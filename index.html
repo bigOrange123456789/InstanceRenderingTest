@@ -171,40 +171,24 @@
 		function initMesh() {
 			clean();
 
-			// make instances
+			//加载JSON文件
 			loader.load( './suzanne_buffergeometry.json', function ( geo ) {
-
 				geo = geo.toNonIndexed();
 				geo.computeBoundingBox();
 				geo.boundingBox.getSize( geometrySize );
 				geometryList.push( geo );
-
-				var start = window.performance.now();
-
 				switch ( method ) {
-
 					case "merged":
 						makeMerged( geo );
 						break;
-
 					case "instanced":
 						makeInstanced( geo );
 						break;
-
 					case "singleMaterial":
 						makeSingleMaterial( geo );
 						break;
 				}
-
 				render();
-
-				var end = window.performance.now();
-
-				document.getElementById( 'materialCount' ).innerText = materialList.length;
-				document.getElementById( 'objectCount' ).innerText = objectCount;
-				document.getElementById( 'drawcalls' ).innerText = renderer.info.render.calls;
-				document.getElementById( 'initTime' ).innerText = ( end - start ).toFixed( 2 );
-
 			} );
 
 		}
