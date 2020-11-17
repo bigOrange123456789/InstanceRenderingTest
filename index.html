@@ -228,11 +228,6 @@
 					case "singleMaterial":
 						makeSingleMaterial( geo );
 						break;
-
-					case "multiMaterial":
-						makeMultiMaterial( geo );
-						break;
-
 				}
 
 				render();
@@ -247,67 +242,7 @@
 			} );
 
 		}
-
-		function makeMultiMaterial( geo ) {
-
-			// material
-
-			var vert = document.getElementById( 'vertMaterial' ).textContent;
-			var frag = document.getElementById( 'fragMaterial' ).textContent;
-
-			var material = new THREE.RawShaderMaterial( {
-				vertexShader: vert,
-				fragmentShader: frag,
-				uniforms: {
-					color: {
-						value: new THREE.Color()
-					}
-				}
-			} );
-
-			var pickingMaterial = new THREE.RawShaderMaterial( {
-				vertexShader: "#define PICKING\n" + vert,
-				fragmentShader: "#define PICKING\n" + frag,
-				uniforms: {
-					pickingColor: {
-						value: new THREE.Color()
-					}
-				}
-			} );
-
-			// geometry / mesh
-
-			var matrix = new THREE.Matrix4();
-
-			for ( var i = 0; i < instanceCount; i ++ ) {
-
-				var object = new THREE.Mesh( geo, material );
-				objectCount ++;
-				randomizeMatrix( matrix );
-				object.applyMatrix( matrix );
-				var pickingObject = object.clone();
-				objectCount ++;
-
-				object.material = material.clone();
-				object.material.uniforms[ "color" ].value.setHex( Math.random() * 0xffffff );
-				materialList.push( object.material );
-
-				pickingObject.material = pickingMaterial.clone();
-				pickingObject.material.uniforms[ "pickingColor" ].value.setHex( i + 1 );
-				materialList.push( pickingObject.material );
-
-				pickingData[ i + 1 ] = object;
-
-				scene.add( object );
-				pickingScene.add( pickingObject );
-
-			}
-
-			material.dispose();
-			pickingMaterial.dispose();
-
-		}
-
+		
 		function makeSingleMaterial( geo ) {
 
 			// material
