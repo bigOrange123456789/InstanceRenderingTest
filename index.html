@@ -497,19 +497,7 @@
 
 			// listeners
 
-			renderer.domElement.addEventListener( 'mousemove', onMouseMove );
-
 			window.addEventListener( 'resize', onWindowResize, false );
-
-		}
-
-		function onMouseMove( e ) {
-
-			mouse.x = e.clientX;
-			mouse.y = e.clientY;
-
-			controls.update();
-			requestAnimationFrame( render );
 
 		}
 
@@ -523,7 +511,7 @@
 
 		}
 
-		function animate() {
+		function animate() {//动画函数，调用渲染函数
 
 			if ( doAnimate ) {
 
@@ -533,9 +521,7 @@
 
 			controls.update();
 			stats.update();
-
 			render();
-
 		}
 
 		function render() {//渲染函数
