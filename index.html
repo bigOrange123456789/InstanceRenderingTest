@@ -106,13 +106,12 @@
 
 		import Stats from './stats.module.js';
 
-		import { TrackballControls } from './TrackballControls.js';
+		import {TrackballControls} from './TrackballControls.js';
 		var container, stats;
 		var camera, controls, scene, renderer;
 		var pickingData, pickingRenderTarget, pickingScene;
 		var useOverrideMaterial = true;
 		var singleMaterial, singlePickingMaterial;
-		var highlightBox;
 		var materialList = [];
 		var geometryList = [];
 		var objectCount = 0;
@@ -124,24 +123,25 @@
 		gui();
 		init();
 		initMesh();
+
 		function gui() {
-			var instanceCountElm = document.getElementById( 'instanceCount' );
-			instanceCount = parseInt( instanceCountElm.value );
-			var methodElm = document.getElementById( 'method' );
+			var instanceCountElm = document.getElementById('instanceCount');
+			instanceCount = parseInt(instanceCountElm.value);
+			var methodElm = document.getElementById('method');
 			method = methodElm.value;
 		}
+
 		function clean() {
 			THREE.Cache.clear();
-			materialList.forEach( function ( m ) {
+			materialList.forEach(function (m) {
 				m.dispose();
-			} );
-			geometryList.forEach( function ( g ) {
+			});
+			geometryList.forEach(function (g) {
 				g.dispose();
-			} );
+			});
 			scene = new THREE.Scene();
-			scene.background = new THREE.Color( 0xffffff );
-			scene.add( camera );
-			scene.add( highlightBox );
+			scene.background = new THREE.Color(0xffffff);
+			scene.add(camera);
 			pickingScene = new THREE.Scene();
 			pickingData = {};
 			materialList = [];
@@ -150,21 +150,22 @@
 			singleMaterial = undefined;
 			singlePickingMaterial = undefined;
 		}
+
 		var randomizeMatrix = function () {
 			var position = new THREE.Vector3();
 			var rotation = new THREE.Euler();
 			var quaternion = new THREE.Quaternion();
 			var scale = new THREE.Vector3();
-			return function ( matrix ) {
+			return function (matrix) {
 				position.x = Math.random() * 40 - 20;
 				position.y = Math.random() * 40 - 20;
 				position.z = Math.random() * 40 - 20;
 				rotation.x = Math.random() * 2 * Math.PI;
 				rotation.y = Math.random() * 2 * Math.PI;
 				rotation.z = Math.random() * 2 * Math.PI;
-				quaternion.setFromEuler( rotation );
+				quaternion.setFromEuler(rotation);
 				scale.x = scale.y = scale.z = Math.random() * 1;
-				matrix.compose( position, quaternion, scale );
+				matrix.compose(position, quaternion, scale);
 			};
 		}();
 
@@ -172,35 +173,32 @@
 			clean();
 
 			//加载JSON文件
-			loader.load( './suzanne_buffergeometry.json', function ( geo ) {
+			loader.load('./suzanne_buffergeometry.json', function (geo) {
 				geo = geo.toNonIndexed();
 				geo.computeBoundingBox();
-				geo.boundingBox.getSize( geometrySize );
-				geometryList.push( geo );
-				switch ( method ) {
+				geo.boundingBox.getSize(geometrySize);
+				geometryList.push(geo);
+				switch (method) {
 					case "merged":
-						makeMerged( geo );
+						makeMerged(geo);
 						break;
 					case "instanced":
-						makeInstanced( geo );
+						makeInstanced(geo);
 						break;
 					case "singleMaterial":
-						makeSingleMaterial( geo );
+						makeSingleMaterial(geo);
 						break;
 				}
-				render();
-			} );
+				renderer.render(scene, camera);//渲染整个场景
+			});
 
 		}
 
-		function makeSingleMaterial( geo ) {
-
+		function makeSingleMaterial(geo) {
 			// material
-
-			var vert = document.getElementById( 'vertMaterial' ).textContent;
-			var frag = document.getElementById( 'fragMaterial' ).textContent;
-
-			var material = new THREE.RawShaderMaterial( {
+			var vert = document.getElementById('vertMaterial').textContent;
+			var frag = document.getElementById('fragMaterial').textContent;
+			var material = new THREE.RawShaderMaterial({
 				vertexShader: vert,
 				fragmentShader: frag,
 				uniforms: {
@@ -208,10 +206,9 @@
 						value: new THREE.Color()
 					}
 				}
-			} );
-			materialList.push( material );
-
-			var pickingMaterial = new THREE.RawShaderMaterial( {
+			});
+			materialList.push(material);
+			var pickingMaterial = new THREE.RawShaderMaterial({
 				vertexShader: "#define PICKING\n" + vert,
 				fragmentShader: "#define PICKING\n" + frag,
 				uniforms: {
@@ -219,167 +216,98 @@
 						value: new THREE.Color()
 					}
 				}
-			} );
-			materialList.push( pickingMaterial );
-
-			if ( useOverrideMaterial ) {
-
-				// make globally available
+			});
+			materialList.push(pickingMaterial);
+			if (useOverrideMaterial) {
 				singleMaterial = material;
 				singlePickingMaterial = pickingMaterial;
-
 			}
-
 			// geometry / mesh
-
 			var matrix = new THREE.Matrix4();
 
-			function onBeforeRender( renderer, scene, camera, geometry, material ) {
-
+			function onBeforeRender(renderer, scene, camera, geometry, material) {
 				var updateList = [];
 				var u = material.uniforms;
 				var d = this.userData;
-
-				if ( u.pickingColor ) {
-
-					u.pickingColor.value.setHex( d.pickingColor );
-					updateList.push( "pickingColor" );
-
+				if (u.pickingColor) {
+					u.pickingColor.value.setHex(d.pickingColor);
+					updateList.push("pickingColor");
 				}
-
-				if ( u.color ) {
-
-					u.color.value.setHex( d.color );
-					updateList.push( "color" );
-
+				if (u.color) {
+					u.color.value.setHex(d.color);
+					updateList.push("color");
 				}
-
-				if ( updateList.length ) {
-
-					var materialProperties = renderer.properties.get( material );
-
-					if ( materialProperties.program ) {
-
+				if (updateList.length) {
+					var materialProperties = renderer.properties.get(material);
+					if (materialProperties.program) {
 						var gl = renderer.getContext();
 						var p = materialProperties.program;
-						gl.useProgram( p.program );
+						gl.useProgram(p.program);
 						var pu = p.getUniforms();
-
-						updateList.forEach( function ( name ) {
-
-							pu.setValue( gl, name, u[ name ].value );
-
-						} );
-
+						updateList.forEach(function (name) {
+							pu.setValue(gl, name, u[name].value);
+						});
 					}
-
 				}
-
 			}
 
-			for ( var i = 0; i < instanceCount; i ++ ) {
-
-				var object = new THREE.Mesh( geo, material );
-				objectCount ++;
-				randomizeMatrix( matrix );
-				object.applyMatrix( matrix );
+			for (var i = 0; i < instanceCount; i++) {
+				var object = new THREE.Mesh(geo, material);
+				objectCount++;
+				randomizeMatrix(matrix);
+				object.applyMatrix(matrix);
 
 				var pickingObject;
-				if ( ! useOverrideMaterial ) {
+				if (!useOverrideMaterial) {
 
 					pickingObject = object.clone();
-					objectCount ++;
+					objectCount++;
 
 				}
 
 				object.material = material;
-				object.userData[ "color" ] = Math.random() * 0xffffff;
+				object.userData["color"] = Math.random() * 0xffffff;
 
-				if ( useOverrideMaterial ) {
+				if (useOverrideMaterial) {
 
-					object.userData[ "pickingColor" ] = i + 1;
+					object.userData["pickingColor"] = i + 1;
 					object.onBeforeRender = onBeforeRender;
 
 				} else {
 
 					pickingObject.material = pickingMaterial;
-					pickingObject.userData[ "pickingColor" ] = i + 1;
+					pickingObject.userData["pickingColor"] = i + 1;
 					pickingObject.onBeforeRender = onBeforeRender;
 
 				}
 
-				pickingData[ i + 1 ] = object;
+				pickingData[i + 1] = object;
 
-				scene.add( object );
-				if ( ! useOverrideMaterial ) pickingScene.add( pickingObject );
+				scene.add(object);
+				if (!useOverrideMaterial) pickingScene.add(pickingObject);
 
 			}
 
 		}
 
-		function init() {
-
+		function init(){
 			// camera
-
 			camera = new THREE.PerspectiveCamera(
-				70, window.innerWidth / window.innerHeight, 1, 100
+					70, window.innerWidth / window.innerHeight, 1, 100
 			);
 			camera.position.z = 40;
 
-			// picking render target
-
-			pickingRenderTarget = new THREE.WebGLRenderTarget(
-				window.innerWidth, window.innerHeight
-			);
-			pickingRenderTarget.texture.generateMipmaps = false;
-			pickingRenderTarget.texture.minFilter = THREE.NearestFilter;
-
-			// highlight box
-
-			highlightBox = new THREE.Mesh(
-				new THREE.BoxBufferGeometry( 1, 1, 1 ),
-				new THREE.MeshLambertMaterial( {
-					emissive: 0xffff00,
-					transparent: true,
-					opacity: 0.5
-				} )
-			);
-
 			// renderer
-
-			container = document.getElementById( "container" );
-			renderer = new THREE.WebGLRenderer( {
+			container = document.getElementById("container");
+			renderer = new THREE.WebGLRenderer({
 				antialias: true,
 				alpha: true
-			} );
-			renderer.setPixelRatio( window.devicePixelRatio );
-			renderer.setSize( window.innerWidth, window.innerHeight );
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
 			//renderer.sortObjects = false;
-			container.appendChild( renderer.domElement );
-
-			if ( renderer.extensions.get( 'ANGLE_instanced_arrays' ) === null ) {
-
-				throw 'ANGLE_instanced_arrays not supported';
-
-			}
-
-			// controls
-
-			controls = new TrackballControls( camera, renderer.domElement );
-			controls.staticMoving = true;
-
-			// stats
-
-			stats = new Stats();
-			container.appendChild( stats.dom );
+			container.appendChild(renderer.domElement);
 		}
-
-		function render() {//渲染函数
-			renderer.setRenderTarget( null );
-			renderer.render( scene, camera );
-
-		}
-
 	</script>
 </body>
 </html>
