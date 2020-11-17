@@ -120,40 +120,15 @@
 		var mouse = new THREE.Vector2();
 		var scale = 1.03;
 		var loader = new THREE.BufferGeometryLoader();
-		var instanceCount, method, doAnimate;
+		var instanceCount, method;
 		gui();
 		init();
 		initMesh();
-		if ( doAnimate ) animate();
 		function gui() {
 			var instanceCountElm = document.getElementById( 'instanceCount' );
 			instanceCount = parseInt( instanceCountElm.value );
-			instanceCountElm.addEventListener( "change", function () {
-				instanceCount = parseInt( instanceCountElm.value );
-				initMesh();
-			} );
 			var methodElm = document.getElementById( 'method' );
 			method = methodElm.value;
-			methodElm.addEventListener( "change", function () {
-				method = methodElm.value;
-				initMesh();
-			} );
-			var animateElm = document.getElementById( 'animate' );
-			doAnimate = animateElm.checked;
-			animateElm.addEventListener( "click", function () {
-				doAnimate = animateElm.checked;
-				animate();
-			} );
-			var overrideElm = document.getElementById( 'override' );
-			useOverrideMaterial = overrideElm.checked;
-			overrideElm.addEventListener( "click", function () {
-				useOverrideMaterial = overrideElm.checked;
-				initMesh();
-			} );
-			var constructElm = document.getElementById( 'construct' );
-			constructElm.addEventListener( "click", function () {
-				initMesh();
-			} );
 		}
 		function clean() {
 			THREE.Cache.clear();
@@ -415,19 +390,6 @@
 			container.appendChild( stats.dom );
 		}
 
-		function animate() {//动画函数，调用渲染函数
-
-			if ( doAnimate ) {
-
-				requestAnimationFrame( animate );
-
-			}
-
-			controls.update();
-			stats.update();
-			render();
-		}
-
 		function render() {//渲染函数
 			renderer.setRenderTarget( null );
 			renderer.render( scene, camera );
@@ -435,6 +397,5 @@
 		}
 
 	</script>
-
 </body>
 </html>
