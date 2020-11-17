@@ -19,17 +19,11 @@
 	</style>
 </head>
 <body>
-
 	<div id="info">
-
 		<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - gpu picking of geometry instances
-
 		<div id="notSupported" style="display:none">Sorry your graphics card + browser does not support hardware instancing</div>
-
 		<br/><br/>
-
 		<div>
-
 			<div>
 				number of instances:
 				<select id="instanceCount">
@@ -46,7 +40,6 @@
 					<option>100000</option>
 				</select>
 			</div>
-
 			<div>
 				method:
 				<select id="method">
@@ -56,236 +49,57 @@
 					<option>multiMaterial</option>
 				</select>
 			</div>
-
 			<div>
 				render continuously:
 				<input id="animate" type="checkbox" />
 			</div>
-
 			<div>
 				override material (only affects singleMaterial):
 				<input id="override" type="checkbox" checked/>
 			</div>
-
 			<div>
 				construct anew(to get additional timings):
 				<button id="construct" type="button">do it</button>
 			</div>
-
 		</div>
-
 		<br/>
-
 		<div>
-
 			<span>Materials: #<span id="materialCount"></span></span>
-
-			&nbsp;&nbsp;&nbsp;
-
 			<span>Objects: #<span id="objectCount"></span></span>
-
-			&nbsp;&nbsp;&nbsp;
-
 			<span>Drawcalls: #<span id="drawcalls"></span></span>
-
-			&nbsp;&nbsp;&nbsp;
-
 			<span>Construction time: <span id="initTime"></span>&nbsp;ms</span>
-
-			&nbsp;&nbsp;&nbsp;
-
 		</div>
-
 	</div>
-
 	<div id="container"></div>
-
-	<script id="vertMerged" type="x-shader/x-vertex">
-		#define SHADER_NAME vertMerged
-
-		precision highp float;
-
-		uniform mat4 modelViewMatrix;
-		uniform mat4 projectionMatrix;
-
-		attribute vec3 position;
-		#ifdef PICKING
-			attribute vec3 pickingColor;
-		#else
-			attribute vec3 color;
-			varying vec3 vPosition;
-		#endif
-
-		varying vec3 vColor;
-
-		void main()	{
-
-			vec3 positionEye = ( modelViewMatrix * vec4( position, 1.0 ) ).xyz;
-
-			#ifdef PICKING
-				vColor = pickingColor;
-			#else
-				vColor = color;
-				vPosition = positionEye;
-			#endif
-
-			gl_Position = projectionMatrix * vec4( positionEye, 1.0 );
-
-		}
-
-	</script>
-
-	<script id="fragMerged" type="x-shader/x-fragment">
-		#define SHADER_NAME fragMerged
-
-		#extension GL_OES_standard_derivatives : enable
-
-		precision highp float;
-
-		varying vec3 vColor;
-
-		#ifndef PICKING
-			varying vec3 vPosition;
-		#endif
-
-		void main()	{
-
-			#ifdef PICKING
-				gl_FragColor = vec4( vColor, 1.0 );
-			#else
-				vec3 fdx = dFdx( vPosition );
-				vec3 fdy = dFdy( vPosition );
-				vec3 normal = normalize( cross( fdx, fdy ) );
-				float diffuse = dot( normal, vec3( 0.0, 0.0, 1.0 ) );
-
-				gl_FragColor = vec4( diffuse * vColor, 1.0 );
-			#endif
-
-		}
-
-	</script>
-
-	<script id="vertInstanced" type="x-shader/x-vertex">
-		#define SHADER_NAME vertInstanced
-
-		precision highp float;
-
-		uniform mat4 modelViewMatrix;
-		uniform mat4 projectionMatrix;
-
-		attribute vec3 position;
-		attribute vec3 mcol0;
-		attribute vec3 mcol1;
-		attribute vec3 mcol2;
-		attribute vec3 mcol3;
-
-		#ifdef PICKING
-			attribute vec3 pickingColor;
-		#else
-			attribute vec3 color;
-			varying vec3 vPosition;
-		#endif
-
-		varying vec3 vColor;
-
-		void main()	{
-
-			mat4 matrix = mat4(
-				vec4( mcol0, 0 ),
-				vec4( mcol1, 0 ),
-				vec4( mcol2, 0 ),
-				vec4( mcol3, 1 )
-			);
-
-			vec3 positionEye = ( modelViewMatrix * matrix * vec4( position, 1.0 ) ).xyz;
-
-			#ifdef PICKING
-				vColor = pickingColor;
-			#else
-				vColor = color;
-				vPosition = positionEye;
-			#endif
-
-			gl_Position = projectionMatrix * vec4( positionEye, 1.0 );
-
-		}
-
-	</script>
-
-	<script id="fragInstanced" type="x-shader/x-fragment">
-		#define SHADER_NAME fragInstanced
-
-		#extension GL_OES_standard_derivatives : enable
-
-		precision highp float;
-
-		varying vec3 vColor;
-
-		#ifndef PICKING
-			varying vec3 vPosition;
-		#endif
-
-		void main()	{
-
-			#ifdef PICKING
-				gl_FragColor = vec4( vColor, 1.0 );
-			#else
-				vec3 fdx = dFdx( vPosition );
-				vec3 fdy = dFdy( vPosition );
-				vec3 normal = normalize( cross( fdx, fdy ) );
-				float diffuse = dot( normal, vec3( 0.0, 0.0, 1.0 ) );
-
-				gl_FragColor = vec4( diffuse * vColor, 1.0 );
-			#endif
-
-		}
-
-	</script>
 
 	<script id="vertMaterial" type="x-shader/x-vertex">
 		#define SHADER_NAME vertMaterial
-
 		precision highp float;
-
 		uniform mat4 modelViewMatrix;
 		uniform mat4 projectionMatrix;
-
 		attribute vec3 position;
-
 		#ifndef PICKING
 			varying vec3 vPosition;
 		#endif
-
 		void main()	{
-
 			vec3 positionEye = ( modelViewMatrix * vec4( position, 1.0 ) ).xyz;
-
 			#ifndef PICKING
 				vPosition = positionEye;
 			#endif
-
 			gl_Position = projectionMatrix * vec4( positionEye, 1.0 );
-
 		}
-
 	</script>
-
 	<script id="fragMaterial" type="x-shader/x-fragment">
 		#define SHADER_NAME fragMaterial
-
 		#extension GL_OES_standard_derivatives : enable
-
 		precision highp float;
-
 		#ifdef PICKING
 			uniform vec3 pickingColor;
 		#else
 			uniform vec3 color;
 			varying vec3 vPosition;
 		#endif
-
 		void main()	{
-
 			#ifdef PICKING
 				gl_FragColor = vec4( pickingColor, 1.0 );
 			#else
@@ -293,21 +107,16 @@
 				vec3 fdy = dFdy( vPosition );
 				vec3 normal = normalize( cross( fdx, fdy ) );
 				float diffuse = dot( normal, vec3( 0.0, 0.0, 1.0 ) );
-
 				gl_FragColor = vec4( diffuse * color, 1.0 );
 			#endif
-
 		}
-
 	</script>
-
 	<script type="module">
 		import * as THREE from './three.module.js';
 
 		import Stats from './stats.module.js';
 
 		import { TrackballControls } from './TrackballControls.js';
-
 		var container, stats;
 		var camera, controls, scene, renderer;
 		var pickingData, pickingRenderTarget, pickingScene;
@@ -320,150 +129,82 @@
 		var geometrySize = new THREE.Vector3();
 		var mouse = new THREE.Vector2();
 		var scale = 1.03;
-
 		var loader = new THREE.BufferGeometryLoader();
-
-		//create buffer for reading a single pixel
 		var pixelBuffer = new Uint8Array( 4 );
-
-		// gui
 		var instanceCount, method, doAnimate;
-
-		//
-
 		gui();
 		init();
 		initMesh();
 		if ( doAnimate ) animate();
-
-		//
-
 		function gui() {
-
 			var instanceCountElm = document.getElementById( 'instanceCount' );
-
 			instanceCount = parseInt( instanceCountElm.value );
-
 			instanceCountElm.addEventListener( "change", function () {
-
 				instanceCount = parseInt( instanceCountElm.value );
 				initMesh();
-
 			} );
-
-			//
-
 			var methodElm = document.getElementById( 'method' );
-
 			method = methodElm.value;
-
 			methodElm.addEventListener( "change", function () {
-
 				method = methodElm.value;
 				initMesh();
-
 			} );
-
-			//
-
 			var animateElm = document.getElementById( 'animate' );
-
 			doAnimate = animateElm.checked;
-
 			animateElm.addEventListener( "click", function () {
-
 				doAnimate = animateElm.checked;
 				animate();
-
 			} );
-
-			//
-
 			var overrideElm = document.getElementById( 'override' );
-
 			useOverrideMaterial = overrideElm.checked;
-
 			overrideElm.addEventListener( "click", function () {
-
 				useOverrideMaterial = overrideElm.checked;
 				initMesh();
-
 			} );
-
-			//
-
 			var constructElm = document.getElementById( 'construct' );
-
 			constructElm.addEventListener( "click", function () {
-
 				initMesh();
-
 			} );
-
 		}
-
 		function clean() {
-
 			THREE.Cache.clear();
-
 			materialList.forEach( function ( m ) {
-
 				m.dispose();
-
 			} );
-
 			geometryList.forEach( function ( g ) {
-
 				g.dispose();
-
 			} );
-
 			scene = new THREE.Scene();
 			scene.background = new THREE.Color( 0xffffff );
-
 			scene.add( camera );
 			scene.add( highlightBox );
-
 			pickingScene = new THREE.Scene();
 			pickingData = {};
 			materialList = [];
 			geometryList = [];
 			objectCount = 0;
-
 			singleMaterial = undefined;
 			singlePickingMaterial = undefined;
-
 		}
-
 		var randomizeMatrix = function () {
-
 			var position = new THREE.Vector3();
 			var rotation = new THREE.Euler();
 			var quaternion = new THREE.Quaternion();
 			var scale = new THREE.Vector3();
-
 			return function ( matrix ) {
-
 				position.x = Math.random() * 40 - 20;
 				position.y = Math.random() * 40 - 20;
 				position.z = Math.random() * 40 - 20;
-
 				rotation.x = Math.random() * 2 * Math.PI;
 				rotation.y = Math.random() * 2 * Math.PI;
 				rotation.z = Math.random() * 2 * Math.PI;
-
 				quaternion.setFromEuler( rotation );
-
 				scale.x = scale.y = scale.z = Math.random() * 1;
-
 				matrix.compose( position, quaternion, scale );
-
 			};
-
 		}();
 
 		function initMesh() {
-
 			clean();
 
 			// make instances
@@ -823,9 +564,6 @@
 			var vertices = geo.attributes.position.clone();
 			igeo.setAttribute( 'position', vertices );
 
-			// var matrices = new THREE.InstancedBufferAttribute(
-			// 	new Float32Array( instanceCount * 16 ), 16
-			// );
 			var mcol0 = new THREE.InstancedBufferAttribute(
 				new Float32Array( instanceCount * 3 ), 3
 			);
@@ -841,7 +579,6 @@
 			var matrix = new THREE.Matrix4();
 			var me = matrix.elements;
 			for ( var i = 0, ul = mcol0.count; i < ul; i ++ ) {
-
 				randomizeMatrix( matrix );
 				var object = new THREE.Object3D();
 				objectCount ++;
@@ -890,7 +627,9 @@
 			// mesh
 
 			var mesh = new THREE.Mesh( igeo, material );
-			scene.add( mesh );
+			scene.add( mesh );//0000
+			console.log(mesh);
+			alert(123);
 
 			var pickingMesh = new THREE.Mesh( igeo, pickingMaterial );
 			pickingScene.add( pickingMesh );
