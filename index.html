@@ -4,62 +4,8 @@
 	<title>three.js webgl - interactive instances (gpu)</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<link type="text/css" rel="stylesheet" href="main.css">
-	<style>
-		#info {
-			background-color: rgba(0,0,0,0.75);
-		}
-	</style>
 </head>
 <body>
-	<div id="info">
-		<div>
-			<div>
-				number of instances:
-				<select id="instanceCount">
-					<option>100</option>
-					<option>500</option>
-					<option selected>1000</option>
-					<option>2000</option>
-					<option>3000</option>
-					<option>5000</option>
-					<option>10000</option>
-					<option>20000</option>
-					<option>30000</option>
-					<option>50000</option>
-					<option>100000</option>
-				</select>
-			</div>
-			<div>
-				method:
-				<select id="method">
-					<option>instanced</option>
-					<option>merged</option>
-					<option selected>singleMaterial</option>
-					<option>multiMaterial</option>
-				</select>
-			</div>
-			<div>
-				render continuously:
-				<input id="animate" type="checkbox" />
-			</div>
-			<div>
-				override material (only affects singleMaterial):
-				<input id="override" type="checkbox" checked/>
-			</div>
-			<div>
-				construct anew(to get additional timings):
-				<button id="construct" type="button">do it</button>
-			</div>
-		</div>
-		<br/>
-		<div>
-			<span>Materials: #<span id="materialCount"></span></span>
-			<span>Objects: #<span id="objectCount"></span></span>
-			<span>Drawcalls: #<span id="drawcalls"></span></span>
-			<span>Construction time: <span id="initTime"></span>&nbsp;ms</span>
-		</div>
-	</div>
 	<div id="container"></div>
 
 	<script id="vertMaterial" type="x-shader/x-vertex">
@@ -123,7 +69,7 @@
 		var method='singleMaterial';
 		init();
 		initMesh();
-		
+
 		function clean() {
 			THREE.Cache.clear();
 			materialList.forEach(function (m) {
