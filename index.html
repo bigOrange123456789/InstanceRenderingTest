@@ -9,19 +9,10 @@
 		#info {
 			background-color: rgba(0,0,0,0.75);
 		}
-		#notSupported {
-			width: 50%;
-			margin: auto;
-			border: 2px red solid;
-			margin-top: 20px;
-			padding: 10px;
-		}
 	</style>
 </head>
 <body>
 	<div id="info">
-		<div id="notSupported" style="display:none">Sorry your graphics card + browser does not support hardware instancing</div>
-		<br/><br/>
 		<div>
 			<div>
 				number of instances:
@@ -242,7 +233,7 @@
 			} );
 
 		}
-		
+
 		function makeSingleMaterial( geo ) {
 
 			// material
@@ -402,12 +393,6 @@
 				antialias: true,
 				alpha: true
 			} );
-			if ( renderer.extensions.get( 'ANGLE_instanced_arrays' ) === null ) {
-
-				document.getElementById( "notSupported" ).style.display = "";
-				return;
-
-			}
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			//renderer.sortObjects = false;
