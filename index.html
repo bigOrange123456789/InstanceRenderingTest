@@ -53,12 +53,6 @@
 			</div>
 		</div>
 		<br/>
-		<div>
-			<span>Materials: #<span id="materialCount"></span></span>
-			<span>Objects: #<span id="objectCount"></span></span>
-			<span>Drawcalls: #<span id="drawcalls"></span></span>
-			<span>Construction time: <span id="initTime"></span>&nbsp;ms</span>
-		</div>
 	</div>
 	<div id="container"></div>
 
@@ -108,8 +102,8 @@
 
 		import {TrackballControls} from './TrackballControls.js';
 		var container, stats;
-		var camera, controls, scene, renderer;
-		var pickingData, pickingRenderTarget, pickingScene;
+		var camera,  scene, renderer;
+		var pickingData, pickingScene;
 		var useOverrideMaterial = true;
 		var singleMaterial, singlePickingMaterial;
 		var materialList = [];
@@ -119,17 +113,11 @@
 		var mouse = new THREE.Vector2();
 		var scale = 1.03;
 		var loader = new THREE.BufferGeometryLoader();
-		var instanceCount, method;
-		gui();
+		var instanceCount=1000;//实例化渲染的个数
+		var method='singleMaterial';
+
 		init();
 		initMesh();
-
-		function gui() {
-			var instanceCountElm = document.getElementById('instanceCount');
-			instanceCount = parseInt(instanceCountElm.value);
-			var methodElm = document.getElementById('method');
-			method = methodElm.value;
-		}
 
 		function clean() {
 			THREE.Cache.clear();
