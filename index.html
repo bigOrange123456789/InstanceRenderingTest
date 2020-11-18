@@ -188,35 +188,23 @@
 
 				var pickingObject;
 				if (!useOverrideMaterial) {
-
 					pickingObject = object.clone();
 					objectCount++;
-
 				}
-
 				object.material = material;
 				object.userData["color"] = Math.random() * 0xffffff;
-
 				if (useOverrideMaterial) {
-
 					object.userData["pickingColor"] = i + 1;
 					object.onBeforeRender = onBeforeRender;
-
 				} else {
-
 					pickingObject.material = pickingMaterial;
 					pickingObject.userData["pickingColor"] = i + 1;
 					pickingObject.onBeforeRender = onBeforeRender;
-
 				}
-
 				pickingData[i + 1] = object;
-
 				scene.add(object);
 				if (!useOverrideMaterial) pickingScene.add(pickingObject);
-
 			}
-
 		}
 
 		function init(){
@@ -234,7 +222,6 @@
 			});
 			renderer.setPixelRatio(window.devicePixelRatio);
 			renderer.setSize(window.innerWidth, window.innerHeight);
-			//renderer.sortObjects = false;
 			container.appendChild(renderer.domElement);
 		}
 	</script>
