@@ -9,14 +9,19 @@
 </head>
 <body>
 	<div id="container"></div>
-	<script id="vertInstanced" type="x-shader/x-vertex">
+	<!--
 	//vertex顶点着色器
+	设置gl_Position//
 	    //#define是宏定义
 	    //const必须在声明的时候初始化
 	    //attribute属性变量、uniform一致变量、varying易变变量 声明时一定不能初始化
 		//attribute只能用于顶点着色器vertex，不能用于片元着色器fragment
 		//          存储顶点的各种属性
 		//
+	//片元着色器fragment
+	设置gl_FragColor
+	-->
+	<script id="vertInstanced" type="x-shader/x-vertex">
 		#define SHADER_NAME vertInstanced
 
 		precision highp float;
@@ -44,15 +49,18 @@
 				vec4( mcol0, 0 ),
 				vec4( mcol1, 0 ),
 				vec4( mcol2, 0 ),
+				//vec4( 1,0,0, 0 ),vec4( 0,1,0, 0 ),vec4( 0,1,0, 0 ),
 				vec4( mcol3, 1 )
 			);
 			vec3 positionEye = ( modelViewMatrix * matrix * vec4( position, 1.0 ) ).xyz;
+
 			#ifdef PICKING
 				vColor = pickingColor;
 			#else
 				vColor = color;
 				vPosition = positionEye;
 			#endif
+
 			gl_Position = projectionMatrix * vec4( positionEye, 1.0 );
 		}
 	</script>
@@ -158,25 +166,26 @@
 			} );
 			materialList.push( material );//材质放入材质列表
 
-			//几何//几何只是处理了点集合 面似乎是交给材质处理的
+			//几何
 			var igeo = new THREE.InstancedBufferGeometry();
 			geometryList.push( igeo );
 
 			//克隆几何的点集合
 			var vertices = geo.attributes.position.clone();
 			igeo.setAttribute( 'position', vertices );
-			
+
+			//
 			var mcol0 = new THREE.InstancedBufferAttribute(
-				new Float32Array( instanceCount * 3 ), 3
+					new Float32Array( instanceCount * 3 ), 3
 			);
 			var mcol1 = new THREE.InstancedBufferAttribute(
-				new Float32Array( instanceCount * 3 ), 3
+					new Float32Array( instanceCount * 3 ), 3
 			);
 			var mcol2 = new THREE.InstancedBufferAttribute(
-				new Float32Array( instanceCount * 3 ), 3
+					new Float32Array( instanceCount * 3 ), 3
 			);
 			var mcol3 = new THREE.InstancedBufferAttribute(
-				new Float32Array( instanceCount * 3 ), 3
+					new Float32Array( instanceCount * 3 ), 3
 			);
 
 			mcol0.setXYZ( 0, 0.5,0,0 );
@@ -196,10 +205,10 @@
 
 			//生成一个随机颜色
 			var colors = new THREE.InstancedBufferAttribute(
-				new Float32Array( instanceCount * 3 ), 3
+					new Float32Array( instanceCount * 3 ), 3
 			);
-			colors.setXYZ( 0, 0.6, 0, 0.5 );
 
+			colors.setXYZ( 0, 0.6, 0, 0.5 );
 			colors.setXYZ( 1, 1, 0, 0.5 );
 
 			igeo.setAttribute( 'color', colors );
