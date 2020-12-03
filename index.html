@@ -91,8 +91,7 @@
 		import * as THREE from './three.module.js';
 		var container;
 		var camera,scene, renderer;
-		var pickingData, pickingScene;
-		var singleMaterial, singlePickingMaterial;
+		var singleMaterial;
 		var materialList = [];
 		var geometryList = [];
 		var objectCount = 0;
@@ -121,14 +120,12 @@
 
 			scene.add( camera );
 
-			pickingScene = new THREE.Scene();
-			pickingData = {};
+
 			materialList = [];
 			geometryList = [];
 			objectCount = 0;
 
 			singleMaterial = undefined;
-			singlePickingMaterial = undefined;
 
 		}
 
@@ -181,14 +178,6 @@
 			} );
 			materialList.push( material );//材质放入材质列表
 
-			//生成拾取材质
-			var pickingMaterial = new THREE.RawShaderMaterial( {
-				vertexShader: "#define PICKING\n" + vert,
-				fragmentShader: "#define PICKING\n" + frag
-			} );
-			materialList.push( pickingMaterial );//拾取材质放入拾取材质列表
-
-			//几何放入几何列表// geometry
 			var igeo = new THREE.InstancedBufferGeometry();
 			geometryList.push( igeo );
 
@@ -216,8 +205,6 @@
 				var object = new THREE.Object3D();
 				objectCount ++;
 				object.applyMatrix( matrix );
-				pickingData[ i + 1 ] = object;
-				// matrices.set( matrix.elements, i * 16 );
 				mcol0.setXYZ( i, me[ 0 ], me[ 1 ], me[ 2 ] );
 				mcol1.setXYZ( i, me[ 4 ], me[ 5 ], me[ 6 ] );
 				mcol2.setXYZ( i, me[ 8 ], me[ 9 ], me[ 10 ] );
@@ -241,24 +228,10 @@
 			}
 			igeo.setAttribute( 'color', colors );
 
-			/*var col = new THREE.Color();
-			var pickingColors = new THREE.InstancedBufferAttribute(
-				new Float32Array( instanceCount * 3 ), 3
-			);
-			for ( var i = 0, ul = pickingColors.count; i < ul; i ++ ) {
-				col.setHex( i + 1 );
-				pickingColors.setXYZ( i, col.r, col.g, col.b );
-			}
-			igeo.setAttribute( 'pickingColor', pickingColors );*/
-
 			// mesh
 			var mesh = new THREE.Mesh( igeo, material );
 			mesh.scale.set(100,100,100);
-			//console.log(mesh);
 			scene.add( mesh );
-
-			var pickingMesh = new THREE.Mesh( igeo, pickingMaterial );
-			pickingScene.add( pickingMesh );
 
 		}
 
