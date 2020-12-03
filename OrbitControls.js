@@ -263,7 +263,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 		return function panLeft( distance, objectMatrix ) {
 
-			console.log(objectMatrix);
+			////console.log(objectMatrix);
 			v.setFromMatrixColumn( objectMatrix, 0 ); // get X column of objectMatrix
 			v.multiplyScalar( - distance );
 
@@ -374,7 +374,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleMouseDownRotate( event ) {
 
-		//console.log( 'handleMouseDownRotate' );
+		//////console.log( 'handleMouseDownRotate' );
 
 		rotateStart.set( event.clientX, event.clientY );
 
@@ -382,7 +382,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleMouseDownDolly( event ) {
 
-		//console.log( 'handleMouseDownDolly' );
+		//////console.log( 'handleMouseDownDolly' );
 
 		dollyStart.set( event.clientX, event.clientY );
 
@@ -390,7 +390,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleMouseDownPan( event ) {
 
-		//console.log( 'handleMouseDownPan' );
+		//////console.log( 'handleMouseDownPan' );
 
 		panStart.set( event.clientX, event.clientY );
 
@@ -398,7 +398,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleMouseMoveRotate( event ) {
 
-		//console.log( 'handleMouseMoveRotate' );
+		//////console.log( 'handleMouseMoveRotate' );
 
 		rotateEnd.set( event.clientX, event.clientY );
 		rotateDelta.subVectors( rotateEnd, rotateStart );
@@ -435,11 +435,11 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleMouseMovePan( event ) {//上下左右移动//0001
 
-		//console.log( 'handleMouseMovePan' );
+		//////console.log( 'handleMouseMovePan' );
 
 		panEnd.set( event.clientX, event.clientY );//panEnd是一个2维向量 THREE.Vector2();
 
-		console.log(event.clientX, event.clientY)
+		////console.log(event.clientX, event.clientY)
 		panDelta.subVectors( panEnd, panStart );//panDelta是一个2维向量 THREE.Vector2();
 
 		pan( panDelta.x, panDelta.y );//
@@ -452,7 +452,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleMouseUp( event ) {
 
-		//console.log( 'handleMouseUp' );
+		//////console.log( 'handleMouseUp' );
 
 	}
 
@@ -478,7 +478,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleKeyDown( event ) {//键盘点击事件的监听
 
-		console.log(1211);//0000
+		////console.log(1211);//0000
 		switch ( event.key ) {
 			case "W":case "w":
 				dollyOut( getZoomScale() );//前进
@@ -525,7 +525,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 	//移动端
 	function handleTouchStartRotate( event ) {
 
-		//console.log( 'handleTouchStartRotate' );
+		//////console.log( 'handleTouchStartRotate' );
 
 		rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 
@@ -533,7 +533,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleTouchStartDolly( event ) {
 
-		//console.log( 'handleTouchStartDolly' );
+		//////console.log( 'handleTouchStartDolly' );
 
 		var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 		var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
@@ -546,7 +546,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleTouchStartPan( event ) {
 
-		//console.log( 'handleTouchStartPan' );
+		//////console.log( 'handleTouchStartPan' );
 
 		panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 
@@ -554,7 +554,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleTouchMoveRotate( event ) {
 
-		//console.log( 'handleTouchMoveRotate' );
+		//////console.log( 'handleTouchMoveRotate' );
 
 		rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 		rotateDelta.subVectors( rotateEnd, rotateStart );
@@ -575,7 +575,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleTouchMoveDolly( event ) {
 
-		//console.log( 'handleTouchMoveDolly' );
+		//////console.log( 'handleTouchMoveDolly' );
 
 		var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 		var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
@@ -604,7 +604,7 @@ function OrbitControls( object,domElement,THREE,myTarget) {//Orbit是轨道的�
 
 	function handleTouchMovePan( event ) {
 
-		//console.log( 'handleTouchMovePan' );
+		//////console.log( 'handleTouchMovePan' );
 
 		panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 

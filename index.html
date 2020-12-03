@@ -10,50 +10,51 @@
 <body>
 	<div id="container"></div>
 	<script id="vertInstanced" type="x-shader/x-vertex">
+	//vertex顶点着色器
+	    //#define是宏定义
+	    //const必须在声明的时候初始化
+	    //attribute属性变量、uniform一致变量、varying易变变量 声明时一定不能初始化
+		//attribute只能用于顶点着色器vertex，不能用于片元着色器fragment
+		//          存储顶点的各种属性
+		//
 		#define SHADER_NAME vertInstanced
 
 		precision highp float;
 
-		uniform mat4 modelViewMatrix;
+		uniform mat4 modelViewMatrix;//mat表示这是一个矩阵
 		uniform mat4 projectionMatrix;
 
-		attribute vec3 position;
+		attribute vec3 position;//vec3指有3个浮点数元素的矢量（vector）
 		attribute vec3 mcol0;
 		attribute vec3 mcol1;
 		attribute vec3 mcol2;
 		attribute vec3 mcol3;
 
 		#ifdef PICKING
-			attribute vec3 pickingColor;
+			attribute vec3 pickingColor;//如果拾取定义拾取颜色
 		#else
-			attribute vec3 color;
+			attribute vec3 color;      //如果没有拾取，定义普通颜色
 			varying vec3 vPosition;
 		#endif
 
 		varying vec3 vColor;
 
 		void main()	{
-
 			mat4 matrix = mat4(
 				vec4( mcol0, 0 ),
 				vec4( mcol1, 0 ),
 				vec4( mcol2, 0 ),
 				vec4( mcol3, 1 )
 			);
-
 			vec3 positionEye = ( modelViewMatrix * matrix * vec4( position, 1.0 ) ).xyz;
-
 			#ifdef PICKING
 				vColor = pickingColor;
 			#else
 				vColor = color;
 				vPosition = positionEye;
 			#endif
-
 			gl_Position = projectionMatrix * vec4( positionEye, 1.0 );
-
 		}
-
 	</script>
 	<script id="fragInstanced" type="x-shader/x-fragment">
 		#define SHADER_NAME fragInstanced
@@ -102,7 +103,7 @@
 		var loader = new THREE.BufferGeometryLoader();
 
 		// gui
-		var instanceCount=100;
+		var instanceCount=1;
 
 		init();
 		initMesh();
@@ -167,31 +168,38 @@
 
 		function makeInstanced( geo ) {
 			// material
-			var vert = document.getElementById( 'vertInstanced' ).textContent;
-			var frag = document.getElementById( 'fragInstanced' ).textContent;
+			//顶点着色器
+			var vert = document.getElementById( 'vertInstanced' ).textContent;//代码的文字内容
+			//片元着色器
+			var frag = document.getElementById( 'fragInstanced' ).textContent;//代码的文字内容//console.log(vert);//console.log(frag);
 
+			//材质
 			var material = new THREE.RawShaderMaterial( {
+				//通过顶点着色器和片元着色器生成材质
 				vertexShader: vert,
 				fragmentShader: frag,
 			} );
-			materialList.push( material );
+			materialList.push( material );//材质放入材质列表
 
+			//生成拾取材质
 			var pickingMaterial = new THREE.RawShaderMaterial( {
 				vertexShader: "#define PICKING\n" + vert,
 				fragmentShader: "#define PICKING\n" + frag
 			} );
-			materialList.push( pickingMaterial );
+			materialList.push( pickingMaterial );//拾取材质放入拾取材质列表
 
-			// geometry
+			//几何放入几何列表// geometry
 			var igeo = new THREE.InstancedBufferGeometry();
 			geometryList.push( igeo );
 
+			//克隆几何的点集合
 			var vertices = geo.attributes.position.clone();
 			igeo.setAttribute( 'position', vertices );
 
+			//
 			var mcol0 = new THREE.InstancedBufferAttribute(
 				new Float32Array( instanceCount * 3 ), 3
-			);
+			);//console.log(mcol0);
 			var mcol1 = new THREE.InstancedBufferAttribute(
 				new Float32Array( instanceCount * 3 ), 3
 			);
@@ -201,7 +209,7 @@
 			var mcol3 = new THREE.InstancedBufferAttribute(
 				new Float32Array( instanceCount * 3 ), 3
 			);
-			var matrix = new THREE.Matrix4();
+			var matrix = new THREE.Matrix4();//4维方阵
 			var me = matrix.elements;
 			for ( var i = 0, ul = mcol0.count; i < ul; i ++ ) {
 				randomizeMatrix( matrix );
@@ -216,11 +224,12 @@
 				mcol3.setXYZ( i, me[ 12 ], me[ 13 ], me[ 14 ] );
 			}
 			// igeo.setAttribute( 'matrix', matrices );
-			igeo.setAttribute( 'mcol0', mcol0 );
+			igeo.setAttribute( 'mcol0', mcol0 );//几何有4个属性//mcol0
 			igeo.setAttribute( 'mcol1', mcol1 );
 			igeo.setAttribute( 'mcol2', mcol2 );
 			igeo.setAttribute( 'mcol3', mcol3 );
 
+			//生成一个随机颜色
 			var randCol = function () {
 				return Math.random();
 			};
@@ -232,7 +241,7 @@
 			}
 			igeo.setAttribute( 'color', colors );
 
-			var col = new THREE.Color();
+			/*var col = new THREE.Color();
 			var pickingColors = new THREE.InstancedBufferAttribute(
 				new Float32Array( instanceCount * 3 ), 3
 			);
@@ -240,11 +249,12 @@
 				col.setHex( i + 1 );
 				pickingColors.setXYZ( i, col.r, col.g, col.b );
 			}
-			igeo.setAttribute( 'pickingColor', pickingColors );
+			igeo.setAttribute( 'pickingColor', pickingColors );*/
 
 			// mesh
-
 			var mesh = new THREE.Mesh( igeo, material );
+			mesh.scale.set(100,100,100);
+			//console.log(mesh);
 			scene.add( mesh );
 
 			var pickingMesh = new THREE.Mesh( igeo, pickingMaterial );
@@ -268,7 +278,6 @@
 				alpha: true
 			} );
 			if ( renderer.extensions.get( 'ANGLE_instanced_arrays' ) === null ) {
-				//document.getElementById( "notSupported" ).style.display = "";
 				return;
 			}
 			renderer.setPixelRatio( window.devicePixelRatio );
