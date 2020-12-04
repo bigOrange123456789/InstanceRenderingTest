@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - interactive instances (gpu)</title>
+    <meta http-equiv="content-type"content="text/html; charset=gb2312">
+    <style>
+        body {overflow:hidden;}
+    </style>
+    <script id="shader-vs" type="x-shader/x-vertex">
+        attribute vec3 v3Position;
+        void main(void){
+            gl_Position=vec4(v3Position,1.0);
+        }
+    </script>
+    <script id="shader-fs" type="x-shader/x-fragment">
+        void main(void)
+        {
+            gl_FragColor=vec4(1,0.5,1,1);
+        }
+    </script>
+    <script>
+        function getShaderSourse(scriptID){
+            return document.getElementById( scriptID ).textContent;//souceCode;
+        }
+        var webgl=null;
+        var vertexShaderObject=null;
+        var fragmentShaderObject=null;
+        var programObject=null;
+        var triangleBuffer=null;
+        var v3PositionIndex=0;
+
+        function Init(){
+            var canvas=document.getElementById("myCanvas")
+            //createElement('canvas');
+            webgl=canvas.getContext("webgl")//获得webgl环境（上下文）
+
+            webgl.viewport(0,0,canvas.clientWidth,canvas.clientHeight);//设置webgl窗口尺寸为canvas画布尺寸
+
+            vertexShaderObject=webgl.createShader(webgl.VERTEX_SHADER)
+            fragmentShaderObject=webgl.createShader(webgl.FRAGMENT_SHADER)
+
+            webgl.shaderSource(vertexShaderObject,getShaderSourse("shader-vs"))
+            webgl.shaderSource(fragmentShaderObject,getShaderSourse("shader-fs"))
+
+            webgl.compileShader(vertexShaderObject)
+            webgl.compileShader(fragmentShaderObject)
+
+            if(!webgl.getShaderParameter(vertexShaderObject,webgl.COMPILE_STATUS))
+            {
+                alert("error");
+                return;
+            }
+            if(!webgl.getShaderParameter(fragmentShaderObject,webgl.COMPILE_STATUS))
+            {
+                alert("error");
+                return;
+            }
+            programObject=webgl.createProgram();
+            webgl.attachShader(programObject,vertexShaderObject);
+            webgl.attachShader(programObject,fragmentShaderObject)
+
+            webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//绑定
+
+            webgl.linkProgram(programObject)
+            if(!webgl.getProgramParameter(programObject,webgl.LINK_STATUS)){
+                alert("error");
+                return;
+            }
+
+            webgl.useProgram(programObject);
+
+            var jsArrayData=[
+                0.0,1.0,0.0,
+                -1.0,-1.0,0.0,
+                1.0,-1.0,0.0
+            ];//右顶点
+
+            triangleBuffer=webgl.createBuffer();
+            webgl.bindBuffer(webgl.ARRAY_BUFFER,triangleBuffer)
+            webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array(jsArrayData),webgl.STATIC_DRAW)
+
+            webgl.clearColor(0,0,0,1);//红蓝绿透明度//rgba
+            webgl.clear(webgl.COLOR_BUFFER_BIT);//使用画布
+            //color buffer bit  //颜色缓存区
+
+            webgl.bindBuffer(webgl.ARRAY_BUFFER,triangleBuffer);
+            webgl.enableVertexAttribArray(v3PositionIndex);
+            webgl.vertexAttribPointer(v3PositionIndex,3,webgl.FLOAT,false,0,0)
+            webgl.drawArrays(webgl.TRIANGLES,0,3)
+        }
+    </script>
+</head>
+<body onload="Init()">
+<canvas id="myCanvas"style="bordor:1px solod red;" width="600" height="450"></canvas>
+</body>
+</html>

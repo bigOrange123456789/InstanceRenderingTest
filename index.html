@@ -45,11 +45,10 @@
 		varying vec3 vColor;
 
 		void main()	{
-			mat4 matrix = mat4(
+			mat4 matrix = mat4(//vec4( 1,0,0, 0 ),vec4( 0,1,0, 0 ),vec4( 0,1,0, 0 ),
 				vec4( mcol0, 0 ),
 				vec4( mcol1, 0 ),
 				vec4( mcol2, 0 ),
-				//vec4( 1,0,0, 0 ),vec4( 0,1,0, 0 ),vec4( 0,1,0, 0 ),
 				vec4( mcol3, 1 )
 			);
 			vec3 positionEye = ( modelViewMatrix * matrix * vec4( position, 1.0 ) ).xyz;
@@ -87,7 +86,8 @@
 				vec3 normal = normalize( cross( fdx, fdy ) );
 				float diffuse = dot( normal, vec3( 0.0, 0.0, 1.0 ) );
 
-				gl_FragColor = vec4( diffuse * vColor, 1.0 );
+				//gl_FragColor = vec4( diffuse * vColor, 1.0 );
+				gl_FragColor = vec4( 0.1,0.3,0.3, 1.0 );
 			#endif
 
 		}

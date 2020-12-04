@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - interactive instances (gpu)</title>
+    <meta charset="utf-8">
+    <style>
+        body {overflow:hidden;}
+    </style>
+    <script>
+        var webgl=null;
+        function Init(){
+            var canvas=document.getElementById("myCanvas")
+                //createElement('canvas');
+            webgl=canvas.getContext("webgl")//获得webgl环境（上下文）
+
+            webgl.viewport(0,0,canvas.clientWidth,canvas.clientHeight);//设置webgl窗口尺寸为canvas画布尺寸
+
+            webgl.clearColor(0,1,0,1);//红蓝绿透明度//rgba
+            webgl.clear(webgl.COLOR_BUFFER_BIT);//使用画布
+            //color buffer bit  //颜色缓存区
+        }
+    </script>
+</head>
+<body onload="Init()">
+<canvas id="myCanvas"style="bordor:1px solod red;" width="600" height="450"></canvas>
+</body>
+</html>
