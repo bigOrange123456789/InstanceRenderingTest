@@ -70,7 +70,6 @@
     import * as THREE from './three.module.js';
 
     import Stats from './stats.module.js';
-    import { GUI } from './dat.gui.module.js';
 
     let container, stats;
 
@@ -176,9 +175,6 @@
         }
 
         //
-
-        const gui = new GUI( { width: 350 } );
-        gui.add( geometry, 'instanceCount', 0, instances );
 
         //
 
