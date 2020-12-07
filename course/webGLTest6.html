@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>索引缓存区</title>
+    <title>生成彩色方块</title>
     <meta http-equiv="content-type"content="text/html; charset=gb2312">
     <style>
         body {overflow:hidden;}
     </style>
     <script id="shader-vs" type="x-shader/x-vertex">
+        precision lowp float;
         attribute vec3 v3Position;
         attribute vec4 inColor;
-        varying   vec4 outColor;
+        varying   vec4 outColor;//varing顶点着色器和片元着色器共享的变量
         //绘制几个点被执行几次
         void main(void){//这个方法被执行的次数就是drawArrays方法中指明的绘制点的个数
+            outColor=inColor;
             gl_Position=vec4(v3Position,1.0);
         }
     </script>
     <script id="shader-fs" type="x-shader/x-fragment">
+        //每个像素执行一次
+        precision lowp float;
+        varying   vec4 outColor;
+
         void main(void)
         {
-            gl_FragColor=vec4(1,0.5,1,1);
+            gl_FragColor=outColor;
         }
     </script>
     <script>
@@ -28,6 +34,7 @@
         var programObject=null;
         var triangleBuffer=null;
         var v3PositionIndex=0;
+        var inColor=1;
 
         //创建canvas，创建openGL的上下文，编译链接，创建顶点缓存区（将要绘制的数据传递到显卡中），指定顶点数据
         //常用缓存区：
@@ -66,50 +73,34 @@
             webgl.compileShader(vertexShaderObject)///编译canvas中的顶点着色器代码//compile编译
             webgl.compileShader(fragmentShaderObject)///编译canvas中的片元着色器代码
 
+            console.log(
+                webgl.getShaderInfoLog(vertexShaderObject),
+                webgl.getShaderInfoLog(fragmentShaderObject)
+            );
+
             //2链接
             programObject=webgl.createProgram();
             webgl.attachShader(programObject,vertexShaderObject);
             webgl.attachShader(programObject,fragmentShaderObject);
 
-            webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//将shader中的变量和JS中的变量进行绑定绑定
+
 
             webgl.linkProgram(programObject);//链接
             webgl.useProgram(programObject);//使用
 
             //3设置缓存区
-            //第一个缓冲区
-            triangleBuffer=webgl.createBuffer();///创建一个缓冲区//创建这么一个对象，但没为它分配内存
-            webgl.bindBuffer(webgl.ARRAY_BUFFER,triangleBuffer)//指定绘制所使用的缓存区///绑定缓存区//指明缓存区的类型
-            webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([//申请缓存数据
-                0.0,1.0,0.0,
-                -1.0,-1.0,0.0,
-                1.0,-1.0,0.0
-            ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
 
-            //第二个缓存区
-            //triangleBuffer2=webgl.createBuffer();///创建一个缓冲区//创建这么一个对象，但没为它分配内存
+            webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//将shader中的变量和JS中的变量进行绑定绑定
+            webgl.bindAttribLocation(programObject,inColor,'inColor');
+            //第四个缓存区
             webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([//申请缓存数据
                 //位置            法线
-                //x,y,z          nx,ny,nz
-                1.0,0.0,0.0,    0.0,0.0,0.0,
-                0.0,0.0,0.0,   0.0,0.0,0.0,
-                0.0,1.0,0.0,   0.0,0.0,0.0,
-
-                1.0,0.0,0.0,    0.0,0.0,0.0,
-                1.0,1.0,0.0,   0.0,0.0,0.0,
-                0.0,1.0,0.0,   0.0,0.0,0.0,
-            ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
-
-            //第三个缓存区
-            webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
-            webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([//申请缓存数据
-                //位置            法线
-                //x,y,z          nx,ny,nz
-                1.0,0.0,0.0,    0.0,0.0,0.0,
-                0.0,1.0,0.0,   0.0,0.0,0.0,
-                0.0,0.0,0.0,   0.0,0.0,0.0,
-                1.0,1.0,0.0,   0.0,0.0,0.0,
+                //x,y,z          r g b a
+                1.0,0.0,0.0,   1.0, 0.0, 0.0, 1.0,
+                0.0,1.0,0.0,   0.0, 1.0, 0.0, 1.0,
+                0.0,0.0,0.0,   0.0, 0.0, 1.0, 1.0,
+                1.0,1.0,0.0,   1.0, 1.0, 0.0, 1.0,
             ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
             webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ELEMENT_ARRAY_BUFFER,new Uint16Array([//申请缓存数据
@@ -118,14 +109,18 @@
             ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
 
 
+            //启用顶点属性数组//attribute变量的使用方法：绑定、启用、传值//
             webgl.enableVertexAttribArray(v3PositionIndex);//v3Position
-            webgl.vertexAttribPointer(v3PositionIndex,3,webgl.FLOAT,false,4*6,0)//Pointer指针//给属性变量赋值
+            webgl.enableVertexAttribArray(inColor);//启用顶点属性数组
+
+            webgl.vertexAttribPointer(v3PositionIndex,3,webgl.FLOAT,false,4*7,0)
+            webgl.vertexAttribPointer(inColor,4,webgl.FLOAT,false,4*7,4*3)//Pointer指针//给属性变量赋值
             //        顶点属性的指针          赋值类型是3维元素/变量类型是浮点数/不规格化/长度/起始偏移量（单位是字节）
             //4*6的含义：4是指一个float类型的字节数，6是指每个点所占用的float类型变量个数
 
             //4绘制
             //设置背景颜色
-            webgl.clearColor(0,0,0,1);
+            webgl.clearColor(0.1,0.1,0.1,1);
             //绘制背景颜色
             webgl.clear(webgl.COLOR_BUFFER_BIT)
 

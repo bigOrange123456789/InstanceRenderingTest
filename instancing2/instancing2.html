@@ -63,19 +63,15 @@
 		}
 
 	</script>
-<<<<<<< HEAD
-=======
-
->>>>>>> 87ae07d0d82a8c1f8aaec3efa2a1a5df489220e0
 <script src="three.js"></script>
 <script>
-
     let container;
 
     let camera, scene, renderer;
 
     init();
-    render();
+    instancing();
+    renderer.render( scene, camera );
 
     function init() {
         container = document.getElementById( 'container' );
@@ -85,23 +81,40 @@
 
         scene = new THREE.Scene();
 
-        // geometry
 
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        container.appendChild( renderer.domElement );
+
+        if ( renderer.capabilities.isWebGL2 === false && renderer.extensions.has( 'ANGLE_instanced_arrays' ) === false ) {
+            document.getElementById( 'notSupported' ).style.display = '';
+            return;
+        }
+    }
+    function instancing() {//开始进行实例化渲染
         const vector = new THREE.Vector4();
-        const instances = 50000;
+        const instances = 5000;
 
-        const positions = [];
+
         const offsets = [];
         const colors = [];
         const orientationsStart = [];
         const orientationsEnd = [];
 
-        positions.push( 0.025, - 0.025, 0 );
-        positions.push( - 0.025, 0.025, 0 );
-        positions.push( 0, 0, 0.025 );
+        const geometry = new THREE.InstancedBufferGeometry();
+        geometry.instanceCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
+
+        //顶点
+        const positions = [];
+        positions.push( 0.025  , - 0.025, 0     );
+        positions.push( - 0.025, 0.025  , 0     );
+        positions.push( 0      , 0      , 0.025 );
+        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+
 
         for ( let i = 0; i < instances; i ++ ) {
-
             // offsets
             offsets.push( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
 
@@ -121,10 +134,7 @@
             orientationsEnd.push( vector.x, vector.y, vector.z, vector.w );
         }
 
-        const geometry = new THREE.InstancedBufferGeometry();
-        geometry.instanceCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
 
-        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
 
         geometry.setAttribute( 'offset', new THREE.InstancedBufferAttribute( new Float32Array( offsets ), 3 ) );
         geometry.setAttribute( 'color', new THREE.InstancedBufferAttribute( new Float32Array( colors ), 4 ) );
@@ -132,7 +142,7 @@
         geometry.setAttribute( 'orientationEnd', new THREE.InstancedBufferAttribute( new Float32Array( orientationsEnd ), 4 ) );
 
         // material
-        const material = new THREE.RawShaderMaterial( {
+        const material = new THREE.RawShaderMaterial( {//原始着色器材质
             uniforms: {
                 "time": { value: 1.0 },
                 "sineTime": { value: 1.0 }
@@ -143,35 +153,10 @@
             transparent: true
         } );
 
-        //
-
-        const mesh = new THREE.Mesh( geometry, material );
+        const mesh = new THREE.Mesh( geometry, material );//重要
         scene.add( mesh );
-        //
-
-        renderer = new THREE.WebGLRenderer();
-        renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        container.appendChild( renderer.domElement );
-
-        if ( renderer.capabilities.isWebGL2 === false && renderer.extensions.has( 'ANGLE_instanced_arrays' ) === false ) {
-            document.getElementById( 'notSupported' ).style.display = '';
-            return;
-        }
-
+        //完成进行实例化渲染
     }
-
-    function render() {
-        const time = performance.now();
-        const object = scene.children[ 0 ];
-
-        object.rotation.y = time * 0.0005;
-        object.material.uniforms[ "time" ].value = time * 0.005;
-        object.material.uniforms[ "sineTime" ].value = Math.sin( object.material.uniforms[ "time" ].value * 0.05 );
-
-        renderer.render( scene, camera );
-    }
-
 </script>
 </body>
 </html>
