@@ -45,7 +45,6 @@
 		}
 
 	</script>
-
 <script id="fragmentShader" type="x-shader/x-fragment">
 
 		precision highp float;
@@ -69,9 +68,7 @@
 <script type="module">
     import * as THREE from './three.module.js';
 
-    import Stats from './stats.module.js';
-
-    let container, stats;
+    let container;
 
     let camera, scene, renderer;
 
@@ -176,13 +173,6 @@
 
         //
 
-        //
-
-        stats = new Stats();
-        container.appendChild( stats.dom );
-
-        //
-
         window.addEventListener( 'resize', onWindowResize, false );
 
     }
@@ -203,8 +193,6 @@
         requestAnimationFrame( animate );
 
         render();
-        stats.update();
-
     }
 
     function render() {
