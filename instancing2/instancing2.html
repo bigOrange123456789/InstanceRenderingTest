@@ -4,7 +4,6 @@
     <title>three.js webgl - instancing test (single triangle)</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link type="text/css" rel="stylesheet" href="main.css">
 </head>
 <body>
 
@@ -65,15 +64,15 @@
 
 	</script>
 
-<script type="module">
-    import * as THREE from './three.module.js';
+<script src="three.js"></script>
+<script>
 
     let container;
 
     let camera, scene, renderer;
 
     init();
-    animate();
+    render();
 
     function init() {
         container = document.getElementById( 'container' );
@@ -173,16 +172,8 @@
 
     }
 
-    //
-
-    function animate() {
-        render();
-    }
-
     function render() {
-
         const time = performance.now();
-
         const object = scene.children[ 0 ];
 
         object.rotation.y = time * 0.0005;
@@ -190,11 +181,8 @@
         object.material.uniforms[ "sineTime" ].value = Math.sin( object.material.uniforms[ "time" ].value * 0.05 );
 
         renderer.render( scene, camera );
-
     }
 
 </script>
-
 </body>
-
 </html>
