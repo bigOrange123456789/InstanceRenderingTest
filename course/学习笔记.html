@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title></title>
+    <meta charset="utf-8">
+</head>
+<body>
+<h1>
+    attribute js与shader之间
+    varing vertex与fragment之间
+</h1>
+<h1>
+    渲染管线（渲染过程）
+    <h2>
+        1.vertex arrays/buffer objects 顶点数组/缓冲区对象
+        输入顶点数组
+        2.vertex shader
+        顶点着色器的处理
+        3.primitive assembly 原始的 装配
+        图元装配
+        4.rasterization 光栅化
+        5.fragment shader
+        6.per-fragment operations
+        7.framebuffer
+    </h2>
+</h1>
+<h1>
+    常用缓存区：
+    <h2>
+        1顶点缓存区//绘制元，顶点数据
+        顶点常用信息：位置、颜色、法线、纹理
+        2索引缓存区
+        3纹理
+        4帧缓存
+        5深度缓存区
+        6颜色缓存区
+        7模板缓存区
+    </h2>
+    常用矩阵
+    <h2>
+        1.模型矩阵
+        2.观察矩阵
+        3.投影矩阵
+        4.视口
+    </h2>
+</h1>
+<h1>
+    github指令
+    <h2>
+        git init
+        git remote add origin **
+        git pull origin master
+
+        git log
+        git commit -m "**"
+        git reset --hard **
+    </h2>
+    <h2>
+        工作区提交到暂存区
+
+        git add xxx ：指定文件提交到暂存区
+        git add . ：全部提交到暂存区，包含修改和增加的，但不包含删除的
+        git add -u：全部提交到暂存区，包含修改和删除的，但不包含新增的
+        git add -A：. 并且 -u
+        　暂存区提交到历史区
+
+        git commit ：提交到历史区（此提交方式注意：需要备注操作信息）
+        git commit -m 'xxx' （操作描述）：提交到历史区
+        git log ： 查看提交记录
+        git reflog ：查看所有历史记录
+        　查看每个区代码区别
+
+        git diff ：工作区 和 暂存区
+        git diff --cached ：暂存区 和 历史区
+
+        3、提交到 github 上（远程有仓库）
+        git remote -v ：查看所有关联信息
+        git remote add xxx[ 远程仓库 git 地址 ] ：建立关联
+        git remote remove xxx[ 默认名：origin 可自定义 ] ：移除关联
+
+        4、拉取
+        前面说了，远程有仓库，提交之前先拉取远程仓库
+        git pull origin（默认名） master
+
+        5、提交
+        正式提交
+        git push origin master
+    </h2>
+</h1>
+</body>
+</html>
