@@ -6,16 +6,18 @@
     <style>
         body {overflow:hidden;}
     </style>
+    <script src="glMatrix.js"></script>
     <script id="shader-vs" type="x-shader/x-vertex">
         uniform float anim;
         precision lowp float;
         attribute vec3 v3Position;
         attribute vec4 inColor;
         varying   vec4 outColor;//varing顶点着色器和片元着色器共享的变量
+        uniform mat4 proj;//投影矩阵
         //绘制几个点被执行几次
         void main(void){//这个方法被执行的次数就是drawArrays方法中指明的绘制点的个数
             outColor=inColor;
-            vec4 temp=vec4(v3Position.x+anim,v3Position.y,v3Position.z,1);
+            vec4 temp=proj*vec4(v3Position.x+anim,v3Position.y,v3Position.z,1);//投影矩阵和坐标向量相乘
             gl_Position=temp;//vec4(v3Position,1.0);
         }
     </script>
@@ -39,12 +41,17 @@
         var inColor=1;
         var uniforColor=0;
         var anim=0;
+        var uniformProj=0;
+
+        var projectMat=mat4.create()
+
 
         function Init(){
             var canvas=document.getElementById("myCanvas");//创建画布//createElement('canvas');
             webgl=canvas.getContext("webgl")//获得webgl环境（上下文）
 
-            webgl.viewport(50,-50,canvas.clientWidth,canvas.clientHeight);//设置canvas的位置和尺寸//设置webgl窗口尺寸为canvas画布尺寸
+            webgl.viewport(0,0,canvas.clientWidth,canvas.clientHeight);//设置canvas的位置和尺寸//设置webgl窗口尺寸为canvas画布尺寸
+            mat4.ortho(0,canvas.clientWidth,canvas.clientHeight,0,-1000,1000,projectMat)
 
             vertexShaderObject=webgl.createShader(webgl.VERTEX_SHADER)//创建顶点shader对象
             fragmentShaderObject=webgl.createShader(webgl.FRAGMENT_SHADER)//创建片元shader对象
@@ -79,13 +86,17 @@
 
             webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//将shader中的变量和JS中的变量进行绑定绑定
             webgl.bindAttribLocation(programObject,inColor,'inColor');
+
             uniforColor=webgl.getUniformLocation(programObject,'color');
-            anim=webgl.getUniformLocation(programObject,'anim');
             webgl.uniform4f(uniforColor,1,0.5,0.5,1);
 
+            anim=webgl.getUniformLocation(programObject,'anim');
             webgl.uniform1f(anim,0);
 
 
+            uniformProj=webgl.getUniformLocation(programObject,'proj');//0001
+            webgl.uniformMatrix4fv(uniformProj ,false, projectMat);
+                                              //不转置
             //第四个缓存区
             webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([//申请缓存数据
