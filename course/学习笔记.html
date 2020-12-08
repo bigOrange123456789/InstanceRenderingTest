@@ -6,6 +6,35 @@
 </head>
 <body>
 <h1>
+    WEB GL 常用语句
+    <h2>
+        //绑定属性变量
+        var v3PositionIndex=0;//根据类型先随便赋个值
+        webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//绑定属性变量
+        webgl.enableVertexAttribArray(v3PositionIndex);//启用缓存区给这个变量使用
+        webgl.vertexAttribPointer(v3PositionIndex,3,webgl.FLOAT,false,4*7,0);//指明：长度、类型、偏移
+
+        //绑定uniform变量//每个点颜色都不同用attribute，一个三角面颜色相同用uniform
+        uniforColor=webgl.getUniformLocation(programObject,'color');
+        webgl.uniform4f(uniforColor,1,0,0,1);
+
+        //1编译
+        webgl.compileShader(vertexShaderObject)///编译canvas中的顶点着色器代码//compile编译
+        webgl.compileShader(fragmentShaderObject)///编译canvas中的片元着色器代码
+        console.log(
+            webgl.getShaderInfoLog(vertexShaderObject),
+            webgl.getShaderInfoLog(fragmentShaderObject)
+        );
+
+        //2链接
+        programObject=webgl.createProgram();
+        webgl.attachShader(programObject,vertexShaderObject);//联系//组装
+        webgl.attachShader(programObject,fragmentShaderObject);
+        webgl.linkProgram(programObject);//链接
+        webgl.useProgram(programObject);//使用
+    </h2>
+</h1>
+<h1>
     attribute js与shader之间
     varing vertex与fragment之间
 </h1>
@@ -13,19 +42,20 @@
     渲染管线（渲染过程）
     <h2>
         1.vertex arrays/buffer objects 顶点数组/缓冲区对象
-        输入顶点数组
+            输入顶点数组
         2.vertex shader
-        顶点着色器的处理
+            顶点着色器的处理
+            顶点的变换过程（模型变换、观察变换、投影变换  MVP 模型 观察矩阵 投影矩阵）
         3.primitive assembly 原始的 装配
-        图元装配
+            图元装配：封装一下
         4.rasterization 光栅化
         5.fragment shader
         6.per-fragment operations
-        7.framebuffer
+        7.framebuffer 帧缓存
     </h2>
 </h1>
 <h1>
-    常用缓存区：
+    常用缓存区&常用矩阵：
     <h2>
         1顶点缓存区//绘制元，顶点数据
         顶点常用信息：位置、颜色、法线、纹理
@@ -36,7 +66,6 @@
         6颜色缓存区
         7模板缓存区
     </h2>
-    常用矩阵
     <h2>
         1.模型矩阵
         2.观察矩阵
