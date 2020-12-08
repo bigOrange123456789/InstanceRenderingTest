@@ -8,6 +8,37 @@
 <h1>
     WEB GL 常用语句
     <h2>
+        //使用缓存区的数据绘制
+        <h3>
+            //缓存区的使用
+            第一步：创建缓冲区对象     （gl.createBuffer()）
+            第二步：绑定缓冲区对象     （gl.bindBuffer()）
+            第三步：将数据写入缓冲区对象 （gl.bufferData()）
+            第四步：将缓冲区对象分配给一个attribute变量（gl.vertexAttribPointer()）
+            第五步：开启attribute变量  （gl.enableVertexAttribArray()）
+
+            //常用数组缓存区存数据，元素缓存区存索引
+            //普通缓存区//ARRAY_BUFFER
+            webgl.bufferData(webgl.ARRAY_BUFFER,*,webgl.STATIC_DRAW)
+            webgl.drawArrays(*);
+            //索引缓冲区//ELEMENT_ARRAY_BUFFER
+            webgl.bufferData(webgl.ELEMENT_ARRAY_BUFFER,*,webgl.STATIC_DRAW)
+            webgl.drawElements(*);
+
+            //绘制三角面
+            webgl.TRIANGLES//普通
+            webgl.TRIANGLE_STRIP//在数组中相邻的点一个三角面，N个点可以画N-2个三角面
+            webgl.TRIANGLE_FAN//似乎是画了一个封闭区域
+            //绘制线条
+            webgl.LINES//普通
+            webgl.LINE_LOOP//循环
+            webgl.LINES_STRIP
+        </h3>
+        //使用索引缓冲区 绘制三角面
+        webgl.drawElements(webgl.TRIANGLES,6,webgl.UNSIGNED_SHORT,0);
+        //绘制线条
+        webgl.drawArrays(webgl.LINES,0,4);
+
         //绑定属性变量
         var v3PositionIndex=0;//根据类型先随便赋个值
         webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//绑定属性变量
@@ -57,8 +88,9 @@
 <h1>
     常用缓存区&常用矩阵：
     <h2>
+        //缓冲区对象是WebGL系统中的一块内存区
         1顶点缓存区//绘制元，顶点数据
-        顶点常用信息：位置、颜色、法线、纹理
+            顶点常用信息：位置、颜色、法线、纹理
         2索引缓存区
         3纹理
         4帧缓存

@@ -654,6 +654,7 @@ mat4.ortho = function (a, b, c, d, e, g, f) {//important
     
     f || (f = mat4.create());
     var h = b - a, i = d - c, j = g - e;
+    //下面是一个4*4的正交变换矩阵
     f[0] = 2 / h;
     f[1] = 0;
     f[2] = 0;
