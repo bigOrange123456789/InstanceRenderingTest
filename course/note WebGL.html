@@ -41,7 +41,8 @@
 
         //绑定属性变量
         var v3PositionIndex=0;//根据类型先随便赋个值
-        webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//绑定属性变量
+        1. attrUV=webgl.getAttribLocation(programObject,'inUV');
+        2. webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//绑定属性变量
         webgl.enableVertexAttribArray(v3PositionIndex);//启用缓存区给这个变量使用
         webgl.vertexAttribPointer(v3PositionIndex,3,webgl.FLOAT,false,4*7,0);//指明：长度、类型、偏移
 
@@ -67,6 +68,7 @@
 </h1>
 <h1>
     attribute js与shader之间
+            属性变量只能用于vertex-shader，不能用于fragment-shader
     varing vertex与fragment之间
 </h1>
 <h1>
@@ -84,6 +86,10 @@
         6.per-fragment operations
         7.framebuffer 帧缓存
     </h2>
+</h1>
+<h1>
+    准许浏览器加载本地文件
+    --allow-file-access-form-files
 </h1>
 <h1>
     常用缓存区&常用矩阵：
@@ -110,7 +116,7 @@
     <h2>
         git init
         git remote add origin **
-        git pull origin master
+        git pull origin master//master
 
         git log
         git commit -m "**"
