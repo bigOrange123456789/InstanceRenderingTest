@@ -27,21 +27,6 @@
         var triangleBuffer=null;
         var v3PositionIndex=0;
 
-        //创建canvas，创建openGL的上下文，编译链接，创建顶点缓存区（将要绘制的数据传递到显卡中），指定顶点数据
-        //常用缓存区：
-        //1顶点缓存区//绘制元，顶点数据
-        //      顶点常用信息：位置、颜色、法线、纹理
-        //2索引缓存区
-        //3纹理
-        //4帧缓存
-        //5深度缓存区
-        //6颜色缓存区
-        //7模板缓存区
-        //常用矩阵
-        //1.模型矩阵
-        //2.观察矩阵
-        //3.投影矩阵
-        //4.视口
         function Init(){
             var canvas=document.getElementById("myCanvas");//创建画布//createElement('canvas');
             webgl=canvas.getContext("webgl")//获得webgl环境（上下文）
@@ -75,44 +60,20 @@
             webgl.useProgram(programObject);//使用
 
             //3设置缓存区
-            //第一个缓冲区
-            triangleBuffer=webgl.createBuffer();///创建一个缓冲区//创建这么一个对象，但没为它分配内存
-            webgl.bindBuffer(webgl.ARRAY_BUFFER,triangleBuffer)//指定绘制所使用的缓存区///绑定缓存区//指明缓存区的类型
-            webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([//申请缓存数据
-                0.0,1.0,0.0,
-                -1.0,-1.0,0.0,
-                1.0,-1.0,0.0
-            ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
-
-            //第二个缓存区
-            //triangleBuffer2=webgl.createBuffer();///创建一个缓冲区//创建这么一个对象，但没为它分配内存
             webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([//申请缓存数据
                 //位置            法线
                 //x,y,z          nx,ny,nz
-                1.0,0.0,0.0,    0.0,0.0,0.0,
-                0.0,0.0,0.0,   0.0,0.0,0.0,
-                0.0,1.0,0.0,   0.0,0.0,0.0,
-
-                1.0,0.0,0.0,    0.0,0.0,0.0,
                 1.0,1.0,0.0,   0.0,0.0,0.0,
-                0.0,1.0,0.0,   0.0,0.0,0.0,
-            ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
-
-            //第三个缓存区
-            webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
-            webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([//申请缓存数据
-                //位置            法线
-                //x,y,z          nx,ny,nz
                 1.0,0.0,0.0,    0.0,0.0,0.0,
                 0.0,1.0,0.0,   0.0,0.0,0.0,
                 0.0,0.0,0.0,   0.0,0.0,0.0,
-                1.0,1.0,0.0,   0.0,0.0,0.0,
+
             ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
             webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ELEMENT_ARRAY_BUFFER,new Uint16Array([//申请缓存数据
                 0,1,2,
-                0,1,3,
+                1,2,3,
             ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
 
 
@@ -126,9 +87,8 @@
             webgl.clearColor(0,0,0,1);
             //绘制背景颜色
             webgl.clear(webgl.COLOR_BUFFER_BIT)
-
-            //webgl.drawArrays(webgl.TRIANGLES,0,6)//照三角形绘制，从第0个点开始，绘制3个点
-            webgl.drawElements(webgl.TRIANGLES,6,webgl.UNSIGNED_SHORT,0);
+            //webgl.drawArrays(webgl.TRIANGLE_STRIP,0,6)//照三角形绘制，从第0个点开始，绘制4个点
+            webgl.drawElements(webgl.TRIANGLES,6,webgl.UNSIGNED_SHORT,0);//照三角形绘制，从第0个点开始，绘制6个点
         }
     </script>
 </head>

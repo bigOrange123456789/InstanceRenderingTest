@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>绑定纹理贴图</title>
+    <title>索引缓存区</title>
     <meta http-equiv="content-type"content="text/html; charset=gb2312">
     <style>
         body {overflow:hidden;}
@@ -10,30 +10,23 @@
     <script id="shader-vs" type="x-shader/x-vertex">
         precision lowp float;
 
-        uniform float anim;
-
         attribute vec3 v3Position;
         attribute vec2 inUV;
         varying vec2 outUV;
         uniform mat4 proj;//投影矩阵
         //绘制几个点被执行几次
         void main(void){//这个方法被执行的次数就是drawArrays方法中指明的绘制点的个数
-            outUV=inUV;
-            vec4 temp=proj*vec4(v3Position.x+anim,v3Position.y+anim,v3Position.z,1);//投影矩阵和坐标向量相乘
-            gl_Position=temp;//vec4(v3Position,1.0);
+            outUV=inUV;//vec2(0,0);//
+            gl_Position=proj*vec4(v3Position,1.0);
         }
     </script>
     <script id="shader-fs" type="x-shader/x-fragment">
-        //每个像素执行一次
         precision lowp float;
-
         varying vec2 outUV;
         uniform sampler2D texture;
-
-        uniform vec4 color;//全局变量
         void main(void)
         {
-            gl_FragColor=texture2D(texture,vec2(outUV));
+            gl_FragColor=texture2D(texture,outUV);//texture2D(texture,vec2(0,1));//vec4(1,0.5,1,1);//
         }
     </script>
     <script>
@@ -70,10 +63,8 @@
         var programObject=null;
         var triangleBuffer=null;
         var v3PositionIndex=0;
-        var uniforColor=0;
-        var anim=0;
-        var uniformProj=0;
 
+        var uniformProj=0;
         var projectMat=mat4.create()
 
         var attrUV=1;
@@ -84,8 +75,8 @@
             webgl=canvas.getContext("webgl")//获得webgl环境（上下文）
 
             webgl.viewport(0,0,canvas.clientWidth,canvas.clientHeight);//设置canvas的位置和尺寸//设置webgl窗口尺寸为canvas画布尺寸
-            mat4.ortho(0,canvas.clientWidth,0,canvas.clientHeight,-1000,1000,projectMat)
-
+            //mat4.ortho(0,canvas.clientWidth,0,canvas.clientHeight,-1000,1000,projectMat)
+            mat4.perspective(45,canvas.clientWidth/canvas.clientHeight,0.1,100,projectMat)//计算透视投影矩阵
 
             vertexShaderObject=webgl.createShader(webgl.VERTEX_SHADER)//创建顶点shader对象
             fragmentShaderObject=webgl.createShader(webgl.FRAGMENT_SHADER)//创建片元shader对象
@@ -103,35 +94,15 @@
             webgl.compileShader(vertexShaderObject)///编译canvas中的顶点着色器代码//compile编译
             webgl.compileShader(fragmentShaderObject)///编译canvas中的片元着色器代码
 
-            console.log(
-                webgl.getShaderInfoLog(vertexShaderObject),
-                webgl.getShaderInfoLog(fragmentShaderObject)
-            );
-
             //2链接
             programObject=webgl.createProgram();
-            webgl.attachShader(programObject,vertexShaderObject);//联系
+            webgl.attachShader(programObject,vertexShaderObject);
             webgl.attachShader(programObject,fragmentShaderObject);
+
+            webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//将shader中的变量和JS中的变量进行绑定绑定
 
             webgl.linkProgram(programObject);//链接
             webgl.useProgram(programObject);//使用
-
-
-            //几何点
-            webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//将shader中的变量和JS中的变量进行绑定绑定
-
-            //颜色//有贴图如何调整颜色
-            uniforColor=webgl.getUniformLocation(programObject,'color');
-            webgl.uniform4f(uniforColor,1,0.5,0.5,1);
-
-            //移动
-            anim=webgl.getUniformLocation(programObject,'anim');
-            webgl.uniform1f(anim,0);
-
-            //投影矩阵
-            uniformProj=webgl.getUniformLocation(programObject,'proj');//0001
-            webgl.uniformMatrix4fv(uniformProj ,false, projectMat);
-                                              //不转置
 
             //纹理
             attrUV=webgl.getAttribLocation(programObject,'inUV');//0001
@@ -139,67 +110,93 @@
 
             //纹理处理
             var textureHandle=initTexture('1.png');
-            webgl.activeTexture(webgl.TEXTURE0);//激活纹理
-            //一个三角面上最多可以贴32张纹理，对应32个阶段//这里激活第0个阶段
+            webgl.activeTexture(webgl.TEXTURE0);//激活纹理//一个三角面上最多可以贴32张纹理，对应32个阶段//这里激活第0个阶段
             webgl.bindTexture(webgl.TEXTURE_2D,textureHandle);//绑定纹理
             webgl.uniform1i(uniformTexture,0);
-            //告诉shader到第0阶段取纹理
 
+            //投影矩阵
+            uniformProj=webgl.getUniformLocation(programObject,'proj');//0001
+            //webgl.uniformMatrix4fv(uniformProj ,false, projectMat);
+
+            webgl.clear(webgl.COLOR_BUFFER_BIT|webgl.DEPTH_BUFFER_BIT)
 
             //3设置缓存区
-            //第四个缓存区
-
-            //circle.push(centerX,centerY,0);
-            //for()
             webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
-            webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([
-                0,0,0,    0,0,
-                400,0,0,  2,0,
-                400,400,0,2,2,
+            webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([//申请缓存数据
+                //x,y,z  u,v   r,g,b,a
+                0,0,0,   0,1,  1,1,1,1,
+                -10,0,0,   1,0,  1,1,1,1,
+                0,-10,0,   0,0,  1,1,1,1,
+                -10,-10,0,   1,0,  1,1,1,1,
 
-                0,0,0,    0,0,
-                400,400,0,2,2,
-                0,400,0,  0,2,
-                ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
-            /*webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
+                0,0,-10,   0,1,  1,1,1,1,
+                -10,0,-10,   0,0,  1,1,1,1,
+                0,-10,-10,   1,1,  1,1,1,1,
+                -10,-10,-10,   0,1,  1,1,1,1,
+            ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
+            webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ELEMENT_ARRAY_BUFFER,new Uint16Array([//申请缓存数据
                 0,1,2,
                 1,2,3,
-            ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存*/
 
+                4,5,6,
+                5,6,7,
 
-            //启用属性变量//attribute变量的使用方法：绑定、启用、传值//
-            webgl.enableVertexAttribArray(v3PositionIndex);//v3Position
+                6,2,4,
+                2,4,0,
+
+                4,5,0,
+                5,0,1,
+
+                5,7,1,
+                7,1,3,
+
+                7,6,3,
+                6,3,2,
+            ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
+
+            var mvp=mat4.create();//模型矩阵
+            var matTrans=mat4.create();
+            var matRot=mat4.create();
+            var matModel=mat4.create();
+
+            var rPyramid=10;
+
             webgl.enableVertexAttribArray(attrUV);
+            webgl.vertexAttribPointer(attrUV,2,webgl.FLOAT,false,4*9,4*3)
 
-            webgl.vertexAttribPointer(v3PositionIndex,3,webgl.FLOAT,false,4*5,0)
-            webgl.vertexAttribPointer(attrUV,2,webgl.FLOAT,false,4*5,4*3)
-            //        顶点属性的指针          赋值类型是3维元素/变量类型是浮点数/不规格化/长度/起始偏移量（单位是字节）
-            //4*6的含义：4是指一个float类型的字节数，6是指每个点所占用的float类型变量个数
-
-            //4绘制
-            //设置背景颜色
-            webgl.clearColor(0.1,0.1,0.1,1);
-            //绘制背景颜色
-            webgl.clear(webgl.COLOR_BUFFER_BIT)
-
-            var k=0.01;
             setInterval(function(){
-                webgl.uniform1f(anim,k);
-                k+=3;
+                mat4.identity(matTrans);
+                mat4.identity(matRot);
+                mat4.identity(matModel);
 
+                rPyramid+=1;
+                mat4.translate(matTrans,[0,0,-40]);//给最下面一行的前三个元素赋值
+                mat4.rotate(matRot,degToRad(rPyramid),[1,1,1])//将矩阵matRot 绕向量（1 1 1）旋转degToRad(rPyramid)度
+
+                function degToRad(degrees){
+                    return degrees*Math.PI/180;
+                }
+                mat4.multiply(matTrans,matRot,matModel);//matModel=matTrans*matRot
+                mat4.multiply(projectMat,matModel,mvp);//mvp=projectMat*matModel
+
+
+                webgl.uniformMatrix4fv(uniformProj,false,mvp);//mvp=projectMat*matTrans*matRot
+                //                                           projectMat * (matTrans * matRot) * vec4(v3Position,1.0);
+
+                webgl.enableVertexAttribArray(v3PositionIndex);//v3Position
+                webgl.vertexAttribPointer(v3PositionIndex,3,webgl.FLOAT,false,4*9,0)//Pointer指针//给属性变量赋值
+                //        顶点属性的指针          赋值类型是3维元素/变量类型是浮点数/不规格化
+                //4*6的含义：4是指一个float类型的字节数，6是指每个点所占用的float类型变量个数
+
+                //4绘制
                 //设置背景颜色
-                webgl.clearColor(0.1,0.1,0.1,1);
-                //绘制背景颜色
-                webgl.clear(webgl.COLOR_BUFFER_BIT)
+                webgl.clearColor(0,0,0,1);
 
-
-                //webgl.drawElements(webgl.TRIANGLES,6,webgl.UNSIGNED_SHORT,0);
-                webgl.drawArrays(webgl.TRIANGLE_FAN,0,6);//不借助索引实现4个点画2个面
-
-                //webgl.drawArrays(webgl.LINES,0,4);
-                //webgl.drawElements(webgl.LINE_LOOP,6,webgl.UNSIGNED_SHORT,0);
-            },50)
+                webgl.clear(webgl.COLOR_BUFFER_BIT|webgl.DEPTH_BUFFER_BIT)//清空颜色缓冲区和深度缓冲区//清空深度缓冲区会有遮挡关系
+                webgl.enable(webgl.DEPTH_TEST)//启用深度测试
+                webgl.drawElements(webgl.TRIANGLES,36,webgl.UNSIGNED_SHORT,0);//照三角形绘制，从第0个点开始，绘制6个点
+            },20)
         }
     </script>
 </head>
