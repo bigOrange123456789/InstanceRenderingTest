@@ -9,21 +9,7 @@
 </head>
 <body>
 	<div id="container"></div>
-	<!--
-	//vertex顶点着色器
-	设置gl_Position//
-	    //#define是宏定义
-	    //const必须在声明的时候初始化
-	    //attribute属性变量、uniform一致变量、varying易变变量 声明时一定不能初始化
-		//attribute只能用于顶点着色器vertex，不能用于片元着色器fragment
-		//          存储顶点的各种属性
-		//
-	//片元着色器fragment
-	设置gl_FragColor
-	-->
 	<script id="vertInstanced" type="x-shader/x-vertex">
-		#define SHADER_NAME vertInstanced
-
 		precision highp float;
 
 		uniform mat4 modelViewMatrix;//mat表示这是一个矩阵
@@ -34,62 +20,26 @@
 		attribute vec3 mcol1;
 		attribute vec3 mcol2;
 		attribute vec3 mcol3;
-
-		#ifdef PICKING
-			attribute vec3 pickingColor;//如果拾取定义拾取颜色
-		#else
-			attribute vec3 color;      //如果没有拾取，定义普通颜色
-			varying vec3 vPosition;
-		#endif
-
-		varying vec3 vColor;
+		attribute vec3 color;      //如果没有拾取，定义普通颜色
 
 		void main()	{
-			mat4 matrix = mat4(//vec4( 1,0,0, 0 ),vec4( 0,1,0, 0 ),vec4( 0,1,0, 0 ),
-				vec4( mcol0, 0 ),
-				vec4( mcol1, 0 ),
-				vec4( mcol2, 0 ),
-				vec4( mcol3, 1 )
+			mat4 matrix = mat4(
+				vec4( mcol0, 0),
+				vec4( mcol1, 0),
+				vec4( mcol2, 0),
+				vec4( mcol3, 1)
 			);
-			vec3 positionEye = ( modelViewMatrix * matrix * vec4( position, 1.0 ) ).xyz;
-
-			#ifdef PICKING
-				vColor = pickingColor;
-			#else
-				vColor = color;
-				vPosition = positionEye;
-			#endif
-
+			vec3 positionEye = ( modelViewMatrix * matrix * vec4( position, 1.0 ) ).xyz;  //(*).xyz的意思是取出前3维
+			//modelViewMatrix把局部坐标系变为世界坐标系
 			gl_Position = projectionMatrix * vec4( positionEye, 1.0 );
+			//projectionMatrix把世界坐标系变为相机坐标系
 		}
 	</script>
 	<script id="fragInstanced" type="x-shader/x-fragment">
-		#define SHADER_NAME fragInstanced
-
-		#extension GL_OES_standard_derivatives : enable
-
 		precision highp float;
 
-		varying vec3 vColor;
-
-		#ifndef PICKING
-			varying vec3 vPosition;
-		#endif
-
 		void main()	{
-
-			#ifdef PICKING
-				gl_FragColor = vec4( vColor, 1.0 );
-			#else
-				vec3 fdx = dFdx( vPosition );
-				vec3 fdy = dFdy( vPosition );
-				vec3 normal = normalize( cross( fdx, fdy ) );
-				float diffuse = dot( normal, vec3( 0.0, 0.0, 1.0 ) );
-
-				//gl_FragColor = vec4( diffuse * vColor, 1.0 );
 				gl_FragColor = vec4( 0.1,0.3,0.3, 1.0 );
-			#endif
-
 		}
 
 	</script>
