@@ -20,6 +20,7 @@
         10.圆
         11.纹理贴图
         12.纹理动画
+        13.点
     </h2>
 </h1>
 <h1>
@@ -50,6 +51,8 @@
             webgl.LINES//普通
             webgl.LINE_LOOP//循环
             webgl.LINES_STRIP
+            //绘制点
+            webgl.POINTS
         </h3>
         //使用索引缓冲区 绘制三角面
         webgl.drawElements(webgl.TRIANGLES,6,webgl.UNSIGNED_SHORT,0);
