@@ -18,7 +18,7 @@
         uniform mat4 proj;//投影矩阵
         //绘制几个点被执行几次
         void main(void){//这个方法被执行的次数就是drawArrays方法中指明的绘制点的个数
-            outUV=inUV;
+            outUV=vec2(inUV.x,inUV.y);
             vec4 temp=proj*vec4(v3Position.x+anim,v3Position.y+anim,v3Position.z,1);//投影矩阵和坐标向量相乘
             gl_Position=temp;//vec4(v3Position,1.0);
         }
@@ -29,11 +29,12 @@
 
         varying vec2 outUV;
         uniform sampler2D texture;
+        uniform float anim2;
 
         uniform vec4 color;//全局变量
         void main(void)
         {
-            gl_FragColor=texture2D(texture,vec2(outUV));
+            gl_FragColor=texture2D(texture,vec2(outUV.x+anim2,outUV.y+anim2));
         }
     </script>
     <script>
@@ -45,13 +46,16 @@
             //                指明2D纹理   , 级别,纹理的存储格式, 图片格式  ,RGBA中每个元素的类型
 
             //纹理采样//filter过滤器//nearest最近的
-            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MAG_FILTER,webgl.NEAREST);
-            //                 指定纹理放大时候的算法：对应点采样
-            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MIN_FILTER,webgl.NEAREST);
+            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MAG_FILTER,webgl.LINEAR);
+            //                 指定纹理放大时候的算法：对应点采样             nearest/linear  NEAREST/LINEAR 线性滤波和接近滤波
+            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MIN_FILTER,webgl.LINEAR);
 
             //纹理包装//wrap包裹  clamp夹住 edge
             webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_WRAP_S,webgl.CLAMP_TO_EDGE);
             webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_WRAP_T,webgl.CLAMP_TO_EDGE);
+            //                                                     webgl.CLAMP_TO_EDGE指使用边缘填充
+            //                                                     webgl.REPEAT指使用重复填充  repeat
+            //                                                     webgl.MIRRORED_REPEAT指使用重复填充  repeat
 
             webgl.bindTexture(webgl.TEXTURE_2D,texture);//这是一个状态机，将它置空以不影响接下来的使用
         }
@@ -72,10 +76,9 @@
         var vertexShaderObject=null;
         var fragmentShaderObject=null;
         var programObject=null;
-        var triangleBuffer=null;
         var v3PositionIndex=0;
         var uniforColor=0;
-        var anim=0;
+        var anim=0,anim2=0;
         var uniformProj=0;
 
         var projectMat=mat4.create()
@@ -128,9 +131,11 @@
             uniforColor=webgl.getUniformLocation(programObject,'color');
             webgl.uniform4f(uniforColor,1,0.5,0.5,1);
 
-            //移动
+            //动画
             anim=webgl.getUniformLocation(programObject,'anim');
             webgl.uniform1f(anim,0);
+            anim2=webgl.getUniformLocation(programObject,'anim2');
+            webgl.uniform1f(anim2,0);
 
             //投影矩阵
             uniformProj=webgl.getUniformLocation(programObject,'proj');//0001
@@ -142,7 +147,7 @@
             uniformTexture=webgl.getUniformLocation(programObject,'texture');//0001
 
             //纹理处理
-            var textureHandle=initTexture('1.png');
+            var textureHandle=initTexture('1.jpg');//http://localhost:8080/1.jpg
             webgl.activeTexture(webgl.TEXTURE0);//激活纹理
             //一个三角面上最多可以贴32张纹理，对应32个阶段//这里激活第0个阶段
             webgl.bindTexture(webgl.TEXTURE_2D,textureHandle);//绑定纹理
@@ -158,12 +163,12 @@
             webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([
                 0,0,0,    0,0,
-                400,0,0,  2,0,
-                400,400,0,2,2,
+                400,0,0,  1.1,0,
+                400,400,0,1.1,1.1,
 
                 0,0,0,    0,0,
-                400,400,0,2,2,
-                0,400,0,  0,2,
+                400,400,0,1.1,1.1,
+                0,400,0,  0,1.1,
                 ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
             /*webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ELEMENT_ARRAY_BUFFER,new Uint16Array([//申请缓存数据
@@ -188,9 +193,12 @@
             webgl.clear(webgl.COLOR_BUFFER_BIT)
 
             var k=0.01;
+            var k2=0.01;
             setInterval(function(){
                 webgl.uniform1f(anim,k);
-                k+=3;
+                webgl.uniform1f(anim2,k2);
+                k+=1;
+                k2+=0.01;
 
                 //设置背景颜色
                 webgl.clearColor(0.1,0.1,0.1,1);
@@ -199,7 +207,7 @@
 
 
                 //webgl.drawElements(webgl.TRIANGLES,6,webgl.UNSIGNED_SHORT,0);
-                webgl.drawArrays(webgl.TRIANGLE_FAN,0,6);//不借助索引实现4个点画2个面
+                webgl.drawArrays(webgl.TRIANGLES,0,6);//不借助索引实现4个点画2个面
 
                 //webgl.drawArrays(webgl.LINES,0,4);
                 //webgl.drawElements(webgl.LINE_LOOP,6,webgl.UNSIGNED_SHORT,0);

@@ -46,12 +46,14 @@
 
             //纹理采样//filter过滤器//nearest最近的
             webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MAG_FILTER,webgl.NEAREST);
-            //                 指定纹理放大时候的算法：对应点采样
+            //                 指定纹理放大时候的算法：对应点采样             nearest/linear
             webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MIN_FILTER,webgl.NEAREST);
 
             //纹理包装//wrap包裹  clamp夹住 edge
             webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_WRAP_S,webgl.CLAMP_TO_EDGE);
             webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_WRAP_T,webgl.CLAMP_TO_EDGE);
+            //                                                     webgl.CLAMP_TO_EDGE指使用边缘填充
+            //                                                     webgl.REPEAT指使用重复填充  repeat
 
             webgl.bindTexture(webgl.TEXTURE_2D,texture);//这是一个状态机，将它置空以不影响接下来的使用
         }
@@ -72,7 +74,6 @@
         var vertexShaderObject=null;
         var fragmentShaderObject=null;
         var programObject=null;
-        var triangleBuffer=null;
         var v3PositionIndex=0;
         var uniforColor=0;
         var anim=0;
@@ -165,11 +166,6 @@
                 400,400,0,2,2,
                 0,400,0,  0,2,
                 ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
-            /*webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
-            webgl.bufferData(webgl.ELEMENT_ARRAY_BUFFER,new Uint16Array([//申请缓存数据
-                0,1,2,
-                1,2,3,
-            ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存*/
 
 
             //启用属性变量//attribute变量的使用方法：绑定、启用、传值//
