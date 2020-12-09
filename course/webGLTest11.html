@@ -59,12 +59,12 @@
             //创建一个纹理
             var textureHandle=webgl.createTexture();//返回一个句柄，也是一个ID
             //创建一个图片
-            textureHandle.imge=new Image();//添加了一个属性imge
+            textureHandle.image=new Image();//添加了一个属性imge
             //指定图片的路径
-            textureHandle.imge.src=imageFile;
-            textureHandle.imge.onload=function(){
+            textureHandle.image.src=imageFile;
+            textureHandle.image.onload=function(){
                 //当图片被加载后调用这个函数
-                handleLoadedTexture(textureHandle)
+                handleLoadedTexture(textureHandle);
             }
             return textureHandle;
         }
@@ -157,19 +157,19 @@
             //for()
             webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([
-                0,0,0,0,0,
-                400,0,0,1,1,
-                400,400,0,1,1,
+                0,0,0,    0,0,
+                400,0,0,  1,1,
+                400,400,0,1,0,
 
-                0,0,0,0,0,
+                0,0,0,    0,0,
                 400,400,0,1,1,
-                0,400,0,0,1,
+                0,400,0,  0,1,
                 ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
-            webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
+            /*webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ELEMENT_ARRAY_BUFFER,new Uint16Array([//申请缓存数据
                 0,1,2,
                 1,2,3,
-            ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
+            ]),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存*/
 
 
             //启用属性变量//attribute变量的使用方法：绑定、启用、传值//
@@ -191,7 +191,7 @@
             setInterval(function(){
                 webgl.uniform1f(anim,k);
                 k+=3;
-                //console.log(k);
+
                 //设置背景颜色
                 webgl.clearColor(0.1,0.1,0.1,1);
                 //绘制背景颜色
