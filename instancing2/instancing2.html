@@ -15,7 +15,6 @@
 
 <script id="vertexShader" type="x-shader/x-vertex">
 		precision highp float;
-		uniform float sineTime;
 
 		uniform mat4 modelViewMatrix;
 		uniform mat4 projectionMatrix;
@@ -35,7 +34,6 @@
 	</script>
 <script id="fragmentShader" type="x-shader/x-fragment">
 		precision highp float;
-		uniform float time;
 
 		varying vec4 vColor;
 
@@ -80,58 +78,37 @@
     }
     function instancing() {//开始进行实例化渲染
         const vector = new THREE.Vector4();
-        const instances = 5000;
+        const instances = 500;
 
 
         const offsets = [];
         const colors = [];
-        const orientationsStart = [];
-        const orientationsEnd = [];
 
         const geometry = new THREE.InstancedBufferGeometry();
         geometry.instanceCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
 
         //顶点
         const positions = [];
-        positions.push( 0.025  , - 0.025, 0     );
-        positions.push( - 0.025, 0.025  , 0     );
-        positions.push( 0      , 0      , 0.025 );
+        positions.push( 0.1  , - 0.1, 0     );
+        positions.push( - 0.1, 0.1 , 0     );
+        positions.push( 0      , 0      , 0.1 );
         geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
 
 
         for ( let i = 0; i < instances; i ++ ) {
             // offsets//位置信息
-            offsets.push( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
-
+            offsets.push( 2*(Math.random() - 0.5), 2*(Math.random() - 0.5), 2*(Math.random() - 0.5) );
             // colors
             colors.push( Math.random(), Math.random(), Math.random(), Math.random() );
-
-            // orientation start
-            vector.set( Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1 );
-            vector.normalize();
-
-            orientationsStart.push( vector.x, vector.y, vector.z, vector.w );
-            // orientation end
-
-            vector.set( Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1 );
-            vector.normalize();
-
-            orientationsEnd.push( vector.x, vector.y, vector.z, vector.w );
         }
 
 
 
         geometry.setAttribute( 'offset', new THREE.InstancedBufferAttribute( new Float32Array( offsets ), 3 ) );
         geometry.setAttribute( 'color', new THREE.InstancedBufferAttribute( new Float32Array( colors ), 4 ) );
-        geometry.setAttribute( 'orientationStart', new THREE.InstancedBufferAttribute( new Float32Array( orientationsStart ), 4 ) );
-        geometry.setAttribute( 'orientationEnd', new THREE.InstancedBufferAttribute( new Float32Array( orientationsEnd ), 4 ) );
 
         // material
         const material = new THREE.RawShaderMaterial( {//原始着色器材质
-            uniforms: {
-                "time": { value: 1.0 },
-                "sineTime": { value: 1.0 }
-            },
             vertexShader: document.getElementById( 'vertexShader' ).textContent,
             fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
             side: THREE.DoubleSide,
