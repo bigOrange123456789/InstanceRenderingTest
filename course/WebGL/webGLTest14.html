@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>纹理动画</title>
+    <title>多纹理</title>
     <meta http-equiv="content-type"content="text/html; charset=gb2312">
     <style>
         body {overflow:hidden;}
@@ -29,12 +29,15 @@
 
         varying vec2 outUV;
         uniform sampler2D texture;
+        uniform sampler2D texture1;
         uniform float anim2;
 
         uniform vec4 color;//全局变量
         void main(void)
         {
-            gl_FragColor=texture2D(texture,vec2(outUV.x+anim2,outUV.y+anim2));
+            vec4 color0=texture2D(texture,outUV);
+            vec4 color1=texture2D(texture1,vec2(outUV.x+anim2,outUV.y+anim2));
+            gl_FragColor=color0+color1;//texture2D(texture,vec2(outUV.x+anim2,outUV.y+anim2));
         }
     </script>
     <script>
@@ -57,7 +60,7 @@
             //                                                     webgl.REPEAT指使用重复填充  repeat
             //                                                     webgl.MIRRORED_REPEAT指使用重复填充  repeat
 
-            webgl.bindTexture(webgl.TEXTURE_2D,texture);//这是一个状态机，将它置空以不影响接下来的使用
+            //webgl.bindTexture(webgl.TEXTURE_2D,texture);//这是一个状态机，将它置空以不影响接下来的使用
         }
         function initTexture(imageFile){//输入路径//1.jpg//initTexture('1.jpg')
             //创建一个纹理
@@ -85,6 +88,7 @@
 
         var attrUV=1;
         var uniformTexture=1;
+        var uniformTexture1=1;
 
         function Init(){
             var canvas=document.getElementById("myCanvas");//创建画布//createElement('canvas');
@@ -145,14 +149,17 @@
             //纹理
             attrUV=webgl.getAttribLocation(programObject,'inUV');//0001
             uniformTexture=webgl.getUniformLocation(programObject,'texture');//0001
+            uniformTexture1=webgl.getUniformLocation(programObject,'texture1');
 
-            //纹理处理
-            var textureHandle=initTexture('1.jpg');//http://localhost:8080/1.jpg
-            webgl.activeTexture(webgl.TEXTURE0);//激活纹理
-            //一个三角面上最多可以贴32张纹理，对应32个阶段//这里激活第0个阶段
-            webgl.bindTexture(webgl.TEXTURE_2D,textureHandle);//绑定纹理
-            webgl.uniform1i(uniformTexture,0);
-            //告诉shader到第0阶段取纹理
+            //纹理处理//一个三角面上最多可以贴32张纹理，对应32个阶段//这里激活第0个阶段
+            webgl.activeTexture(webgl.TEXTURE0);//激活第0个单元//激活纹理
+            webgl.bindTexture(webgl.TEXTURE_2D,initTexture('1.jpg'));//绑定纹理
+            webgl.uniform1i(uniformTexture,0);//告诉shader到第1阶段取纹理
+
+            webgl.activeTexture(webgl.TEXTURE1);//激活第1个单元
+            webgl.bindTexture(webgl.TEXTURE_2D,initTexture('pot.png'));
+            webgl.uniform1i(uniformTexture,1);//告诉shader到第0阶段取纹理
+
 
 
             //3设置缓存区
@@ -162,9 +169,9 @@
             //for()
             webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
             webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array([
-                0,0,0,    0,0,
-                400,0,0,  1.1,0,
                 400,400,0,1.1,1.1,
+                400,0,0,  1.1,0,
+                0,0,0,    0,0,
 
                 0,0,0,    0,0,
                 400,400,0,1.1,1.1,
