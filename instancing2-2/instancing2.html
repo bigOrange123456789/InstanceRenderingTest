@@ -48,16 +48,23 @@
 	</script>
 <script src="three.js"></script>
 <script src="GLTFLoader.js"></script>
+<script src="OrbitControls.js"></script>
 <script>
     let container;
 
     let camera, scene, renderer;
 
     init();
+
     var loader= new THREE.GLTFLoader();
     loader.load('Female02.glb', (glb) => {
         instancing(glb);
-        renderer.render( scene, camera );
+        render();
+        new OrbitControls(camera , renderer.domElement,THREE);
+        function render() {
+            renderer.render( scene, camera );
+            requestAnimationFrame(render);
+        }
     });
 
 
