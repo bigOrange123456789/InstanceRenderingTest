@@ -20,32 +20,34 @@
 		uniform mat4 projectionMatrix;
 
 		attribute vec3 position;
+		attribute vec2 inUV;
+        varying vec2 outUV;
+
 		attribute vec3 offset;
 		attribute vec4 color;
+
 
 		varying vec4 vColor;
 
 		void main(){
-			vec3 vPosition = position;//offset +
+			vec3 vPosition = position;                   //offset +
 			vColor = color;
+			outUV=inUV;
 			gl_Position = projectionMatrix * modelViewMatrix * vec4( vPosition, 1.0 );
 		}
-
 	</script>
 <script id="fragmentShader" type="x-shader/x-fragment">
-		//precision highp float;
         precision lowp float;
-        varying vec2 outUV;
-
         uniform sampler2D texture;
 
 		varying vec4 vColor;
+		varying vec2 outUV;
 
-		void main() {
-			vec4 color = vec4( vColor );
-			gl_FragColor =texture2D(texture,vec2(1,1));//vec4( 1,1,0,1 );// color;
+		void main(){
+			gl_FragColor = vec4( 1,1,0,1 );
+			//gl_FragColor = texture2D(texture,outUV);
+			//gl_FragColor = texture2D(texture,vec2(1,1));
 		}
-
 	</script>
 <script src="three.js"></script>
 <script src="GLTFLoader.js"></script>
@@ -77,7 +79,6 @@
         }
     });
 
-
     function init() {
         container = document.getElementById( 'container' );
 
@@ -85,8 +86,6 @@
         camera.position.z = 2;
 
         scene = new THREE.Scene();
-
-
 
         renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio( window.devicePixelRatio );
@@ -101,52 +100,48 @@
     function instancing(glb) {//开始进行实例化渲染
         const instances = 1;
 
-
         const offsets = [];
         const colors = [];
 
         const geometry = new THREE.InstancedBufferGeometry();
         geometry.instanceCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
+        //console.log(glb);
 
-        //顶点
-        console.log(glb);
-        //console.log(glb.scene.children[0].geometry.attributes.position.array);
 
-        /*const positions = [];
-        positions.push( 1  , - 1, 0     );
-        positions.push( - 1, 1 , 0     );
-        positions.push( 0      , 0      , 1 );*/
-        geometry.setAttribute( 'position', glb.scene.children[0].geometry.attributes.position );
+        const positions = [
+        ];
+        positions.push( 0.25  , - 0.25, 0.25     );
+        positions.push( - 0.25, 0.25  , 0.25     );
+        positions.push( 0      , 0.25     , 0.25 );
+        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+
+        //geometry.setAttribute( 'position', glb.scene.children[0].geometry.attributes.position );
+
+        console.log(geometry);
 
         //纹理
-        //attrUV=webgl.getAttribLocation(programObject,'inUV');//0001
-        //uniformTexture=webgl.getUniformLocation(programObject,'texture');//0001
-
-        //纹理处理
-        var textureHandle=initTexture('texture/business01_f_30.jpg');
+        var textureHandle=initTexture('1.png');
         console.log(textureHandle);
-        //webgl.activeTexture(webgl.TEXTURE0);//激活纹理//一个三角面上最多可以贴32张纹理，对应32个阶段//这里激活第0个阶段
-        //webgl.bindTexture(webgl.TEXTURE_2D,textureHandle);//绑定纹理
-        //webgl.uniform1i(uniformTexture,0);
-
 
         for ( let i = 0; i < instances; i ++ ) {
-            // offsets//位置信息
             offsets.push( 0    ,1  ,-1 );
-                 //      左右   上下  前后
-            // colors
             colors.push( 1, 1, 1, 1 );
         }
 
-
-
         geometry.setAttribute( 'offset', new THREE.InstancedBufferAttribute( new Float32Array( offsets ), 3 ) );
         geometry.setAttribute( 'color', new THREE.InstancedBufferAttribute( new Float32Array( colors ), 4 ) );
+        geometry.setAttribute( 'inUV', new THREE.InstancedBufferAttribute( new Float32Array( [
+            0,0,
+            0,1,
+            1,0
+        ]), 2 ) );
 
+        var box = new THREE.Box3();
+        console.log(box);
         // material
         const material = new THREE.RawShaderMaterial( {//原始着色器材质
             uniforms: {
-                "texture": textureHandle
+                "texture": THREE.ImageUtils.loadTexture('1.png')//textureHandle
             },
             vertexShader: document.getElementById( 'vertexShader' ).textContent,
             fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
