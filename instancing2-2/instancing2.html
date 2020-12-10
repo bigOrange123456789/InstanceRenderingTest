@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - instancing test (single triangle)</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+
+<div id="container"></div>
+<div id="info">
+    <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - instancing demo (single triangle)
+    <div id="notSupported" style="display:none">Sorry your graphics card + browser does not support hardware instancing</div>
+</div>
+
+<script id="vertexShader" type="x-shader/x-vertex">
+		precision highp float;
+
+		uniform mat4 modelViewMatrix;
+		uniform mat4 projectionMatrix;
+
+		attribute vec3 position;
+		attribute vec3 offset;
+		attribute vec4 color;
+
+		varying vec4 vColor;
+
+		void main(){
+			vec3 vPosition = position;//offset +
+			vColor = color;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( vPosition, 1.0 );
+		}
+
+	</script>
+<script id="fragmentShader" type="x-shader/x-fragment">
+		precision highp float;
+
+		varying vec4 vColor;
+
+		void main() {
+
+			vec4 color = vec4( vColor );
+
+			gl_FragColor = color;
+
+		}
+
+	</script>
+<script src="three.js"></script>
+<script src="GLTFLoader.js"></script>
+<script>
+    let container;
+
+    let camera, scene, renderer;
+
+    init();
+    var loader= new THREE.GLTFLoader();
+    loader.load('Female02.glb', (glb) => {
+        instancing(glb);
+        renderer.render( scene, camera );
+    });
+
+
+    function init() {
+        container = document.getElementById( 'container' );
+
+        camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 10 );
+        camera.position.z = 2;
+
+        scene = new THREE.Scene();
+
+
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        container.appendChild( renderer.domElement );
+
+        if ( renderer.capabilities.isWebGL2 === false && renderer.extensions.has( 'ANGLE_instanced_arrays' ) === false ) {
+            document.getElementById( 'notSupported' ).style.display = '';
+            return;
+        }
+    }
+    function instancing(glb) {//开始进行实例化渲染
+        const vector = new THREE.Vector4();
+        const instances = 1;
+
+
+        const offsets = [];
+        const colors = [];
+
+        const geometry = new THREE.InstancedBufferGeometry();
+        geometry.instanceCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
+
+        //顶点
+        console.log(glb);
+        console.log(glb.scene.children[0].geometry.attributes.position.array);
+
+        const positions = [];
+        positions.push( 1  , - 1, 0     );
+        positions.push( - 1, 1 , 0     );
+        positions.push( 0      , 0      , 1 );
+        geometry.setAttribute( 'position', glb.scene.children[0].geometry.attributes.position );
+
+
+        for ( let i = 0; i < instances; i ++ ) {
+            // offsets//位置信息
+            offsets.push( 0    ,1  ,-1 );
+                 //      左右   上下  前后
+            // colors
+            colors.push( 1, 1, 1, 1 );
+        }
+
+
+
+        geometry.setAttribute( 'offset', new THREE.InstancedBufferAttribute( new Float32Array( offsets ), 3 ) );
+        geometry.setAttribute( 'color', new THREE.InstancedBufferAttribute( new Float32Array( colors ), 4 ) );
+
+        // material
+        const material = new THREE.RawShaderMaterial( {//原始着色器材质
+            vertexShader: document.getElementById( 'vertexShader' ).textContent,
+            fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+            side: THREE.DoubleSide,
+            transparent: true
+        } );
+
+        const mesh = new THREE.Mesh( geometry, material );//重要
+        scene.add( mesh );
+        //完成进行实例化渲染
+    }
+</script>
+</body>
+</html>

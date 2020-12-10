@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>three.js webgl - interactive instances (gpu)</title>
+	<meta charset="utf-8">
+	<style>
+		body {overflow:hidden;}
+	</style>
+</head>
+<body>
+	<div id="container"></div>
+	<script id="vertInstanced" type="x-shader/x-vertex">
+		precision highp float;
+
+		uniform mat4 modelViewMatrix;//mat表示这是一个矩阵
+		uniform mat4 projectionMatrix;
+
+		//模型
+		attribute vec3 position;//vec3指有3个浮点数元素的矢量（vector）
+
+		//变换矩阵
+		attribute vec3 mcol0;//每个点一个矩阵
+		attribute vec3 mcol1;
+		attribute vec3 mcol2;
+		attribute vec3 mcol3;
+
+		//颜色
+		attribute vec3 color;      //如果没有拾取，定义普通颜色
+
+		void main()	{
+			mat4 matrix = mat4(
+				vec4( mcol0, 0),
+				vec4( mcol1, 0),
+				vec4( mcol2, 0),
+				vec4( mcol3, 1)
+			);
+			vec3 positionEye = ( modelViewMatrix * matrix * vec4( position, 1.0 ) ).xyz;  //(*).xyz的意思是取出前3维
+			//modelViewMatrix把局部坐标系变为世界坐标系
+			gl_Position = projectionMatrix * vec4( positionEye, 1.0 );
+			//projectionMatrix把世界坐标系变为相机坐标系
+		}
+	</script>
+	<script id="fragInstanced" type="x-shader/x-fragment">
+		precision highp float;
+
+		void main()	{
+				gl_FragColor = vec4( 0.1,0.3,0.3, 1.0 );
+		}
+
+	</script>
+	<script src="three.js"></script>
+	<script src="OrbitControls.js"></script>
+	<script src="GLTFLoader.js"></script>
+	<script type="module">
+		import * as THREE from './three.module.js';
+		var container;
+		var camera,scene, renderer;
+		var singleMaterial;
+		var materialList = [];
+		var geometryList = [];
+		var objectCount = 0;
+		var geometrySize = new THREE.Vector3();
+		var mouse = new THREE.Vector2();
+		var scale = 1.03;
+
+		var loader = new THREE.BufferGeometryLoader();
+
+		// gui
+		var instanceCount=2;
+
+		init();
+		initMesh();
+
+		function clean() {
+			THREE.Cache.clear();
+			materialList.forEach( function ( m ) {
+				m.dispose();
+			} );
+			geometryList.forEach( function ( g ) {
+				g.dispose();
+			} );
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color( 0xffffff );
+
+			scene.add( camera );
+
+
+			materialList = [];
+			geometryList = [];
+			objectCount = 0;
+
+			singleMaterial = undefined;
+
+		}
+
+		function initMesh() {
+			clean();
+			// make instances
+			loader.load( './suzanne_buffergeometry.json', function ( geo ) {
+				geo = geo.toNonIndexed();
+				geo.computeBoundingBox();
+				geo.boundingBox.getSize( geometrySize );
+				geometryList.push( geo );
+				makeInstanced( geo );
+				render();
+			} );
+		}
+
+		function makeInstanced( geo ) {
+			//用于生成材质
+			// material
+			//顶点着色器
+			var vert = document.getElementById( 'vertInstanced' ).textContent;//代码的文字内容
+			//片元着色器
+			var frag = document.getElementById( 'fragInstanced' ).textContent;//代码的文字内容//console.log(vert);//console.log(frag);
+
+			//材质
+			var material = new THREE.RawShaderMaterial( {
+				//通过顶点着色器和片元着色器生成材质
+				vertexShader: vert,
+				fragmentShader: frag,
+			} );
+			materialList.push( material );//材质放入材质列表
+
+			//几何
+			var igeo = new THREE.InstancedBufferGeometry();
+			geometryList.push( igeo );
+
+			//克隆几何的点集合
+			var vertices = geo.attributes.position.clone();
+			igeo.setAttribute( 'position', vertices );
+
+			//
+			var mcol0 = new THREE.InstancedBufferAttribute(
+					new Float32Array( instanceCount * 3 ), 3
+			);
+			var mcol1 = new THREE.InstancedBufferAttribute(
+					new Float32Array( instanceCount * 3 ), 3
+			);
+			var mcol2 = new THREE.InstancedBufferAttribute(
+					new Float32Array( instanceCount * 3 ), 3
+			);
+			var mcol3 = new THREE.InstancedBufferAttribute(
+					new Float32Array( instanceCount * 3 ), 3
+			);
+
+			//var obj=THREE.M
+			mcol0.setXYZ( 0, 0.5,0,0 );
+			mcol1.setXYZ( 0, 0,0.5,0 );
+			mcol2.setXYZ( 0, 0, 0, 1 );
+			mcol3.setXYZ( 0, 1, 0 ,0 );
+
+			mcol0.setXYZ( 1, 1,0,0 );
+			mcol1.setXYZ( 1, 0,1,0 );
+			mcol2.setXYZ( 1, 0,0,1 );
+			mcol3.setXYZ( 1, -1,0,0 );
+
+			igeo.setAttribute( 'mcol0', mcol0 );//几何有4个属性//mcol0
+			igeo.setAttribute( 'mcol1', mcol1 );
+			igeo.setAttribute( 'mcol2', mcol2 );
+			igeo.setAttribute( 'mcol3', mcol3 );
+
+			//生成一个随机颜色
+			var colors = new THREE.InstancedBufferAttribute(
+					new Float32Array( instanceCount * 3 ), 3
+			);
+
+			colors.setXYZ( 0, 0.6, 0, 0.5 );
+			colors.setXYZ( 1, 1, 0, 0.5 );
+
+			igeo.setAttribute( 'color', colors );
+
+			// mesh
+			var mesh = new THREE.Mesh( igeo, material );
+			mesh.scale.set(10,10,10);
+			scene.add( mesh );
+		}
+
+		function init() {
+			// camera
+			camera = new THREE.PerspectiveCamera(
+				70, window.innerWidth / window.innerHeight, 0.001, 10000
+			);//fov摄像机视锥体垂直视野角度//aspect摄像机视锥体长宽比//near摄像机视锥体近端面//far摄像机视锥体远端面
+			camera.position.z = 40;
+			var targetPosition = new THREE.Vector3(0, 0, 0);
+			camera.lookAt(targetPosition);
+
+			// renderer
+			container = document.getElementById( "container" );
+			renderer = new THREE.WebGLRenderer( {
+				antialias: true,
+				alpha: true
+			} );
+			if ( renderer.extensions.get( 'ANGLE_instanced_arrays' ) === null ) {
+				return;
+			}
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+
+			new OrbitControls(camera , renderer.domElement,THREE);
+
+			container.appendChild( renderer.domElement );
+
+			if ( renderer.extensions.get( 'ANGLE_instanced_arrays' ) === null ) {
+				throw 'ANGLE_instanced_arrays not supported';
+			}
+		}
+		function render() {
+			renderer.render( scene, camera );
+			requestAnimationFrame(render);
+		}
+	</script>
+
+</body>
+</html>
