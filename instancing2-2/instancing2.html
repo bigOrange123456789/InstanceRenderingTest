@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 </head>
 <body>
-
+<canvas id="myCanvas" style="border:0px" width="0" height="0"></canvas>
 <div id="container"></div>
 <div id="info">
     <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - instancing demo (single triangle)
@@ -36,16 +36,14 @@
 		//precision highp float;
         precision lowp float;
         varying vec2 outUV;
+
         uniform sampler2D texture;
 
 		varying vec4 vColor;
 
 		void main() {
-
 			vec4 color = vec4( vColor );
-
-			gl_FragColor = vec4( 1,1,0,1 );//color;
-
+			gl_FragColor = vec4( 1,1,0,1 );//texture2D(texture,vec2(1,1));//color;
 		}
 
 	</script>
@@ -54,6 +52,8 @@
 <script src="OrbitControls.js"></script>
 <script src="PlayerControl.js"></script>
 <script>
+    var canvas=document.getElementById("myCanvas");//创建画布//createElement('canvas');
+    var webgl=canvas.getContext("webgl")//获得webgl环境（上下文）
     function handleLoadedTexture(texture){//handle处理//绑定纹理，并指定这个纹理为2维纹理
         webgl.bindTexture(webgl.TEXTURE_2D,texture);
         webgl.texImage2D(webgl.TEXTURE_2D,0,webgl.RGBA,webgl.RGBA,webgl.UNSIGNED_BYTE,texture.image);
@@ -135,13 +135,24 @@
 
         //顶点
         console.log(glb);
-        console.log(glb.scene.children[0].geometry.attributes.position.array);
+        //console.log(glb.scene.children[0].geometry.attributes.position.array);
 
-        const positions = [];
+        /*const positions = [];
         positions.push( 1  , - 1, 0     );
         positions.push( - 1, 1 , 0     );
-        positions.push( 0      , 0      , 1 );
+        positions.push( 0      , 0      , 1 );*/
         geometry.setAttribute( 'position', glb.scene.children[0].geometry.attributes.position );
+
+        //纹理
+        //attrUV=webgl.getAttribLocation(programObject,'inUV');//0001
+        //uniformTexture=webgl.getUniformLocation(programObject,'texture');//0001
+
+        //纹理处理
+        var textureHandle=initTexture('texture/business01_f_30.jpg');
+        console.log(textureHandle);
+        //webgl.activeTexture(webgl.TEXTURE0);//激活纹理//一个三角面上最多可以贴32张纹理，对应32个阶段//这里激活第0个阶段
+        //webgl.bindTexture(webgl.TEXTURE_2D,textureHandle);//绑定纹理
+        //webgl.uniform1i(uniformTexture,0);
 
 
         for ( let i = 0; i < instances; i ++ ) {
@@ -159,6 +170,9 @@
 
         // material
         const material = new THREE.RawShaderMaterial( {//原始着色器材质
+            uniforms: {
+                "texture": textureHandle
+            },
             vertexShader: document.getElementById( 'vertexShader' ).textContent,
             fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
             side: THREE.DoubleSide,
