@@ -136,8 +136,9 @@
             1,0
         ]), 2 ) );
 
-        var box = new THREE.Box3();
-        console.log(box);
+        //var box = new THREE.Box3();
+        const texture = THREE.ImageUtils.loadTexture('1.png');
+        console.log(texture)
         // material
         const material = new THREE.RawShaderMaterial( {//原始着色器材质
             uniforms: {
