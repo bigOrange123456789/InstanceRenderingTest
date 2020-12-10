@@ -47,15 +47,19 @@
 
 	</script>
 <script src="three.js"></script>
+<script src="OrbitControls.js"></script>
 <script>
     let container;
 
     let camera, scene, renderer;
 
-    init();
-    instancing();
-    renderer.render( scene, camera );
 
+    //function render() {
+        init();
+        instancing();
+        renderer.render( scene, camera );
+        //requestAnimationFrame(render);
+    //}
     function init() {
         container = document.getElementById( 'container' );
 
@@ -75,17 +79,18 @@
             document.getElementById( 'notSupported' ).style.display = '';
             return;
         }
+        new OrbitControls(camera , renderer.domElement,THREE);
     }
     function instancing() {//开始进行实例化渲染
         const vector = new THREE.Vector4();
-        const instances = 500;
+        const instances = 500;//需要弄清楚这里是如何渲染多个对象的
 
 
         const offsets = [];
         const colors = [];
 
         const geometry = new THREE.InstancedBufferGeometry();
-        geometry.instanceCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
+        geometry.instanceCount = instances;//渲染多个对象 // set so its initalized for dat.GUI, will be set in first draw otherwise
 
         //顶点
         const positions = [];
