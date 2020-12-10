@@ -30,36 +30,29 @@
 			vColor = color;
 			gl_Position = projectionMatrix * modelViewMatrix * vec4( vPosition, 1.0 );
 		}
-
 	</script>
 <script id="fragmentShader" type="x-shader/x-fragment">
 		precision highp float;
-
 		varying vec4 vColor;
-
 		void main() {
-
 			vec4 color = vec4( vColor );
-
 			gl_FragColor = color;
-
 		}
-
 	</script>
 <script src="three.js"></script>
 <script src="OrbitControls.js"></script>
 <script>
     let container;
-
     let camera, scene, renderer;
+    init();
+    instancing();
+    render();
+    function render() {
 
 
-    //function render() {
-        init();
-        instancing();
         renderer.render( scene, camera );
-        //requestAnimationFrame(render);
-    //}
+        requestAnimationFrame(render);
+    }//////
     function init() {
         container = document.getElementById( 'container' );
 
