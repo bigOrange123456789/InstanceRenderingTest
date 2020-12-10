@@ -30,10 +30,8 @@
         }
     </script>
     <script>
-        function handleLoadedTexture(texture){//handle处理
-            //绑定纹理，并指定这个纹理为2维纹理
+        function handleLoadedTexture(texture){//handle处理//绑定纹理，并指定这个纹理为2维纹理
             webgl.bindTexture(webgl.TEXTURE_2D,texture);
-
             webgl.texImage2D(webgl.TEXTURE_2D,0,webgl.RGBA,webgl.RGBA,webgl.UNSIGNED_BYTE,texture.image);
             //                指明2D纹理   , 级别,纹理的存储格式, 图片格式  ,RGBA中每个元素的类型
 
