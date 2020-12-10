@@ -40,8 +40,9 @@
 		varying vec2 outUV;
 
 		void main(){
-			vec4 myTexture = texture2D(text, outUV);
-            gl_FragColor = vec4 (myTexture.r,
+			vec4 myTexture = texture2D(text, vec2(0,1));
+            gl_FragColor = vec4 (
+                           myTexture.r,
                            myTexture.g,
                            myTexture.b,
                            1.0);
@@ -65,8 +66,18 @@
     let light;
 
     init();
-    animate();
-    instancing();
+
+    var loader= new THREE.GLTFLoader();
+    loader.load('Female02.glb', (glb) => {
+        instancing(glb);
+        render();
+        //new PlayerControl(camera);
+        new OrbitControls(camera , renderer.domElement,THREE);
+        function render() {
+            renderer.render( scene, camera );
+            requestAnimationFrame(render);
+        }
+    });
 
     function init() {
         container = document.getElementById('container');
@@ -92,7 +103,7 @@
         scene.add(light);
     }
 
-    function instancing() {//开始进行实例化渲染
+    function instancing(glb) {//开始进行实例化渲染
         const instances = 1;
 
         const offsets = [];
@@ -110,7 +121,9 @@
         // positions.push(1, 0, 0);
         // positions.push(0, 1, 0);
 
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        //geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('position', glb.scene.children[0].geometry.attributes.position);
+        console.log(glb.scene.children[0]);
 
         for (let i = 0; i < instances; i++) {
             // offsets.push(0, 1, -1);
@@ -119,16 +132,17 @@
 
         // geometry.setAttribute('offset', new THREE.InstancedBufferAttribute(new Float32Array(offsets), 3));
         geometry.setAttribute('color', new THREE.InstancedBufferAttribute(new Float32Array(colors), 4));
-        geometry.setAttribute('inUV', new THREE.InstancedBufferAttribute(new Float32Array([
+        /*geometry.setAttribute('inUV', new THREE.InstancedBufferAttribute(new Float32Array([
             0, 0,
             0, 1,
             1, 0
-        ]), 2));
+        ]), 2));*/
+        geometry.setAttribute('inUV',glb.scene.children[0].geometry.attributes.uv);
 
         //var box = new THREE.Box3();
         let tex = THREE.ImageUtils.loadTexture('1.png');
         tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-        console.log(tex);
+        //console.log(tex);
         // texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
         // material
@@ -146,26 +160,6 @@
         //完成进行实例化渲染
     }
 
-    // function myInit2() {
-    //     let TEX = THREE.ImageUtils.loadTexture('1.png',{},function () {
-    //         renderer.render(scene, camera);
-    //     });
-    //
-    //     let UNIFS = {
-    //         img: { type: 't', value: TEX}
-    //     };
-    //     let VS = document.getElementById('vert').textContent;
-    //     let FS = document.getElementById('frag').textContent;
-    //
-    //     let GEO = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
-    //     let MAT = new THREE.ShaderMaterial({
-    //         uniforms: UNIFS,
-    //         vertexShader: VS,
-    //         fragmentShader: FS
-    //     });
-    //     let OBJ = new THREE.Mesh(GEO, MAT);
-    //     scene.add(OBJ);
-    // }
 
     function animate() {
         requestAnimationFrame(animate);

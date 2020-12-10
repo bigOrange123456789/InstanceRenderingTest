@@ -43,7 +43,7 @@
 
 		void main() {
 			vec4 color = vec4( vColor );
-			texture2D(myTexture,vec2(0,1));// gl_FragColor =vec4( 1,1,0,1 );//color;
+			gl_FragColor =vec4( 1,1,0,1 );//texture2D(texture,vec2(0,1));// color;
 		}
 
 	</script>
@@ -146,7 +146,7 @@
         // material
         const material = new THREE.RawShaderMaterial( {//原始着色器材质
             uniforms: {
-                "myTexture": {type: 't', value: textureHandle}
+                "texture": textureHandle
             },
             vertexShader: document.getElementById( 'vertexShader' ).textContent,
             fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
