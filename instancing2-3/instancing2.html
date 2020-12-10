@@ -43,7 +43,7 @@
 
 		void main() {
 			vec4 color = vec4( vColor );
-			gl_FragColor =vec4( 1,1,0,1 );//texture2D(texture,vec2(0,1));// color;
+			gl_FragColor =texture2D(texture,vec2(1,1));//vec4( 1,1,0,1 );// color;
 		}
 
 	</script>
@@ -123,7 +123,7 @@
         //uniformTexture=webgl.getUniformLocation(programObject,'texture');//0001
 
         //纹理处理
-        var textureHandle=initTexture('1.png');
+        var textureHandle=initTexture('texture/business01_f_30.jpg');
         console.log(textureHandle);
         //webgl.activeTexture(webgl.TEXTURE0);//激活纹理//一个三角面上最多可以贴32张纹理，对应32个阶段//这里激活第0个阶段
         //webgl.bindTexture(webgl.TEXTURE_2D,textureHandle);//绑定纹理
