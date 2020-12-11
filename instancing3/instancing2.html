@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - instancing test (single triangle)</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+<canvas id="myCanvas" style="border:0px" width="0" height="0"></canvas>
+
+
+<script id="vertInstanced" type="x-shader/x-vertex">
+		#define SHADER_NAME vertInstanced
+
+		precision highp float;
+
+		uniform mat4 modelViewMatrix;
+		uniform mat4 projectionMatrix;
+
+		attribute vec3 position;
+		attribute vec3 mcol0;
+		attribute vec3 mcol1;
+		attribute vec3 mcol2;
+		attribute vec3 mcol3;
+		attribute vec3 color;
+
+		varying vec3 vPosition;
+		varying vec3 vColor;
+
+		void main()	{
+		    mat4 matrix = mat4(
+				vec4( mcol0, 0 ),
+				vec4( mcol1, 0 ),
+				vec4( mcol2, 0 ),
+				vec4( mcol3, 1 )
+			);
+			vec3 positionEye = ( modelViewMatrix * matrix * vec4( position, 1.0 ) ).xyz;
+			vColor = color;
+			vPosition = positionEye;
+			gl_Position = projectionMatrix * vec4( positionEye, 1.0 );
+		}
+</script>
+<script id="fragInstanced" type="x-shader/x-fragment">
+		#define SHADER_NAME fragInstanced
+		#extension GL_OES_standard_derivatives : enable
+
+		precision highp float;
+
+		uniform sampler2D texture;
+
+		varying vec3 vColor;
+		varying vec3 vPosition;
+
+		void main()	{
+            vec3 fdx = dFdx( vPosition );
+            vec3 fdy = dFdy( vPosition );
+            vec3 normal = normalize( cross( fdx, fdy ) );
+            float diffuse = dot( normal, vec3( 0.0, 0.0, 1.0 ) );
+            gl_FragColor = vec4( diffuse * vColor, 1.0 );
+		}
+
+</script>
+
+<script src="three.js"></script>
+<script src="GLTFLoader.js"></script>
+<script src="OrbitControls.js"></script>
+<script>
+    var canvas = document.getElementById("myCanvas");//创建画布//createElement('canvas');
+    var webgl = canvas.getContext("webgl")//获得webgl环境（上下文）
+
+
+    var attrUV = 1;
+    var uniformTexture = 1;
+
+
+    let container;
+
+    let camera, scene, renderer;
+    let light;
+
+    init();
+
+    var loader= new THREE.GLTFLoader();
+    loader.load('Female02.glb', (glb) => {
+        instancing(glb);
+        render();
+        new OrbitControls(camera , renderer.domElement,THREE);
+        function render() {
+            renderer.render( scene, camera );
+            requestAnimationFrame(render);
+        }
+    });
+
+    function init() {
+        container = document.getElementById('container');
+
+        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.z = 2;
+
+        scene = new THREE.Scene();
+
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xffffff);
+        container.appendChild(renderer.domElement);
+
+        if (renderer.capabilities.isWebGL2 === false && renderer.extensions.has('ANGLE_instanced_arrays') === false) {
+            document.getElementById('notSupported').style.display = '';
+            return;
+        }
+
+        light = new THREE.AmbientLight(0xffffff,1.0)
+        scene.add(light);
+    }
+
+    function instancing(glb) {//开始进行实例化渲染
+        const mesh = makeInstanced(glb.scene.children[0].geometry,THREE.ImageUtils.loadTexture('people.jpg'));//重要
+        scene.add(mesh);
+        console.log(mesh);
+        //完成进行实例化渲染
+    }
+
+
+    function makeInstanced(geo,myTexture) {
+        let instanceCount =2;
+        //1.material
+        var vert = document.getElementById('vertInstanced').textContent;
+        var frag = document.getElementById('fragInstanced').textContent;
+        var uniforms={texture:{type: 't', value: myTexture}};
+        var material = new THREE.RawShaderMaterial({
+            uniforms: uniforms,
+            vertexShader: vert,
+            fragmentShader: frag
+        });
+        //2.igeo几何//InstancedBufferGeometry//将原网格中的geo拷贝到igeo中
+        //设置位置信息
+        var igeo=new THREE.InstancedBufferGeometry();//geometry//threeJS中有一种对象叫InstancedMesh，构造方法为InstancedMesh( geometry : BufferGeometry, material : Material, count : Integer )
+        var vertices = geo.attributes.position.clone();
+        igeo.addAttribute('position', vertices);//设置几何中的点
+        //igeo.setIndex(geo.index);
+        var mcol0,mcol1,mcol2,mcol3;
+        mcol0=mcol1=mcol2=mcol3=new THREE.InstancedBufferAttribute(
+            new Float32Array(instanceCount * 3), 3
+        );
+        mcol0.setXYZ(0, 1, 0, 0);//设置原始mesh的变换矩阵与名称
+        mcol1.setXYZ(0, 0, 1, 0);//四元数、齐次坐标
+        mcol2.setXYZ(0, 0, 0, 1);
+        mcol3.setXYZ(0, 0, 0, 0);//这16个数字构成了一个4*4的矩阵
+        for (let i = 1, ul = instanceCount; i < ul; i++){
+            mcol0.setXYZ(i, 1,0,0);
+            mcol1.setXYZ(i, 0,1,0);
+            mcol2.setXYZ(i, 0,0,1);
+            mcol3.setXYZ(i, 0,0,0);
+        }
+        igeo.addAttribute('mcol0', mcol0);//四元数、齐次坐标
+        igeo.addAttribute('mcol1', mcol1);
+        igeo.addAttribute('mcol2', mcol2);
+        igeo.addAttribute('mcol3', mcol3);//console.log(igeo);
+        var colors = new THREE.InstancedBufferAttribute(
+            new Float32Array(instanceCount * 3),3
+        );
+        for(let i=0,ul=colors.count;i<ul;i++){//colors.setXYZ(i, color.r, color.g, color.b);
+            colors.setXYZ(i,0.33,0.33,0.33);
+        }
+        igeo.addAttribute('color', colors);
+        //3.mesh
+        var mesh = new THREE.Mesh(igeo, material);//生成的还是mesh对象
+        //mesh.scale.set(0.001, 0.001, 0.001);
+        mesh.material.side = THREE.DoubleSide;
+        mesh.frustumCulled = false;
+        return mesh;//sceneRoot.add(mesh);
+    }
+    function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - instancing test (single triangle)</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+<canvas id="myCanvas" style="border:0px" width="0" height="0"></canvas>
+<div id="container"></div>
+<div id="info">
+    <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - instancing demo (single triangle)
+    <div id="notSupported" style="display:none">Sorry your graphics card + browser does not support hardware instancing</div>
+</div>
+
+<script id="vertexShader" type="x-shader/x-vertex">
+		precision highp float;
+
+		uniform mat4 modelViewMatrix;
+		uniform mat4 projectionMatrix;
+
+		attribute vec3 position;
+		attribute vec3 offset;
+		attribute vec4 color;
+
+		varying vec4 vColor;
+
+		void main(){
+			vec3 vPosition = position;//offset +
+			vColor = color;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( vPosition, 1.0 );
+		}
+
+	</script>
+<script id="fragmentShader" type="x-shader/x-fragment">
+		//precision highp float;
+        precision lowp float;
+        varying vec2 outUV;
+
+        uniform sampler2D texture;
+
+		varying vec4 vColor;
+
+		void main() {
+			vec4 color = vec4( vColor );
+			gl_FragColor =texture2D(texture,vec2(1,1));//vec4( 1,1,0,1 );// color;
+		}
+
+	</script>
+<script src="three.js"></script>
+<script src="GLTFLoader.js"></script>
+<script src="OrbitControls.js"></script>
+<script>
+    var canvas=document.getElementById("myCanvas");//创建画布//createElement('canvas');
+    var webgl=canvas.getContext("webgl")//获得webgl环境（上下文）
+
+
+    var attrUV=1;
+    var uniformTexture=1;
+
+
+    let container;
+
+    let camera, scene, renderer;
+
+    init();
+
+    var loader= new THREE.GLTFLoader();
+    loader.load('Female02.glb', (glb) => {
+        instancing(glb);
+        render();
+        //new PlayerControl(camera);
+        new OrbitControls(camera , renderer.domElement,THREE);
+        function render() {
+            renderer.render( scene, camera );
+            requestAnimationFrame(render);
+        }
+    });
+
+
+    function init() {
+        container = document.getElementById( 'container' );
+
+        camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 10 );
+        camera.position.z = 2;
+
+        scene = new THREE.Scene();
+
+
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        container.appendChild( renderer.domElement );
+
+        if ( renderer.capabilities.isWebGL2 === false && renderer.extensions.has( 'ANGLE_instanced_arrays' ) === false ) {
+            document.getElementById( 'notSupported' ).style.display = '';
+            return;
+        }
+    }
+    function instancing(glb) {//开始进行实例化渲染
+        const instances = 1;
+
+
+        const offsets = [];
+        const colors = [];
+
+        const geometry = new THREE.InstancedBufferGeometry();
+        geometry.instanceCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
+
+        //顶点
+        console.log(glb);
+        //console.log(glb.scene.children[0].geometry.attributes.position.array);
+
+        /*const positions = [];
+        positions.push( 1  , - 1, 0     );
+        positions.push( - 1, 1 , 0     );
+        positions.push( 0      , 0      , 1 );*/
+        geometry.setAttribute( 'position', glb.scene.children[0].geometry.attributes.position );
+
+        //纹理
+        //attrUV=webgl.getAttribLocation(programObject,'inUV');//0001
+        //uniformTexture=webgl.getUniformLocation(programObject,'texture');//0001
+
+        //纹理处理
+        var textureHandle=initTexture('texture/business01_f_30.jpg');
+        console.log(textureHandle);
+        //webgl.activeTexture(webgl.TEXTURE0);//激活纹理//一个三角面上最多可以贴32张纹理，对应32个阶段//这里激活第0个阶段
+        //webgl.bindTexture(webgl.TEXTURE_2D,textureHandle);//绑定纹理
+        //webgl.uniform1i(uniformTexture,0);
+
+
+        for ( let i = 0; i < instances; i ++ ) {
+            // offsets//位置信息
+            offsets.push( 0    ,1  ,-1 );
+                 //      左右   上下  前后
+            // colors
+            colors.push( 1, 1, 1, 1 );
+        }
+
+
+
+        geometry.setAttribute( 'offset', new THREE.InstancedBufferAttribute( new Float32Array( offsets ), 3 ) );
+        geometry.setAttribute( 'color', new THREE.InstancedBufferAttribute( new Float32Array( colors ), 4 ) );
+
+        // material
+        const material = new THREE.RawShaderMaterial( {//原始着色器材质
+            uniforms: {
+                "texture": textureHandle
+            },
+            vertexShader: document.getElementById( 'vertexShader' ).textContent,
+            fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+            side: THREE.DoubleSide,
+            transparent: true
+        } );
+
+        const mesh = new THREE.Mesh( geometry, material );//重要
+        scene.add( mesh );
+        //完成进行实例化渲染
+    }
+    function handleLoadedTexture(texture){//handle处理//绑定纹理，并指定这个纹理为2维纹理
+        webgl.bindTexture(webgl.TEXTURE_2D,texture);
+        webgl.texImage2D(webgl.TEXTURE_2D,0,webgl.RGBA,webgl.RGBA,webgl.UNSIGNED_BYTE,texture.image);
+        //                指明2D纹理   , 级别,纹理的存储格式, 图片格式  ,RGBA中每个元素的类型
+
+        //纹理采样//filter过滤器//nearest最近的
+        webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MAG_FILTER,webgl.NEAREST);
+        //                 指定纹理放大时候的算法：对应点采样
+        webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MIN_FILTER,webgl.NEAREST);
+
+        //纹理包装//wrap包裹  clamp夹住 edge
+        webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_WRAP_S,webgl.CLAMP_TO_EDGE);
+        webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_WRAP_T,webgl.CLAMP_TO_EDGE);
+
+        webgl.bindTexture(webgl.TEXTURE_2D,texture);//这是一个状态机，将它置空以不影响接下来的使用
+    }
+    function initTexture(imageFile){//输入路径//1.jpg//initTexture('1.jpg')
+        var textureHandle=webgl.createTexture();//创建一个纹理//返回一个句柄，也是一个ID
+        textureHandle.image=new Image();//创建一个图片//添加了一个属性imge
+        textureHandle.image.src=imageFile;//指定图片的路径
+        textureHandle.image.onload=function(){//当图片被加载后调用这个函数
+            handleLoadedTexture(textureHandle);
+        }
+        return textureHandle;
+    }
+</script>
+</body>
+</html>

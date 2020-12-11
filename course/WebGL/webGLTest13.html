@@ -17,7 +17,7 @@
         //绘制几个点被执行几次
         void main(void){//这个方法被执行的次数就是drawArrays方法中指明的绘制点的个数
             vec4 temp=proj*vec4(
-                    v4Position.x+v4Position.w*100.0*cos(anim),
+                    v4Position.x+v4Position.w*100.0*cos(anim)+v4Position.x*1.1,
                     v4Position.y+v4Position.w*100.0*sin(anim),
                     v4Position.z,1
                     );//投影矩阵和坐标向量相乘

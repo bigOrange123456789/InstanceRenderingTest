@@ -8,12 +8,6 @@
 <body>
 <canvas id="myCanvas" style="border:0px" width="0" height="0"></canvas>
 <div id="container"></div>
-<div id="info">
-    <a href="https://threejs.org" target="_blank" rel="noopener"></a>
-    <div id="notSupported" style="display:none">Sorry your graphics card + browser does not support hardware
-        instancing
-    </div>
-</div>
 
 <script id="vertexShader" type="x-shader/x-vertex">
 		precision highp float;
@@ -123,6 +117,7 @@
 
         //geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
         geometry.setAttribute('position', glb.scene.children[0].geometry.attributes.position);
+        geometry.setAttribute('index',    glb.scene.children[0].geometry.index);
         console.log(glb.scene.children[0]);
 
         for (let i = 0; i < instances; i++) {
@@ -132,11 +127,6 @@
 
         // geometry.setAttribute('offset', new THREE.InstancedBufferAttribute(new Float32Array(offsets), 3));
         geometry.setAttribute('color', new THREE.InstancedBufferAttribute(new Float32Array(colors), 4));
-        /*geometry.setAttribute('inUV', new THREE.InstancedBufferAttribute(new Float32Array([
-            0, 0,
-            0, 1,
-            1, 0
-        ]), 2));*/
         geometry.setAttribute('inUV',glb.scene.children[0].geometry.attributes.uv);
 
         //var box = new THREE.Box3();
