@@ -34,7 +34,7 @@
 		varying vec2 outUV;
 
 		void main(){
-			vec4 myTexture = texture2D(text, vec2(0,1));
+			vec4 myTexture = texture2D(text, outUV);
             gl_FragColor = vec4 (
                            myTexture.r,
                            myTexture.g,
@@ -103,7 +103,7 @@
         const offsets = [];
         const colors = [];
 
-        const geometry = new THREE.InstancedBufferGeometry();
+        var geometry = new THREE.InstancedBufferGeometry();
         geometry.instanceCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
         //console.log(glb);
 
@@ -122,12 +122,18 @@
 
         for (let i = 0; i < instances; i++) {
             // offsets.push(0, 1, -1);
-            colors.push(1, 1, 1, 1);
+            colors.push(0, 1, 1, 1);
         }
 
         // geometry.setAttribute('offset', new THREE.InstancedBufferAttribute(new Float32Array(offsets), 3));
         geometry.setAttribute('color', new THREE.InstancedBufferAttribute(new Float32Array(colors), 4));
         geometry.setAttribute('inUV',glb.scene.children[0].geometry.attributes.uv);
+
+        console.log();
+        geometry.index=glb.scene.children[0].geometry.index;
+        geometry.toNonIndexed();
+        console.log(geometry);
+        geometry.index=null;
 
         //var box = new THREE.Box3();
         let tex = THREE.ImageUtils.loadTexture('people.jpg');
