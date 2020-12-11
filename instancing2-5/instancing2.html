@@ -44,7 +44,7 @@
 				vec4( 0,0,1,0 ),
 				vec4( 0,0,0,1 )
 			);
-			gl_Position = projectionMatrix * modelViewMatrix * matrix2 * vec4( vPosition, 1.0 );
+			gl_Position = projectionMatrix * modelViewMatrix * matrix1 * vec4( vPosition, 1.0 );
 		}
 </script>
 <script id="fragmentShader" type="x-shader/x-fragment">
@@ -66,7 +66,13 @@
 			vec4 myTexture;
 
 			if(varyType==1.0)myTexture =texture2D(text1, outUV);
-			else myTexture =texture2D(text2, outUV);
+			else if(varyType==2.0)myTexture =texture2D(text2, outUV);
+			else if(varyType==3.0)myTexture =texture2D(text3, outUV);
+			else if(varyType==4.0)myTexture =texture2D(text4, outUV);
+			else if(varyType==5.0)myTexture =texture2D(text5, outUV);
+			else if(varyType==6.0)myTexture =texture2D(text6, outUV);
+			else if(varyType==7.0)myTexture =texture2D(text7, outUV);
+			else myTexture =texture2D(text8, outUV);
 
 			//myTexture=texture2D(text1, outUV);
             gl_FragColor = vec4 (
@@ -128,9 +134,10 @@
     }
 
     function instancing(glb) {//开始进行实例化渲染
-        const instanceCount = 1;
+        const instanceCount = 100;
         let texs_length=10;
 
+        glb.scene.children[0].geometry=glb.scene.children[0].geometry.toNonIndexed();
         var geometry = new THREE.InstancedBufferGeometry();
         geometry.instanceCount = instanceCount; // set so its initalized for dat.GUI, will be set in first draw otherwise
         geometry.setAttribute('position', glb.scene.children[0].geometry.attributes.position);
@@ -147,10 +154,10 @@
             mcol0.setXYZ(i, 1,0,0);
             mcol1.setXYZ(i, 0,1,0);//四元数、齐次坐标
             mcol2.setXYZ(i, 0,0,1);
-            mcol3.setXYZ(i, 0,0,0);
+            mcol3.setXYZ(i, i%10-5,i/10-5,0);
 
-            type.setX(i, 1.0);
-            //type.setX(i, Math.floor(Math.random()*texs_length));
+            //type.setX(i, 1.0);
+            type.setX(i, Math.floor(Math.random() * 5));
         }
 
         geometry.addAttribute('mcol0', mcol0);//四元数、齐次坐标
@@ -159,10 +166,6 @@
         geometry.addAttribute('mcol3', mcol3);
 
         geometry.addAttribute('type', type);
-
-
-        geometry.index=glb.scene.children[0].geometry.index;
-        geometry=geometry.toNonIndexed();
 
         let texs=[];
 
