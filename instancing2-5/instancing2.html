@@ -10,33 +10,70 @@
 <div id="container"></div>
 
 <script id="vertexShader" type="x-shader/x-vertex">
-		precision highp float;
+		precision lowp float;
 		uniform mat4 modelViewMatrix;
 		uniform mat4 projectionMatrix;
 
 		attribute vec3 position;
+
+		attribute vec3 mcol0;
+		attribute vec3 mcol1;
+		attribute vec3 mcol2;
+		attribute vec3 mcol3;
+
+		attribute float type;
+
 		attribute vec2 inUV;
         varying vec2 outUV;
+        varying float varyType;
 		attribute vec3 offset;
 
 		void main(){
 			vec3 vPosition = position;
 			outUV = inUV;
-			gl_Position = projectionMatrix * modelViewMatrix * vec4( vPosition, 1.0 );
+			varyType=type;
+			mat4 matrix1 = mat4(
+				vec4( mcol0, 0 ),
+				vec4( mcol1, 0 ),
+				vec4( mcol2, 0 ),
+				vec4( mcol3, 1 )
+			);
+			mat4 matrix2 = mat4(
+				vec4( 1,0,0,0 ),
+				vec4( 0,1,0,0 ),
+				vec4( 0,0,1,0 ),
+				vec4( 0,0,0,1 )
+			);
+			gl_Position = projectionMatrix * modelViewMatrix * matrix2 * vec4( vPosition, 1.0 );
 		}
 </script>
 <script id="fragmentShader" type="x-shader/x-fragment">
         precision lowp float;
-        uniform sampler2D text;
+        uniform sampler2D text1;
+        uniform sampler2D text2;
+        uniform sampler2D text3;
+        uniform sampler2D text4;
+        uniform sampler2D text5;
+        uniform sampler2D text6;
+        uniform sampler2D text7;
+        uniform sampler2D text8;
+
+        varying float varyType;
 		varying vec2 outUV;
 
 		void main(){
-			vec4 myTexture =texture2D(text, outUV);// texture2D(text, vec2( 0,1));
+
+			vec4 myTexture;
+
+			if(varyType==1.0)myTexture =texture2D(text1, outUV);
+			else myTexture =texture2D(text2, outUV);
+
+			//myTexture=texture2D(text1, outUV);
             gl_FragColor = vec4 (
                            myTexture.r,
                            myTexture.g,
                            myTexture.b,
-                           1.0);
+                           0);
 		}
 </script>
 <script src="three.js"></script>
@@ -49,7 +86,6 @@
 
     var attrUV = 1;
     var uniformTexture = 1;
-
 
     let container;
 
@@ -77,7 +113,6 @@
 
         scene = new THREE.Scene();
 
-
         renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -88,32 +123,67 @@
             document.getElementById('notSupported').style.display = '';
             return;
         }
-
         light = new THREE.AmbientLight(0xffffff,1.0)
         scene.add(light);
     }
 
     function instancing(glb) {//开始进行实例化渲染
-        const instances = 1;
-        
+        const instanceCount = 1;
+        let texs_length=10;
+
         var geometry = new THREE.InstancedBufferGeometry();
-        geometry.instanceCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
+        geometry.instanceCount = instanceCount; // set so its initalized for dat.GUI, will be set in first draw otherwise
         geometry.setAttribute('position', glb.scene.children[0].geometry.attributes.position);
         geometry.setAttribute('inUV',glb.scene.children[0].geometry.attributes.uv);
+
+        var mcol0=new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+        var mcol1=new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+        var mcol2=new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+        var mcol3=new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+
+        var type=new THREE.InstancedBufferAttribute(new Uint16Array(instanceCount), 1);
+
+        for (let i = 0; i < instanceCount; i++){
+            mcol0.setXYZ(i, 1,0,0);
+            mcol1.setXYZ(i, 0,1,0);//四元数、齐次坐标
+            mcol2.setXYZ(i, 0,0,1);
+            mcol3.setXYZ(i, 0,0,0);
+
+            type.setX(i, 1.0);
+            //type.setX(i, Math.floor(Math.random()*texs_length));
+        }
+
+        geometry.addAttribute('mcol0', mcol0);//四元数、齐次坐标
+        geometry.addAttribute('mcol1', mcol1);
+        geometry.addAttribute('mcol2', mcol2);
+        geometry.addAttribute('mcol3', mcol3);
+
+        geometry.addAttribute('type', type);
+
 
         geometry.index=glb.scene.children[0].geometry.index;
         geometry=geometry.toNonIndexed();
 
-        let tex = THREE.ImageUtils.loadTexture('people.jpg');
-        console.log(tex);
-        tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-        // texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        let texs=[];
+
+        for(i=0;i<texs_length;i++){
+            texs.push(THREE.ImageUtils.loadTexture('texture/'+i+'.jpg')) ;
+            texs[i].flipY=false;
+            texs[i].wrapS = texs[i].wrapT = THREE.ClampToEdgeWrapping;
+        }
 
 
         // material
         let material = new THREE.RawShaderMaterial({//原始着色器材质
             uniforms: {
-                text: {type: 't', value: tex}//textureHandle
+                text1: {type: 't', value: texs[0]}//textureHandle
+                ,text2: {type: 't', value: texs[1]}
+                ,text3: {type: 't', value: texs[2]}
+                ,text4: {type: 't', value: texs[3]}
+                ,text5: {type: 't', value: texs[4]}
+                ,text6: {type: 't', value: texs[5]}
+                ,text7: {type: 't', value: texs[6]}
+                ,text8: {type: 't', value: texs[7]}
             },
             vertexShader: document.getElementById('vertexShader').textContent,
             fragmentShader: document.getElementById('fragmentShader').textContent,
@@ -124,7 +194,6 @@
         scene.add(mesh);
         //完成进行实例化渲染
     }
-
 
     function animate() {
         requestAnimationFrame(animate);
