@@ -70,16 +70,17 @@
 
 			vec4 myTexture;
 
-			if(varyType==1.0)myTexture =texture2D(text1, outUV);
-			else if(varyType==2.0)myTexture =texture2D(text2, outUV);
-			else if(varyType==3.0)myTexture =texture2D(text3, outUV);
-			else if(varyType==4.0)myTexture =texture2D(text4, outUV);
-			else if(varyType==5.0)myTexture =texture2D(text5, outUV);
-			else if(varyType==6.0)myTexture =texture2D(text6, outUV);
-			else if(varyType==7.0)myTexture =texture2D(text7, outUV);
-			else if(varyType==8.0)myTexture =texture2D(text8, outUV);
-			else if(varyType==9.0)myTexture =texture2D(text9, outUV);
-			else myTexture =texture2D(text10, outUV);
+
+			if(varyType>0.9&&varyType<1.1)myTexture =texture2D(text1, outUV);
+			else if(varyType>1.9&&varyType<2.1)myTexture =texture2D(text2, outUV);
+			else if(varyType>2.9&&varyType<3.1)myTexture =texture2D(text3, outUV);
+			else if(varyType>3.9&&varyType<4.1)myTexture =texture2D(text4, outUV);
+			else if(varyType>4.9&&varyType<5.1)myTexture =texture2D(text5, outUV);
+			else if(varyType>5.9&&varyType<6.1)myTexture =texture2D(text6, outUV);
+			else if(varyType>6.9&&varyType<7.1)myTexture =texture2D(text7, outUV);
+			else if(varyType>7.9&&varyType<8.1)myTexture =texture2D(text8, outUV);
+			else if(varyType>8.9&&varyType<9.1)myTexture =texture2D(text9, outUV);
+			else if(varyType>9.9&&varyType<10.1)myTexture =texture2D(text10, outUV);
 
 			//myTexture=texture2D(text9, outUV);
             gl_FragColor = vec4 (
