@@ -44,10 +44,6 @@
 
 			var gui, scene, camera, renderer, orbit, lights, mesh, bones, skeletonHelper;
 
-			var state = {
-				animateBones: false
-			};
-
 			function initScene() {
 				gui = new GUI();
 
@@ -213,16 +209,14 @@
 
 				var time = Date.now() * 0.001;
 
-				//Wiggle the bones
-				//if ( state.animateBones ) {
 
-					for ( var i = 0; i < mesh.skeleton.bones.length; i ++ ) {
+				for (var i = 0; i < mesh.skeleton.bones.length; i++) {
 
-						mesh.skeleton.bones[ i ].rotation.z = Math.sin( time ) * 2 / mesh.skeleton.bones.length;
+					mesh.skeleton.bones[i].rotation.z = Math.sin(time) * 2 / mesh.skeleton.bones.length;
 
-					}
+				}
 
-				//}
+
 
 				renderer.render( scene, camera );
 

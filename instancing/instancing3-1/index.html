@@ -237,7 +237,6 @@
 
         //开始设置骨骼
         var bones = [];
-        //console.log(myMesh);
         cloneBones(myMesh.skeleton.bones[0], bones);
         var skeletonBones= new THREE.Skeleton(bones, myMesh.skeleton.boneInverses);
         var skeletonMatrix =  myMesh.matrixWorld.clone();//这个有用吗？
@@ -253,7 +252,6 @@
             skinnedMesh.add(skeletonBones.bones[0]);//添加骨骼
             skinnedMesh.bind(skeletonBones,skeletonMatrix);//绑定骨架
         }
-        console.log(myMesh);
         geometry.addAttribute('skinIndex' ,myMesh.geometry.attributes.skinIndex);
         geometry.addAttribute('skinWeight',myMesh.geometry.attributes.skinWeight);
         //完成设置骨骼
