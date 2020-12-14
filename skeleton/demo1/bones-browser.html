@@ -106,7 +106,7 @@
 				* */
 
 				var position = geometry.attributes.position;//获得几何的点
-				var vertex = new Vector3();
+				var vertex = new Vector3();//用于依次取出每个点的坐标
 
 				var skinIndices = [];
 				var skinWeights = [];
@@ -119,10 +119,8 @@
 					var skinIndex = Math.floor( y / sizing.segmentHeight );//到地面的距离除以一节的高度//计算结果【0，1，2，3】
 					var skinWeight =1- ( y % sizing.segmentHeight ) / sizing.segmentHeight;//距离越近，受骨骼影响的权重越大
 
-					//skinIndices.push( skinIndex, 0, 0, 0 );
-					//skinWeights.push( skinWeight,0, 0, 0 );
 					skinIndices.push( skinIndex ,skinIndex + 1, 0, 0 );
-					skinWeights.push( skinWeight,1 -skinWeight, 0, 0 );
+					skinWeights.push( skinWeight,1 -skinWeight, 0, 0 );//距离就是权重
 				}
 				geometry.setAttribute( 'skinIndex', new Uint16BufferAttribute( skinIndices, 4 ) );
 				geometry.setAttribute( 'skinWeight', new Float32BufferAttribute( skinWeights, 4 ) );
@@ -148,7 +146,7 @@
 
 				var prevBone = new Bone();//上一个骨骼//骨骼几乎和空白Object3D相同。
 				bones.push( prevBone );
-				prevBone.position.y = - sizing.halfHeight;//第一个关节的位置在圆台最下面
+				prevBone.position.y =0//骨骼的坐标应该代表旋转和形变的中心// - sizing.halfHeight;//第一个关节的位置在圆台最下面
 				for ( var i = 0; i < sizing.segmentCount; i ++ ) {//已经创建完一个骨头关节了，这里再创建4个就可以了
 					var bone = new Bone();//创建骨头
 					bone.position.y = sizing.segmentHeight;//骨头关节的位置在最上面？
