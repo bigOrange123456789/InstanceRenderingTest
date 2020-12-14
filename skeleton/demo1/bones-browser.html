@@ -149,7 +149,7 @@
 				prevBone.position.y =0//骨骼的坐标应该代表旋转和形变的中心// - sizing.halfHeight;//第一个关节的位置在圆台最下面
 				for ( var i = 0; i < sizing.segmentCount; i ++ ) {//已经创建完一个骨头关节了，这里再创建4个就可以了
 					var bone = new Bone();//创建骨头
-					bone.position.y = sizing.segmentHeight;//骨头关节的位置在最上面？
+					bone.position.y =0; sizing.segmentHeight;//骨头关节的位置在最上面？
 					bones.push( bone );
 					prevBone.add(bone);//下面的骨头包含上面的骨头//骨头是一个对象，这里是将下面的骨头作为上面骨头的孩子
 					prevBone = bone;
