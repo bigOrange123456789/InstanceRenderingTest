@@ -132,6 +132,7 @@
     var animLoader = new PMAnimLoader();//估计是通过gltf文件加载的动画
     animLoader.load('test.glb', function (gltfScene)
     {
+        console.log(123);
         console.log(gltfScene);
     });
 
@@ -159,6 +160,7 @@
 
     function instancing(glb) {//开始进行实例化渲染
 
+        console.log(glb);
 
 
         const instanceCount = 1;//10 0000
@@ -234,15 +236,11 @@
         });
 
         //开始设置骨骼
-        var node=myMesh;
-        console.log(glb);//animations
-        console.log(glb.animations);//this.animationClips;
         var bones = [];
-        console.log(node);
-        cloneBones(node.skeleton.bones[0], bones);
-        var skeletonBones= new THREE.Skeleton(bones, node.skeleton.boneInverses);
-        console.log(skeletonBones)
-        var skeletonMatrix =  node.matrixWorld.clone();//这个有用吗？
+        //console.log(myMesh);
+        cloneBones(myMesh.skeleton.bones[0], bones);
+        var skeletonBones= new THREE.Skeleton(bones, myMesh.skeleton.boneInverses);
+        var skeletonMatrix =  myMesh.matrixWorld.clone();//这个有用吗？
         function cloneBones(rootBone, boneArray) {
             var rootBoneClone=rootBone.clone();
             rootBoneClone.children.splice(0,rootBoneClone.children.length);
@@ -251,27 +249,46 @@
                 rootBoneClone.add(cloneBones(rootBone.children[i], boneArray));
             return rootBoneClone;
         }
-        function setupPmSkinnedMesh(skinnedMesh, skeletonBones , skeletonMatrix)
-        {//set up设置//设置PM骨骼网格//00001//var skinnedMesh = rootObject.children[0];//console.log(skeletonBones);
-            skinnedMesh.add(skeletonBones.bones[0]);
-            skinnedMesh.bind(skeletonBones,skeletonMatrix);
+        function setupPmSkinnedMesh(skinnedMesh, skeletonBones , skeletonMatrix) {//set up设置//设置PM骨骼网格//00001//var skinnedMesh = rootObject.children[0];//console.log(skeletonBones);
+            skinnedMesh.add(skeletonBones.bones[0]);//添加骨骼
+            skinnedMesh.bind(skeletonBones,skeletonMatrix);//绑定骨架
         }
+        console.log(myMesh);
+        geometry.addAttribute('skinIndex' ,myMesh.geometry.attributes.skinIndex);
+        geometry.addAttribute('skinWeight',myMesh.geometry.attributes.skinWeight);
         //完成设置骨骼
 
-        //开始设置动画//进行这个动画设置的时候可能还只是一个基模
 
-        var animations=glb.animations;
-        var animationMixer=new THREE.AnimationMixer(glb);//动画混合器animationMixer是用于场景中特定对象的动画的播放器
-        animationMixer.clipAction(animations[0]).play();//动画剪辑AnimationClip是一个可重用的关键帧轨道集，它代表动画。
-
-        for(var k=0;k<animations.length;k++)
-            animationMixers.push(
-                animationMixer.clipAction(animations[k])
-            );
-        //完成设置动画
 
         const mesh = new THREE.SkinnedMesh(geometry, material);//重要
-        setupPmSkinnedMesh(mesh, skeletonBones , skeletonMatrix);
+        setupPmSkinnedMesh(mesh,skeletonBones,skeletonMatrix);
+
+
+        function test12() {
+
+            requestAnimationFrame(animate);
+            for(var i=0;i<mesh.skeleton.bones.length;i++)
+            mesh.skeleton.bones[i].rotation.z+=0.2;
+
+        }test12();
+        window.setInterval(function(){
+            for(var i=0;i<mesh.skeleton.bones.length;i++)
+                mesh.skeleton.bones[i].rotation.z+=0.1;
+            console.log(mesh.skeleton)
+        },10);
+        //console.log(mesh);
+        //开始设置动画//进行这个动画设置的时候可能还只是一个基模
+        var animations=glb.animations;
+        var animationMixer=new THREE.AnimationMixer(glb);//动画混合器animationMixer是用于场景中特定对象的动画的播放器
+        var myAnimationAction=animationMixer.clipAction(animations[0]);//动画剪辑AnimationClip是一个可重用的关键帧轨道集，它代表动画。
+         /*myAnimationAction.play();
+         //返回所传入的剪辑参数的AnimationAction, 根对象参数可选，默认值为混合器的默认根对象。
+         //第一个参数可以是动画剪辑(AnimationClip)对象或者动画剪辑的名称。
+         for(var k=0;k<animations.length;k++)
+             animationMixers.push(
+                 animationMixer.clipAction(animations[k])
+             );*/
+        //完成设置动画
 
         mesh.rotation.set(-Math.PI/6,Math.PI,0);
         mesh.position.set(0,0,-3);
