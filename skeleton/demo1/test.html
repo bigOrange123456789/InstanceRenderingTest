@@ -202,22 +202,12 @@
     }
 
     function render() {
-
         requestAnimationFrame( render );
-
         var time = Date.now() * 0.001;
-
-
         for (var i = 0; i < mesh.skeleton.bones.length; i++) {
-
             mesh.skeleton.bones[i].rotation.z = Math.sin(time) * 2 / mesh.skeleton.bones.length;
-
         }
-
-
-
         renderer.render( scene, camera );
-
     }
 
     initScene();
