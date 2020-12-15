@@ -63,7 +63,7 @@
 		};
 	}
 
-	var REVISION = '123dev';//
+	var REVISION = '123dev';//revision是修订的意思，这里应该是版本号
 	var MOUSE = {
 		LEFT: 0,
 		MIDDLE: 1,
