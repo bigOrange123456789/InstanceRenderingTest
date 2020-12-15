@@ -120,22 +120,21 @@
     init();
 
     var loader= new THREE.GLTFLoader();
-    /*loader.load('test.glb', (glb) => {
+    loader.load('test.glb', (glb) => {
         instancing(glb);
         render();
         function render() {
             renderer.render( scene, camera );
             requestAnimationFrame(render);
         }
-    });*/
-    loader.load('test2.glb', (glb) => {
+    });/**/
+    /*loader.load('test2.glb', (glb) => {
         console.log(glb);
-        //var mesh0=glb.scene.children[0].children[1];//test2.glb
         var mesh0=glb.scene.children[0].children[3];//test.glb
         //var mesh0=glb.scene.children[0].children[0];//robot.glb
 
         mixer = new THREE.AnimationMixer( mesh0 );
-        var action = mixer.clipAction(glb.animations[1]);
+        var action = mixer.clipAction(glb.animations[0]);
         action.play();
 
         scene.add(mesh0);
@@ -147,17 +146,17 @@
             renderer.render( scene, camera );
             requestAnimationFrame(render);
         }
-    });/**/
+    });*/
 
     function instancing(glb) {//开始进行实例化渲染
         const instanceCount = 2;//10 0000
         let texs_length=16;
 
-        var myMesh=glb.scene.children[0].children[1];//'test2.glb'
-        //var myMesh=glb.scene.children[0].children[3];//'test.glb'
+        //var myMesh=glb.scene.children[0].children[1];//'test2.glb'
+        var myMesh=glb.scene.children[0].children[3];//'test.glb'
 
-        //var geometry=myMesh.geometry;
-        //var material=myMesh.material;
+        var geometry=myMesh.geometry;
+        var material=myMesh.material;
         /*
         myMesh.geometry=myMesh.geometry.toNonIndexed();
         var geometry = new THREE.InstancedBufferGeometry();
@@ -231,7 +230,8 @@
             vertexShader: document.getElementById('vertexShader').textContent,
             fragmentShader: document.getElementById('fragmentShader').textContent,
             side: THREE.DoubleSide
-        });*/
+        });
+        */
 
 
 
