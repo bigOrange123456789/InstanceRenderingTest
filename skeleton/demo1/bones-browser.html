@@ -140,7 +140,7 @@
 				return geometry;
 			}
 
-			function createBones( sizing ) {
+			function createBones( sizing ) {//被初始化骨骼函数所调用
 
 				bones = [];//一个数组用来存放骨骼对象//总长度为5
 
@@ -149,7 +149,7 @@
 				prevBone.position.y =0- sizing.halfHeight;//第一个关节的位置在圆台最下面
 				for ( var i = 0; i < sizing.segmentCount; i ++ ) {//已经创建完一个骨头关节了，这里再创建4个就可以了
 					var bone = new Bone();//创建骨头
-					bone.position.y =sizing.segmentHeight;//骨头关节的位置在最上面？
+					bone.position.y =sizing.segmentHeight;//一节的长度//因为每一个骨骼都是下面骨骼的孩子，所以这是相对位置
 					bones.push( bone );
 					prevBone.add(bone);//下面的骨头包含上面的骨头//骨头是一个对象，这里是将下面的骨头作为上面骨头的孩子
 					prevBone = bone;
@@ -175,7 +175,6 @@
 				skeletonHelper.material.linewidth = 2;//用来模拟骨骼 Skeleton 的辅助对象
 				scene.add( skeletonHelper );
 
-				console.log(mesh)
 				return mesh;
 
 			}
@@ -196,28 +195,14 @@
 				var geometry = createGeometry( sizing );
 				var bones = createBones( sizing );
 				mesh = createMesh( geometry, bones );
-
-				mesh.scale.multiplyScalar( 1 );
 				scene.add( mesh );
 			}
 
 			function render() {
-
 				requestAnimationFrame( render );
-
-				var time = Date.now() * 0.001;
-
-
-				for (var i = 0; i < mesh.skeleton.bones.length; i++) {
-
-					mesh.skeleton.bones[i].rotation.z = Math.sin(time) * 2 / mesh.skeleton.bones.length;
-
-				}
-
-
-
+				mesh.skeleton.bones[1].rotation.z+=0.01;
+				mesh.skeleton.bones[3].rotation.z+=0.01;
 				renderer.render( scene, camera );
-
 			}
 
 			initScene();

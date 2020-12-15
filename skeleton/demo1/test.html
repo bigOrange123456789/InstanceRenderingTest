@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Three.js Bones Browser</title>
+    <style>
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #newWindow {
+            display: block;
+            position: absolute;
+            bottom: 0.3em;
+            left: 0.5em;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<script type="module">
+    import {
+        Bone,
+        Color,
+        CylinderBufferGeometry,
+        DoubleSide,
+        Float32BufferAttribute,
+        MeshPhongMaterial,
+        PerspectiveCamera,
+        PointLight,
+        Scene,
+        SkinnedMesh,
+        Skeleton,
+        SkeletonHelper,
+        Vector3,
+        Uint16BufferAttribute,
+        WebGLRenderer
+    } from "./three.module.js";
+
+    import { GUI } from './dat.gui.module.js';
+    import { OrbitControls } from './OrbitControls.js';
+
+    var gui, scene, camera, renderer, orbit, lights, mesh, bones, skeletonHelper;
+
+    function initScene() {
+        gui = new GUI();
+
+        scene = new Scene();
+        scene.background = new Color( 0x444444 );
+
+        camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 200 );
+        camera.position.z = 30;
+        camera.position.y = 30;
+
+        renderer = new WebGLRenderer( { antialias: true } );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+
+        orbit = new OrbitControls( camera, renderer.domElement );
+        orbit.enableZoom = false;
+
+        lights = [];
+        lights[ 0 ] = new PointLight( 0xffffff, 1, 0 );
+        lights[ 1 ] = new PointLight( 0xffffff, 1, 0 );
+        lights[ 2 ] = new PointLight( 0xffffff, 1, 0 );
+
+        lights[ 0 ].position.set( 0, 200, 0 );
+        lights[ 1 ].position.set( 100, 200, 100 );
+        lights[ 2 ].position.set( - 100, - 200, - 100 );
+
+        scene.add( lights[ 0 ] );
+        scene.add( lights[ 1 ] );
+        scene.add( lights[ 2 ] );
+
+        window.addEventListener( 'resize', function () {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+        }, false );
+
+        initBones();
+
+    }
+
+    function createGeometry( sizing ) {//要指明每个点对应的骨头，和受这骨头影响的程度
+        var geometry = new CylinderBufferGeometry(//4段骨头，5个关节
+            5,//顶部半径 // radiusTop
+            5,//底部半径 // radiusBottom
+            sizing.height,//圆柱高度 //柱子总高度
+            8,//圆柱侧面分段数 // radiusSegments
+            sizing.segmentCount * 3,//圆台侧面纵向分段//每一节分3段//柱子的节数是4 // heightSegments
+            true // openEnded//底面和顶面是开放的
+        );
+        /*
+        * radiusTop — 圆柱的顶部半径，默认值是1。
+        * radiusBottom — 圆柱的底部半径，默认值是1。
+        * height — 圆柱的高度，默认值是1。
+        * radialSegments — 圆柱侧面周围的分段数，默认为8。
+        * heightSegments — 圆柱侧面沿着其高度的分段数，默认值为1。
+        * openEnded — 一个Boolean值，指明该圆锥的底面是开放的还是封顶的。默认值为false，即其底面默认是封顶的。
+        * thetaStart — 第一个分段的起始角度，默认为0。（three o'clock position）
+        * thetaLength — 圆柱底面圆扇区的中心角，通常被称为“θ”（西塔）。默认值是2*Pi，这使其成为一个完整的圆柱。
+        * */
+
+        var position = geometry.attributes.position;//获得几何的点
+        var vertex = new Vector3();//用于依次取出每个点的坐标
+
+        var skinIndices = [];
+        var skinWeights = [];
+
+        for ( var i = 0; i < position.count; i ++ ) {//遍历几何的点
+            vertex.fromBufferAttribute( position, i );//将position的内容3个一组，取第i组
+            var y = ( vertex.y + sizing.halfHeight );//经过这个转换后最底部点对应值为0//到底面的距离
+
+            //找到距离点最近的骨骼
+            var skinIndex = Math.floor( y / sizing.segmentHeight );//到地面的距离除以一节的高度//计算结果【0，1，2，3】
+            var skinWeight =1- ( y % sizing.segmentHeight ) / sizing.segmentHeight;//距离越近，受骨骼影响的权重越大
+
+            skinIndices.push( skinIndex ,skinIndex + 1, 0, 0 );
+            skinWeights.push( skinWeight,1 -skinWeight, 0, 0 );//距离就是权重
+        }
+        geometry.setAttribute( 'skinIndex', new Uint16BufferAttribute( skinIndices, 4 ) );
+        geometry.setAttribute( 'skinWeight', new Float32BufferAttribute( skinWeights, 4 ) );
+        /*
+        * skinWeights 的值也是与几何体的顶点相对应。
+        * 每个顶点可以最多有 4 个骨骼与之相关联。
+        * 因而第一个 skinIndex 就与几何体的第一个顶点相关联，skinIndex 的值就指明了影响该顶点的骨骼是哪个。
+        * 例如，第一个顶点的值是 ( 10.05, 30.10, 12.12 )，
+        * 第一个 skinIndex 的值是  (  10, 2  , 0, 0 )，
+        * 第一个 skinWeight 的值是 ( 0.8, 0.2, 0, 0 )。
+        * 上述值表明第一个顶点受到mesh.bones[10]骨骼的影响有 80%， 受到 skeleton.bones[2] 的影响是 20%，由于另外两个 skinWeight 的值是 0，因而他们对顶点没有任何影响。
+        * 当在处理一个 SkinnedMesh 时，每个顶点最多可以有 4 个相关的 bones 来影响它。
+        * skinWeights 属性是一个权重队列，顺序同几何体中的顶点保持一致。
+        * 因而，队列中的第一个 skinWeight 就对应几何体中的第一个顶点。
+        * 由于每个顶点可以被 4 个 bones 营销，因而每个顶点的 skinWeights 就采用一个 Vector4 表示。
+        * */
+        return geometry;
+    }
+
+    function createBones( sizing ) {
+
+        bones = [];//一个数组用来存放骨骼对象//总长度为5
+
+        var prevBone = new Bone();//上一个骨骼//骨骼几乎和空白Object3D相同。
+        bones.push( prevBone );//骨骼的坐标应该代表旋转和形变的中心//
+        prevBone.position.y =0- sizing.halfHeight;//第一个关节的位置在圆台最下面
+        for ( var i = 0; i < sizing.segmentCount; i ++ ) {//已经创建完一个骨头关节了，这里再创建4个就可以了
+            var bone = new Bone();//创建骨头
+            bone.position.y =sizing.segmentHeight;//骨头关节的位置在最上面？
+            bones.push( bone );
+            prevBone.add(bone);//下面的骨头包含上面的骨头//骨头是一个对象，这里是将下面的骨头作为上面骨头的孩子
+            prevBone = bone;
+        }
+        return bones;
+    }
+
+    function createMesh( geometry, bones ) {//创建蒙皮网格
+        var material = new MeshPhongMaterial( {//随便创建一种材质
+            skinning: true,
+            color: 0x156289,
+            emissive: 0x072534,
+            side: DoubleSide,
+            flatShading: true
+        } );
+
+        var mesh = new SkinnedMesh( geometry,	material );//几何加材质得到网格
+        var skeleton = new Skeleton( bones );//使用bones数组来创建骨架，用于SkinnedMesh//根据骨骼生成骨架
+        mesh.add( bones[ 0 ]);//网格添加骨骼
+        mesh.bind( skeleton );//网格绑定骨架
+
+        skeletonHelper = new SkeletonHelper( mesh );//生成骨骼辅助线
+        skeletonHelper.material.linewidth = 2;//用来模拟骨骼 Skeleton 的辅助对象
+        scene.add( skeletonHelper );
+
+        console.log(mesh)
+        return mesh;
+
+    }
+
+    function initBones() {
+        var segmentHeight = 8;//每一段的高
+        var segmentCount = 4;//分为4段//实际上有5根骨头
+        var height = segmentHeight * segmentCount;//总高度
+        var halfHeight = height * 0.5;//高度的一半
+
+        var sizing = {
+            segmentHeight: segmentHeight,//一节的高度
+            segmentCount: segmentCount,//节数
+            height: height,//总高度
+            halfHeight: halfHeight//一半的高度
+        };
+
+        var geometry = createGeometry( sizing );
+        var bones = createBones( sizing );
+        mesh = createMesh( geometry, bones );
+
+        mesh.scale.multiplyScalar( 1 );
+        scene.add( mesh );
+    }
+
+    function render() {
+
+        requestAnimationFrame( render );
+
+        var time = Date.now() * 0.001;
+
+
+        for (var i = 0; i < mesh.skeleton.bones.length; i++) {
+
+            mesh.skeleton.bones[i].rotation.z = Math.sin(time) * 2 / mesh.skeleton.bones.length;
+
+        }
+
+
+
+        renderer.render( scene, camera );
+
+    }
+
+    initScene();
+    render();
+
+</script>
+</body>
+</html>

@@ -120,7 +120,18 @@
     init();
 
     var loader= new THREE.GLTFLoader();
-    loader.load('robot.glb', (glb) => {
+    loader.load('test.glb', (glb) => {
+        instancing(glb);
+        render();
+        new PlayerControl(camera);
+        new OrbitControls(camera , renderer.domElement,THREE);
+        function render() {
+            renderer.render( scene, camera );
+            requestAnimationFrame(render);
+        }
+    });
+    /*loader.load('robot.glb', (glb) => {
+
         var mesh0=glb.scene.children[0].children[0];
 
         mixer = new THREE.AnimationMixer( mesh0 );
@@ -137,7 +148,7 @@
             renderer.render( scene, camera );
             requestAnimationFrame(render);
         }
-    });
+    });*/
 
 
     function init() {
@@ -163,7 +174,6 @@
     }
 
     function instancing(glb) {//开始进行实例化渲染
-        console.log(glb);
         const instanceCount = 1;//10 0000
         let texs_length=16;
 
@@ -263,47 +273,35 @@
         setupPmSkinnedMesh(mesh,skeletonBones,skeletonMatrix);
 
 
-        function test12() {
 
-            requestAnimationFrame(animate);
-            for(var i=0;i<mesh.skeleton.bones.length;i++)
-            mesh.skeleton.bones[i].rotation.z+=0.2;
-
-        }test12();
-        window.setInterval(function(){
-            for(var i=0;i<mesh.skeleton.bones.length;i++)
-                mesh.skeleton.bones[i].rotation.z+=0.1;
-            console.log(mesh.skeleton)
-        },10);
         //console.log(mesh);
         //开始设置动画//进行这个动画设置的时候可能还只是一个基模
         var animations=glb.animations;
-        var animationMixer=new THREE.AnimationMixer(glb);//动画混合器animationMixer是用于场景中特定对象的动画的播放器
+        var animationMixer=new THREE.AnimationMixer(mesh);//动画混合器animationMixer是用于场景中特定对象的动画的播放器
         var myAnimationAction=animationMixer.clipAction(animations[0]);//动画剪辑AnimationClip是一个可重用的关键帧轨道集，它代表动画。
-         /*myAnimationAction.play();
+         myAnimationAction.play();
          //返回所传入的剪辑参数的AnimationAction, 根对象参数可选，默认值为混合器的默认根对象。
          //第一个参数可以是动画剪辑(AnimationClip)对象或者动画剪辑的名称。
-         for(var k=0;k<animations.length;k++)
-             animationMixers.push(
-                 animationMixer.clipAction(animations[k])
-             );*/
+        /*for(var k=0;k<animations.length;k++)
+            animationMixers.push(
+                animationMixer.clipAction(animations[k])
+            );*/
+        function test12() {
+            animationMixer.update( 0.01 );
+            requestAnimationFrame(test12);
+            //for(var i=0;i<mesh.skeleton.bones.length;i++)
+            //mesh.skeleton.bones[i].rotation.z+=0.2;
+
+        }test12();
         //完成设置动画
 
         mesh.rotation.set(-Math.PI/6,Math.PI,0);
         mesh.position.set(0,0,-3);
         mesh.frustumCulled=false;
-        //console.log(mesh);
         scene.add(mesh);
         //完成进行实例化渲染
 
 
-    }
-
-    function animate() {
-        var delta = clock.getDelta();
-        mixer.update( delta / 2.0 );
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
     }
 
 </script>
