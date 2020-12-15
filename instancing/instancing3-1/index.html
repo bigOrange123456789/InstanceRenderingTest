@@ -120,7 +120,7 @@
     init();
 
     var loader= new THREE.GLTFLoader();
-    loader.load('test.glb', (glb) => {
+    /**/loader.load('test2.glb', (glb) => {
         instancing(glb);
         render();
         function render() {
@@ -128,10 +128,10 @@
             requestAnimationFrame(render);
         }
     });
-    /*loader.load('robot.glb', (glb) => {
-        //var mesh0=glb.scene.children[0].children[3];//test.glb
-        var mesh0=glb.scene.children[0].children[0];//robot.glb
-
+    /*loader.load('test.glb', (glb) => {
+        var mesh0=glb.scene.children[0].children[3];//test.glb
+        //var mesh0=glb.scene.children[0].children[0];//robot.glb
+        //mesh0.geometry=mesh0.geometry.toNonIndexed();
         mixer = new THREE.AnimationMixer( mesh0 );
         var action = mixer.clipAction(glb.animations[0]);
         action.play();
@@ -141,7 +141,7 @@
         render();
 
         function render() {
-            mixer.update( 0.1 );
+            //mixer.update( 0.1 );
             renderer.render( scene, camera );
             requestAnimationFrame(render);
         }
@@ -151,11 +151,15 @@
         const instanceCount = 2;//10 0000
         let texs_length=16;
 
-        //var myMesh=glb.scene.children[0].children[1];
-        var myMesh=glb.scene.children[0].children[3];//'test.glb'
+        var myMesh=glb.scene.children[0].children[1];
+        //var myMesh=glb.scene.children[0].children[3];//'test.glb'
 
-        myMesh.geometry=myMesh.geometry.toNonIndexed();
-        var geometry = new THREE.InstancedBufferGeometry();
+        //myMesh.geometry=myMesh.geometry.toNonIndexed();
+
+        var geometry=myMesh.geometry;
+        var material=myMesh.material;
+
+        /*var geometry = new THREE.InstancedBufferGeometry();
         geometry.instanceCount = instanceCount; // set so its initalized for dat.GUI, will be set in first draw otherwise
         geometry.setAttribute('position', myMesh.geometry.attributes.position);
         geometry.setAttribute('inUV',myMesh.geometry.attributes.uv);
@@ -219,7 +223,7 @@
             vertexShader: document.getElementById('vertexShader').textContent,
             fragmentShader: document.getElementById('fragmentShader').textContent,
             side: THREE.DoubleSide
-        });
+        });*/
 
         //开始设置骨骼
         var bones = [];

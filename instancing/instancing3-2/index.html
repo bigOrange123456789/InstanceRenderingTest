@@ -120,20 +120,22 @@
     init();
 
     var loader= new THREE.GLTFLoader();
-    loader.load('test.glb', (glb) => {
+    /*loader.load('test.glb', (glb) => {
         instancing(glb);
         render();
         function render() {
             renderer.render( scene, camera );
             requestAnimationFrame(render);
         }
-    });
-    /*loader.load('robot.glb', (glb) => {
-        //var mesh0=glb.scene.children[0].children[3];//test.glb
-        var mesh0=glb.scene.children[0].children[0];//robot.glb
+    });*/
+    loader.load('test2.glb', (glb) => {
+        console.log(glb);
+        //var mesh0=glb.scene.children[0].children[1];//test2.glb
+        var mesh0=glb.scene.children[0].children[3];//test.glb
+        //var mesh0=glb.scene.children[0].children[0];//robot.glb
 
         mixer = new THREE.AnimationMixer( mesh0 );
-        var action = mixer.clipAction(glb.animations[0]);
+        var action = mixer.clipAction(glb.animations[1]);
         action.play();
 
         scene.add(mesh0);
@@ -145,20 +147,28 @@
             renderer.render( scene, camera );
             requestAnimationFrame(render);
         }
-    });*/
+    });/**/
 
     function instancing(glb) {//开始进行实例化渲染
         const instanceCount = 2;//10 0000
         let texs_length=16;
 
-        //var myMesh=glb.scene.children[0].children[1];
-        var myMesh=glb.scene.children[0].children[3];//'test.glb'
+        var myMesh=glb.scene.children[0].children[1];//'test2.glb'
+        //var myMesh=glb.scene.children[0].children[3];//'test.glb'
 
+        //var geometry=myMesh.geometry;
+        //var material=myMesh.material;
+        /*
         myMesh.geometry=myMesh.geometry.toNonIndexed();
         var geometry = new THREE.InstancedBufferGeometry();
         geometry.instanceCount = instanceCount; // set so its initalized for dat.GUI, will be set in first draw otherwise
+
         geometry.setAttribute('position', myMesh.geometry.attributes.position);
         geometry.setAttribute('inUV',myMesh.geometry.attributes.uv);
+        //开始设置骨骼
+        geometry.setAttribute('skinIndex' ,myMesh.geometry.attributes.skinIndex);
+        geometry.setAttribute('skinWeight',myMesh.geometry.attributes.skinWeight);
+        //完成设置骨骼
 
         var mcol0=new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
         var mcol1=new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
@@ -180,6 +190,7 @@
                 //console.log(1);
             }
 
+
         geometry.addAttribute('mcol0', mcol0);//四元数、齐次坐标
         geometry.addAttribute('mcol1', mcol1);
         geometry.addAttribute('mcol2', mcol2);
@@ -187,8 +198,9 @@
 
         geometry.addAttribute('type', type);
 
-        let texs=[];
+        console.log(geometry);
 
+        let texs=[];
         for(i=0;i<texs_length;i++){
             texs.push(THREE.ImageUtils.loadTexture('texture/'+i+'.jpg')) ;
             texs[i].flipY=false;
@@ -219,32 +231,14 @@
             vertexShader: document.getElementById('vertexShader').textContent,
             fragmentShader: document.getElementById('fragmentShader').textContent,
             side: THREE.DoubleSide
-        });
+        });*/
 
-        //开始设置骨骼
-        var bones = [];
-        cloneBones(myMesh.skeleton.bones[0], bones);
-        console.log();
-        var skeletonBones=new THREE.Skeleton(bones, myMesh.skeleton.boneInverses);
-        var skeletonMatrix =  myMesh.matrixWorld.clone();//这个有用吗？
-        function cloneBones(rootBone, boneArray) {
-            var rootBoneClone=rootBone.clone();
-            rootBoneClone.children.splice(0,rootBoneClone.children.length);
-            boneArray.push(rootBoneClone);
-            for (var i = 0 ; i < rootBone.children.length ; ++i)
-                rootBoneClone.add(cloneBones(rootBone.children[i], boneArray));
-            return rootBoneClone;
-        }/**/
-        function setupSkinnedMesh(skinnedMesh, skeletonBones , skeletonMatrix) {//set up设置//设置PM骨骼网格//00001//var skinnedMesh = rootObject.children[0];//console.log(skeletonBones);
-            skinnedMesh.add(skeletonBones.bones[0]);//添加骨骼
-            skinnedMesh.bind(skeletonBones,skeletonMatrix);//绑定骨架
-        }
-        geometry.addAttribute('skinIndex' ,myMesh.geometry.attributes.skinIndex);
-        geometry.addAttribute('skinWeight',myMesh.geometry.attributes.skinWeight);
-        //完成设置骨骼
 
-        const mesh = new THREE.SkinnedMesh(geometry, material);//重要
-        setupSkinnedMesh(mesh,skeletonBones,skeletonMatrix);
+
+        const mesh = new THREE.SkinnedMesh(geometry, material);
+        var skeletonBones=myMesh.skeleton;
+        mesh.add(skeletonBones.bones[0]);//添加骨骼
+        mesh.bind(skeletonBones,myMesh.matrixWorld);//绑定骨架
 
         //开始设置动画//进行这个动画设置的时候可能还只是一个基模
         var animations=glb.animations;
@@ -255,7 +249,6 @@
             animationMixer.update( 0.01 );
             requestAnimationFrame(test12);
         }test12();
-        console.log(mesh );
         //完成设置动画
 
         mesh.rotation.set(-Math.PI/6,Math.PI,0);
