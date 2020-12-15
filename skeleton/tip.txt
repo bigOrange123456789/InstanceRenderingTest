@@ -1,0 +1,13 @@
+坐标变换要先缩放、后旋转、再平移
+假设关节位置既影响旋转中心又可以造成放缩
+五个节点的位置分别是：16、8、0、-8、-16
+现在Demo中，旋转中心不同
+        一个点的骨骼变幻矩阵=4个骨骼变换矩阵的加权和
+
+
+动画混合器：
+        mixer = new THREE.AnimationMixer( mesh0 );
+        var action = mixer.clipAction(glb.animations[0]);//clip夹住
+        action.play();
+
+        mixer.update( 0.1 );

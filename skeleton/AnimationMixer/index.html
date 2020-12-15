@@ -104,6 +104,24 @@
 					ready = true;
 
 				} );
+				loader.load( 'robot.glb', function ( gltf ) {
+					console.log(model);
+					console.log(gltf);
+					var model = gltf.scene;
+					model.position.y -= 35;
+					model.scale.multiplyScalar( 15 );
+
+					mixer = new THREE.AnimationMixer( model );
+
+					var dance = gltf.animations[0];
+
+					var action = mixer.clipAction( dance );
+
+					action.play();
+
+					scene.add( model );
+
+				} );
 
 			}
 

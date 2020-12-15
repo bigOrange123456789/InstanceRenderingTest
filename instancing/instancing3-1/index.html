@@ -110,6 +110,7 @@
 <script>
     var attrUV = 1;
     var uniformTexture = 1;
+    var mixer;
 
     let container;
 
@@ -119,22 +120,25 @@
     init();
 
     var loader= new THREE.GLTFLoader();
-    loader.load('test.glb', (glb) => {
-        instancing(glb);
+    loader.load('robot.glb', (glb) => {
+        var mesh0=glb.scene.children[0].children[0];
+
+        mixer = new THREE.AnimationMixer( mesh0 );
+        var action = mixer.clipAction(glb.animations[0]);
+        action.play();
+
+        scene.add(mesh0);
+
         render();
         new PlayerControl(camera);
         new OrbitControls(camera , renderer.domElement,THREE);
         function render() {
+            mixer.update( 0.1 );
             renderer.render( scene, camera );
             requestAnimationFrame(render);
         }
     });
-    var animLoader = new PMAnimLoader();//估计是通过gltf文件加载的动画
-    animLoader.load('test.glb', function (gltfScene)
-    {
-        console.log(123);
-        console.log(gltfScene);
-    });
+
 
     function init() {
         container = document.getElementById('container');
@@ -159,10 +163,7 @@
     }
 
     function instancing(glb) {//开始进行实例化渲染
-
         console.log(glb);
-
-
         const instanceCount = 1;//10 0000
         let texs_length=16;
 
@@ -299,6 +300,8 @@
     }
 
     function animate() {
+        var delta = clock.getDelta();
+        mixer.update( delta / 2.0 );
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
     }
