@@ -80,7 +80,7 @@
 				vec4( mcol3, 1 )
 			);
 
-			gl_Position = projectionMatrix * modelViewMatrix * matrix2  * matrix1 * vec4( vPosition, 1.0 );
+			gl_Position = projectionMatrix * modelViewMatrix * matrix2 * matrix1 *  vec4( vPosition, 1.0 );
 		}
 </script>
 <script id="fragmentShader" type="x-shader/x-fragment">
@@ -213,7 +213,11 @@
 
         var skeletonData=[];//16*25//400
         for(i=0;i<myMesh.skeleton.boneInverses.length;i++){
-            var temp=myMesh.skeleton.boneInverses[i].toArray();
+            var temp=myMesh.skeleton.boneInverses[i];//.toArray();
+            var temp2=myMesh.skeleton.bones[i].matrix;//.toArray();
+            //temp2.multiply(temp);
+            temp=temp2.toArray();
+            //var temp=myMesh.skeleton.bones[i].matrixWorld.toArray();//全是单位矩阵
             /*skeletonData.push(
                  1,0,0,0
                 ,0,1,0,0
@@ -223,6 +227,7 @@
             for(j=0;j<temp.length;j++)
                 skeletonData.push(temp[j]);
         }
+        //var skeletonData=myMesh.skeleton.boneMatrices;//全是0矩阵
 
        //test10[0]=0.1;
         let material = new THREE.RawShaderMaterial({//原始着色器材质
