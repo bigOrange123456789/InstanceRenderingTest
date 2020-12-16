@@ -13,6 +13,8 @@
 		uniform mat4 modelViewMatrix;
 		uniform mat4 projectionMatrix;
 
+		uniform float myTest[400];//16*25
+
 		attribute vec3 position;
 		attribute vec2 inUV;
         attribute vec4 skinIndex;
@@ -27,24 +29,86 @@
 
         varying vec2 outUV;
         varying float varyType;
+        varying float varyMyTest0;
+
+        mat4 matrixs[25];
 
 		void main(){
 			vec3 vPosition = position;
 			outUV = inUV;
 			varyType=type;
-			mat4 matrix1 = mat4(
+
+			varyMyTest0=skinIndex[0];//myTest[0];
+
+
+			int mySkinIndex[4];
+			for(int i=0;i<25;i++){
+			    matrixs[i]=mat4(
+			        myTest[i*16+0] ,myTest[i*16+1] ,myTest[i*16+2] ,myTest[i*16+3] ,
+			        myTest[i*16+4] ,myTest[i*16+5] ,myTest[i*16+6] ,myTest[i*16+7] ,
+			        myTest[i*16+8] ,myTest[i*16+9] ,myTest[i*16+10],myTest[i*16+11],
+			        myTest[i*16+12],myTest[i*16+13],myTest[i*16+14],myTest[i*16+15]
+			        );
+			}
+            //skinWeight[0]*matrixs[skinIndex[0]]+skinWeight[1]*matrixs[skinIndex[1]]
+            //+skinWeight[2]*matrixs[skinIndex[2]]+skinWeight[3]*matrixs[skinIndex[3]]
+            //int i=0;//(float)skinIndex[0];
+
+
+            for(int j=0;j<4;j++){
+                float i0=0.0;
+                for(int i=0;i<25;i++){
+                   if((skinIndex[j]-i0)>-0.5&&(skinIndex[j]-i0)<0.5)
+                           mySkinIndex[j]=i;
+                   i0=i0+1.0;
+                }
+            }
+            //mySkinIndex[0]=0;
+
+            //int kk=0;
+            //mat4 matrix1 =*matrixs;
+            //[ mySkinIndex[0] ];/[0];///
+            //skinWeight[0]*matrixs[skinIndex[0]]+skinWeight[1]*matrixs[skinIndex[1]]
+            //+skinWeight[2]*matrixs[skinIndex[2]]+skinWeight[3]*matrixs[skinIndex[3]];
+
+            mat4 matrix1;
+            mat4 matrix_temp;
+
+            for(int i=0;i<25;i++)
+                if(i==mySkinIndex[0])matrix_temp=matrixs[i];
+            matrix1=skinWeight[0]*matrix_temp;
+
+            for(int i=0;i<25;i++)
+                if(i==mySkinIndex[1])matrix_temp=matrixs[i];
+            matrix1=matrix1+skinWeight[1]*matrix_temp;
+
+            for(int i=0;i<25;i++)
+                if(i==mySkinIndex[2])matrix_temp=matrixs[i];
+            matrix1=matrix1+skinWeight[2]*matrix_temp;
+
+            for(int i=0;i<25;i++)
+                if(i==mySkinIndex[3])matrix_temp=matrixs[i];
+            matrix1=matrix1+skinWeight[3]*matrix_temp;
+
+			mat4 matrix2 = mat4(//确定位置
 				vec4( mcol0, 0 ),
 				vec4( mcol1, 0 ),
 				vec4( mcol2, 0 ),
 				vec4( mcol3, 1 )
 			);
-			mat4 matrix2 = mat4(
-				vec4( 1,0,0,0 ),
-				vec4( 0,1,0,0 ),
-				vec4( 0,0,1,0 ),
-				vec4( 0,0,0,1 )
-			);
-			gl_Position = projectionMatrix * modelViewMatrix * matrix1 * vec4( vPosition, 1.0 );
+			//transpose
+			//matrix1=matrix1.transpose();
+
+            for(int i=0;i<4;i++)
+                for(int j=0;j<4;j++){
+                    float temp=matrix1[i][j];
+                    matrix1[i][j]=matrix1[j][i];
+                    matrix1[j][i]=temp;
+                }
+
+			float test111=matrix1[0][0];
+
+			gl_Position = projectionMatrix * modelViewMatrix * matrix2  * matrix1 * vec4( vPosition, 1.0 );
 		}
 </script>
 <script id="fragmentShader" type="x-shader/x-fragment">
@@ -66,15 +130,13 @@
         uniform sampler2D text14;
         uniform sampler2D text15;
 
+        varying float varyMyTest0;
 
         varying float varyType;
 		varying vec2 outUV;
 
 		void main(){
-		    //var my
-
 			vec4 myTexture;
-
 
             if(varyType> -0.1&&varyType<0.1)myTexture =texture2D(text0, outUV);
 			else if(varyType>0.9&&varyType<1.1)myTexture =texture2D(text1, outUV);
@@ -93,12 +155,9 @@
 			else if(varyType>13.9&&varyType<14.1)myTexture =texture2D(text14, outUV);
 			else if(varyType>14.9&&varyType<15.1)myTexture =texture2D(text15, outUV);
 
-			//myTexture=texture2D(text9, outUV);
-            gl_FragColor = vec4 (
-                           myTexture.r,
-                           myTexture.g,
-                           myTexture.b,
-                           0);
+            //if(varyMyTest0!=1.0)gl_FragColor = vec4 (0,varyMyTest0,1,0);
+            //else
+                gl_FragColor = vec4 (myTexture.r,myTexture.g,myTexture.b,0);
 		}
 </script>
 <script src="three.js"></script>
@@ -137,12 +196,12 @@
         myMesh.geometry=myMesh.geometry.toNonIndexed();
 
         var geometry = new THREE.InstancedBufferGeometry();
+        console.log(geometry);
         geometry.instanceCount = instanceCount; // set so its initalized for dat.GUI, will be set in first draw otherwise
         geometry.setAttribute('position', myMesh.geometry.attributes.position);//Float32Array
         geometry.setAttribute('inUV',myMesh.geometry.attributes.uv);
         geometry.setAttribute('skinIndex',myMesh.geometry.attributes.skinIndex);
         geometry.setAttribute('skinWeight',myMesh.geometry.attributes.skinWeight);
-        console.log(myMesh)
 
         var mcol0=new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
         var mcol1=new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
@@ -177,6 +236,16 @@
         }
 
         // material
+        console.log(myMesh.skeleton)
+
+        var test10=[];//16*25//400
+        for(i=0;i<myMesh.skeleton.boneInverses.length;i++){
+            var temp=myMesh.skeleton.boneInverses[i].toArray();
+            for(j=0;j<temp.length;j++)
+                test10.push(temp[j]);
+        }
+        console.log(test10[0])
+        test10[0]=0.1;
         let material = new THREE.RawShaderMaterial({//原始着色器材质
             uniforms: {
                 text0: {type: 't', value: texs[0]}//textureHandle
@@ -196,6 +265,8 @@
                 ,text14: {type: 't', value: texs[14]}
                 ,text15: {type: 't', value: texs[15]}
 
+                ,myTest:{value: test10}
+
             },
             vertexShader: document.getElementById('vertexShader').textContent,
             fragmentShader: document.getElementById('fragmentShader').textContent,
@@ -205,7 +276,6 @@
         //开始设置骨骼
         var bones = [];
         cloneBones(myMesh.skeleton.bones[0], bones);
-        console.log();
         var skeletonBones=new THREE.Skeleton(bones, myMesh.skeleton.boneInverses);
         var skeletonMatrix =  myMesh.matrixWorld.clone();//这个有用吗？
         function cloneBones(rootBone, boneArray) {
@@ -236,7 +306,6 @@
             animationMixer.update( 0.01 );
             requestAnimationFrame(test12);
         }test12();
-        console.log(mesh );
         //完成设置动画
 
         mesh.rotation.set(-Math.PI/6,Math.PI,0);
