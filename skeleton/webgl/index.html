@@ -54,7 +54,7 @@
     <script src="https://webgl2fundamentals.org/webgl/resources/m4.js"></script>
     <script>
         function main() {
-            // Get A WebGL context
+            // Get A WebGL context获取WebGL上下文
             /** @type {HTMLCanvasElement} */
             const canvas =document.getElementById("myCanvas");// document.querySelector("#canvas");
             const gl = canvas.getContext("webgl2");
@@ -62,8 +62,8 @@
                 return;
             }
 
-            // Tell the twgl to match position with a_position, n
-            // normal with a_normal etc..
+            // Tell the twgl to match position with a_position, n//告诉twgl将位置与a位置匹配，n
+            // normal with a_normal etc..//法向量？
             twgl.setAttributePrefix("a_");
 
             // -- vertex shader --
@@ -71,11 +71,11 @@
             const fs = document.getElementById( "shader-fs" ).textContent
             const vs2 = document.getElementById( "shader-vs2" ).textContent;
 
-            // compiles and links the shaders, looks up attribute and uniform locations
+            // compiles and links the shaders, looks up attribute and uniform locations//编译并链接着色器，查找属性和统一位置
             const programInfo = twgl.createProgramInfo(gl, [vs, fs]);
 
-            const arrays = {
-                position: {
+            const arrays = {//这个图形由10个顶点组成，顶点的编号为 0-9
+                position: {//？//应该是两个数对应一个顶点
                     numComponents: 2,
                     data: [
                         0,  1,  // 0
@@ -91,7 +91,7 @@
                     ],
                 },
                 boneNdx: {
-                    numComponents: 4,
+                    numComponents: 4,//应该是每个顶点对应四根骨头
                     data: new Uint8Array([
                         0, 0, 0, 0,  // 0
                         0, 0, 0, 0,  // 1
@@ -105,7 +105,7 @@
                         2, 0, 0, 0,  // 9
                     ]),
                 },
-                weight: {
+                weight: {//每个顶点受四个骨骼节点影响的程度
                     numComponents: 4,
                     data: [
                         1,  0,  0,  0,  // 0
@@ -121,7 +121,7 @@
                     ],
                 },
 
-                indices: {
+                indices: {//指数?//索引?//这个索引是啥？
                     numComponents: 2,
                     data: [
                         0, 1,
@@ -140,35 +140,35 @@
                     ],
                 },
             };
-            // calls gl.createBuffer, gl.bindBuffer, gl.bufferData
+            // calls gl.createBuffer, gl.bindBuffer, gl.bufferData//声明一些东西
             const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
             const skinVAO = twgl.createVAOFromBufferInfo(gl, programInfo, bufferInfo);
 
-            // 4 matrices, one for each bone
-            const numBones = 4;
-            const boneArray = new Float32Array(numBones * 16);
+            // 4 matrices, one for each bone//4个矩阵，每个骨骼一个
+            const numBones = 4;//骨骼数量是4个
+            const boneArray = new Float32Array(numBones * 16);//记录了所有的骨骼信息//骨骼矩阵们 是 n*4*4 的
 
             const uniforms = {
-                projection: m4.orthographic(-20, 20, -10, 10, -1, 1),
-                view: m4.translation(-6, 0, 0),
-                bones: boneArray,
-                color: [1, 0, 0, 1],
+                projection: m4.orthographic(-20, 20, -10, 10, -1, 1),//应该是获取了一个正交投影矩阵
+                view: m4.translation(-6, 0, 0),//应该是获取了一个视图矩阵
+                bones: boneArray,//骨骼矩阵
+                color: [1, 0, 0, 1],//颜色
             };
 
-            // make views for each bone. This lets all the bones
-            // exist in 1 array for uploading but as separate
-            // arrays for using with the math functions
+            // make views for each bone. This lets all the bones 为每个骨骼创建视图
+            // exist in 1 array for uploading but as separate 存在于1个数组中，但作为单独的
+            // arrays for using with the math functions 用于数学函数的数组
             const boneMatrices = [];  // the uniform data
-            const bones = [];         // the value before multiplying by inverse bind matrix
-            const bindPose = [];      // the bind matrix
+            const bones = [];         // the value before multiplying by inverse bind matrix //inverse相反的
+            const bindPose = [];      // the bind matrix //绑定矩阵
             for (let i = 0; i < numBones; ++i) {
                 boneMatrices.push(new Float32Array(boneArray.buffer, i * 4 * 16, 16));
-                bindPose.push(m4.identity());  // just allocate storage
+                bindPose.push(m4.identity());  //应该是生成4*4的单位矩阵 //just allocate storage 仅仅是分配存储
                 bones.push(m4.identity());     // just allocate storage
             }
 
-            // rotate each bone by a and simulate a hierarchy
-            function computeBoneMatrices(bones, angle) {
+            // rotate each bone by a simulate and a hierarchy 通过模拟和层次旋转每个骨骼
+            function computeBoneMatrices(bones, angle) {//计算骨骼矩阵
                 const m = m4.identity();
                 m4.zRotate(m, angle, bones[0]);
                 m4.translate(bones[0], 4, 0, 0, m);
@@ -179,24 +179,24 @@
             }
 
             // compute the initial positions of each matrix
-            computeBoneMatrices(bindPose, 0);
+            computeBoneMatrices(bindPose, 0);//计算角度为0时的骨骼矩阵
 
-            // compute their inverses
+            // compute their inverses 计算它们的逆
             const bindPoseInv = bindPose.map(function(m) {
                 return m4.inverse(m);
             });
 
-            function render(time) {
+            function render(time) {//time应该是脚本程序的运行时间
                 twgl.resizeCanvasToDisplaySize(gl.canvas);
                 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
                 const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-                m4.orthographic(-aspect * 10, aspect * 10, -10, 10, -1, 1, uniforms.projection);
+                m4.orthographic(-aspect * 10, aspect * 10, -10, 10, -1, 1, uniforms.projection);//计算投影矩阵
 
                 const t = time * 0.001;
                 const angle = Math.sin(t) * 0.8;
-                computeBoneMatrices(bones, angle);
+                computeBoneMatrices(bones, angle);//计算骨骼矩阵
 
-                // multiply each by its bindPoseInverse
+                // multiply each by its bindPoseInverse//将每个值乘以其bindPoseInverse
                 bones.forEach((bone, ndx) => {
                     m4.multiply(bone, bindPoseInv[ndx], boneMatrices[ndx]);
                 });
@@ -211,7 +211,7 @@
                 // calls gl.drawArrays or gl.drawIndices
                 twgl.drawBufferInfo(gl, bufferInfo, gl.LINES);
 
-                drawAxis(uniforms.projection, uniforms.view, bones);
+                drawAxis(uniforms.projection, uniforms.view, bones);//画骨骼节点的x和y坐标
 
                 requestAnimationFrame(render);
             }
@@ -219,11 +219,11 @@
 
 
             // --- ignore below this line - it's not relevant to the exmample and it's kind of a bad example ---
-
+            //忽略下面这一行-这与例子无关，这是一个很坏的例子
             let axisProgramInfo;
             let axisBufferInfo;
             let axisVAO;
-            function drawAxis(projection, view, bones) {
+            function drawAxis(projection, view, bones) {//画骨骼节点的x和y坐标//这个函数每帧被调用1次
                 if (!axisProgramInfo) {
                     axisProgramInfo = twgl.createProgramInfo(gl, [vs2, fs]);
                     axisBufferInfo = twgl.createBufferInfoFromArrays(gl, {
@@ -260,7 +260,7 @@
             }
         }
 
-        main();
+        main();//所有代码都在main函数中
     </script>
 </body>
 </html>
