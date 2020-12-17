@@ -169,11 +169,9 @@
     });
 
     function instancing(glb) {//开始进行实例化渲染
-        const instanceCount =1;//10 0000
+        const instanceCount =70*70;//10 0000
         let texs_length=16;
 
-        console.log(glb);//scene.children[0].children[0]//scene.children[0].children[1]
-        //var myMesh=glb.scene.children[0].children[3];
         var myMesh=glb.scene.children[0].children[1];//'test2.glb'//console.log(glb);//'test.glb'
 
         console.log(myMesh);
@@ -193,8 +191,8 @@
 
         var type=new THREE.InstancedBufferAttribute(new Uint16Array(instanceCount), 1);
 
-        for(var k=0,kl=1,il=instanceCount ,i=0;k<kl&&i<il;k++)
-            for(var b=0,bl=1;b<bl&&i<il;b++,i++){
+        for(var k=0,kl=70,il=instanceCount ,i=0;k<kl&&i<il;k++)
+            for(var b=0,bl=70;b<bl&&i<il;b++,i++){
                 mcol0.setXYZ(i, Math.random()/2+0.75,0,0);
                 mcol1.setXYZ(i, 0,Math.random()/2+0.75,0);//四元数、齐次坐标
                 mcol2.setXYZ(i, 0,0,Math.random()/2+0.75);//mcol3.setXYZ(i, 0,0,0);
@@ -226,8 +224,7 @@
             for(j=0;j<temp.length;j++)
                 skeletonData.push(temp[j]);
         }
-        //console.log(skeletonData);
-        //var skeletonData=myMesh.skeleton.boneMatrices;//全是0矩阵
+        //全是0矩阵
 
        //test10[0]=0.1;
         let material = new THREE.RawShaderMaterial({//原始着色器材质
@@ -295,47 +292,19 @@
         }
         mesh.material.uniforms.skeletonData={value: skeletonData};
 
-        //console.log(glb.scene.children[0].children[3])//scene.children[0].children[3]//
-        //console.log(glb.scene.children[0].children[3].skeleton.bones)
-        //console.log(glb.scene.children[0].children[3].skeleton.bones[1].matrixWorld)
-        //console.log(glb.scene.children[0].children[3].skeleton.bones[1].matrix)
-        //console.log(glb.scene.children[0].children[3].skeleton.bones[1].parent.matrix)
-
-        //console.log(glb.scene.children[0].children[3].skeleton.bones[1].matrix)
-        //var m1=glb.scene.children[0].children[3].skeleton.bones[1].matrix.clone();
-        //var m2=glb.scene.children[0].children[3].skeleton.bones[1].parent.matrix.clone();
-        //var m3=glb.scene.children[0].children[3].skeleton.bones[1].parent.parent.matrix.clone();
-        //console.log(m1.multiply(m2.multiply(m3)));
-        //console.log(m3.multiply(m2.multiply(m1)));
-        //console.log(m1);
-        //(m2);
-        //console.log(m3);
-
         //开始设置动画//进行这个动画设置的时候可能还只是一个基模
         var animations=glb.animations;
-        var animationMixer=new THREE.AnimationMixer(mesh);//动画混合器animationMixer是用于场景中特定对象的动画的播放器
+        //var animationMixer=new THREE.AnimationMixer(mesh);//动画混合器animationMixer是用于场景中特定对象的动画的播放器
         var animationMixer0=new THREE.AnimationMixer(mesh0);
-        var myAnimationAction=animationMixer.clipAction(animations[0]);//动画剪辑AnimationClip是一个可重用的关键帧轨道集，它代表动画。
+        //var myAnimationAction=animationMixer.clipAction(animations[0]);//动画剪辑AnimationClip是一个可重用的关键帧轨道集，它代表动画。
         var myAnimationAction0=animationMixer0.clipAction(animations[0]);
-        myAnimationAction.play();
+        //myAnimationAction.play();
         myAnimationAction0.play();
         //var pre_skeletonData=skeletonData;
         function test12() {
-            /*skeletonData=[];//16*25//400
-            for(i=0;i<myMesh.skeleton.boneInverses.length;i++){
-                var temp=myMesh.skeleton.boneInverses[i].toArray();
-                for(j=0;j<temp.length;j++)
-                    skeletonData.push(temp[j]);
-            }*/
-            //var flag=0;//记录不同元素的个数
-            //for(i=0;i<400;i++)
-                //if(skeletonData[i]!==pre_skeletonData[i])flag++;
-            //console.log(flag);
-            animationMixer.update( 0.01 );
-            animationMixer0.update( 0.01 );
+            //animationMixer.update( 0.01 );
+            animationMixer0.update( 0.05 );
             requestAnimationFrame(test12);
-            //pre_skeletonData=skeletonData;
-
 
             skeletonData=[];//16*25//400
             for(i=0;i<myMesh.skeleton.boneInverses.length;i++){
@@ -347,15 +316,24 @@
                     skeletonData.push(temp[j]);
             }
             mesh.material.uniforms.skeletonData={value: skeletonData};
+            //console.log(camera);
 
         }test12();
         //完成设置动画
 
-        /*mesh.rotation.set(-Math.PI/6,Math.PI,0);
-        mesh.position.set(0,0,-3);
-        mesh.frustumCulled=false;*/
-        mesh.scale.set(0.01,0.01,0.01);
+
         scene.add(mesh);
+
+
+
+        mesh.position.set(10,0,0);
+        mesh.rotation.set(Math.PI,0,0);
+        mesh.frustumCulled=false;
+
+        mesh0.scale.set(0.01,0.01,0.01);
+        //mesh0.rotation.set(Math.PI,0,0);
+        camera.rotation.set( 1.4850434010742404, -0.01558289712906201,0.17931851636280588);
+        camera.position.set(-0.3655338232857634,  -23.369285990164506,  2.0089112807939498);//-0.3655338232857634,  -23.369285990164506,  2.0089112807939498
         scene.add(mesh0);
         //完成进行实例化渲染
     }
