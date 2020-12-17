@@ -169,7 +169,7 @@
     });
 
     function instancing(glb) {//开始进行实例化渲染
-        const instanceCount =70*70;//10 0000
+        const instanceCount =40*40;//10 0000
         let texs_length=16;
 
         var myMesh=glb.scene.children[0].children[1];//'test2.glb'//console.log(glb);//'test.glb'
@@ -191,8 +191,8 @@
 
         var type=new THREE.InstancedBufferAttribute(new Uint16Array(instanceCount), 1);
 
-        for(var k=0,kl=70,il=instanceCount ,i=0;k<kl&&i<il;k++)
-            for(var b=0,bl=70;b<bl&&i<il;b++,i++){
+        for(var k=0,kl=40,il=instanceCount ,i=0;k<kl&&i<il;k++)
+            for(var b=0,bl=40;b<bl&&i<il;b++,i++){
                 mcol0.setXYZ(i, Math.random()/2+0.75,0,0);
                 mcol1.setXYZ(i, 0,Math.random()/2+0.75,0);//四元数、齐次坐标
                 mcol2.setXYZ(i, 0,0,Math.random()/2+0.75);//mcol3.setXYZ(i, 0,0,0);
