@@ -60,8 +60,7 @@
             mat4 matrix1=mat4(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
             mat4 matrix_temp;
             for(int j=0;j<4;j++){
-                for(int i=0;i<25;i++)
-                   if(i==mySkinIndex[j])matrix_temp=matrixs[i];
+                for(int i=0;i<25;i++)if(i==mySkinIndex[j])matrix_temp=matrixs[i];
                 matrix1=matrix1+skinWeight[j]*matrix_temp;
             }
 
@@ -70,7 +69,7 @@
                     float temp=matrix1[i][j];
                     matrix1[i][j]=matrix1[j][i];
                     matrix1[j][i]=temp;
-                }/**/
+                }
             varyMyTest0=matrix1[0][3]+matrix1[1][3]+matrix1[2][3]+matrix1[3][3];//myTest[0];
 
 			mat4 matrix2 = mat4(//确定位置//最后一列是 0 0 0 1
@@ -80,7 +79,7 @@
 				vec4( mcol3, 1 )
 			);
 
-			gl_Position = projectionMatrix * modelViewMatrix * matrix2 *   vec4( vPosition, 1.0 );
+			gl_Position = projectionMatrix * modelViewMatrix * matrix2 * matrix1 *  vec4( vPosition, 1.0 );
 		}
 </script>
 <script id="fragmentShader" type="x-shader/x-fragment">
@@ -111,7 +110,7 @@
 		    int texts1[2];
 			vec4 myTexture;
 
-            if(varyType> -0.1&&varyType<0.1)myTexture =texture2D(text0, outUV);
+               if (varyType>-0.1&&varyType<0.1)myTexture =texture2D(text0, outUV);
 			else if(varyType>0.9&&varyType<1.1)myTexture =texture2D(text1, outUV);
 			else if(varyType>1.9&&varyType<2.1)myTexture =texture2D(text2, outUV);
 			else if(varyType>2.9&&varyType<3.1)myTexture =texture2D(text3, outUV);
@@ -165,14 +164,11 @@
         const instanceCount =1;//10 0000
         let texs_length=16;
 
-        //var myMesh=glb.scene.children[0].children[1];//'test2.glb'
-        console.log(glb);
-        var myMesh=glb.scene.children[0].children[3];//'test.glb'
+        var myMesh=glb.scene.children[0].children[3];//var myMesh=glb.scene.children[0].children[1];//'test2.glb'//console.log(glb);//'test.glb'
 
-        //myMesh.geometry=myMesh.geometry.toNonIndexed();
+        myMesh.geometry=myMesh.geometry.toNonIndexed();
 
-        var geometry = new THREE.InstancedBufferGeometry();
-        console.log(geometry);
+        var geometry = new THREE.InstancedBufferGeometry();//console.log(geometry);
         geometry.instanceCount = instanceCount; // set so its initalized for dat.GUI, will be set in first draw otherwise
         geometry.setAttribute('position', myMesh.geometry.attributes.position);//Float32Array
         geometry.setAttribute('inUV',myMesh.geometry.attributes.uv);
@@ -204,39 +200,30 @@
         geometry.addAttribute('type', type);
 
         let texs=[];
-
         for(i=0;i<texs_length;i++){
             texs.push(THREE.ImageUtils.loadTexture('texture/'+i+'.jpg')) ;
             texs[i].flipY=false;
             texs[i].wrapS = texs[i].wrapT = THREE.ClampToEdgeWrapping;
         }
 
-        var skeletonData=computeSkeletonData(myMesh);/*[];//16*25//400
+        var skeletonData=[];//16*25//400
         for(i=0;i<myMesh.skeleton.boneInverses.length;i++){
-            var temp=myMesh.skeleton.boneInverses[i];//.toArray();
-            //var temp2=myMesh.skeleton.bones[i].matrix;//.toArray();
-            //temp=temp.multiply(temp2);
+            var temp1=myMesh.skeleton.boneInverses[i];//.toArray();
+            var temp2=myMesh.skeleton.bones[i].matrix;//.toArray();
+            var temp=temp2.multiply(temp1);
             temp=temp.toArray();
+            //console.log(temp);
             //var temp=myMesh.skeleton.bones[i].matrixWorld.toArray();//全是单位矩阵
-            //skeletonData.push(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+            /*skeletonData.push(
+                 1,0,0,0
+                ,0,1,0,0
+                ,0,0,1,0
+                ,0,0,0,1
+            );*/
             for(j=0;j<temp.length;j++)
                 skeletonData.push(temp[j]);
-        }*/
-        function computeSkeletonData(mesh){
-            var result=[];//16*25//400
-            for(i=0;i<25;i++){
-                var temp1=temp2=new THREE.Matrix4();
-                temp1.copy(mesh.skeleton.bones[i].matrix);
-                var temp2=new THREE.Matrix4();//myMesh.skeleton.boneInverses[i].copy();
-                temp2.copy(myMesh.skeleton.boneInverses[i]);
-                var temp=temp1;//.multiply(temp2);
-                temp=temp.toArray();
-                for(j=0;j<temp.length;j++)
-                    result.push(temp[j]);
-                //console.log((temp[0]+temp[1]+temp[2]+temp[3])/100)
-            }
-            return result;
         }
+        console.log(skeletonData);
         //var skeletonData=myMesh.skeleton.boneMatrices;//全是0矩阵
 
        //test10[0]=0.1;
@@ -266,10 +253,7 @@
             side: THREE.DoubleSide
         });
 
-        //应该设置一个mesh0可以不添加到场景中，只用于计算骨骼动画
         //开始设置骨骼
-        //var myMesh
-        /**/
         var bones = [];
         cloneBones(myMesh.skeleton.bones[0], bones);
         var skeletonBones=new THREE.Skeleton(bones, myMesh.skeleton.boneInverses);
@@ -292,35 +276,27 @@
 
         const mesh = new THREE.SkinnedMesh(geometry, material);//重要
         setupSkinnedMesh(mesh,skeletonBones,skeletonMatrix);
-        setupSkinnedMesh(myMesh,skeletonBones,skeletonMatrix);///
 
         //开始设置动画//进行这个动画设置的时候可能还只是一个基模
         var animations=glb.animations;
-        //var animationMixer=new THREE.AnimationMixer(mesh);//动画混合器animationMixer是用于场景中特定对象的动画的播放器
-        var animationMixer0=new THREE.AnimationMixer(myMesh);
-        //var myAnimationAction=animationMixer.clipAction(animations[0]);//动画剪辑AnimationClip是一个可重用的关键帧轨道集，它代表动画。
-        var myAnimationAction0=animationMixer0.clipAction(animations[0]);
-        //myAnimationAction.play();
-        myAnimationAction0.play();
-        //var pre_skeletonData=skeletonData;
+        var animationMixer=new THREE.AnimationMixer(mesh);//动画混合器animationMixer是用于场景中特定对象的动画的播放器
+        var myAnimationAction=animationMixer.clipAction(animations[0]);//动画剪辑AnimationClip是一个可重用的关键帧轨道集，它代表动画。
+        myAnimationAction.play();
+        var pre_skeletonData=skeletonData;
         function test12() {
-            /*skeletonData=[];//16*25//400
-            for(i=0;i<myMesh.skeleton.bones.length;i++){
-                var temp=myMesh.skeleton.bones[i].matrix.toArray();
+            skeletonData=[];//16*25//400
+            for(i=0;i<myMesh.skeleton.boneInverses.length;i++){
+                var temp=myMesh.skeleton.boneInverses[i].toArray();
                 for(j=0;j<temp.length;j++)
                     skeletonData.push(temp[j]);
             }
             var flag=0;//记录不同元素的个数
             for(i=0;i<400;i++)
                 if(skeletonData[i]!==pre_skeletonData[i])flag++;
-            console.log(flag);*/
-            //animationMixer.update( 0.01 );
-            animationMixer0.update( 0.01 );
+            //console.log(flag);
+            animationMixer.update( 0.01 );
             requestAnimationFrame(test12);
-            //pre_skeletonData=skeletonData;
-            //material.skeletonData={value: computeSkeletonData(myMesh)};
-
-
+            pre_skeletonData=skeletonData;
         }test12();
         //完成设置动画
 
@@ -328,7 +304,6 @@
         mesh.position.set(0,0,-3);
         mesh.frustumCulled=false;
         scene.add(mesh);
-        scene.add(myMesh);
         //完成进行实例化渲染
     }
 

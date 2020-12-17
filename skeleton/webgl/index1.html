@@ -176,25 +176,21 @@
             // compute their inverses 计算它们的逆
             const bindPoseInv = bindPose.map(function(m) {
                 return m4.inverse(m);//计算逆矩阵
+                //抵消 移动效果（4,0,0）
             });
 
             function render(time) {//每一帧的情况是代码的核心//应该是脚本程序的运行时间
                 twgl.resizeCanvasToDisplaySize(gl.canvas);
                 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-                const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-                m4.orthographic(-aspect * 10, aspect * 10, -10, 10, -1, 1, uniforms.projection);//计算投影矩阵
 
                 const t = time * 0.001;
                 const angle = Math.sin(t) * 0.8;
                 computeBoneMatrices(bones, angle);//计算骨骼矩阵//这个矩阵的处理是关键
 
-
                 // multiply each by its bindPoseInverse//将每个值乘以其bindPoseInverse
                 bones.forEach((bone, ndx) => {//骨骼的每个矩阵都要乘以inverse矩阵
                     m4.multiply(bone, bindPoseInv[ndx], boneMatrices[ndx]);
-                    //console.log(boneMatrices[ndx]);
                 });
-
 
                 gl.useProgram(programInfo.program);
 
