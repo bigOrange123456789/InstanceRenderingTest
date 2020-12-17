@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>蒙皮动画</title>
+    <title>蒙皮动画--要对矩阵变换有严格的推导证明式的理解</title>
     <meta http-equiv="content-type"content="text/html; charset=utf-8">
     <style>
         body {overflow:hidden;}
@@ -11,35 +11,33 @@
     <canvas id="myCanvas"style="bordor:1px solod red;" width="600" height="450"></canvas>
     <script id="shader-vs" type="x-shader/x-vertex">
         #version 300 es
-  in vec4 a_position;
-  in vec4 a_weight;
-  in uvec4 a_boneNdx;
+        in vec4 a_position;
+        in vec4 a_weight;
+        in uvec4 a_boneNdx;
 
-  uniform mat4 projection;
-  uniform mat4 view;
-  uniform mat4 bones[4];
+        uniform mat4 projection;
+        uniform mat4 view;
+        uniform mat4 bones[4];
 
-  void main() {
-
-    gl_Position = projection * view *
+        void main() {//主要看bones是如何处理的
+            gl_Position = projection * view *
                   (bones[a_boneNdx[0]] * a_position * a_weight[0] +
                    bones[a_boneNdx[1]] * a_position * a_weight[1] +
                    bones[a_boneNdx[2]] * a_position * a_weight[2] +
                    bones[a_boneNdx[3]] * a_position * a_weight[3]);
-
-  }
+        }
     </script>
     <script id="shader-fs" type="x-shader/x-fragment">
         #version 300 es
-  precision highp float;
-  uniform vec4 color;
-  out vec4 outColor;
-  void main () {
-    outColor = color;
-  }
+        precision highp float;
+        uniform vec4 color;
+        out vec4 outColor;
+        void main () {
+            outColor = color;
+        }
     </script>
     <script src="https://webgl2fundamentals.org/webgl/resources/twgl-full.min.js"></script>
-    <script src="https://webgl2fundamentals.org/webgl/resources/m4.js"></script>
+    <script src="m4.js"></script>
     <script>
         function main() {
             // Get A WebGL context获取WebGL上下文
@@ -138,7 +136,7 @@
             const uniforms = {
                 projection: m4.orthographic(-20, 20, -10, 10, -1, 1),//应该是获取了一个正交投影矩阵
                 view: m4.translation(-6, 0, 0),//应该是获取了一个视图矩阵
-                bones: boneArray,//骨骼矩阵
+                bones: boneArray,//这是要看的最重要的部分//骨骼矩阵
                 color: [1, 0, 0, 1],//颜色
             };
 
@@ -149,18 +147,25 @@
             const bones = [];         // the value before multiplying by inverse bind matrix //inverse相反的
             const bindPose = [];      // the bind matrix //绑定矩阵
             for (let i = 0; i < numBones; ++i) {
-                boneMatrices.push(new Float32Array(boneArray.buffer, i * 4 * 16, 16));
+                //这里有三类矩阵：boneMatrices、bindPose、bones
+                //以下为分配缓存区空间
+                boneMatrices.push(new Float32Array(boneArray.buffer, i * 4 * 16, 16));//从缓存区某个位置起取出一段空间，i*4*16应该是起始偏移量，16个一组
+
                 bindPose.push(m4.identity());  //应该是生成4*4的单位矩阵 //just allocate storage 仅仅是分配存储
                 bones.push(m4.identity());     // just allocate storage
-            }
+            }//清楚骨骼的内容
+
 
             // rotate each bone by a simulate and a hierarchy 通过模拟和层次旋转每个骨骼
-            function computeBoneMatrices(bones, angle) {//计算骨骼矩阵
+            function computeBoneMatrices(bones, angle) {//计算骨骼矩阵//初始时角度均为0
                 const m = m4.identity();
-                m4.zRotate(m, angle, bones[0]);
-                m4.translate(bones[0], 4, 0, 0, m);
-                m4.zRotate(m, angle, bones[1]);
-                m4.translate(bones[1], 4, 0, 0, m);
+                //计算骨头0
+                m4.zRotate(m, angle, bones[0]);//bones[0]=(旋转)*m//结果放入bones[0]中
+                //计算骨头1
+                m4.translate(bones[0], 4, 0, 0, m);//bones[0]沿着y轴移动4个单位//结果放入m中
+                m4.zRotate(m, angle, bones[1]);//结果放入bones[1]中
+                //计算骨头2
+                m4.translate(bones[1], 4, 0, 0, m);//结果放入m中
                 m4.zRotate(m, angle, bones[2]);
                 // bones[3] is not used
             }
@@ -170,7 +175,7 @@
 
             // compute their inverses 计算它们的逆
             const bindPoseInv = bindPose.map(function(m) {
-                return m4.inverse(m);
+                return m4.inverse(m);//计算逆矩阵
             });
 
             function render(time) {//每一帧的情况是代码的核心//应该是脚本程序的运行时间
@@ -181,12 +186,15 @@
 
                 const t = time * 0.001;
                 const angle = Math.sin(t) * 0.8;
-                computeBoneMatrices(bones, angle);//计算骨骼矩阵
+                computeBoneMatrices(bones, angle);//计算骨骼矩阵//这个矩阵的处理是关键
+
 
                 // multiply each by its bindPoseInverse//将每个值乘以其bindPoseInverse
-                bones.forEach((bone, ndx) => {
+                bones.forEach((bone, ndx) => {//骨骼的每个矩阵都要乘以inverse矩阵
                     m4.multiply(bone, bindPoseInv[ndx], boneMatrices[ndx]);
+                    //console.log(boneMatrices[ndx]);
                 });
+
 
                 gl.useProgram(programInfo.program);
 
