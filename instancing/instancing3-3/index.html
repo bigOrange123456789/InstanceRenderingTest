@@ -201,7 +201,7 @@
 
         let texs=[];
         for(i=0;i<texs_length;i++){
-            texs.push(THREE.ImageUtils.loadTexture('texture/'+i+'.jpg')) ;
+            texs.push( THREE.ImageUtils.loadTexture('texture/'+i+'.jpg') ) ;
             texs[i].flipY=false;
             texs[i].wrapS = texs[i].wrapT = THREE.ClampToEdgeWrapping;
         }
@@ -223,7 +223,7 @@
             for(j=0;j<temp.length;j++)
                 skeletonData.push(temp[j]);
         }
-        console.log(skeletonData);
+        //console.log(skeletonData);
         //var skeletonData=myMesh.skeleton.boneMatrices;//全是0矩阵
 
        //test10[0]=0.1;

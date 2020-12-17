@@ -188,9 +188,8 @@
                 computeBoneMatrices(bones, angle);//计算骨骼矩阵//这个矩阵的处理是关键
 
                 // multiply each by its bindPoseInverse//将每个值乘以其bindPoseInverse
-                bones.forEach((bone, ndx) => {//骨骼的每个矩阵都要乘以inverse矩阵
-                    m4.multiply(bone, bindPoseInv[ndx], boneMatrices[ndx]);
-                });
+                for(var i=0;i<3;i++)
+                    m4.multiply(bones[i], bindPoseInv[i], boneMatrices[i]);
 
                 gl.useProgram(programInfo.program);
 
