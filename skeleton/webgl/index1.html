@@ -151,15 +151,13 @@
                 //以下为分配缓存区空间
                 boneMatrices.push(new Float32Array(boneArray.buffer, i * 4 * 16, 16));//从缓存区某个位置起取出一段空间，i*4*16应该是起始偏移量，16个一组
 
-                boneMatrices.push(new Float32Array(boneArray.buffer, i * 4 * 16, 16));//因为有父子关系，所以矩阵个数逐渐增加
-
                 bindPose.push(m4.identity());  //应该是生成4*4的单位矩阵 //just allocate storage 仅仅是分配存储
                 bones.push(m4.identity());     // just allocate storage
             }//清楚骨骼的内容
 
 
             // rotate each bone by a simulate and a hierarchy 通过模拟和层次旋转每个骨骼
-            function computeBoneMatrices(bones, angle) {//计算骨骼矩阵
+            function computeBoneMatrices(bones, angle) {//计算骨骼矩阵//初始时角度均为0
                 const m = m4.identity();
                 //计算骨头0
                 m4.zRotate(m, angle, bones[0]);//bones[0]=(旋转)*m//结果放入bones[0]中
@@ -177,7 +175,7 @@
 
             // compute their inverses 计算它们的逆
             const bindPoseInv = bindPose.map(function(m) {
-                return m4.inverse(m);
+                return m4.inverse(m);//计算逆矩阵
             });
 
             function render(time) {//每一帧的情况是代码的核心//应该是脚本程序的运行时间
@@ -188,10 +186,6 @@
 
                 const t = time * 0.001;
                 const angle = Math.sin(t) * 0.8;
-
-
-                computeBoneMatrices(bones, angle);//计算骨骼矩阵
-
                 computeBoneMatrices(bones, angle);//计算骨骼矩阵//这个矩阵的处理是关键
 
 
