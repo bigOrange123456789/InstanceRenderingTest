@@ -171,8 +171,12 @@
     function instancing(glb) {//开始进行实例化渲染
 
 
-        var peoples=new InstancedGroup();
+        var peoples=new InstancedGroup(4);
         peoples.init(glb.scene.children[0].children[1],glb.animations);
+        for(var i=0;i<4;i++){
+            peoples.scaleSet(i,[Math.random()/2+0.75,Math.random()/2+0.75,Math.random()/2+0.75]);
+            peoples.positionSet(i,[i,0,0]);
+        }
         scene.add(peoples.obj);
 
         camera.rotation.set( 1.4850434010742404, -0.01558289712906201,0.17931851636280588);
