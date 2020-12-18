@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>同屏显示4千人</title>
+    <title>同屏显示1089人</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 </head>
@@ -36,7 +36,9 @@
 			outUV = inUV;
 			varyType=type;
 
-			varyMyTest0=0.0;
+			if(vPosition.y<0.2)varyMyTest0=0.0;
+			else
+			   varyMyTest0=1.0;
 
             mat4 matrixs[25];//25个骨骼的变换矩阵
 			for(int i=0;i<25;i++){
@@ -87,7 +89,8 @@
 			//else
 			//if(varyMyTest0==1.0)gl_Position = projectionMatrix * modelViewMatrix *  matrix1 * vec4( position, 1.0 );
 			//else
-			gl_Position = projectionMatrix * modelViewMatrix*   matrix2 * matrix1 * vec4( position, 1.0 );
+			//if(varyMyTest0>0.5&&varyMyTest0<1.5)
+			       gl_Position = projectionMatrix * modelViewMatrix*   matrix2 * matrix1 * vec4( position, 1.0 );
 		}
 </script>
 <script id="fragmentShader" type="x-shader/x-fragment">
@@ -107,7 +110,7 @@
         uniform sampler2D text12;
         uniform sampler2D text13;
         uniform sampler2D text14;
-        uniform sampler2D text15;
+        uniform sampler2D text15;/**/
 
         varying float varyMyTest0;
 
@@ -135,10 +138,10 @@
 			else if(varyType>13.9&&varyType<14.1)myTexture =texture2D(text14, outUV);
 			else if(varyType>14.9&&varyType<15.1)myTexture =texture2D(text15, outUV);
 
-            //if(varyMyTest0==1.0)
-              //  gl_FragColor = vec4 (0,varyMyTest0-0.5,1,0);
-            //else
+            //if(varyMyTest0>0.5&&varyMyTest0<1.5)
                 gl_FragColor = vec4 (myTexture.r,myTexture.g,myTexture.b,0);
+            //else
+                //gl_FragColor = vec4 (0,varyMyTest0-0.5,1,0);
 		}
 </script>
 <script src="three.js"></script>
@@ -169,12 +172,12 @@
     });
 
     function instancing(glb) {//开始进行实例化渲染
-        const instanceCount =40*40;//10 0000
-        let texs_length=16;
+        const instanceCount =33*33;//10 0000//1089
+        let texs_length=6//16;
 
         var myMesh=glb.scene.children[0].children[1];//'test2.glb'//console.log(glb);//'test.glb'
 
-        console.log(myMesh);
+        //console.log(myMesh);
         myMesh.geometry=myMesh.geometry.toNonIndexed();
 
         var geometry = new THREE.InstancedBufferGeometry();//console.log(geometry);
@@ -191,8 +194,8 @@
 
         var type=new THREE.InstancedBufferAttribute(new Uint16Array(instanceCount), 1);
 
-        for(var k=0,kl=40,il=instanceCount ,i=0;k<kl&&i<il;k++)
-            for(var b=0,bl=40;b<bl&&i<il;b++,i++){
+        for(var k=0,kl=33,il=instanceCount ,i=0;k<kl&&i<il;k++)
+            for(var b=0,bl=33;b<bl&&i<il;b++,i++){
                 mcol0.setXYZ(i, Math.random()/2+0.75,0,0);
                 mcol1.setXYZ(i, 0,Math.random()/2+0.75,0);//四元数、齐次坐标
                 mcol2.setXYZ(i, 0,0,Math.random()/2+0.75);//mcol3.setXYZ(i, 0,0,0);
