@@ -1,9 +1,11 @@
-function InstancedGroup(instanceCount,originMesh,haveSkeleton){
+function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
+    var scope=this;
     //若有骨骼，则需要源mesh是skinnedMesh
     this.obj=new THREE.Object3D();
     this.instanceCount=instanceCount;
     this.haveSkeleton=haveSkeleton;
     this.originMeshs=originMesh;//这是一个数组，每个元素播放一种动画
+    this.camera=camera;
 
     this.mesh=null;//实例化渲染对象的网格
 
@@ -19,6 +21,7 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton){
     this.dummy=new THREE.Object3D();//dummy仿制品//工具对象
 
     this.init=function (texSrc){
+        console.log(this.camera)
         for(var i=0;i<this.instanceCount;i++){
             this.scales.push([1,1,1]);
             this.rotations.push([0,0,0]);
@@ -112,6 +115,7 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton){
 
                     ,skeletonData0:{value: skeletonData}
                     ,skeletonData1:{value: skeletonData}
+                    ,cameraPos:{value: [this.camera.position.x,this.camera.position.y,this.camera.position.z]}
                 },
                 vertexShader: document.getElementById('vertexShader').textContent,
                 fragmentShader: document.getElementById('fragmentShader').textContent,
@@ -136,6 +140,8 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton){
                     ,text13: {type: 't', value: texs[13]}
                     ,text14: {type: 't', value: texs[14]}
                     ,text15: {type: 't', value: texs[15]}
+
+                    ,cameraPos:{value: [this.camera.position.x,this.camera.position.y,this.camera.position.z]}
                 },
                 vertexShader: document.getElementById('vertexShader0').textContent,
                 fragmentShader: document.getElementById('fragmentShader0').textContent,
@@ -170,6 +176,17 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton){
         }
 
 
+        function test(){
+            scope.mesh.material.uniforms.cameraPos={
+                value: [
+                    scope.camera.position.x,
+                    scope.camera.position.y,
+                    scope.camera.position.z
+                ]}
+            requestAnimationFrame(test);
+        }test();
+
+
 
 
         this.obj.add(this.mesh);
@@ -177,10 +194,6 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton){
         //完成进行实例化渲染
     }
     this.handleSkeletonAnimation=function(geometry){
-
-
-
-
         var scope=this;//scope范围//为了避免this重名
         function updateAnimation() {//每帧更新一次动画
             requestAnimationFrame(updateAnimation);

@@ -16,6 +16,7 @@
 
 		uniform float skeletonData0[400];//16*25
 		uniform float skeletonData1[400];//16*25
+		uniform float cameraPos[3];//cameraPos
 
 		attribute vec3 position;
 		attribute vec2 inUV;
@@ -186,6 +187,7 @@
 		uniform mat4 modelViewMatrix;
 		uniform mat4 projectionMatrix;
 
+        uniform vec3 cameraPos;//cameraPos
 
 		attribute vec3 position;
 		attribute vec2 inUV;
@@ -205,6 +207,10 @@
         varying vec3 varyColor;
         varying float type_part;
         varying float myTest00;
+
+        //varing vec3 cameraPosTool;
+        //varing vec4 myPosition;
+
 
 		void main(){
 			vec3 vPosition = position;
@@ -242,7 +248,13 @@
 					vec4( mcol3, 1)
 				);
 
-				gl_Position = projectionMatrix * modelViewMatrix*  matrix2  *  vec4( position, 1.0 );
+                vec4 myPosition=matrix2  *  vec4( position, 1.0 );
+                //if(vec4(cameraPos,0.0)*myPosition>0.0)
+                //if(cameraPosTool[0]*myPosition[0]+cameraPosTool[1]*myPosition[1]+cameraPos[2]Tool*myPosition[2]>0)
+                float test=dot(vec4(cameraPos,0.0)-vec4( mcol3, 0),myPosition-vec4( mcol3, 0));
+                //if(dot(vec4(cameraPos,0.0),myPosition)<0.0)
+                if(test>=0.0)
+				    gl_Position = projectionMatrix * modelViewMatrix* myPosition;
 				//gl_Position = projectionMatrix * modelViewMatrix*  matrix2  * matrix1 * vec4( position, 1.0 );
 			}
 		}
@@ -331,6 +343,7 @@
 		}
 </script>
 
+
 <script src="three.js"></script>
 <script src="GLTFLoader.js"></script>
 <script src="PlayerControl.js"></script>
@@ -349,8 +362,27 @@
 
     var loader= new THREE.GLTFLoader();
     loader.load('test2.glb', (glb) => {
-        //instancing(glb.scene.children[0].children[1]);//'test2.glb'
-        instancing2(glb.scene.children[0].children[1],glb.animations);
+        var geometry=glb.scene.children[0].children[1].geometry;
+        var myArr=geometry.attributes.position.array;
+        console.log(myArr);
+        console.log(myArr[0]);
+        var max0=[myArr[0],myArr[1],myArr[2]],min0=[myArr[0],myArr[1],myArr[2]];
+        console.log(max0,min0)
+        for(var i=0;i<myArr.length/3;i+=3){
+            max0[0]=Math.max(max0[0],myArr[3*i]);
+            max0[1]=Math.max(max0[1],myArr[3*i+1]);
+            max0[2]=Math.max(max0[2],myArr[3*i+2]);
+            min0[0]=Math.min(min0[0],myArr[3*i]);
+            min0[1]=Math.min(min0[1],myArr[3*i+1]);
+            min0[2]=Math.min(min0[2],myArr[3*i+2]);
+        }
+        var center=[(max0[0]+min0[0])/2,(max0[1]+min0[1])/2,(max0[2]+min0[2])/2]
+        console.log(center)
+        //console.log(glb.scene.children[0].children[1].geometry.computeBoundingBox());
+        glb.scene.children[0].children[1].geometry.computeBoundingSphere();
+        //console.log(glb);
+        instancing(glb.scene.children[0].children[1]);//无骨骼动画的实例化渲染
+        //instancing2(glb.scene.children[0].children[1],glb.animations);//有骨骼动画的实例化渲染
     });
 
 
@@ -361,14 +393,18 @@
     }
 
 
-    function instancing(mesh) {//开始进行实例化渲染
+    function instancing(mesh) {//无骨骼动画的实例化渲染
 
-        var instancedNum=3;
+        var instancedNum=30*30;
         var positions=[];
         var types=[];
         var colors=[];
+        for(i=0;i<30;i++)
+            for(j=0;j<30;j++)
+                positions.push([6*i-6*15,0,6*j-6*15]);
+
         for(i=0;i<instancedNum;i++){
-            positions.push([2*i+2,0,0]);
+            //positions.push([5*i-5,0,0]);
             types.push([
                 Math.floor(Math.random() * 16),
                 Math.floor(Math.random() * 16),
@@ -388,13 +424,14 @@
         //
         //console.log(glb);
         var peoples=new InstancedGroup(
-            10,
+            instancedNum,//实例化渲染的个数
             [mesh,mesh],//这些mesh的网格应该一致
-            false//无动画
+            false,//无动画
+            camera
         );
         peoples.init(texSrc);
         for(i=0;i<instancedNum;i++){
-            peoples.rotationSet(i,[0,0,0]);
+            peoples.rotationSet(i,[0,Math.PI/2,0]);
             peoples.positionSet(i,positions[i]);
             peoples.scaleSet(i,[4.5,4.5,4.5]);
             peoples.typeSet(i,types[i]);
@@ -402,60 +439,67 @@
         }
         peoples.animationSpeed=0.1;
         scene.add(peoples.obj);
+
+        camera.position.set(0,0,-133);//设置一个方便观察效果的观察位置
+        camera.rotation.set(-3.11116,0.03657,3.14047);
     }
-    function instancing2(mesh,animations) {//开始进行实例化渲染
+    function instancing2(mesh,animations) {//有骨骼动画的实例化渲染
 
         var instancedNum=9;
         var positions=[];
         var types=[];
         var colors=[];
         for(i=0;i<instancedNum;i++){
-            positions.push([350*i-350*4,0,0]);
+            positions.push([350*i-350*4,0,0]);//设置位置
             types.push([
-                Math.floor(Math.random() * 16),
-                Math.floor(Math.random() * 16),
-                Math.floor(Math.random() * 16),
-                Math.floor(Math.random() *2)
+                Math.floor(Math.random() * 16),//设置头部贴图
+                Math.floor(Math.random() * 16),//设置上衣贴图
+                Math.floor(Math.random() * 16),//设置裤子贴图
+                Math.floor(Math.random() *2)//设置动作
             ]);
-            colors.push([
-                Math.random()/4 ,
-                Math.random()/4 ,
-                Math.random()/4
+            colors.push([//设置裤子颜色
+                Math.random()/4 ,//红
+                Math.random()/4 ,//绿
+                Math.random()/4//蓝
             ]);
         }
-        var texSrc=[];
-        for(i=0;i<16;i++)texSrc.push('./texture/'+i+'.jpg');
+        var texSrc=[];//贴图必须输入16张
+        for(i=0;i<16;i++)texSrc.push('./texture/'+i+'.jpg');//16张贴图
 
         var mySkinnedMesh0=new MySkinnedMesh();
-        mySkinnedMesh0.init(mesh,animations[0]);
+        mySkinnedMesh0.init(mesh,animations[0]);//使用动画0的skinnedMesh
         var mySkinnedMesh1=new MySkinnedMesh();
-        mySkinnedMesh1.init(mesh,animations[1]);
+        mySkinnedMesh1.init(mesh,animations[1]);//使用动画1的skinnedMesh
 
         var peoples=new InstancedGroup(
-            10,
+            instancedNum,//实例化渲染的个数
             [
-                mySkinnedMesh0.mesh,
-                mySkinnedMesh1.mesh
+                mySkinnedMesh0.mesh,//使用动画0的skinnedMesh
+                mySkinnedMesh1.mesh//使用动画1的skinnedMesh
             ],//这些mesh的网格应该一致
-            true//无动画
+            true,//无动画
+            camera
         );
         peoples.init(texSrc);
         for(i=0;i<instancedNum;i++){
-            peoples.rotationSet(i,[0,0,0]);
-            peoples.positionSet(i,positions[i]);
-            peoples.scaleSet(i,[3,3,3]);
-            peoples.typeSet(i,types[i]);
-            peoples.colorSet(i,colors[i]);
+            peoples.rotationSet(i,[0,0,0]);//设置第i个对象的rotation
+            peoples.positionSet(i,positions[i]);//设置第i个对象的position
+            peoples.scaleSet(i,[3,3,3]);//设置第i个对象的scale
+            peoples.typeSet(i,types[i]);//设置第i个对象的贴图和动画类型
+            peoples.colorSet(i,colors[i]);//设置第i个对象的裤子颜色
         }
         peoples.animationSpeed=0.1;
         scene.add(peoples.obj);
+
+        camera.position.set(0,1727.99,-367);//设置一个方便观察效果的观察位置
+        camera.rotation.set(-1.5708,0,0.10633);
     }
 
     function init() {
         container = document.getElementById('container');
 
         camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 10000);
-        camera.position.z = 2;
+        camera.position.z = 20;
 
         scene = new THREE.Scene();
 
@@ -472,8 +516,6 @@
         light = new THREE.AmbientLight(0xffffff,1.0)
         scene.add(light);
         new PlayerControl(camera);
-        camera.position.set(0,1727.99,-367);
-        camera.rotation.set(-1.5708,0,0.10633);
     }
 
 
