@@ -156,10 +156,17 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton){
 
         if(this.haveSkeleton){
             this.handleSkeletonAnimation(geometry);
+            var objOriginMeshs=new THREE.Object3D();
+
             for(var i=0;i<this.originMeshs.length;i++){
-                this.originMeshs[i].visible=false;
-                this.obj.add(this.originMeshs[i]);//threeJS中模型的位置尺寸角度变化，似乎是通过骨骼来实现的
-            }
+                objOriginMeshs.add(this.originMeshs[i]);
+
+                //this.originMeshs[i].visible=false;
+                //this.obj.add(this.originMeshs[i]);//threeJS中模型的位置尺寸角度变化，似乎是通过骨骼来实现的
+            }/**/
+            objOriginMeshs.visible=false;
+            this.obj.add(objOriginMeshs);
+            objOriginMeshs.visible=false;
         }
 
 

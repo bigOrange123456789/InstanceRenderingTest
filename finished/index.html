@@ -30,9 +30,11 @@
 		attribute vec3 mcol3;
 
 		attribute vec4 type;   //type[3]是0或1，用于表示动画
+		attribute vec3 color;
 
-        varying vec2 outUV;
+		varying vec2 outUV;
         varying vec3 varyType;
+        varying vec3 varyColor;
         varying float type_part;
         varying float myTest00;
 
@@ -49,11 +51,13 @@
 			{
 				outUV = inUV;
 				varyType=vec3(type[0],type[1],type[2]);
+				varyColor=vec3(color[0],color[1],color[2]);
 				myTest00=type[3];
 
 				if(vPosition.y<0.15)type_part=0.0;//下身
 				else if(vPosition.y<0.59) type_part=1.0;//上身
 				else type_part=2.0;//头部
+
 
 				//判断使用哪一种动画
 				float skeletonData[400];
@@ -134,6 +138,7 @@
         varying float type_part;
 
         varying vec3 varyType;
+        varying vec3 varyColor;
 		varying vec2 outUV;
 
 		varying float myTest00;
@@ -164,7 +169,14 @@
 			else myTexture =texture2D(text15, outUV);
 
             float mytest0=varyType[1]*0.01;
-            gl_FragColor = vec4 (myTexture.r,myTexture.g,myTexture.b,1.0);//varyType[0]
+            if(floor(type_part)==0.0){//下身
+            	gl_FragColor = vec4 (
+            					 myTexture.r+varyColor[0],
+            					 myTexture.g+varyColor[1],
+            					 myTexture.b+varyColor[2],
+            					 1.0);
+            }else
+                gl_FragColor = vec4 (myTexture.r,myTexture.g,myTexture.b,1.0);//varyType[0]
             //gl_FragColor =vec4 (0.0,0.5,myTest00,1.0);//myTest00值为0
 		}
 </script>
@@ -210,9 +222,15 @@
 				varyColor=vec3(color[0],color[1],color[2]);
 				myTest00=type[3];
 
-				if(position.z<-0.95)type_part=2.0;//头部
-				else if(position.z<-0.60) type_part=1.0;//上身
-				else type_part=0.0;//下身
+				//以下是正常人物模型的身体划分
+				if(vPosition.y<0.15)type_part=0.0;//下身
+				else if(vPosition.y<0.59) type_part=1.0;//上身
+				else type_part=2.0;//头部
+
+                //以下是坐姿模型的身体划分
+				//if(position.z<-0.95)type_part=2.0;//头部
+				//else if(position.z<-0.60) type_part=1.0;//上身
+				//else type_part=0.0;//下身
 
 				//if(position.z<-1.0)type_part=0.0;
 				//else type_part=1.0;
@@ -283,7 +301,7 @@
 
             float mytest0=varyType[1]*0.01;
 
-            /**/if(floor(type_part)==0.0){//下身
+            if(floor(type_part)==0.0){//下身
             	gl_FragColor = vec4 (
             					 myTexture.r+varyColor[0],
             					 myTexture.g+varyColor[1],
@@ -331,33 +349,10 @@
 
     var loader= new THREE.GLTFLoader();
     loader.load('test2.glb', (glb) => {
-        //console.log(glb);//scene.children[0].children[1]
-        instancing(glb.scene.children[0].children[1]);//'test2.glb'
+        //instancing(glb.scene.children[0].children[1]);//'test2.glb'
+        instancing2(glb.scene.children[0].children[1],glb.animations);
     });
-    /*var loader= new THREE.GLTFLoader();
-    loader.load(src, (glb) => {
-        var peoples=new InstancedGroup(
-            scope.positions.length,
-            [glb.scene.children[0],glb.scene.children[0]],//这些mesh的网格应该一致
-            false
-        );
-        var texSrc=[];
-        for(i=0;i<16;i++)texSrc.push('./texture/'+i+'.jpg');
-        peoples.init(
-            texSrc
-        );
-        for(var i=0;i<scope.positions.length;i++){
-            peoples.rotationSet(i,[Math.PI/2,0,3*Math.PI/2]);
-            peoples.positionSet(i,[scope.positions[i][0]+2,scope.positions[i][1]+1.5,scope.positions[i][2]]);
-            peoples.scaleSet(i,[4.5,4.5,4.5]);
-            peoples.typeSet(i,scope.types[i]);
-            peoples.colorSet(i,scope.colors[i]);
-        }
-        peoples.animationSpeed=0.1;
 
-
-    });*/
-    ////////////////
 
     render();
     function render() {
@@ -365,14 +360,15 @@
         requestAnimationFrame(render);
     }
 
+
     function instancing(mesh) {//开始进行实例化渲染
 
-        var instancedNum=5;
+        var instancedNum=3;
         var positions=[];
         var types=[];
         var colors=[];
         for(i=0;i<instancedNum;i++){
-            positions.push([2*i,0,0]);
+            positions.push([2*i+2,0,0]);
             types.push([
                 Math.floor(Math.random() * 16),
                 Math.floor(Math.random() * 16),
@@ -406,20 +402,53 @@
         }
         peoples.animationSpeed=0.1;
         scene.add(peoples.obj);
-        /*var peoples=new InstancedGroup(4);
-        peoples.init(glb.scene.children[0].children[1],glb.animations);
-        for(var i=0;i<4;i++){
-            peoples.scaleSet(i,[Math.random()/2+0.75,Math.random()/2+0.75,Math.random()/2+0.75]);
-            peoples.positionSet(i,[i,0,0]);
+    }
+    function instancing2(mesh,animations) {//开始进行实例化渲染
+
+        var instancedNum=9;
+        var positions=[];
+        var types=[];
+        var colors=[];
+        for(i=0;i<instancedNum;i++){
+            positions.push([350*i-350*4,0,0]);
+            types.push([
+                Math.floor(Math.random() * 16),
+                Math.floor(Math.random() * 16),
+                Math.floor(Math.random() * 16),
+                Math.floor(Math.random() *2)
+            ]);
+            colors.push([
+                Math.random()/4 ,
+                Math.random()/4 ,
+                Math.random()/4
+            ]);
         }
+        var texSrc=[];
+        for(i=0;i<16;i++)texSrc.push('./texture/'+i+'.jpg');
+
+        var mySkinnedMesh0=new MySkinnedMesh();
+        mySkinnedMesh0.init(mesh,animations[0]);
+        var mySkinnedMesh1=new MySkinnedMesh();
+        mySkinnedMesh1.init(mesh,animations[1]);
+
+        var peoples=new InstancedGroup(
+            10,
+            [
+                mySkinnedMesh0.mesh,
+                mySkinnedMesh1.mesh
+            ],//这些mesh的网格应该一致
+            true//无动画
+        );
+        peoples.init(texSrc);
+        for(i=0;i<instancedNum;i++){
+            peoples.rotationSet(i,[0,0,0]);
+            peoples.positionSet(i,positions[i]);
+            peoples.scaleSet(i,[3,3,3]);
+            peoples.typeSet(i,types[i]);
+            peoples.colorSet(i,colors[i]);
+        }
+        peoples.animationSpeed=0.1;
         scene.add(peoples.obj);
-
-        camera.rotation.set( 1.4850434010742404, -0.01558289712906201,0.17931851636280588);
-        camera.position.set(-0.3655338232857634,  -23.369285990164506,  2.0089112807939498);
-*/
-
-
-
     }
 
     function init() {
@@ -443,6 +472,8 @@
         light = new THREE.AmbientLight(0xffffff,1.0)
         scene.add(light);
         new PlayerControl(camera);
+        camera.position.set(0,1727.99,-367);
+        camera.rotation.set(-1.5708,0,0.10633);
     }
 
 
