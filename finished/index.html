@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>同屏显示1089人</title>
+    <title>剔除模型的背面</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 </head>
@@ -255,6 +255,7 @@
                 //if(dot(vec4(cameraPos,0.0),myPosition)<0.0)
                 if(test>=0.0)
 				    gl_Position = projectionMatrix * modelViewMatrix* myPosition;
+				else return;
 				//gl_Position = projectionMatrix * modelViewMatrix*  matrix2  * matrix1 * vec4( position, 1.0 );
 			}
 		}
