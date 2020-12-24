@@ -255,7 +255,7 @@
                 //if(dot(vec4(cameraPos,0.0),myPosition)<0.0)
                 if(test>=0.0)
 				    gl_Position = projectionMatrix * modelViewMatrix* myPosition;
-				else gl_Position=vec4( 1.0, 1.0, 1.0, 0.0 );;
+				else gl_Position=vec4( 1.0, 1.0, 1.0, 0.0 );
 				//gl_Position = projectionMatrix * modelViewMatrix*  matrix2  * matrix1 * vec4( position, 1.0 );
 			}
 		}
