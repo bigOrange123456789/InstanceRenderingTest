@@ -35,6 +35,8 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
         geometry.instanceCount = this.instanceCount; // set so its initalized for dat.GUI, will be set in first draw otherwise
         geometry.setAttribute('position', this.originMeshs[0].geometry.attributes.position);//Float32Array
         geometry.setAttribute('inUV',this.originMeshs[0].geometry.attributes.uv);
+        geometry.setAttribute('myNormal',this.originMeshs[0].geometry.attributes.normal);
+
         if(this.haveSkeleton){
             geometry.setAttribute('skinIndex',this.originMeshs[0].geometry.attributes.skinIndex);
             geometry.setAttribute('skinWeight',this.originMeshs[0].geometry.attributes.skinWeight);

@@ -191,6 +191,7 @@
 
 		attribute vec3 position;
 		attribute vec2 inUV;
+		attribute vec3 myNormal;
 
         attribute float random;
 
@@ -249,14 +250,13 @@
 				);
 
                 vec4 myPosition=matrix2  *  vec4( position, 1.0 );
-                //if(vec4(cameraPos,0.0)*myPosition>0.0)
-                //if(cameraPosTool[0]*myPosition[0]+cameraPosTool[1]*myPosition[1]+cameraPos[2]Tool*myPosition[2]>0)
-                float test=dot(vec4(cameraPos,0.0)-vec4( mcol3, 0),myPosition-vec4( mcol3, 0));
-                //if(dot(vec4(cameraPos,0.0),myPosition)<0.0)
-                if(test>=0.0)
+
+                if(dot(vec4(cameraPos,0.0)-myPosition,vec4( myNormal, 0.0))>=0.0)//需要渲染
 				    gl_Position = projectionMatrix * modelViewMatrix* myPosition;
-				else gl_Position=vec4( 1.0, 1.0, 1.0, 0.0 );
-				//gl_Position = projectionMatrix * modelViewMatrix*  matrix2  * matrix1 * vec4( position, 1.0 );
+				else //不需要渲染
+				    gl_Position=vec4( 1.0, 1.0, 1.0, 0.0 );;
+
+
 			}
 		}
 	</script>
@@ -357,32 +357,15 @@
 
     var loader= new THREE.GLTFLoader();
     loader.load('test2.glb', (glb) => {
-        var geometry=glb.scene.children[0].children[1].geometry;
-        var myArr=geometry.attributes.position.array;
-        console.log(myArr);
-        console.log(myArr[0]);
-        var max0=[myArr[0],myArr[1],myArr[2]],min0=[myArr[0],myArr[1],myArr[2]];
-        console.log(max0,min0)
-        for(var i=0;i<myArr.length/3;i+=3){
-            max0[0]=Math.max(max0[0],myArr[3*i]);
-            max0[1]=Math.max(max0[1],myArr[3*i+1]);
-            max0[2]=Math.max(max0[2],myArr[3*i+2]);
-            min0[0]=Math.min(min0[0],myArr[3*i]);
-            min0[1]=Math.min(min0[1],myArr[3*i+1]);
-            min0[2]=Math.min(min0[2],myArr[3*i+2]);
-        }
-        var center=[(max0[0]+min0[0])/2,(max0[1]+min0[1])/2,(max0[2]+min0[2])/2]
-        console.log(center)
-        //console.log(glb.scene.children[0].children[1].geometry.computeBoundingBox());
-        glb.scene.children[0].children[1].geometry.computeBoundingSphere();
-        //console.log(glb);
-        instancing(glb.scene.children[0].children[1]);//无骨骼动画的实例化渲染
+        console.log(glb);
+        instancing(glb.scene.children[0].children[1]);//test2.glb'
+        //instancing(glb.scene.children[3].children[3]);//dong8.glb
         //instancing2(glb.scene.children[0].children[1],glb.animations);//有骨骼动画的实例化渲染
     });
 
 
     render();
-    function render() {
+    function render(){
         renderer.render( scene, camera );
         requestAnimationFrame(render);
     }
@@ -390,13 +373,15 @@
 
     function instancing(mesh) {//无骨骼动画的实例化渲染
 
-        var instancedNum=30*30;
+        var colNum=10;
+        var rowNum=10;
+        var instancedNum=colNum*rowNum;
         var positions=[];
         var types=[];
         var colors=[];
-        for(i=0;i<30;i++)
-            for(j=0;j<30;j++)
-                positions.push([6*i-6*15,0,6*j-6*15]);
+        for(i=0;i<rowNum;i++)
+            for(j=0;j<colNum;j++)
+                positions.push([30*(i-rowNum/2),-10,30*(j-rowNum/2)]);
 
         for(i=0;i<instancedNum;i++){
             //positions.push([5*i-5,0,0]);
