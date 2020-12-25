@@ -172,12 +172,9 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
             this.handleSkeletonAnimation(geometry);
             var objOriginMeshs=new THREE.Object3D();
 
-            for(var i=0;i<this.originMeshs.length;i++){
+            for(var i=0;i<this.originMeshs.length;i++)
                 objOriginMeshs.add(this.originMeshs[i]);
 
-                //this.originMeshs[i].visible=false;
-                //this.obj.add(this.originMeshs[i]);//threeJS中模型的位置尺寸角度变化，似乎是通过骨骼来实现的
-            }/**/
             objOriginMeshs.visible=false;
             this.obj.add(objOriginMeshs);
             objOriginMeshs.visible=false;
@@ -188,8 +185,8 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
 
         //完成进行实例化渲染
     }
-    this.handleSkeletonAnimation=function(geometry){
-        var scope=this;//scope范围//为了避免this重名
+    this.handleSkeletonAnimation=function(geometry){//geometry是新建的scope.instancedBufferGeometry空间
+
         function updateAnimation() {//每帧更新一次动画
             requestAnimationFrame(updateAnimation);
 
@@ -218,22 +215,15 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
             }
             var toolMat=new THREE.Matrix4();//.identity ()
             var sumMat=new THREE.Matrix4();
-            var attributes=scope.instancedBufferGeometry.attributes;
+            var attributes=geometry.attributes;
 
-            //console.log(attributes);
-            //console.log(scope.position0_array[2004]);
-            //for(var i=0;i<10;i++){//
+
             for(var i=0;i<attributes.position.count;i++){//2004个点，6012个数据
-                //console.log(attributes.type.array[3*i]);
-                //if(attributes.type.array[4*i]===0){
                     sumMat.set(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
                     for(j=0;j<4;j++){
                         toolMat.copy(matrixs0[attributes.skinIndex.array[4*i+j]]);
                         toolMat.multiplyScalar(attributes.skinWeight.array[4*i+j]);
-                        //attributes.skinWeight.array[4*i];//
-                        console.log(sumMat,toolMat);
                         matAdd(sumMat,toolMat);
-                        console.log(sumMat);
                     }//四个矩阵之和
 
 

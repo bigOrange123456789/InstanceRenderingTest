@@ -72,7 +72,7 @@
 
             	mat4 matrixs[25];//25个骨骼的变换矩阵
 				for(int i=0;i<25;i++){
-			   	 matrixs[i]=mat4(//最后一行是：0 0 0 1
+			   	 matrixs[i]=mat4(//这里似乎是最后一列是   0,0,0,1
 			    	    skeletonData[i*16+0] ,skeletonData[i*16+1] ,skeletonData[i*16+2] ,skeletonData[i*16+3] ,
 			  	      	skeletonData[i*16+4] ,skeletonData[i*16+5] ,skeletonData[i*16+6] ,skeletonData[i*16+7] ,
 			    	    skeletonData[i*16+8] ,skeletonData[i*16+9] ,skeletonData[i*16+10],skeletonData[i*16+11],
@@ -98,13 +98,6 @@
                 	for(int i=0;i<25;i++)if(i==mySkinIndex[j])matrix_temp=matrixs[i];
                 	matrix1=matrix1+skinWeight[j]*matrix_temp;
             	}
-
-            	for(int i=0;i<4;i++)//对矩阵求转置
-                	for(int j=0;j<4;j++){
-                    	float temp=matrix1[i][j];
-                    	matrix1[i][j]=matrix1[j][i];
-                    	matrix1[j][i]=temp;
-                	}
 
 				mat4 matrix2 = mat4(//确定位置//最后一列是 0 0 0 1
 					vec4( mcol0, 0),
