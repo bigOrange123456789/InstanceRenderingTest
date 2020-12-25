@@ -187,7 +187,7 @@
 		uniform mat4 modelViewMatrix;
 		uniform mat4 projectionMatrix;
 
-        //uniform vec3 cameraPos;//cameraPos
+        uniform vec3 cameraPos;//cameraPos
 
 		attribute vec3 position;
 		attribute vec2 inUV;
@@ -251,8 +251,10 @@
 
                 vec4 myPosition=matrix2  *  vec4( position, 1.0 );
 
-                gl_Position = projectionMatrix * modelViewMatrix* myPosition;
-
+                if(dot(vec4(cameraPos,0.0)-myPosition,vec4( myNormal, 0.0))>=0.0)//需要渲染
+				    gl_Position = projectionMatrix * modelViewMatrix* myPosition;
+				else //不需要渲染
+				    gl_Position=vec4( 1.0, 1.0, 1.0, 0.0 );;
 
 
 			}
@@ -356,7 +358,7 @@
     var loader= new THREE.GLTFLoader();
     loader.load('test2.glb', (glb) => {
         console.log(glb);
-        instancing2(glb.scene.children[0].children[1],glb.animations);//test2.glb'
+        instancing(glb.scene.children[0].children[1]);//test2.glb'
         //instancing(glb.scene.children[3].children[3]);//dong8.glb
         //instancing2(glb.scene.children[0].children[1],glb.animations);//有骨骼动画的实例化渲染
     });
@@ -423,17 +425,12 @@
     }
     function instancing2(mesh,animations) {//有骨骼动画的实例化渲染
 
-        var colNum=2;
-        var rowNum=2;
-        var instancedNum=colNum*rowNum;
+        var instancedNum=9;
         var positions=[];
         var types=[];
         var colors=[];
-        for(i=0;i<rowNum;i++)
-            for(j=0;j<colNum;j++)
-                positions.push([330*(i-rowNum/2),-10,330*(j-rowNum/2)]);
         for(i=0;i<instancedNum;i++){
-            //positions.push([350*i-350*4,0,0]);//设置位置
+            positions.push([350*i-350*4,0,0]);//设置位置
             types.push([
                 Math.floor(Math.random() * 16),//设置头部贴图
                 Math.floor(Math.random() * 16),//设置上衣贴图

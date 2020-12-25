@@ -117,7 +117,7 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
 
                     ,skeletonData0:{value: skeletonData}
                     ,skeletonData1:{value: skeletonData}
-                    //,cameraPos:{value: [this.camera.position.x,this.camera.position.y,this.camera.position.z]}
+                    ,cameraPos:{value: [this.camera.position.x,this.camera.position.y,this.camera.position.z]}
                 },
                 vertexShader: document.getElementById('vertexShader').textContent,
                 fragmentShader: document.getElementById('fragmentShader').textContent,
@@ -143,7 +143,7 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
                     ,text14: {type: 't', value: texs[14]}
                     ,text15: {type: 't', value: texs[15]}
 
-                    //,cameraPos:{value: [this.camera.position.x,this.camera.position.y,this.camera.position.z]}
+                    ,cameraPos:{value: [this.camera.position.x,this.camera.position.y,this.camera.position.z]}
                 },
                 vertexShader: document.getElementById('vertexShader0').textContent,
                 fragmentShader: document.getElementById('fragmentShader0').textContent,
@@ -178,7 +178,7 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
         }
 
 
-        /*function test(){
+        function test(){
             scope.mesh.material.uniforms.cameraPos={
                 value: [
                     scope.camera.position.x,
@@ -186,7 +186,7 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
                     scope.camera.position.z
                 ]}
             requestAnimationFrame(test);
-        }test();*/
+        }test();
 
 
 

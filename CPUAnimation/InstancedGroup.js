@@ -9,6 +9,9 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
 
     this.mesh=null;//实例化渲染对象的网格
 
+    this.instancedBufferGeometry=new THREE.InstancedBufferGeometry();
+    this.position0_array;
+
     this.mcol0;//变换矩阵的一部分
     this.mcol1;
     this.mcol2;
@@ -31,11 +34,14 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
 
         this.originMeshs[0].geometry=this.originMeshs[0].geometry.toNonIndexed();
 
-        var geometry = new THREE.InstancedBufferGeometry();//console.log(geometry);
+        var geometry =this.instancedBufferGeometry;// new THREE.InstancedBufferGeometry();//console.log(geometry);
         geometry.instanceCount = this.instanceCount; // set so its initalized for dat.GUI, will be set in first draw otherwise
+        this.position0_array=new Float32Array(this.originMeshs[0].geometry.attributes.position.count*3);
+        for(var i=0;i<this.originMeshs[0].geometry.attributes.position.count;i++)
+            this.position0_array[i]=this.originMeshs[0].geometry.attributes.position.array[i];
         geometry.setAttribute('position', this.originMeshs[0].geometry.attributes.position);//Float32Array
         geometry.setAttribute('inUV',this.originMeshs[0].geometry.attributes.uv);
-        geometry.setAttribute('myNormal',this.originMeshs[0].geometry.attributes.normal);
+        //geometry.setAttribute('myNormal',this.originMeshs[0].geometry.attributes.normal);
 
         if(this.haveSkeleton){
             geometry.setAttribute('skinIndex',this.originMeshs[0].geometry.attributes.skinIndex);
@@ -117,7 +123,7 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
 
                     ,skeletonData0:{value: skeletonData}
                     ,skeletonData1:{value: skeletonData}
-                    //,cameraPos:{value: [this.camera.position.x,this.camera.position.y,this.camera.position.z]}
+                    ,cameraPos:{value: [this.camera.position.x,this.camera.position.y,this.camera.position.z]}
                 },
                 vertexShader: document.getElementById('vertexShader').textContent,
                 fragmentShader: document.getElementById('fragmentShader').textContent,
@@ -143,7 +149,7 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
                     ,text14: {type: 't', value: texs[14]}
                     ,text15: {type: 't', value: texs[15]}
 
-                    //,cameraPos:{value: [this.camera.position.x,this.camera.position.y,this.camera.position.z]}
+                    ,cameraPos:{value: [this.camera.position.x,this.camera.position.y,this.camera.position.z]}
                 },
                 vertexShader: document.getElementById('vertexShader0').textContent,
                 fragmentShader: document.getElementById('fragmentShader0').textContent,
@@ -178,19 +184,6 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
         }
 
 
-        /*function test(){
-            scope.mesh.material.uniforms.cameraPos={
-                value: [
-                    scope.camera.position.x,
-                    scope.camera.position.y,
-                    scope.camera.position.z
-                ]}
-            requestAnimationFrame(test);
-        }test();*/
-
-
-
-
         this.obj.add(this.mesh);
 
         //完成进行实例化渲染
@@ -200,29 +193,67 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
         function updateAnimation() {//每帧更新一次动画
             requestAnimationFrame(updateAnimation);
 
-            var skeletonData0=[];//16*25//400
+            //还原所有的骨骼矩阵
+            var matrixs0=[];
             for(i=0;i<scope.originMeshs[0].skeleton.boneInverses.length;i++){
                 temp1=scope.originMeshs[0].skeleton.boneInverses[i];//.toArray();
                 temp2=scope.originMeshs[0].skeleton.bones[i].matrixWorld.clone();//.toArray();
                 temp=temp2.multiply(temp1);//逆矩阵在右
-                temp=temp.toArray();
-                for(j=0;j<temp.length;j++)
-                    skeletonData0.push(temp[j]);
+                matrixs0.push(temp);
+                //if(i===4)console.log(temp2);
             }
-            scope.mesh.material.uniforms.skeletonData0={value: skeletonData0};
+            //console.log(matrixs0[0])
 
-            skeletonData1=[];//16*25//400
-            for(i=0;i<scope.originMeshs[1].skeleton.boneInverses.length;i++){
-                temp1=scope.originMeshs[1].skeleton.boneInverses[i];//.toArray();
-                temp2=scope.originMeshs[1].skeleton.bones[i].matrixWorld.clone();//.toArray();
-                temp=temp2.multiply(temp1);//逆矩阵在右
-                temp=temp.toArray();
-                for(j=0;j<temp.length;j++)
-                    skeletonData1.push(temp[j]);
+            function matAdd(mat1,mat2){//mat1=mat1+mat2;
+                for(var i=0;i<mat1.elements.length;i++)
+                    mat1.elements[i]=mat1.elements[i]+mat2.elements[i];
             }
-            scope.mesh.material.uniforms.skeletonData1={value: skeletonData1};
+            function multiplyVec(vec3,mat) {//vec=vec*mat//vec3是3维度数组
+                //这个函数似乎输出了NAN
+                //console.log(vec3,mat);
+                vec3[0]=vec3[0]*mat.elements[0]+vec3[1]*mat.elements[4]+vec3[2]*mat.elements[8]+mat.elements[12];
+                vec3[1]=vec3[1]*mat.elements[1]+vec3[1]*mat.elements[5]+vec3[2]*mat.elements[9]+mat.elements[13];
+                vec3[2]=vec3[2]*mat.elements[2]+vec3[1]*mat.elements[6]+vec3[2]*mat.elements[10]+mat.elements[14];
+                //console.log(vec3);
+            }
+            var toolMat=new THREE.Matrix4();//.identity ()
+            var sumMat=new THREE.Matrix4();
+            var attributes=scope.instancedBufferGeometry.attributes;
 
-        }updateAnimation();
+            //console.log(attributes);
+            //console.log(scope.position0_array[2004]);
+            //for(var i=0;i<10;i++){//
+            for(var i=0;i<attributes.position.count;i++){//2004个点，6012个数据
+                //console.log(attributes.type.array[3*i]);
+                //if(attributes.type.array[4*i]===0){
+                    sumMat.set(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+                    for(j=0;j<4;j++){
+                        toolMat.copy(matrixs0[attributes.skinIndex.array[4*i+j]]);
+                        toolMat.multiplyScalar(attributes.skinWeight.array[4*i+j]);
+                        //attributes.skinWeight.array[4*i];//
+                        console.log(sumMat,toolMat);
+                        matAdd(sumMat,toolMat);
+                        console.log(sumMat);
+                    }//四个矩阵之和
+
+
+
+                    var pos=new Array(3);
+                    pos[0]=scope.position0_array[3*i];
+                    pos[1]=scope.position0_array[3*i+1];
+                    pos[2]=scope.position0_array[3*i+2];
+
+                    multiplyVec(pos,sumMat);
+                    if(i===0)console.log(pos);//sumMat
+                    attributes.position.array[3*i]= pos[0];
+                    attributes.position.array[3*i+1]=pos[1];
+                    attributes.position.array[3*i+2]=pos[2];
+                    //if(i===0)
+            }
+
+        }
+        updateAnimation();
+        //setInterval(updateAnimation,1);
     }
 
     this.updateBuffer=function(i){//更新第i个对象对应的缓冲区
