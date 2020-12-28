@@ -204,9 +204,9 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
             for(i=0;i<scope.originMeshs[0].skeleton.boneInverses.length;i++){
                 temp1=scope.originMeshs[0].skeleton.boneInverses[i];//.toArray();
                 temp2=scope.originMeshs[0].skeleton.bones[i].matrixWorld.clone();//.toArray();
-                console.log(temp1,temp2);
+                //console.log(temp1,temp2);
                 temp=temp2.multiply(temp1);//逆矩阵在右
-                console.log(temp);
+                //console.log(temp);
                 temp=temp.toArray();
                 for(j=0;j<temp.length;j++)
                     skeletonData0.push(temp[j]);

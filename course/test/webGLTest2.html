@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - interactive instances (gpu)</title>
+    <meta http-equiv="content-type"content="text/html; charset=gb2312">
+    <style>
+        body {overflow:hidden;}
+    </style>
+    <script id="shader-vs" type="x-shader/x-vertex">
+        attribute vec3 v3Position;
+        void main(void){
+            gl_Position=vec4(v3Position,1.0);
+        }
+    </script>
+    <script id="shader-fs" type="x-shader/x-fragment">
+        void main(void)
+        {
+            gl_FragColor=vec4(1,0.5,1,1);
+        }
+    </script>
+    <script>
+        var webgl=null;
+        var vertexShaderObject=null;
+        var fragmentShaderObject=null;
+        var programObject=null;
+        var triangleBuffer=null;
+        var v3PositionIndex=0;
+
+        //创建canvas，创建openGL的上下文，编译链接，创建顶点缓存区（将要绘制的数据传递到显卡中），指定顶点数据
+        function Init(){
+            var canvas=document.getElementById("myCanvas");//创建画布//createElement('canvas');
+            webgl=canvas.getContext("webgl")//获得webgl环境（上下文）
+
+            webgl.viewport(50,-50,canvas.clientWidth,canvas.clientHeight);//设置canvas的位置和尺寸//设置webgl窗口尺寸为canvas画布尺寸
+
+            vertexShaderObject=webgl.createShader(webgl.VERTEX_SHADER)//创建顶点shader对象
+            fragmentShaderObject=webgl.createShader(webgl.FRAGMENT_SHADER)//创建片元shader对象
+
+            webgl.shaderSource(///将顶点shader信息告诉canvas
+                vertexShaderObject,//一个顶点渲染器对象vertexShaderObject
+                document.getElementById( "shader-vs" ).textContent
+            );
+            webgl.shaderSource(///将片元shader信息告诉canvas
+                fragmentShaderObject,
+                document.getElementById( "shader-fs" ).textContent
+            );
+
+            //1编译
+            webgl.compileShader(vertexShaderObject)///编译canvas中的顶点着色器代码//compile编译
+            webgl.compileShader(fragmentShaderObject)///编译canvas中的片元着色器代码
+
+            //2链接
+            programObject=webgl.createProgram();
+            webgl.attachShader(programObject,vertexShaderObject);
+            webgl.attachShader(programObject,fragmentShaderObject);
+
+            webgl.bindAttribLocation(programObject,v3PositionIndex,'v3Position');//绑定
+
+            webgl.linkProgram(programObject);//链接
+            webgl.useProgram(programObject);//使用
+
+            //3输入
+            triangleBuffer=webgl.createBuffer();///创建一个缓冲区
+         }
+    </script>
+</head>
+<body onload="Init()">
+<canvas id="myCanvas"style="bordor:1px solod red;" width="600" height="450"></canvas>
+</body>
+</html>

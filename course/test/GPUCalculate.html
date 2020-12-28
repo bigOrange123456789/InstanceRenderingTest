@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - interactive instances (gpu)</title>
+    <meta http-equiv="content-type"content="text/html; charset=gb2312">
+    <style>
+        body {overflow:hidden;}
+    </style>
+    <script>
+        //创建canvas，创建openGL的上下文，编译链接，创建顶点缓存区（将要绘制的数据传递到显卡中），指定顶点数据
+        function Init(){
+            var canvas=document.getElementById("myCanvas");//创建画布//createElement('canvas');
+            var gl=canvas.getContext("webgl")//获得webgl环境（上下文）
+
+            gl.viewport(50,-50,canvas.clientWidth,canvas.clientHeight);//设置canvas的位置和尺寸//设置webgl窗口尺寸为canvas画布尺寸
+
+
+            //1编译
+            // 绑定并编译着色器程序
+             var vertexShaderSource =gl.createShader(gl.VERTEX_SHADER)// '...';
+             var fragmentShaderSource =gl.createShader(gl.FRAGMENT_SHADER)// '...' + code + '...';
+             var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+             gl.shaderSource(vertexShader, vertexShaderSource);
+             gl.compileShader(vertexShader);
+             var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+             gl.shaderSource(fragmentShader, fragmentShaderSource);
+             gl.compileShader(fragmentShader);
+
+            //2链接
+             // 创建程序对象
+             var program = gl.createProgram();
+             gl.attachShader(program, vertexShader);
+             gl.attachShader(program, fragmentShader);
+             gl.linkProgram(program);
+             gl.useProgram(program);
+
+
+        //3输入
+         // 顶点数据传输
+         var vertices = new Float32Array([-1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0]);
+        //triangleBuffer=webgl.createBuffer();///创建一个缓冲区
+        var vertexBuffer = gl.createBuffer();//这里报错了
+        //报错原因createBuffer未定义
+        }
+    </script>
+</head>
+<body onload="Init()">
+<canvas id="myCanvas"style="bordor:1px solod red;" width="600" height="450"></canvas>
+</body>
+</html>

@@ -207,10 +207,10 @@ function InstancedGroup(instanceCount,originMesh,haveSkeleton,camera){
             }
             function multiplyVec(vec3,mat) {//vec=vec*mat//vec3是3维度数组
                 //这个函数似乎输出了NAN
-                //console.log(vec3,mat);
+                console.log(vec3,mat);
                 vec3[0]=vec3[0]*mat.elements[0]+vec3[1]*mat.elements[4]+vec3[2]*mat.elements[8]+mat.elements[12];
-                vec3[1]=vec3[1]*mat.elements[1]+vec3[1]*mat.elements[5]+vec3[2]*mat.elements[9]+mat.elements[13];
-                vec3[2]=vec3[2]*mat.elements[2]+vec3[1]*mat.elements[6]+vec3[2]*mat.elements[10]+mat.elements[14];
+                vec3[1]=vec3[0]*mat.elements[1]+vec3[1]*mat.elements[5]+vec3[2]*mat.elements[9]+mat.elements[13];
+                vec3[2]=vec3[0]*mat.elements[2]+vec3[1]*mat.elements[6]+vec3[2]*mat.elements[10]+mat.elements[14];
                 //console.log(vec3);
             }
             var toolMat=new THREE.Matrix4();//.identity ()
