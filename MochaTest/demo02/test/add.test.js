@@ -1,3 +1,4 @@
+//测试脚本的核心由两部分组成：被测试文件路径、测试代码（断言/期望）
 var add = require('../src/add.js');
 var expect = require('chai').expect;
 
