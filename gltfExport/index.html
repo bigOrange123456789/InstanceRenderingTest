@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+<script src="three.js"></script>
+<script src="GLTFLoader.js"></script>
+<script src="GLTFExporter.js"></script>
+<script>
+    var loader= new THREE.GLTFLoader();
+    var fileName='new.glb';
+    loader.load(fileName, (glb) => {
+        console.log(glb);
+        var array=glb.scene.children;
+        for(var i=0;i<1;i++){
+            //var fileName_i=fileName+i;
+            var gltfExporter = new THREE.GLTFExporter();
+            var scene=new THREE.Scene();
+            scene.add(array[i]);
+            gltfExporter.parse(scene, function (result) {
+                console.log(result);
+                let link = document.createElement('a');
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.href = URL.createObjectURL(new Blob([JSON.stringify(result)], { type: 'text/plain' }));
+                link.download = 'new'+i+'.gltf';
+                link.click();
+                document.body.removeChild(link);/**/
+            });
+        }
+    });
+</script>
+</body>
