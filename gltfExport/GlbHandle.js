@@ -48,18 +48,17 @@ GlbHandle.prototype={
         });
     },
     resultDownLoad:function (result,name){
-        let link = document.createElement('a');
+        /*let link = document.createElement('a');
         link.style.display = 'none';
         document.body.appendChild(link);
         link.href = URL.createObjectURL(new Blob([JSON.stringify(result)], { type: 'text/plain' }));
         link.download = name;
-        link.click();
+        link.click();*/
 
         var scope=this;
         console.log(name);
-        setTimeout((function (){
+        //setTimeout((function (){
             scope.arrayDownLoad();
-        }),500);
-        //document.body.removeChild(link);
+        //}),500);
     },
 }
