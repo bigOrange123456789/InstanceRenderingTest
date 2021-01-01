@@ -5,6 +5,12 @@ function GlbHandle(){
     this.arrayJ=0;
 }
 GlbHandle.prototype={
+    init:function(array){
+        this.dataArray=array;
+        this.arrayI=0;
+        this.arrayJ=0;
+        this.arrayDownLoad();
+    },
     arrayDownLoad:function(){
         var myArray=this.dataArray;
         var i=this.arrayI,j=this.arrayJ,index=this.counter;
@@ -48,17 +54,17 @@ GlbHandle.prototype={
         });
     },
     resultDownLoad:function (result,name){
-        /*let link = document.createElement('a');
+        let link = document.createElement('a');
         link.style.display = 'none';
         document.body.appendChild(link);
         link.href = URL.createObjectURL(new Blob([JSON.stringify(result)], { type: 'text/plain' }));
         link.download = name;
-        link.click();*/
+        link.click();
 
         var scope=this;
-        console.log(name);
-        //setTimeout((function (){
+        //console.log(name);
+        setTimeout((function (){
             scope.arrayDownLoad();
-        //}),500);
+        }),500);
     },
 }
