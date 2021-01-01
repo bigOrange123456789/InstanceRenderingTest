@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+<script src="lib/three.js"></script>
+<script src="lib/GLTFLoader.js"></script>
+<script src="lib/GLTFExporter.js"></script>
+<script src="GlbHandle.js"></script>
+<script>
+
+    var loader= new THREE.GLTFLoader();
+    var myGlbHandle=new GlbHandle();
+    var fileName='new.glb';
+    var index=0;
+    loader.load(fileName, (glb) => {
+        console.log(glb);
+        var array=glb.scene.children;
+        //console.log(array);
+        //console.log(array.length);
+        THREELoad(array,0,0);
+        function THREELoad(myArray,i,j) {
+            if(i===myArray.length)return;//已经全部输出
+            //出现的BUG: i没有增加，j=index
+            //if(index===3)return;//test
+            console.log(myArray.length,":",i,j,index);
+            var mesh,name;
+
+            if(myArray[i].children.length!==0) {//为Group类型，有孩子
+                mesh=myArray[i].children[j].clone();
+                //指定下一个mesh
+                if(j===myArray[i].children.length-1){
+                    i++;
+                    j=0;
+                }else{
+                    j++;
+                }
+            } else {//纯mesh类型
+                mesh=myArray[i].clone();
+                //指定下一个mesh
+                i++;
+                //j=0;
+            }
+
+            name='new'+index+'.gltf';
+            index++;
+
+            myGlbHandle.meshDownLoad(mesh,name);
+
+
+            THREELoad(myArray,i,j);
+        }
+    });//读取函数结尾处
+</script>
+</body>
