@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>同屏显示1089人</title>
+    <title>同屏显示1089人--判断影响效率的因素</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 </head>
@@ -32,6 +32,7 @@
         varying float varyMyTest0;
 
 		void main(){
+
 			vec3 vPosition = position;
 			outUV = inUV;
 			varyType=type;
@@ -65,32 +66,29 @@
             //计算动画的变换矩阵：matrix1=skinWeight[0]*matrixs[mySkinIndex[0]]+...
             mat4 matrix1=mat4(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
             mat4 matrix_temp;
-            for(int j=0;j<4;j++){
-                for(int i=0;i<25;i++)if(i==mySkinIndex[j])matrix_temp=matrixs[i];
-                matrix1=matrix1+skinWeight[j]*matrix_temp;
-            }
+            for(int i=0;i<25;i++)
+                if(i==mySkinIndex[0]){
+                    matrix_temp=matrixs[i];
+                    matrix1=matrix1+skinWeight[0]*matrix_temp;
+                }else if(i==mySkinIndex[1]){
+                    matrix_temp=matrixs[i];
+                    matrix1=matrix1+skinWeight[1]*matrix_temp;
+                }else if(i==mySkinIndex[2]){
+                    matrix_temp=matrixs[i];
+                    matrix1=matrix1+skinWeight[2]*matrix_temp;
+                }else if(i==mySkinIndex[3]){
+                    matrix_temp=matrixs[i];
+                    matrix1=matrix1+skinWeight[3]*matrix_temp;
+                }
 
-            for(int i=0;i<4;i++)//对矩阵求转置
-                for(int j=0;j<4;j++){
-                    float temp=matrix1[i][j];
-                    matrix1[i][j]=matrix1[j][i];
-                    matrix1[j][i]=temp;
-                }/**/
-            //varyMyTest0=matrix1[0][3]+matrix1[1][3]+matrix1[2][3]+matrix1[3][3];//myTest[0];
-
-			mat4 matrix2 = mat4(//确定位置//最后一列是 0 0 0 1
+            mat4 matrix2 = mat4(//确定位置//最后一列是 0 0 0 1
 				vec4( mcol0, 0 ),
 				vec4( mcol1, 0 ),
 				vec4( mcol2, 0 ),
 				vec4( mcol3, 1 )
 			);
 
-			//if(varyMyTest0==1.0)gl_Position = projectionMatrix * modelViewMatrix * matrix2 *  vec4( vPosition, 1.0 );
-			//else
-			//if(varyMyTest0==1.0)gl_Position = projectionMatrix * modelViewMatrix *  matrix1 * vec4( position, 1.0 );
-			//else
-			//if(varyMyTest0>0.5&&varyMyTest0<1.5)
-			       gl_Position = projectionMatrix * modelViewMatrix*   matrix2 * matrix1 * vec4( position, 1.0 );
+			gl_Position = projectionMatrix * modelViewMatrix*   matrix2 *  matrix1 * vec4( position, 1.0 ) ;
 		}
 </script>
 <script id="fragmentShader" type="x-shader/x-fragment">
@@ -172,7 +170,7 @@
     });
 
     function instancing(glb) {//开始进行实例化渲染
-        const instanceCount =33*33;//10 0000//1089
+        const instanceCount =55*55;//10 0000//1089
         let texs_length=6//16;
 
         var myMesh=glb.scene.children[0].children[1];//'test2.glb'//console.log(glb);//'test.glb'
@@ -194,8 +192,8 @@
 
         var type=new THREE.InstancedBufferAttribute(new Uint16Array(instanceCount), 1);
 
-        for(var k=0,kl=33,il=instanceCount ,i=0;k<kl&&i<il;k++)
-            for(var b=0,bl=33;b<bl&&i<il;b++,i++){
+        for(var k=0,kl=50,il=instanceCount ,i=0;k<kl&&i<il;k++)
+            for(var b=0,bl=50;b<bl&&i<il;b++,i++){
                 mcol0.setXYZ(i, Math.random()/2+0.75,0,0);
                 mcol1.setXYZ(i, 0,Math.random()/2+0.75,0);//四元数、齐次坐标
                 mcol2.setXYZ(i, 0,0,Math.random()/2+0.75);//mcol3.setXYZ(i, 0,0,0);
@@ -277,6 +275,7 @@
         //完成设置骨骼
 
         const mesh = new THREE.SkinnedMesh(geometry, material);//重要
+
         const mesh0 = new THREE.SkinnedMesh(myMesh.geometry, myMesh.material);//重要
         mesh.skeleton=myMesh.skeleton;
         mesh0.skeleton=myMesh.skeleton;

@@ -14,7 +14,8 @@ GlbHandle.prototype={
     arrayDownLoad:function(){
         var myArray=this.dataArray;
         var i=this.arrayI,j=this.arrayJ,index=this.counter;
-        if(i===myArray.length)return;//已经全部输出
+        if(i>=myArray.length)return;//已经全部输出//进行测试
+        //if(i===myArray.length)return;//已经全部输出
         console.log(myArray.length,":",i,j,index);
         var mesh,name;
         if(myArray[i].children.length!==0) {//为Group类型，有孩子
@@ -65,6 +66,6 @@ GlbHandle.prototype={
         //console.log(name);
         setTimeout((function (){
             scope.arrayDownLoad();
-        }),500);
+        }),1000);
     },
 }
