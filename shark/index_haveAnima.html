@@ -29,7 +29,7 @@
 
             mat4 getBoneMatrix(uint jointNdx) {
               return mat4(
-                texelFetch(u_jointTexture, ivec2(0, jointNdx), 0),
+                texelFetch(u_jointTexture, ivec2(0, jointNdx), 0),//vec表示向量，ivec应该是整数向量
                 texelFetch(u_jointTexture, ivec2(1, jointNdx), 0),
                 texelFetch(u_jointTexture, ivec2(2, jointNdx), 0),
                 texelFetch(u_jointTexture, ivec2(3, jointNdx), 0));
@@ -67,8 +67,8 @@
 
         async function main() {
             // Get A WebGL context
-            /** @type {HTMLCanvasElement} */
-            const canvas =document.getElementById("myCanvas");///  document.querySelector("#canvas");
+            /** @type {HTMLCanvasElement}*/
+            const canvas =document.getElementById("myCanvas");//document.querySelector("#canvas");
             const gl = canvas.getContext("webgl2");
 
             // Specify the locations of the attributes so they'll//指定属性的位置
@@ -90,27 +90,30 @@
                     this.joints = joints;
                     this.inverseBindMatrices = [];
                     this.jointMatrices = [];
-                    // allocate enough space for one matrix per joint
-                    this.jointData = new Float32Array(joints.length * 16);
-                    // create views for each joint and inverseBindMatrix
+                    //为每个关节分配足够的空间 allocate enough space for one matrix per joint
+                    this.jointData = new Float32Array(joints.length * 16);//6*16=96
+                    //为每个关节和反转索引矩阵创建视图 create views for each joint and inverseBindMatrix
                     for (let i = 0; i < joints.length; ++i) {
-                        this.inverseBindMatrices.push(new Float32Array(
-                            inverseBindMatrixData.buffer,
-                            inverseBindMatrixData.byteOffset + Float32Array.BYTES_PER_ELEMENT * 16 * i,
-                            16));
-                        this.jointMatrices.push(new Float32Array(
-                            this.jointData.buffer,
-                            Float32Array.BYTES_PER_ELEMENT * 16 * i,
-                            16));
+                        this.inverseBindMatrices.push(new Float32Array(//逆绑定矩阵
+                                                        inverseBindMatrixData.buffer,
+                                                        inverseBindMatrixData.byteOffset + Float32Array.BYTES_PER_ELEMENT * 16 * i,
+                                                        16
+                                                    )
+                        );
+                        this.jointMatrices.push(new Float32Array(//关节矩阵
+                                                        this.jointData.buffer,
+                                                        Float32Array.BYTES_PER_ELEMENT * 16 * i,
+                                                        16
+                                                    )
+                        );
                     }
-                    // create a texture to hold the joint matrices//创建一个纹理来保存关节矩阵
+                    //创建一个纹理来保存关节矩阵 create a texture to hold the joint matrices
                     this.jointTexture = gl.createTexture();
                     gl.bindTexture(gl.TEXTURE_2D, this.jointTexture);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                    //console.log(gl.TEXTURE_MIN_FILTER,gl.TEXTURE_MAG_FILTER);
                 }
                 update(node) {
                     const globalWorldInverse = m4.inverse(node.worldMatrix);
@@ -118,14 +121,25 @@
                     // apply the inverse bind matrices and store the
                     // entire result in the texture
                     for (let j = 0; j < this.joints.length; ++j) {
+                        //世界矩阵*骨骼逆矩阵*绑定逆矩阵
                         const joint = this.joints[j];
-                        const dst = this.jointMatrices[j];
+                        const dst = this.jointMatrices[j];//[6][16]
                         m4.multiply(globalWorldInverse, joint.worldMatrix, dst);
                         m4.multiply(dst, this.inverseBindMatrices[j], dst);
                     }
                     gl.bindTexture(gl.TEXTURE_2D, this.jointTexture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, 4, this.joints.length, 0,
-                        gl.RGBA, gl.FLOAT, this.jointData);
+                    gl.texImage2D(
+                        gl.TEXTURE_2D,//target
+                        0,//level
+                        gl.RGBA32F,//internalFormat
+                        4,//width
+                        this.joints.length,//height
+                        0,//border//This value must be 0.
+                        gl.RGBA,//format
+                        gl.FLOAT,//type
+                        this.jointData//16*6//data//Specifies a pointer to the image data in memory.
+                    );
+                    //console.log(this.jointData);
                     //console.log(gl.TEXTURE_2D,this.jointData)
                 }
             }
@@ -293,6 +307,7 @@
                 };
             }
 
+            //gltf的另一种加载方法
             async function loadGLTF(url) {
                 async function loadFile(url, typeFunc) {
                     const response = await fetch(url);
@@ -383,14 +398,15 @@
                     return node;
                 });
 
-                // setup skins
+                //设置外观 setup skins
                 gltf.skins = gltf.skins.map((skin) => {
                     const joints = skin.joints.map(ndx => gltf.nodes[ndx]);
                     const {stride, array} = getAccessorTypedArrayAndStride(gl, gltf, skin.inverseBindMatrices);
                     return new Skin(joints, array);
                 });
+                console.log(gltf.skins)
 
-                // Add SkinRenderers to nodes with skins
+                //将SkinRenderer添加到具有蒙皮的节点 Add SkinRenderers to nodes with skins
                 for (const {node, mesh, skinNdx} of skinNodes) {
                     node.drawables.push(new SkinRenderer(mesh, gltf.skins[skinNdx]));
                 }
@@ -410,19 +426,15 @@
                 }
 
                 return gltf;
+                function addChildren(nodes, node, childIndices) {
+                    childIndices.forEach((childNdx) => {
+                        const child = nodes[childNdx];
+                        child.setParent(node);
+                    });
+                }
             }
 
-            function addChildren(nodes, node, childIndices) {
-                childIndices.forEach((childNdx) => {
-                    const child = nodes[childNdx];
-                    child.setParent(node);
-                });
-            }
-
-
-            const gltf = await loadGLTF('whale.CYCLES.gltf');//gltf的另一种加载方法
-            //console.log(gltf);
-
+            const gltf = await loadGLTF('whale.CYCLES.gltf');
 
             function degToRad(deg) {
                 return deg * Math.PI / 180;
@@ -496,7 +508,6 @@
             }
             requestAnimationFrame(render);
         }
-
         main();
     </script>
 </body>
