@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+<script src="lib/three.js"></script>
+<script src="lib/GLTFLoader.js"></script>
+<script src="lib/GLTFExporter.js"></script>
+<script src="GlbHandle.js"></script>
+<script>
+    var loader= new THREE.GLTFLoader();
+    var fileName='1.glb';
+    loader.load(fileName, (glb) => {
+        console.log(glb)
+        mesh=glb.scene.children[0].children[0].children[2];
+        geometry=mesh.geometry;
+        attributes=geometry.attributes;
+        position=attributes.position;
+        for(var i=0;i<position.count;i++){
+            temp=position.array[3*i+1];
+            position.array[3*i+1]=-position.array[3*i+2];
+            position.array[3*i+2]=temp;
+        }
+        glb.scene.children[0].traverse(node=>{
+            if(typeof(node.position)!="undefined"){
+                node.position.set(0,0,0);
+                node.rotation.set(0,0,0);
+                node.scale.set(1,1,1);
+            }
+        })
+
+        geometry=mesh.geometry;
+        //print(glb);
+        //console.log(geometry);
+    });//读取函数结尾处
+    loader.load("Female.glb", (glb) => {
+        console.log(glb)
+        mesh=glb.scene.children[0].children[1];
+
+
+        glb.scene.children[0].traverse(node=>{
+            if(typeof(node.position)!="undefined"){
+                node.position.set(0,0,0);
+                node.rotation.set(0,0,0);
+                node.scale.set(1,1,1);
+            }
+        })
+        //print(glb);
+        console.log(geometry);
+    });
+    function print(glb) {
+        var myGlbHandle=new GlbHandle();
+        myGlbHandle.print(glb,"test");
+    }
+</script>
+</body>
