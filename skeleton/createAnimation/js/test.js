@@ -44,7 +44,7 @@ Describe.prototype={
             }
             light = new THREE.AmbientLight(0xffffff,1.0)
             scene.add(light);
-            new OrbitControls(camera , renderer.domElement);
+            new OrbitControls(camera,renderer.domElement,new THREE.Vector3(0,5,-100));
         }
         function render(){
             scope.frameIndex++;

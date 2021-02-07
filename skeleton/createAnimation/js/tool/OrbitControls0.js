@@ -1,11 +1,14 @@
-function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//这是一个相机控制对象的构造函数//controls = new THREE.OrbitControls(camera , renderer.domElement);
-	this.object = object;//object是相机对象
-	this.domElement = ( domElement !== undefined ) ? domElement : document;//渲染器的omElement
+//controls = new OrbitControls(camera , renderer.domElement);
+//这是一个构造函数
+function OrbitControls( object,domElement) {
+	this.object = object;
+	this.domElement = ( domElement !== undefined ) ? domElement : document;
 
-	this.enabled = true;// Set to false to disable this control
+	// Set to false to disable this control
+	this.enabled = true;
 
 	// "target" sets the location of focus, where the object orbits around
-	this.target =( myTarget=== undefined )?new THREE.Vector3(0, 0, 0):myTarget;// new THREE.Vector3();
+	this.target = new THREE.Vector3();
 
 	// How far you can dolly in and out ( PerspectiveCamera only )
 	this.minDistance = 0;
@@ -15,7 +18,7 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 	this.minZoom = 0;
 	this.maxZoom = Infinity;
 
-	// How far you can orbit vertically, upper and lower limits.您可以垂直环绕多远，上限和下限。
+	// How far you can orbit vertically, upper and lower limits.
 	// Range is 0 to Math.PI radians.
 	this.minPolarAngle = 0; // radians
 	this.maxPolarAngle = Math.PI; // radians
@@ -256,14 +259,12 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	}
 
-	//控制左右移动的函数
 	var panLeft = function() {
 
 		var v = new THREE.Vector3();
 
 		return function panLeft( distance, objectMatrix ) {
 
-			////console.log(objectMatrix);
 			v.setFromMatrixColumn( objectMatrix, 0 ); // get X column of objectMatrix
 			v.multiplyScalar( - distance );
 
@@ -288,16 +289,16 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	}();
 
-	// deltaX and deltaY are in pixels; right and down are positive//deltaX和deltaY以像素为单位；right和down为正
+	// deltaX and deltaY are in pixels; right and down are positive
 	var pan = function() {
 
 		var offset = new THREE.Vector3();
 
-		return function pan ( deltaX, deltaY ) {//有两个输入参数
+		return function pan ( deltaX, deltaY ) {
 
 			var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-			if ( scope.object instanceof THREE.PerspectiveCamera ) {//0000//计算采用透视法的相机如何前后左右移动
+			if ( scope.object instanceof THREE.PerspectiveCamera ) {
 
 				// perspective
 				var position = scope.object.position;
@@ -350,20 +351,23 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	}
 
-	function dollyOut( dollyScale ) {//0000
-		if ( scope.object instanceof THREE.PerspectiveCamera ) {//透视照相机//scope范围 一般表示某个this
+	function dollyOut( dollyScale ) {
+
+		if ( scope.object instanceof THREE.PerspectiveCamera ) {
 
 			scale *= dollyScale;
 
-		} else if ( scope.object instanceof THREE.OrthographicCamera ) {//正交照相机
+		} else if ( scope.object instanceof THREE.OrthographicCamera ) {
 
 			scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom / dollyScale ) );
 			scope.object.updateProjectionMatrix();
 			zoomChanged = true;
 
 		} else {
+
 			console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
 			scope.enableZoom = false;
+
 		}
 
 	}
@@ -374,7 +378,7 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	function handleMouseDownRotate( event ) {
 
-		//////console.log( 'handleMouseDownRotate' );
+		//console.log( 'handleMouseDownRotate' );
 
 		rotateStart.set( event.clientX, event.clientY );
 
@@ -382,7 +386,7 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	function handleMouseDownDolly( event ) {
 
-		//////console.log( 'handleMouseDownDolly' );
+		//console.log( 'handleMouseDownDolly' );
 
 		dollyStart.set( event.clientX, event.clientY );
 
@@ -390,7 +394,7 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	function handleMouseDownPan( event ) {
 
-		//////console.log( 'handleMouseDownPan' );
+		//console.log( 'handleMouseDownPan' );
 
 		panStart.set( event.clientX, event.clientY );
 
@@ -398,7 +402,7 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	function handleMouseMoveRotate( event ) {
 
-		//////console.log( 'handleMouseMoveRotate' );
+		//console.log( 'handleMouseMoveRotate' );
 
 		rotateEnd.set( event.clientX, event.clientY );
 		rotateDelta.subVectors( rotateEnd, rotateStart );
@@ -418,13 +422,21 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 	}
 
 	function handleMouseMoveDolly( event ) {
+
+		//console.log( 'handleMouseMoveDolly' );
+
 		dollyEnd.set( event.clientX, event.clientY );
+
 		dollyDelta.subVectors( dollyEnd, dollyStart );
 
 		if ( dollyDelta.y > 0 ) {
+
 			dollyIn( getZoomScale() );
+
 		} else if ( dollyDelta.y < 0 ) {
+
 			dollyOut( getZoomScale() );
+
 		}
 
 		dollyStart.copy( dollyEnd );
@@ -433,16 +445,15 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	}
 
-	function handleMouseMovePan( event ) {//上下左右移动//0001
+	function handleMouseMovePan( event ) {
 
-		//////console.log( 'handleMouseMovePan' );
+		//console.log( 'handleMouseMovePan' );
 
-		panEnd.set( event.clientX, event.clientY );//panEnd是一个2维向量 THREE.Vector2();
+		panEnd.set( event.clientX, event.clientY );
 
-		////console.log(event.clientX, event.clientY)
-		panDelta.subVectors( panEnd, panStart );//panDelta是一个2维向量 THREE.Vector2();
+		panDelta.subVectors( panEnd, panStart );
 
-		pan( panDelta.x, panDelta.y );//
+		pan( panDelta.x, panDelta.y );
 
 		panStart.copy( panEnd );
 
@@ -452,15 +463,29 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	function handleMouseUp( event ) {
 
-		//////console.log( 'handleMouseUp' );
+		//console.log( 'handleMouseUp' );
 
 	}
 
-	function handleMouseWheel( event ) {//滑动鼠标滑轮
-		var delta = 0;
-		if ( event.wheelDelta !== undefined )delta = event.wheelDelta;
-		else if ( event.detail !== undefined )delta = - event.detail;
+	function handleMouseWheel( event ) {
 
+		//console.log( 'handleMouseWheel' );
+
+		var delta = 0;
+
+		if ( event.wheelDelta !== undefined ) {
+
+			// WebKit / Opera / Explorer 9
+
+			delta = event.wheelDelta;
+
+		} else if ( event.detail !== undefined ) {
+
+			// Firefox
+
+			delta = - event.detail;
+
+		}
 
 		if ( delta > 0 ) {
 
@@ -476,28 +501,12 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	}
 
-	function handleKeyDown( event ) {//键盘点击事件的监听
+	function handleKeyDown( event ) {
 
-		////console.log(1211);//0000
-		switch ( event.key ) {
-			case "W":case "w":
-				dollyOut( getZoomScale() );//前进
-				scope.update();//更新场景中的画面
-				break;
-			case "S":case "s":
-				dollyIn( getZoomScale() );//后退
-				scope.update();//更新场景中的画面
-				break;
-			case "A":case "a"://对象的移动控制还不熟悉//00001
-				panEnd.set(0.1,0.1);//panEnd是一个2维向量 THREE.Vector2();
-				panDelta.subVectors( panEnd, panStart );//panDelta是一个2维向量 THREE.Vector2();
-				pan( panDelta.x, panDelta.y );//
-				panStart.copy( panEnd );
-				scope.update();
-				break;
-		}
+		//console.log( 'handleKeyDown' );
 
 		switch ( event.keyCode ) {
+
 			case scope.keys.UP:
 				pan( 0, scope.keyPanSpeed );
 				scope.update();
@@ -522,10 +531,9 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	}
 
-	//移动端
 	function handleTouchStartRotate( event ) {
 
-		//////console.log( 'handleTouchStartRotate' );
+		//console.log( 'handleTouchStartRotate' );
 
 		rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 
@@ -533,7 +541,7 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	function handleTouchStartDolly( event ) {
 
-		//////console.log( 'handleTouchStartDolly' );
+		//console.log( 'handleTouchStartDolly' );
 
 		var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 		var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
@@ -546,7 +554,7 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	function handleTouchStartPan( event ) {
 
-		//////console.log( 'handleTouchStartPan' );
+		//console.log( 'handleTouchStartPan' );
 
 		panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 
@@ -554,7 +562,7 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	function handleTouchMoveRotate( event ) {
 
-		//////console.log( 'handleTouchMoveRotate' );
+		//console.log( 'handleTouchMoveRotate' );
 
 		rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 		rotateDelta.subVectors( rotateEnd, rotateStart );
@@ -575,7 +583,7 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	function handleTouchMoveDolly( event ) {
 
-		//////console.log( 'handleTouchMoveDolly' );
+		//console.log( 'handleTouchMoveDolly' );
 
 		var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 		var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
@@ -604,7 +612,7 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	function handleTouchMovePan( event ) {
 
-		//////console.log( 'handleTouchMovePan' );
+		//console.log( 'handleTouchMovePan' );
 
 		panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 
@@ -621,7 +629,6 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 	function handleTouchEnd( event ) {
 	}
 
-	//PC端
 	function onMouseDown( event ) {
 		if ( scope.enabled === false ) return;
 		event.preventDefault();
@@ -655,23 +662,28 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	}
 
-	function onMouseMove( event ) {//鼠标拖动事件//无论左键右键都监听
+	function onMouseMove( event ) {
+
 		if ( scope.enabled === false ) return;
 
 		event.preventDefault();
 
-		if ( state === STATE.ROTATE ) {//这里对应了左键拖动时的旋转事件
+		if ( state === STATE.ROTATE ) {
+
 			if ( scope.enableRotate === false ) return;
 
 			handleMouseMoveRotate( event );
 
-		} else if ( state === STATE.DOLLY ) {//这里对应了滑轮拖动时的前进后退事件//dolly滑动
+		} else if ( state === STATE.DOLLY ) {
+
 			if ( scope.enableZoom === false ) return;
 
 			handleMouseMoveDolly( event );
 
-		} else if ( state === STATE.PAN ) {//这里对应了右键拖动时的移动事件
+		} else if ( state === STATE.PAN ) {
+
 			if ( scope.enablePan === false ) return;
+
 			handleMouseMovePan( event );
 
 		}
@@ -697,13 +709,14 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 		if ( scope.enabled === false || scope.enableZoom === false || ( state !== STATE.NONE && state !== STATE.ROTATE ) ) return;
 
-		event.preventDefault();
+		if(domElement !== undefined)event.preventDefault();
 		event.stopPropagation();
 
 		handleMouseWheel( event );
 
-		scope.dispatchEvent( startEvent ); // not sure why these are here...//不知道为什么会有这些。。。
+		scope.dispatchEvent( startEvent ); // not sure why these are here...
 		scope.dispatchEvent( endEvent );
+
 	}
 
 	function onKeyDown( event ) {
@@ -714,7 +727,6 @@ function OrbitControls( object,domElement,myTarget) {//Orbit是轨道的意思//
 
 	}
 
-	//移动端
 	function onTouchStart( event ) {
 
 		if ( scope.enabled === false ) return;
