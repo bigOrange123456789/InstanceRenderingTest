@@ -192,13 +192,13 @@ Describe.prototype={
             var button40=new Button("+","red",29,35,35);
             button40.rePos(5+140,10+tagHeight*tagPosition);
             button40.addEvent(function () {
-                measure.obj0.rotation.x+=measure.stepPosition;
+                measure.obj0.rotation.x+=measure.stepRotation;
                 measure.update();
             });
             var button41=new Button("-","red",29,35,35);
             button41.rePos(5+200,10+tagHeight*tagPosition);
             button41.addEvent(function () {
-                measure.obj0.rotation.x-=measure.stepPosition;
+                measure.obj0.rotation.x-=measure.stepRotation;
                 measure.update();
             });
 
@@ -207,13 +207,13 @@ Describe.prototype={
             var button50=new Button("+","red",29,35,35);
             button50.rePos(5+140,10+tagHeight*tagPosition);
             button50.addEvent(function () {
-                measure.obj0.rotation.y+=measure.stepPosition;
+                measure.obj0.rotation.y+=measure.stepRotation;
                 measure.update();
             });
             var button51=new Button("-","red",29,35,35);
             button51.rePos(5+200,10+tagHeight*tagPosition);
             button51.addEvent(function () {
-                measure.obj0.rotation.y-=measure.stepPosition;
+                measure.obj0.rotation.y-=measure.stepRotation;
                 measure.update();
             });
 
@@ -222,14 +222,29 @@ Describe.prototype={
             var button60=new Button("+","red",29,35,35);
             button60.rePos(5+140,10+tagHeight*tagPosition);
             button60.addEvent(function () {
-                measure.obj0.rotation.z+=measure.stepPosition;
+                measure.obj0.rotation.z+=measure.stepRotation;
                 measure.update();
             });
             var button61=new Button("-","red",29,35,35);
             button61.rePos(5+200,10+tagHeight*tagPosition);
             button61.addEvent(function () {
-                measure.obj0.rotation.z-=measure.stepPosition;
+                measure.obj0.rotation.z-=measure.stepRotation;
                 measure.update();
+            });
+
+            var button3=new Button("positon step","red",10,150,40);
+            button3.rePos(10,470);
+            button3.addEvent(function () {
+                measure.stepPosition=parseFloat(
+                    prompt("pos步长 "+measure.stepPosition+" 更新为:")
+                );
+            });
+            var button4=new Button("rotation step","red",10,150,40);
+            button4.rePos(10,520);
+            button4.addEvent(function () {
+                measure.stepRotation=parseFloat(
+                    prompt("rot步长 "+measure.stepRotation+" 更新为:")
+                );
             });
 
             updateAnimation();//
@@ -242,6 +257,9 @@ Describe.prototype={
                 tag4.reStr("rotation_x:   "+(Math.floor(measure.obj0.rotation.x*1000)/1000));
                 tag5.reStr("rotation_y:   "+(Math.floor(measure.obj0.rotation.y*1000)/1000));
                 tag6.reStr("rotation_z:   "+(Math.floor(measure.obj0.rotation.z*1000)/1000));
+
+                button3.reStr("pos步长:"+measure.stepPosition);
+                button4.reStr("rot步长:"+measure.stepRotation);
 
                 requestAnimationFrame(updateAnimation);
             }
