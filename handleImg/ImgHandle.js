@@ -49,4 +49,16 @@ ImgHandle.prototype={
             else scope.drawImg(srcs[index], [510 * index, 0, 510, 510], callback);
         }
     },
+    mergeImg2:function (srcs,name) {
+        var index=0;
+        var scope=this;
+        this.drawImg(srcs[index],[510*index/2 , 0 ,510 ,510],callback);
+        function callback() {
+            //setInterval(function () {},100);
+            console.log(index);
+            index++;
+            if (index === srcs.length) scope.download(name);
+            else scope.drawImg(srcs[index], [510 * index/2+0.001, 0, 510, 510], callback);
+        }
+    },
 }
