@@ -55,52 +55,7 @@ Describe.prototype={
         this.camera=camera;
     },
 
-    //动画修改测试
-    test1:function (){
-        this.setContext2();
-        console.log(this,this.camera)
-        //this.camera.position.set(0,0,-20);
-        var nameTest="输出帧序号，用于验证";
-        console.log('start test:'+nameTest);
-        //开始测试
-        var scope=this;
-        var loader= new THREE.GLTFLoader();
-        loader.load("Female.glb", (glb) => {
-            console.log(glb);//OnlyArm
-            var mesh=glb.scene.children[0].children[1];//"myModel/avatar/Female.glb"
 
-            var controller=new SkinnedMeshController();
-            controller.init(mesh,glb.animations[0]);
-            controller.mesh.rotation.set(Math.PI / 2, 0, 0);
-            controller.mesh.scale.set(0.5,0.5,0.5);
-            controller.mesh.position.set(0,-25,-100);
-            scope.scene.add(controller.mesh);
-            /*
-            *       var meshMixer2 = new THREE.AnimationMixer(G.scene);
-                    meshMixer2.clipAction(glb1.animations[0]).play();
-                    setInterval(function () {
-                        meshMixer2.update(0.01);
-                    },100)
-                    console.log(scope.scene,G.scene);
-                    scope.scene.add(G.scene);
-            * */
-
-            var measure=new ParamMeasure(glb.animations[0],2);
-            measure.boneIndex=8;
-            scope.tag.reStr("骨骼序号："+measure.boneIndex);
-
-            updateAnimation();//
-            function updateAnimation() {//每帧更新一次动画
-                //controller.init(mesh,glb.animations[0]);
-                controller.setTime(0);
-                //requestAnimationFrame(updateAnimation);
-            }
-
-
-
-        });//
-        //完成测试
-    },
 
     //动画修改测试
     test2:function (){
@@ -121,6 +76,35 @@ Describe.prototype={
             controller.mesh.scale.set(0.5,0.5,0.5);
             controller.mesh.position.set(0,-25,-100);
             scope.scene.add(controller.mesh);
+            //controller.mesh.material=new THREE.MeshBasicMaterial({color:0xffffff, transparent: true,opacity: 0.5 });
+            //scope.scene.visible=false;
+
+            var helper = new THREE.SkeletonHelper( controller.mesh );
+            //helper.material=new THREE.MeshPhongMaterial({color:0x0000dd});//new THREE.BASI
+            helper.rotation.set(Math.PI / 2, 0, 0);
+            helper.scale.set(0.5,0.5,0.5);
+            helper.position.set(0,-25,-100);
+            helper.material.linewidth = 10;
+            scope.scene.add( helper );
+
+            var material1=controller.mesh.material;
+            var material2=helper.material;
+            var material0=new THREE.MeshBasicMaterial({color:0xffffff, transparent: true,opacity: 0.5 });
+            helper.material=material0;
+
+            var button_material=new Button("网格模式","red",10,100,40);
+            button_material.rePos(450,-1);
+            button_material.addEvent(function () {
+                if(button_material.element.innerHTML==="网格模式"){
+                    button_material.element.innerHTML="骨骼模式";
+                    controller.mesh.material=material0;
+                    helper.material=material2;
+                }else{
+                    button_material.element.innerHTML="网格模式";
+                    controller.mesh.material=material1;
+                    helper.material=material0;
+                }
+            });
 
             var measure=new ParamMeasure(glb.animations[0],2);
             measure.boneIndex=8;
