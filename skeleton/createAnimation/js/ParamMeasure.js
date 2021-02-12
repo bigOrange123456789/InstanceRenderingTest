@@ -46,10 +46,17 @@ function ParamMeasure(obj,type){
         }loop();
 
         var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
-        loader.load("animation.json", function(str){//dataTexture
-            var data=JSON.parse(str).data;//204
-            This.setAnimation(data);
+        loader.load("animation/animation (单手托下巴2).json", function(str){//dataTexture
+            var data=JSON.parse(str).data;//204//animation(单手托下巴1)
+            This.setAnimation(data);//"animation/animation (3).json",
         });
+        //0 14举手
+        //1 2 鼓掌
+        //3 4 5 6静止
+        //7 8 9抱胸
+        //10 11托腮
+        //12 13后仰放松
+        //
 
         //开始测试
 

@@ -58,15 +58,15 @@ Describe.prototype={
         //开始测试
         var scope=this;
         var loader= new THREE.GLTFLoader();
-        loader.load("female_run.glb", (glb1) => {
-            loader.load("female_bend.glb", (glb2) => {
-                var myGlb=glb1;
+        loader.load("Female.glb", (glb1) => {
+            loader.load("male_run.glb", (glb2) => {
+                var myGlb=glb2;
                 createObj2(myGlb);
                 function createObj2(G) {
                     var meshMixer2 = new THREE.AnimationMixer(G.scene);
-                    meshMixer2.clipAction(glb1.animations[0]).play();
+                    meshMixer2.clipAction(glb2.animations[0]).play();
                     setInterval(function () {
-                        meshMixer2.update(0.01);
+                        meshMixer2.update(0.05);
                     },100)
                     console.log(scope.scene,G.scene);
                     scope.scene.add(G.scene);

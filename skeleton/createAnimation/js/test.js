@@ -67,7 +67,7 @@ Describe.prototype={
         //开始测试
         var scope=this;
         var loader= new THREE.GLTFLoader();
-        loader.load("Female.glb", (glb) => {
+        loader.load("Male_Low.glb", (glb) => {
             var mesh=glb.scene.children[0].children[1];//"myModel/avatar/Female.glb"
 
             var controller=new SkinnedMeshController();
@@ -80,15 +80,22 @@ Describe.prototype={
             //scope.scene.visible=false;
 
             var helper = new THREE.SkeletonHelper( controller.mesh );
-            //helper.material=new THREE.MeshPhongMaterial({color:0x0000dd});//new THREE.BASI
+            helper.material= new THREE.LineBasicMaterial({
+                opacity: 1.0,
+                linewidth: 10,
+                vertexColors: THREE.VertexColors
+            });//new THREE.MeshPhongMaterial({color:0x0000dd});//new THREE.BASI
             helper.rotation.set(Math.PI / 2, 0, 0);
             helper.scale.set(0.5,0.5,0.5);
             helper.position.set(0,-25,-100);
-            helper.material.linewidth = 10;
+            //helper.material.linewidth = 10;
             scope.scene.add( helper );
+
+
 
             var material1=controller.mesh.material;
             var material2=helper.material;
+            console.log(material2);
             var material0=new THREE.MeshBasicMaterial({color:0xffffff, transparent: true,opacity: 0.5 });
             helper.material=material0;
 
@@ -251,7 +258,6 @@ Describe.prototype={
                 var data=[];
                 var time=0;
                 var animation=measure.obj;
-                console.log()
                 for(var i=0;i<25;i++) {
                     data.push([
                         i,
@@ -292,7 +298,7 @@ Describe.prototype={
         //开始测试
         var scope=this;
         var loader= new THREE.GLTFLoader();
-        loader.load("Female.glb", (glb) => {
+        loader.load("Male_Low.glb", (glb) => {
             console.log(glb);//OnlyArm
 
             //setInterval(function () {meshMixer2.update(0.01);},100)

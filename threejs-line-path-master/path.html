@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>path</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      /* 隐藏body窗口区域滚动条 */
+    }
+  </style>
+  <!--引入three.js三维引擎-->
+  <script src="js/plugins/three.min.js"></script>
+  <script src="js/plugins/controls/OrbitControls.js"></script>
+  <script src="js/data.js"></script>
+</head>
+
+<body>
+  <script>
+    /**
+     * 创建场景对象Scene
+     */
+    var scene = new THREE.Scene();
+    /**
+     * 创建网格模型
+     */
+    var data = data;
+    console.log(data)
+
+    var group = new THREE.Group();
+    // type: 0 画线
+    for (let i = 0; i < data.lines.length; i++) {
+      var geometry = new THREE.Geometry(); // 声明一个几何体对象Geometry
+      var p = []
+      for (let j = 0; j < data.lines[i].positions.length; j++) {
+        p.push(new THREE.Vector3(data.lines[i].positions[j].x * -100, data.lines[i].positions[j].y * 100, data.lines[i].positions[j].z * -100))
+      }
+
+      if (data.lines[i].positions.length > 1) {
+        // CatmullRomCurve3函数用来创建曲线，其中第一个点为起点，最后一个点为终点
+        // points参数-----点数组
+        // closed是否闭合，默认不闭合
+        // curveType曲线类型
+        // tension张力，默认0.5
+        var curve = new THREE.CatmullRomCurve3(p);
+        //getPoints是基类Curve的方法，返回一个vector3对象作为元素组成的数组
+        var points = curve.getPoints(100); //分段数100，返回101个顶点
+        // setFromPoints方法从points中提取数据改变几何体的顶点属性vertices
+        geometry.setFromPoints(points);
+        //材质对象
+        var material = new THREE.LineBasicMaterial({
+          color: `rgb(${Math.floor(data.lines[i].color.r * 255)}, ${Math.floor(data.lines[i].color.g * 255)}, ${Math.floor(data.lines[i].color.b * 255)})`,
+          // linewidth: Math.floor(data.lines[i].width * 1000), // 线宽无效
+          opacity: data.lines[i].color.a.toFixed(2),
+          transparent: true
+        });
+        //线条模型对象
+        var line = new THREE.Line(geometry, material);
+        group.add(line); //线条对象添加到场景中
+        group.position.set(-20, 0, 0);
+      }
+    }
+    scene.add(group)
+    scene.scale.set(1.2, 1.2, 1.2);
+
+    // 辅助三维坐标系AxesHelper  参数250表示坐标系大小，可以根据场景大小去设置
+    var axesHelper = new THREE.AxesHelper(250);
+    scene.add(axesHelper);
+
+    /**
+     * 光源设置
+     */
+    //点光源
+    var pointLight = new THREE.PointLight(0xffffff);
+    // pointLight.position.set(400, 200, 300); //点光源位置
+    pointLight.position.set(0, 0, 300); //点光源位置
+    scene.add(pointLight); //点光源添加到场景中
+
+    //环境光
+    var ambient2 = new THREE.AmbientLight(0x444444);
+    scene.add(ambient2);
+    /**
+     * 相机设置
+     */
+    var width = window.innerWidth; //窗口宽度
+    var height = window.innerHeight; //窗口高度
+    var k = width / height; //窗口宽高比
+    var s = 200; //三维场景显示范围控制系数，系数越大，显示的范围越大
+    //创建相机对象 - 正投影相机设置
+    var camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+    // camera.position.set( -200, 0, -200); // 设置相机位置
+    camera.position.set(200, 0, 200); //设置相机位置
+    camera.lookAt(scene.position); //设置相机方向(指向的场景对象)
+
+    //透视投影相机设置
+    // var camera = new THREE.PerspectiveCamera(60, width / height, 1, 1000);
+
+    // var shadowCameraHelper = new THREE.CameraHelper( camera );
+    // scene.add( shadowCameraHelper );
+    /**
+     * 创建渲染器对象
+     */
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(width, height);//设置渲染区域尺寸，本质就是设置输出canvas的尺寸
+    renderer.setClearColor(0xdedede, 1); //设置背景颜色
+    document.body.appendChild(renderer.domElement); //body元素中插入canvas对象
+    //执行渲染操作   指定场景、相机作为参数
+    // renderer.render(scene, camera);
+    function render() {
+      renderer.render(scene, camera);//执行渲染操作
+      // group.rotateY(0.01);//每次绕y轴旋转0.01弧度
+      // requestAnimationFrame(render);//请求再次执行渲染函数render
+    }
+    render();
+
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);//创建控件对象
+    // 已经通过requestAnimationFrame(render);周期性执行render函数，没必要再通过监听鼠标事件执行render函数
+    controls.addEventListener('change', render)
+
+    // onresize 事件会在窗口被调整大小时发生
+    window.onresize = function () {
+      // 重置渲染器输出画布canvas尺寸
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      // 重置相机投影的相关参数
+      k = window.innerWidth / window.innerHeight;//窗口宽高比
+      camera.left = -s * k;
+      camera.right = s * k;
+      camera.top = s;
+      camera.bottom = -s;
+      // 渲染器执行render方法的时候会读取相机对象的投影矩阵属性projectionMatrix
+      // 但是不会每渲染一帧，就通过相机的属性计算投影矩阵(节约计算资源)
+      // 如果相机的一些属性发生了变化，需要执行updateProjectionMatrix ()方法更新相机的投影矩阵
+      camera.updateProjectionMatrix();
+    };
+  </script>
+</body>
+
+</html>
