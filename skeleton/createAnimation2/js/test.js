@@ -68,7 +68,7 @@ Describe.prototype={
         var scope=this;
         var loader= new THREE.GLTFLoader();
         loader.load("test.gltf", (glb) => {
-            console.log(glb.scene.children[0].children[0].children[1]);
+            console.log(glb);
             var mesh=glb.scene.children[0].children[0].children[1];//"myModel/avatar/Female.glb"
 
             var controller=new SkinnedMeshController();
@@ -120,10 +120,10 @@ Describe.prototype={
 
             var button_material2=new Button("起始帧","red",10,100,40);
             button_material2.rePos(555,-1);
-            button_material2.addEvent(function () {
+            button_material2.addEvent(function () {//动画共有36帧
                 if(button_material2.element.innerHTML==="起始帧"){
                     button_material2.element.innerHTML="结束帧";
-                    measure.frameIndex=1;
+                    measure.frameIndex=35;
                 }else{
                     button_material2.element.innerHTML="起始帧";
                     measure.frameIndex=0;

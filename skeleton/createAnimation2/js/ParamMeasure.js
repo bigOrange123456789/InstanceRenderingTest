@@ -6,7 +6,7 @@ function ParamMeasure(obj,type){
     this.stepRotation=1;
     this.stepScale=1;
     this.boneIndex=7;
-    this.frameIndex=1;
+    this.frameIndex=0;
     this.obj0={position:{},scale:{},rotation:{}};
     this.quaternion2euler=function (quaternion) {
         var euler=new THREE.Euler(0,0,0, 'XYZ');
