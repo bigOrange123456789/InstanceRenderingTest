@@ -6,6 +6,7 @@ function ParamMeasure(obj,type){
     this.stepRotation=1;
     this.stepScale=1;
     this.boneIndex=7;
+    this.frameIndex=1;
     this.obj0={position:{},scale:{},rotation:{}};
     this.quaternion2euler=function (quaternion) {
         var euler=new THREE.Euler(0,0,0, 'XYZ');
@@ -22,7 +23,7 @@ function ParamMeasure(obj,type){
 
         function loop() {
             var i=This.boneIndex;
-            var time=0;//修改地0帧的数据
+            var time=This.frameIndex;//修改地0帧的数据
             var obj={};
             var animation=This.obj;
             obj.position={};
@@ -45,11 +46,7 @@ function ParamMeasure(obj,type){
             requestAnimationFrame(loop);
         }loop();
 
-        /*var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
-        loader.load("animation/animation (单手托下巴2).json", function(str){//dataTexture
-            var data=JSON.parse(str).data;//204//animation(单手托下巴1)
-            This.setAnimation(data);//"animation/animation (3).json",
-        });*/
+
         //0 14举手
         //1 2 鼓掌
         //3 4 5 6静止
@@ -62,11 +59,10 @@ function ParamMeasure(obj,type){
 
         var step=this.stepPosition;//
         var stepRotation=0.3;
-        var stepScale=this.stepScale;
         document.onkeydown = function (e) {
             //7,8,9,10
             var obj=This.obj0;
-            var time=0;
+            var time=This.boneIndex;
 
 
             if (e.key === "t") obj.position.x += step;
@@ -99,30 +95,10 @@ function ParamMeasure(obj,type){
             This.update();
         }
     }
-    this.setAnimation=function (data) {
-        //举起左手
-        var datas=data;
-
-        for(var i=0;i<datas.length;i++)
-            this.setBone(datas[i]);
-    }
-    this.setBone=function (data) {
-        var i=data[0];
-        var time=data[1];
-
-        this.obj.tracks[3*i].values[3*time]=data[2];
-        this.obj.tracks[3*i].values[3*time+1]=data[3];
-        this.obj.tracks[3*i].values[3*time+2]=data[4];
-
-        this.obj.tracks[3*i+1].values[4*time]=data[5];
-        this.obj.tracks[3*i+1].values[4*time+1]=data[6];
-        this.obj.tracks[3*i+1].values[4*time+2]=data[7];
-        this.obj.tracks[3*i+1].values[4*time+3]=data[8];
-    }
 
     this.update=function () {
         var This=this;
-        var time=0;
+        var time=this.frameIndex;
         var i=This.boneIndex;
         var obj=this.obj0;
         var rx=obj.rotation.x,ry=obj.rotation.y,rz=obj.rotation.z;

@@ -118,6 +118,18 @@ Describe.prototype={
             measure.boneIndex=8;
             scope.tag.reStr("骨骼序号："+measure.boneIndex);
 
+            var button_material2=new Button("起始帧","red",10,100,40);
+            button_material2.rePos(555,-1);
+            button_material2.addEvent(function () {
+                if(button_material2.element.innerHTML==="起始帧"){
+                    button_material2.element.innerHTML="结束帧";
+                    measure.frameIndex=1;
+                }else{
+                    button_material2.element.innerHTML="起始帧";
+                    measure.frameIndex=0;
+                }
+            });
+
             var button1=new Button("上一个","red",25);
             button1.rePos(170,-1);
             button1.addEvent(function () {
@@ -239,9 +251,22 @@ Describe.prototype={
                 );
             });
 
+            this.button.addEvent(function () {//下载按钮的设置
+                var gltfExporter = new THREE.GLTFExporter();
+                gltfExporter.parse(glb.scene, function (result) {
+                    var name="test.gltf";
+                    let link = document.createElement('a');
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.href = URL.createObjectURL(new Blob([JSON.stringify(result)], { type: 'text/plain' }));
+                    link.download = name;
+                    link.click();
+                },{animations:glb.animations});
+            });
+
             updateAnimation();//
             function updateAnimation() {//每帧更新一次动画
-                controller.setTime(0);
+                controller.setTime(measure.frameIndex);
                 scope.tag.reStr("骨骼序号："+measure.boneIndex);
                 tag1.reStr("position_x:   "+(Math.floor(measure.obj0.position.x*1000)/1000));
                 tag2.reStr("position_y:   "+(Math.floor(measure.obj0.position.y*1000)/1000));
@@ -255,18 +280,7 @@ Describe.prototype={
 
                 requestAnimationFrame(updateAnimation);
             }
-            this.button.addEvent(function () {
-                var gltfExporter = new THREE.GLTFExporter();
-                gltfExporter.parse(glb.scene, function (result) {
-                    var name="test.gltf";
-                    let link = document.createElement('a');
-                    link.style.display = 'none';
-                    document.body.appendChild(link);
-                    link.href = URL.createObjectURL(new Blob([JSON.stringify(result)], { type: 'text/plain' }));
-                    link.download = name;
-                    link.click();
-                },{animations:glb.animations});
-            });
+
         });
         //完成测试
     }
