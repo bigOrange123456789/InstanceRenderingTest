@@ -111,7 +111,7 @@ SkinnedMeshController.prototype={
             }/**/
         }
         function get(k,begin,end) {
-            console.log(k,begin,end);
+            //console.log(k,begin,end);
             var k_max=35;
             return (k/k_max)*(end-begin)+begin;
         }
