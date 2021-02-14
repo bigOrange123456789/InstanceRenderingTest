@@ -252,6 +252,8 @@ Describe.prototype={
             });
 
             this.button.addEvent(function () {//下载按钮的设置
+                //glb.animations[0]=
+                    controller.computeIntermediateFrame(glb.animations[0]);
                 var gltfExporter = new THREE.GLTFExporter();
                 gltfExporter.parse(glb.scene, function (result) {
                     var name="test.gltf";
@@ -261,7 +263,7 @@ Describe.prototype={
                     link.href = URL.createObjectURL(new Blob([JSON.stringify(result)], { type: 'text/plain' }));
                     link.download = name;
                     link.click();
-                },{animations:glb.animations});
+                },{animations: glb.animations});
             });
 
             updateAnimation();//

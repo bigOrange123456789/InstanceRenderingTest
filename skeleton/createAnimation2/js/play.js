@@ -67,27 +67,32 @@ Describe.prototype={
         var loader= new THREE.GLTFLoader();
         loader.load("test.gltf", (glb) => {
             console.log(glb);
-            var mesh=glb.scene.children[0].children[0].children[1];//"myModel/avatar/Female.glb"
+            //var mesh=glb.scene.children[0].children[0].children[1];//"myModel/avatar/Female.glb"
 
-            var controller=new SkinnedMeshController();
-            controller.init(mesh,glb.animations[0]);
-            controller.mesh.rotation.set(Math.PI / 2, 0, 0);
-            controller.mesh.scale.set(0.5,0.5,0.5);
-            controller.mesh.position.set(0,-25,-100);
-            scope.scene.add(controller.mesh);
+            glb.scene.traverse(node=>{
+                if(node instanceof THREE.SkinnedMesh){
+                    play(node);
+                }
+            });
+            function play(mesh) {
+                var controller=new SkinnedMeshController();
+                controller.init(mesh,glb.animations[0]);
+                controller.mesh.rotation.set(Math.PI / 2, 0, 0);
+                controller.mesh.scale.set(0.5,0.5,0.5);
+                controller.mesh.position.set(0,-25,-100);
+                scope.scene.add(controller.mesh);
 
+                var frameIndex=0;
 
-
-            var frameIndex=0;
-
-            updateAnimation();//
-            function updateAnimation() {//每帧更新一次动画
-                controller.setTime(frameIndex);
-                frameIndex++;
-                if(frameIndex===35)frameIndex=0;
-                requestAnimationFrame(updateAnimation);
-            }
-
+                updateAnimation();//
+                function updateAnimation() {//每帧更新一次动画
+                    if(frameIndex>=35)controller.setTime(70-frameIndex);
+                    else controller.setTime(frameIndex);
+                    frameIndex++;
+                    if(frameIndex===70)frameIndex=0;
+                    requestAnimationFrame(updateAnimation);
+                }
+            }//完成播放
         });
         //完成测试
     }
