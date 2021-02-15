@@ -98,7 +98,6 @@ SkinnedMeshController.prototype={
         for(var i=0;i<25;i++){//25个骨头
             var position=animation.tracks[3*i].values;
             var quaternion=animation.tracks[3*i+1].values;
-
             for(var time=1;time<=34;time++){
                 position[3*time  ]=get(time,position[0],position[3*35  ]);
                 position[3*time+1]=get(time,position[1],position[3*35+1]);
@@ -108,7 +107,7 @@ SkinnedMeshController.prototype={
                 quaternion[4*time+1]=get(time,quaternion[1],quaternion[4*35+1]);
                 quaternion[4*time+2]=get(time,quaternion[2],quaternion[4*35+2]);
                 quaternion[4*time+3]=get(time,quaternion[3],quaternion[4*35+3]);
-            }/**/
+            }
         }
         function get(k,begin,end) {
             //console.log(k,begin,end);

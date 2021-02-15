@@ -128,11 +128,15 @@ Describe.prototype={
                 button_material2.addEvent(function () {//动画共有36帧
                     if(button_material2.element.innerHTML==="起始帧"){
                         button_material2.element.innerHTML="结束帧";
-                        measure.frameIndex=35;//0//3*9
+                        //measure.frameIndex=35;//0//3*9
+                        measure.frameIndex=measure.frameIndex+8<36?measure.frameIndex+8:0;
                     }else{
                         button_material2.element.innerHTML="起始帧";
-                        measure.frameIndex=0;
+                        //measure.frameIndex=0;
+                        measure.frameIndex=measure.frameIndex+8<36?measure.frameIndex+8:0;
                     }
+                    if(measure.frameIndex===32)measure.frameIndex=35;
+                    console.log("帧序号:"+measure.frameIndex);
                 });
 
                 var button1=new Button("上一个","red",25);
@@ -267,6 +271,9 @@ Describe.prototype={
                     measure.frameCopy(35,0);
                 });
 
+                //初始计算一次
+                glb.animations[0]=
+                    controller.computeIntermediateFrame(glb.animations[0]);
                 scope.button.addEvent(function () {//下载按钮的设置
                     glb.animations[0]=
                         controller.computeIntermediateFrame(glb.animations[0]);
