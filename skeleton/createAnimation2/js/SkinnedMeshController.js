@@ -94,7 +94,7 @@ SkinnedMeshController.prototype={
     },
     computeIntermediateFrame:function (animation) {
         //this.animation
-        console.log(animation);
+        //console.log(animation);
         for(var i=0;i<25;i++){//25个骨头
             var position=animation.tracks[3*i].values;
             var quaternion=animation.tracks[3*i+1].values;

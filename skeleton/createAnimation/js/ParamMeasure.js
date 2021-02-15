@@ -46,7 +46,7 @@ function ParamMeasure(obj,type){
         }loop();
 
         var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
-        loader.load("animation/animation (单手托下巴2).json", function(str){//dataTexture
+        loader.load("animation (站立).json", function(str){//dataTexture
             var data=JSON.parse(str).data;//204//animation(单手托下巴1)
             This.setAnimation(data);//"animation/animation (3).json",
         });

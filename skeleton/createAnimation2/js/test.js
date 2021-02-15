@@ -128,7 +128,7 @@ Describe.prototype={
                 button_material2.addEvent(function () {//动画共有36帧
                     if(button_material2.element.innerHTML==="起始帧"){
                         button_material2.element.innerHTML="结束帧";
-                        measure.frameIndex=35;
+                        measure.frameIndex=35;//0//3*9
                     }else{
                         button_material2.element.innerHTML="起始帧";
                         measure.frameIndex=0;
@@ -254,6 +254,17 @@ Describe.prototype={
                     measure.stepRotation=parseFloat(
                         prompt("rot步长 "+measure.stepRotation+" 更新为:")
                     );
+                });
+
+                var button5=new Button("起始帧复制到结束帧","red",10,150,35);
+                button5.rePos(10,600);//将起始帧的动作赋给结束帧
+                button5.addEvent(function () {
+                    measure.frameCopy(0,35);
+                });
+                var button6=new Button("结束帧复制到起始帧","red",10,150,35);
+                button6.rePos(10,650);//将起始帧的动作赋给结束帧
+                button6.addEvent(function () {
+                    measure.frameCopy(35,0);
                 });
 
                 scope.button.addEvent(function () {//下载按钮的设置

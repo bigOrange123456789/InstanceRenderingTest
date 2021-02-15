@@ -284,45 +284,23 @@ Describe.prototype={
                 }
             });
 
-        });//
-        //完成测试
-    },
-
-    //动画修改测试
-    test3:function (){
-        this.setContext2();
-        console.log(this,this.camera)
-        //this.camera.position.set(0,0,-20);
-        var nameTest="输出帧序号，用于验证";
-        console.log('start test:'+nameTest);
-        //开始测试
-        var scope=this;
-        var loader= new THREE.GLTFLoader();
-        loader.load("Male_Low.glb", (glb) => {
-            console.log(glb);//OnlyArm
-
-            //setInterval(function () {meshMixer2.update(0.01);},100)
-            //glb.scene.rotation.set(Math.PI / 2, 0, 0);
-            //glb.scene.scale.set(0.5,0.5,0.5);
-            //glb.scene.position.set(0,0,15);
-            scope.scene.add(glb.scene);
-
-
-            var measure=new ParamMeasure(glb.animations[0],2);
-            measure.boneIndex=8;
-            scope.tag.reStr("骨骼序号："+measure.boneIndex);
-            measure.setAnimation();
-
-            var meshMixer = new THREE.AnimationMixer(glb.scene);
-            meshMixer.clipAction(glb.animations[0]).play();
-
-            updateAnimation();//
-            function updateAnimation() {//每帧更新一次动画
-
-                //controller.init(mesh,glb.animations[0]);
-                //controller.setTime(0);
-                //requestAnimationFrame(updateAnimation);
-            }
+            setTimeout(function () {
+                downLoad(glb);
+                function downLoad(glb) {
+                    var gltfExporter = new THREE.GLTFExporter();
+                    gltfExporter.parse(glb.scene, function (result) {
+                        var name="test.gltf";
+                        let link = document.createElement('a');
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        link.href = URL.createObjectURL(new Blob([JSON.stringify(result)], { type: 'text/plain' }));
+                        link.download = name;
+                        link.click();
+                    },{
+                        animations:[glb.animations[0]]
+                    });
+                }
+            },1000);
         });//
         //完成测试
     },

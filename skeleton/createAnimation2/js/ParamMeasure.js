@@ -112,6 +112,27 @@ function ParamMeasure(obj,type){
         This.obj.tracks[3*i+1].values[4*time+2]=quaternion.z;
         This.obj.tracks[3*i+1].values[4*time+3]=quaternion.w;
     };
+    this.frameCopy=function (i_start,i_end) {
+        animation=this.obj;
+        //var i_start=0,i_end=35;
+        var time0=i_start,time1=i_end;
+        //for()
+        for(var i=0;i<25;i++){//25个骨头
+            var position=animation.tracks[3*i].values;
+            var quaternion=animation.tracks[3*i+1].values;
+
+            //for(var time=1;time<=34;time++){
+                position[3*time1  ]=position[3*time0  ];
+                position[3*time1+1]=position[3*time0+1];
+                position[3*time1+2]=position[3*time0+2];
+
+                quaternion[4*time1  ]=quaternion[4*time0  ];
+                quaternion[4*time1+1]=quaternion[4*time0+1];
+                quaternion[4*time1+2]=quaternion[4*time0+2];
+                quaternion[4*time1+3]=quaternion[4*time0+3];
+            //}
+        }
+    }
 
     this.AnimationObj(this.obj);
 }
