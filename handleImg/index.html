@@ -1,5 +1,14 @@
 <script src="ImgHandle.js"></script>
 <script>
+    function myLoad1() {
+        var imgHandle=new ImgHandle();
+        var w=500,
+            h=280;
+        imgHandle.init(w,h);
+        imgHandle.drawImg("3.jpg",[0, 0 ,w,h],function(){
+            imgHandle.getBlackBackground();
+        });
+    }
     function myLoad2() {
         var srcs=[];
         for(var i=0;i<32;i++){
@@ -9,5 +18,7 @@
         imgHandle.init(510*srcs.length/2,510);
         imgHandle.mergeImg2(srcs,"w0.jpg");
 
-    }myLoad2();
+    }
+    myLoad1();
+
 </script>

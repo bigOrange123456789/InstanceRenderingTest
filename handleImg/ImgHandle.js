@@ -15,6 +15,22 @@ ImgHandle.prototype={
         this.canvas=canvas;
         this.context=context;
     },
+    getBlackBackground:function(name){
+        var ctx=this.canvas.getContext( "2d" );  //设置画布类型2d
+        ctx.fillStyle = "#FFFFFF";//白色
+        for( var y = 0; y < this.canvas.height; y++ ) {
+            for( var x = 0; x < this.canvas.width ; x++ ) {
+                // 获取当前位置的元素
+                var pixel = ctx.getImageData( x, y, 1, 1 );//获取一个像素点的数据
+                // 判断透明度不为0
+                if( pixel.data[0] +pixel.data[1] +pixel.data[2] >100) {//如果颜色较亮
+                    ctx.fillRect(x,y,1,1);
+                }
+            }
+        }
+        if(typeof (name)==="undefined")name="bg.jpg";
+        this.download(name);
+    },
     drawTex:function(){
         context.font = "60px Courier New";
         context.fillText("我是文字",350,450);
