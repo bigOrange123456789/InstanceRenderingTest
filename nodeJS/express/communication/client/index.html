@@ -1,0 +1,10 @@
+<script src="axios.min.js"></script>
+<script src="util.js"></script>
+<script>
+    async  function communication(){//找到房间中所有用户的位置，并把他们渲染出来
+        console.log(
+            await asyncAxios.get("communication/",{test:"test"})
+        );
+    }
+    communication()
+</script>

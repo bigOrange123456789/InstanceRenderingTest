@@ -1,0 +1,11 @@
+<script src="axios.min.js"></script>
+<script src="util.js"></script>
+<script>
+    async  function find_all_user(){//找到房间中所有用户的位置，并把他们渲染出来
+        var condition={test:"test"};
+        var result;
+        result=await asyncAxios.get("myroom_number/myfind",condition);
+        console.log(result);
+    }
+    find_all_user()
+</script>
