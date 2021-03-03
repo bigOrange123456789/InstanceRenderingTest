@@ -276,7 +276,7 @@ Describe.prototype={
                     controller.computeIntermediateFrame(glb.animations[0]);
                 scope.button.addEvent(function () {//下载按钮的设置
                     glb.animations[0]=
-                        controller.computeIntermediateFrame(glb.animations[0]);
+                        controller.computeIntermediateFrame(glb.animations[0]);//计算动画
                     var gltfExporter = new THREE.GLTFExporter();
                     gltfExporter.parse(glb.scene, function (result) {
                         var name="test.gltf";
