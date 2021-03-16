@@ -12,14 +12,11 @@
 <script src="GlbHandle.js"></script>
 <script>
     var loader= new THREE.GLTFLoader();
-    var fileName='room2.glb';
-    loader.load(fileName, (glb) => {
-        console.log(glb.scene);
-        /*var array=glb.scene.children;
-        var myGlbHandle=new GlbHandle();
-        myGlbHandle.init(array);*/
+    var fileName='new';
+    loader.load('./'+fileName+'.glb', (glb) => {
+        console.log(glb);
         var myGlbHandle2=new GlbHandle2();
-        myGlbHandle2.init();
+        myGlbHandle2.init(fileName);
         myGlbHandle2.glbDownload(glb);
     });//读取函数结尾处
 </script>

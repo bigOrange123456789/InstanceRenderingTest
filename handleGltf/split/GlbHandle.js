@@ -70,31 +70,47 @@ GlbHandle.prototype={
     },
 }
 function GlbHandle2(){
+    this.fileName;
     this.index;
+    this.mapsIndex;
+    this.names;
 }
 GlbHandle2.prototype={
-    init:function(){
+    init:function(fileName){
         this.index=0;
+        this.fileName=fileName;
+        this.mapsIndex=[];
+        this.names=getNames();
+        function getNames(){
+            var names=[
+                '室内-会议横幅（非）',
+                '室内-舞台灯架（非）',
+                '上层外墙',
+                '窗体',
+                '外部台阶与屋顶墙体',
+                '网格103','网格.103_1','网格.103_2',
+            ];
+            arr=[22,23,25,26,27,28,29,30,31,32,33,34,35,38,39];
+            for(i=0;i<arr.length;i++){
+                names.push('网格0'+arr[i]);
+                names.push('网格.0'+arr[i]+'_1');
+                names.push('网格.0'+arr[i]+'_2');
+            }
+            return names;
+        }
     },
-    glbDownload:function(glb){
+    glbDownload:function(glb,isPNG){
+        if(typeof(isPNG)==="undefined")isPNG=false;
         var scope=this;
         var arr=[];
         glb.scene.traverse(node => {
-            if (typeof (node.geometry)!=="undefined") {//instanceof THREE.SkinnedMesh
+            if (node instanceof THREE.Mesh) {//instanceof THREE.SkinnedMesh
                 //createObj(node);
                 arr.push(node);
-                console.log(node.material.emissiveMap);
             }
         });
-        //开始测试
-        var map=arr[11].material.emissiveMap;
-        //image
-        downLoadImg(
-            processImage( map.image,  true )
-            ,"test.png"
-        );
-        function processImage( image,  flipY ) {//图片处理
-                //canvas是画布
+
+        function processImage( image,  flipY ) {//图片处理//canvas是画布
                 var canvas =  document.createElement( 'canvas' );
                 //计算画布的宽、高
                 canvas.width = Math.min( image.width);
@@ -112,23 +128,67 @@ GlbHandle2.prototype={
                 return canvas;
         }
         function downLoadImg(canvas,name) {//将画布的内容保存为图片
-            let url = canvas.toDataURL("image/png"); //得到图片的base64编码数据
+            let url;
+            if(isPNG)url = canvas.toDataURL("image/png");//得到图片的base64编码数据
+            else url = canvas.toDataURL("image/jpeg");
             let a = document.createElement("a"); // 生成一个a元素
             let event = new MouseEvent("click"); // 创建一个单击事件
             a.download = name || "photo"; // 设置图片名称
             a.href = url; // 将生成的URL设置为a.href属性
             a.dispatchEvent(event); // 触发a的单击事件
         }
-        //完成测试
+        function correct(mesh){
+            if(mesh.parent instanceof THREE.Group){
+                mesh.position.set(
+                    mesh.parent.position.x,
+                    mesh.parent.position.y,
+                    mesh.parent.position.z
+                );
+                mesh.rotation.set(
+                    mesh.parent.rotation.x,
+                    mesh.parent.rotation.y,
+                    mesh.parent.rotation.z
+                );
+            }
+        }
+        function needDelete(mesh){
+            for(i=0;i<scope.names.length;i++){
+                if(scope.names[i]===mesh.name)return true;
+            }
+            return false;
+        }
 
-        return;
-        console.log(arr);
+        for(i0=arr.length-1;i0>0;i0--){
+            if(needDelete(arr[i0])){
+                arr.splice(i0,1);
+            }
+        }
+
         var myInterval=setInterval(function () {
-            var name='new'+scope.index+'.gltf';
-            scope.meshDownLoad(arr[scope.index],name);
+            //下载图片
+            var map=arr[scope.index].material.emissiveMap;
+            if(map){//有纹理贴图
+                scope.mapsIndex.push(1);
+                downLoadImg(
+                    processImage( map.image,true )
+                    ,scope.fileName+scope.index+(isPNG?'.png':'.jpg')
+                );
+                //arr[scope.index].material=new THREE.MeshPhongMaterial({color:0xffffff});//不反光
+                arr[scope.index].material=new THREE.MeshBasicMaterial({color:0xf0f0c8});//反光材质
+            }else scope.mapsIndex.push(0);
             scope.index++;
-            if(scope.index===arr.length)clearInterval(myInterval);
-        },100);
+            if(scope.index===arr.length){
+                scope.index=0;
+                clearInterval(myInterval);
+                console.log(scope.mapsIndex.toString());
+                var myInterval2=setInterval(function () {//下载模型
+                    var name=scope.fileName+scope.index+'.gltf';
+                    scope.meshDownLoad(arr[scope.index],name);
+                    scope.index++;
+                    if(scope.index===arr.length)clearInterval(myInterval2);
+                },1000);
+            }
+        },1000);
 
     },
     meshDownLoad:function (mesh,name){

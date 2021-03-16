@@ -60,7 +60,8 @@ ImgHandle.prototype={
         }
     },
     download:function (name) {//将画布的内容保存为图片
-        let url = this.canvas.toDataURL("image/png"); //得到图片的base64编码数据
+        let url = this.canvas.toDataURL("image/jpeg");
+        //let url = this.canvas.toDataURL("image/png"); //得到图片的base64编码数据
         console.log(url);
         let a = document.createElement("a"); // 生成一个a元素
         let event = new MouseEvent("click"); // 创建一个单击事件
