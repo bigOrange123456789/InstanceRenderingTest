@@ -73,7 +73,7 @@ THREE.GLTFExporter.prototype = {
 			trs: false,
 			onlyVisible: true,
 			truncateDrawRange: true,
-			embedImages: true,
+			embedImages: true,//默认是嵌入图片
 			maxTextureSize: Infinity,
 			animations: [],
 			includeCustomExtensions: false
@@ -734,7 +734,7 @@ THREE.GLTFExporter.prototype = {
 		 * @param  {Boolean} flipY before writing out the image
 		 * @return {Integer}     Index of the processed texture in the "images" array
 		 */
-		function processImage( image, format, flipY ) {
+		function processImage( image, format, flipY ) {//图片处理
 
 			if ( ! cachedData.images.has( image ) ) {
 
@@ -760,22 +760,20 @@ THREE.GLTFExporter.prototype = {
 
 			var gltfImage = { mimeType: mimeType };
 
-			if ( options.embedImages ) {
-
+			if ( options.embedImages ) {//embed嵌入  如果是嵌入图片
+				//canvas是画布
 				var canvas = cachedCanvas = cachedCanvas || document.createElement( 'canvas' );
-
+				//计算画布的宽、高
 				canvas.width = Math.min( image.width, options.maxTextureSize );
 				canvas.height = Math.min( image.height, options.maxTextureSize );
 
 				var ctx = canvas.getContext( '2d' );
 
 				if ( flipY === true ) {
-
 					ctx.translate( 0, canvas.height );
 					ctx.scale( 1, - 1 );
-
 				}
-
+				//将image画到画布上
 				ctx.drawImage( image, 0, 0, canvas.width, canvas.height );
 
 				if ( options.binary === true ) {
@@ -850,15 +848,15 @@ THREE.GLTFExporter.prototype = {
 		 * @param  {Texture} map Map to process
 		 * @return {Integer}     Index of the processed texture in the "textures" array
 		 */
-		function processTexture( map ) {
+		function processTexture( map ) {//处理纹理
 
-			if ( cachedData.textures.has( map ) ) {
+			if ( cachedData.textures.has( map ) ) {//如果有纹理直接返回
 
 				return cachedData.textures.get( map );
 
 			}
 
-			if ( ! outputJSON.textures ) {
+			if ( ! outputJSON.textures ) {//如果没有输出纹理
 
 				outputJSON.textures = [];
 
@@ -867,7 +865,7 @@ THREE.GLTFExporter.prototype = {
 			var gltfTexture = {
 
 				sampler: processSampler( map ),
-				source: processImage( map.image, map.format, map.flipY )
+				source: processImage( map.image, map.format, map.flipY )//image是ImageBitmap格式的
 
 			};
 
