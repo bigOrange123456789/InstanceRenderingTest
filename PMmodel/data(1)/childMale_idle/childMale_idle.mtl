@@ -1,0 +1,9 @@
+newmtl body
+illum 1
+Ke 0 0 0
+Kd 1 1 1
+Ns 800
+d 1
+map_Kd Texture_0.jpeg
+
+

@@ -31,6 +31,20 @@ ImgHandle.prototype={
         if(typeof (name)==="undefined")name="bg.jpg";
         this.download(name);
     },
+    drawPoint:function(ps,color){
+        var ctx=this.canvas.getContext( "2d" );  //设置画布类型2d
+        ctx.fillStyle = "#000000";
+        for(i=0;i<this.canvas.width;i++)
+            for(j=0;j<this.canvas.height;j++){
+            ctx.fillRect(i, j,1,1);
+        }
+        ctx.fillStyle = typeof(color)==="undefined"?"#ffffff":color;//"#00ff00";
+        for(i=0;i<ps.length;i++){
+            ctx.fillRect(ps[i][0], ps[i][1],1,1);
+        }
+        this.download("assignment2");
+        //for(i=0;i<50;i++) for(j=0;j<50;j++) ctx.fillRect(i,j,1,1);
+    },
     drawTex:function(){
         context.font = "60px Courier New";
         context.fillText("我是文字",350,450);
@@ -47,6 +61,7 @@ ImgHandle.prototype={
     },
     download:function (name) {//将画布的内容保存为图片
         let url = this.canvas.toDataURL("image/png"); //得到图片的base64编码数据
+        console.log(url);
         let a = document.createElement("a"); // 生成一个a元素
         let event = new MouseEvent("click"); // 创建一个单击事件
         a.download = name || "photo"; // 设置图片名称

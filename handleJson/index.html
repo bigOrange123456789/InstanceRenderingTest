@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING--softwareTest</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+
+	<body>
+
+		<script src="three.js"></script>
+		<script>
+			var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
+			loader.load("animationData.json", function (data) {
+				console.log(
+
+				);
+				data=JSON.parse(data).data;
+				l=data.length;
+				dataL=[];
+				dataR=[];
+				for(i=0;i<l/2;i++){
+					dataL.push(data[i]);
+				}
+				for(;i<l;i++){
+					dataR.push(data[i]);
+				}
+
+				let link = document.createElement('a');
+				link.style.display = 'none';
+				document.body.appendChild(link);
+				link.href = URL.createObjectURL(new Blob([JSON.stringify({data:dataL})], { type: 'text/plain' }));
+				link.download ="dataL.json";
+				link.click();
+
+				setTimeout(function () {
+					link = document.createElement('a');
+					link.style.display = 'none';
+					document.body.appendChild(link);
+					link.href = URL.createObjectURL(new Blob([JSON.stringify({data:dataR})], { type: 'text/plain' }));
+					link.download ="dataR.json";
+					link.click();
+				},100);
+				/*computeArmData(
+						JSON.parse(animationNew).data,
+						function (data) {
+							loader.load("animationOld.json", function (animationOld) {
+								addition(
+										JSON.parse(animationOld).data,
+										data
+								);
+							});
+						}
+						);*/
+			});
+		</script>
+	</body>
+</html>

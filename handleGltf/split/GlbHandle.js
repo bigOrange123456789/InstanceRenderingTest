@@ -69,3 +69,49 @@ GlbHandle.prototype={
         }),1000);
     },
 }
+function GlbHandle2(){
+    this.index;
+}
+GlbHandle2.prototype={
+    init:function(){
+        this.index=0;
+    },
+    glbDownload:function(glb){
+        var scope=this;
+        var arr=[];
+        glb.scene.traverse(node => {
+            if (typeof (node.geometry)!=="undefined") {//instanceof THREE.SkinnedMesh
+                //createObj(node);
+                arr.push(node);
+            }
+        });
+        console.log(arr);
+        var myInterval=setInterval(function () {
+            var name='new'+scope.index+'.gltf';
+            scope.meshDownLoad(arr[scope.index],name);
+            scope.index++;
+            if(scope.index===arr.length)clearInterval(myInterval);
+        },100);
+
+    },
+    meshDownLoad:function (mesh,name){
+        var scene=new THREE.Scene();
+        scene.add(mesh);
+        this.sceneDownLoad(scene,name);
+    },
+    sceneDownLoad:function (scene,name){
+        var scope=this;
+        var gltfExporter = new THREE.GLTFExporter();
+        gltfExporter.parse(scene, function (result) {
+            scope.resultDownLoad(result,name);
+        });
+    },
+    resultDownLoad:function (result,name){
+        let link = document.createElement('a');
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.href = URL.createObjectURL(new Blob([JSON.stringify(result)], { type: 'text/plain' }));
+        link.download = name;
+        link.click();
+    },
+}

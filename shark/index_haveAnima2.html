@@ -24,11 +24,13 @@
             uniform mat4 u_view;
             uniform mat4 u_world;
             uniform sampler2D u_jointTexture;
+            uniform sampler2D u_jointTexture2;
 
             out vec3 v_normal;
 
             mat4 getBoneMatrix(uint jointNdx) {
-            float a=texelFetch(u_jointTexture, ivec2(0, jointNdx),0).x;
+
+
               return mat4(
                 texelFetch(u_jointTexture, ivec2(0, jointNdx), 0),//vec表示向量，ivec应该是整数向量
                 texelFetch(u_jointTexture, ivec2(1, jointNdx), 0),
@@ -37,13 +39,14 @@
             }
 
             void main() {
-              mat4 skinMatrix = getBoneMatrix(a_JOINTS_0[0]) * a_WEIGHTS_0[0] +
+                float a=texelFetch(u_jointTexture, ivec2(0, 0),0).x;
+                 mat4 skinMatrix = getBoneMatrix(a_JOINTS_0[0]) * a_WEIGHTS_0[0] +
                                 getBoneMatrix(a_JOINTS_0[1]) * a_WEIGHTS_0[1] +
                                 getBoneMatrix(a_JOINTS_0[2]) * a_WEIGHTS_0[2] +
                                 getBoneMatrix(a_JOINTS_0[3]) * a_WEIGHTS_0[3];
-              mat4 world = u_world * skinMatrix;
-              gl_Position = u_projection * u_view * world * a_POSITION;
-              v_normal = mat3(world) * a_NORMAL;
+                mat4 world = u_world * skinMatrix;
+                gl_Position = u_projection * u_view * world * a_POSITION;
+                v_normal = mat3(world) * a_NORMAL;
             }
         `;
         //片元着色器
@@ -229,9 +232,10 @@
                             u_view: view,
                             u_world: node.worldMatrix,
                             u_jointTexture: skin.jointTexture,
+                            u_jointTexture2: skin.jointTexture,
                             u_numJoints: skin.joints.length,
                         }, primitive.material.uniforms, sharedUniforms);
-                       // console.log(skin.jointTexture);
+                       console.log(skin);
                         twgl.drawBufferInfo(gl, primitive.bufferInfo);
                         //console.log(skin.jointTexture);
                         //console.log(skin);
