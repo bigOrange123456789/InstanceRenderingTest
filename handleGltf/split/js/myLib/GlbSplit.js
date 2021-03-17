@@ -1,72 +1,48 @@
-//将glb分解为多个小文件
+//将glb分解为多个小文件，同时将纹理贴图单独存放为jpg格式
 function GlbSplit(){
-    this.counter=0;//计数器，记录处理文件的个数，初始值为0
-    this.dataArray=[];
-    this.arrayI=0;
-    this.arrayJ=0;
+    this.names;
+    this.init();
 }
 GlbSplit.prototype={
-    init:function(array){
-        this.dataArray=array;
-        this.arrayI=0;
-        this.arrayJ=0;
-        this.arrayDownLoad();
-    },
-    arrayDownLoad:function(){
-        var myArray=this.dataArray;
-        var i=this.arrayI,j=this.arrayJ,index=this.counter;
-        if(i>=myArray.length)return;//已经全部输出//进行测试
-        //if(i===myArray.length)return;//已经全部输出
-        console.log(myArray.length,":",i,j,index);
-        var mesh,name;
-        if(myArray[i].children.length!==0) {//为Group类型，有孩子
-            mesh=myArray[i].children[j].clone();
-            //指定下一个mesh
-            if(j===myArray[i].children.length-1){
-                i++;
-                j=0;
-            }else{
-                j++;
+    init:function(){
+        this.names=getNames();
+        function getNames(){
+            var names=[
+                '室内-会议横幅（非）',
+                '室内-舞台灯架（非）',
+                '上层外墙',
+                '窗体',
+                '外部台阶与屋顶墙体',
+                '网格103','网格.103_1','网格.103_2'
+            ];
+            arr=[22,23,25,26,27,28,29,30,31,32,33,34,35,38,39];
+            for(i=0;i<arr.length;i++){
+                names.push('网格0'+arr[i]);
+                names.push('网格.0'+arr[i]+'_1');
+                names.push('网格.0'+arr[i]+'_2');
             }
-        } else {//纯mesh类型
-            mesh=myArray[i].clone();
-            //指定下一个mesh
-            i++;//j=0;
+            return names;
         }
-
-        name='new'+index+'.gltf';
-        index++;
-
-        this.meshDownLoad(mesh,name);
-
-        this.arrayI=i;
-        this.arrayJ=j;
-        this.counter=index;
     },
-    meshDownLoad:function (mesh,name){
-        var scene=new THREE.Scene();
-        scene.add(mesh);
-        this.sceneDownLoad(scene,name);
-    },
-    sceneDownLoad:function (scene,name){
-        var scope=this;
-        var gltfExporter = new THREE.GLTFExporter();
-        gltfExporter.parse(scene, function (result) {
-            scope.resultDownLoad(result,name);
+    getArray:function(glb){
+        var arr=[];
+        glb.scene.traverse(node => {
+            if (node instanceof THREE.Mesh) {//instanceof THREE.SkinnedMesh
+                arr.push(node);
+            }
         });
+        for(i0=arr.length-1;i0>0;i0--){
+            if(this.needDelete(arr[i0])){
+                arr.splice(i0,1);
+            }
+        }
+        return arr;
     },
-    resultDownLoad:function (result,name){
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.href = URL.createObjectURL(new Blob([JSON.stringify(result)], { type: 'text/plain' }));
-        link.download = name;
-        link.click();
+    needDelete:function(mesh){
+        for(i=0;i<this.names.length;i++){
+            if(this.names[i]===mesh.name)return true;
+        }
+        return false;
+    }
 
-        var scope=this;
-        //console.log(name);
-        setTimeout((function (){
-            scope.arrayDownLoad();
-        }),1000);
-    },
 }
