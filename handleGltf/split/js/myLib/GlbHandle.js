@@ -6,13 +6,10 @@ function GlbHandle(){
     this.mapsIndex=[];
 }
 GlbHandle.prototype={
-    process:function (name) {
-        var scope=this;
-        new THREE.GLTFLoader().load('./'+name+'.glb', (glb) => {
-            console.log(glb);
-            var arr=new GlbSplit().getArray(glb);
-            scope.downloadArray(arr);
-        });
+    process:function (name,glb) {
+        var arr=new GlbSplit().getArray(glb);//拆分、去除某些部件
+        new InDe().process(arr);
+        this.downloadArray(arr);//纹理和网格分开下载
     },
     downloadArray:function (arr) {
         var scope=this;

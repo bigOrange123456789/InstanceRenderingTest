@@ -1,7 +1,8 @@
 var name=
     prompt(
         "Please enter a file name to process:",
-        "ExhibitionHall"
+        "ConferenceRoom"//"ExhibitionHall"
     );
-var myGlbHandle=new GlbHandle();
-myGlbHandle.process(name);
+new THREE.GLTFLoader().load('./'+name+'.glb', (glb) => {
+    new GlbHandle().process(name,glb);
+});

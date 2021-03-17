@@ -1,0 +1,46 @@
+function InDe() {//通过兴趣度调整加载顺序
+    this.meshArr;
+    this.IDs;
+}
+InDe.prototype={
+    process(arr){
+        this.meshArr=arr;
+        this.computeID();
+        this.sort();//将IDs变为由大到小，对应调整meshaArr中元素顺序
+    },
+    computeID:function () {//计算兴趣度
+        this.IDs=[];
+        console.log(this.meshArr);
+        for(i=0;i<this.meshArr.length;i++){
+            var mesh=this.meshArr[i];
+            mesh.geometry.computeBoundingBox();
+            var box=mesh.geometry.boundingBox;
+            var a=box.max,b=box.min;
+            var V=Math.abs(
+                (a.x-b.x)*(a.y-b.y)*(a.z-b.z)
+            );
+            var N=mesh.geometry.attributes.position.count;
+            var ID=V/N;
+            console.log(mesh.name,V,N,ID);
+            this.IDs.push(ID);
+        }
+    },
+    sort:function () {//兴趣度高的优先传输
+        //简单选择排序
+        var IDs=this.IDs;var temp;
+        for(i=0;i<IDs.length-1;i++){
+            max=i;
+            for(j=i+1;j<IDs.length;j++){
+                if(IDs[j]>IDs[max])max=j;
+            }
+            if(max!==i){
+                temp=IDs[i];
+                IDs[i]=IDs[max];
+                IDs[max]=temp;
+                temp=this.meshArr[i];
+                this.meshArr[i]=this.meshArr[max];
+                this.meshArr[max]=temp;
+            }
+        }
+    },
+}
