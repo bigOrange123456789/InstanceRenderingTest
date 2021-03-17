@@ -1,23 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title></title>
+    <title>静态模型处理</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 </head>
 <body>
-<script src="lib/three.js"></script>
-<script src="lib/GLTFLoader.js"></script>
-<script src="lib/GLTFExporter.js"></script>
-<script src="GlbHandle.js"></script>
-<script>
-    var loader= new THREE.GLTFLoader();
-    var fileName='new';
-    loader.load('./'+fileName+'.glb', (glb) => {
-        console.log(glb);
-        var myGlbHandle2=new GlbHandle2();
-        myGlbHandle2.init(fileName);
-        myGlbHandle2.glbDownload(glb);
-    });//读取函数结尾处
-</script>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/threeLib/GLTFExporter.js"></script>
+
+<script src="js/myLib/Download.js"></script>
+<script src="js/myLib/GlbHandle.js"></script>
+<script src="js/myLib/GlbSplit.js"></script>
+<script src="js/myLib/GlbSplit2.js"></script>
+
+<script src="js/index.js"></script>
+
 </body>
