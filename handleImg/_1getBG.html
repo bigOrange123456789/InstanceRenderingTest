@@ -18,30 +18,6 @@
             imgHandle.getBlackBackground();
         });
     }
-    //减半合并//男性贴图
-    function myLoad2() {
-        var srcs=[];
-        for(var i=0;i<32;i++){
-            srcs.push("m/m"+i+".jpg");
-        }
-        var imgHandle=new ImgHandle();
-        imgHandle.init(510*srcs.length/2,510);
-        imgHandle.mergeImg2(srcs,"w0.jpg");
-
-    }
-    //不减半合并//女性贴图
-    function myLoad3() {
-        var srcs=[];
-        for(var i=0;i<32;i++){
-            srcs.push("m/m"+i+".jpg");
-        }
-        for(var i=0;i<32;i++){
-            srcs.push("m/m"+i+".jpg");
-        }
-        var imgHandle=new ImgHandle();
-        imgHandle.init(510*srcs.length,510);
-        imgHandle.mergeImg(srcs,"w0.jpg");
-    }
 
     myLoad1()
 
