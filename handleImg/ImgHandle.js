@@ -5,15 +5,12 @@ function ImgHandle() {
 ImgHandle.prototype={
     init:function (width,height) {
         //生成画布
-        var canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = width;
+        this.canvas.height = height;
 
         //生成画笔
-        var context = canvas.getContext("2d");
-
-        this.canvas=canvas;
-        this.context=context;
+        this.context = this.canvas.getContext("2d");
     },
     getBlackBackground:function(name){
         var ctx=this.canvas.getContext( "2d" );  //设置画布类型2d
@@ -136,6 +133,25 @@ ImgHandle.prototype={
             myImage2.height/=2;
             scope.context.drawImage(myImage2 ,0,0,myImage2.width,myImage2.height);
             myOnload();
+        }
+    },
+    computeColor:function(src,myOnload){
+        var scope=this;
+        var myImage2 = new Image();
+        myImage2.src = src;   //你自己本地的图片或者在线图片
+        myImage2.crossOrigin = 'Anonymous';
+        myImage2.onload = function(){//pos[0],pos[1]是落笔的起始位置，pos[2],pos[3]是落笔区域的大小
+            //scope.init(myImage2.width,myImage2.height);
+            myImage2.width=1;
+            myImage2.height=1;
+            scope.context.drawImage(myImage2 ,1,1,1,1);
+
+            var pixel = scope.context.getImageData( 1, 1, 1, 1 );//获取一个像素点的数据
+            var r=pixel.data[0];
+            var g=pixel.data[1];
+            var b=pixel.data[2];
+
+            myOnload(r*256*256+g*256+b);
         }
     },
     download:function (name) {//将画布的内容保存为图片
