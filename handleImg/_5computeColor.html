@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>像素点绘制</title>
+    <meta http-equiv="content-type"content="text/html; charset=gb2312">
+</head>
+<body>
+<script src="ImgHandle.js"></script>
+
+
+<script>
+    //提取背景
+    function myLoad1() {
+        var imgHandle=new ImgHandle();
+        imgHandle.drawImg3("1.jpg",function(){
+            imgHandle.compress();
+        });
+    }
+    myLoad1()
+
+</script>
+</body>
+
+</html>

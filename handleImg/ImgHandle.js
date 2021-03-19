@@ -73,6 +73,17 @@ ImgHandle.prototype={
         if(typeof (name)==="undefined")name="bg.jpg";
         this.download(name);
     },
+    compress:function(name){
+        var ctx=this.canvas.getContext( "2d" );  //设置画布类型2d
+        var pixel = ctx.getImageData( 1, 1, this.canvas.height, this.canvas.width);//获取一个像素点的数据
+        console.log(this.canvas.height, this.canvas.width);
+        var dh=this.canvas.height/2;
+        var dw=this.canvas.width/2;
+        ctx.putImageData(pixel, 100,100,1, 1, dh,dw);
+
+        if(typeof (name)==="undefined")name="bg.jpg";
+        this.download(name);
+    },
     drawPoint:function(ps,color){
         var ctx=this.canvas.getContext( "2d" );  //设置画布类型2d
         ctx.fillStyle = "#000000";
@@ -109,6 +120,20 @@ ImgHandle.prototype={
         myImage2.onload = function(){//pos[0],pos[1]是落笔的起始位置，pos[2],pos[3]是落笔区域的大小
             console.log(myImage2);
             scope.init(myImage2.width,myImage2.height);
+            scope.context.drawImage(myImage2 ,0,0,myImage2.width,myImage2.height);
+            myOnload();
+        }
+    },
+    drawImg3:function(src,myOnload){
+        var scope=this;
+        var myImage2 = new Image();
+        myImage2.src = src;   //你自己本地的图片或者在线图片
+        myImage2.crossOrigin = 'Anonymous';
+        myImage2.onload = function(){//pos[0],pos[1]是落笔的起始位置，pos[2],pos[3]是落笔区域的大小
+            console.log(myImage2);
+            scope.init(myImage2.width,myImage2.height);
+            myImage2.width/=2;
+            myImage2.height/=2;
             scope.context.drawImage(myImage2 ,0,0,myImage2.width,myImage2.height);
             myOnload();
         }
