@@ -63,6 +63,8 @@ ImgHandle.prototype={
                 pixel.data[1]=arr0[pixel.data[1]];
                 pixel.data[2]=arr0[pixel.data[2]];
                 ctx.putImageData(pixel, x, y);
+                //putImageData(imgData,x,y,dirtyX,dirtyY,dirtyWidth,dirtyHeight);
+                //dirty 肮脏的
             }
             if(y%100===0)console.log(y+"/"+this.canvas.height);
             //console.log(y);
@@ -136,7 +138,7 @@ ImgHandle.prototype={
         }
     },
     computeColor:function(src,myOnload){
-        var scope=this;
+        var scope=this;//'#161616','#d7d0c8','#8e7d69','#0','#212121','#0','#312e25','#ffffff','#1f1f1f','#272727','#0','#423a2f','#d9ccc6','#333333','#212121','#c2b9b2','#161616'
         var myImage2 = new Image();
         myImage2.src = src;   //你自己本地的图片或者在线图片
         myImage2.crossOrigin = 'Anonymous';
@@ -148,6 +150,39 @@ ImgHandle.prototype={
             //drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
             //sx,sy,swidth,sheight
             //s是source
+
+            var pixel = scope.context.getImageData( 1, 1, 1, 1 );//获取一个像素点的数据
+            var r=pixel.data[0];
+            var g=pixel.data[1];
+            var b=pixel.data[2];
+
+            myOnload(r*256*256+g*256+b);
+        }
+    },
+    computeColor2:function(src,myOnload){
+        var scope=this;
+        //'#161616','#d7d0c8','#8e7d69','#0','#212121','#0','#312e25','#ffffff','#1f1f1f','#272727','#0','#423a2f','#d9ccc6','#333333','#212121','#c2b9b2','#161616'
+        //'#161616','#d7d0c8','#8e7d69','#0','#212121','#0','#312e25','#ffffff','#1f1f1f','#272727','#0','#433a2e','#dacbc6','#333333','#212121','#c2b9b2','#161616'
+        //'#161616','#d7d0c8','#8e7d69','#0','#212121','#0','#312e25','#ffffff','#1f1f1f','#272727','#0','#433a2e','#dacbc6','#333333','#212121','#c2b9b2','#161616'
+        var myImage2 = new Image();
+        myImage2.src = src;   //你自己本地的图片或者在线图片
+        myImage2.crossOrigin = 'Anonymous';
+        myImage2.onload = function(){//pos[0],pos[1]是落笔的起始位置，pos[2],pos[3]是落笔区域的大小
+            var w=myImage2.width;
+            var h=myImage2.height;
+            console.log(w,h)
+            scope.canvas = document.createElement("canvas");
+            scope.canvas.width = w;
+            scope.canvas.height = h;
+            scope.context = scope.canvas.getContext("2d");
+
+            scope.context.drawImage(myImage2 ,1,1,w,h,1,1,w,h);
+            //drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+            //sx,sy,swidth,sheight
+            //s是source
+
+            var imgData = scope.context.getImageData( 1,1,w,h);
+            scope.context.putImageData(imgData,1,1,1,1,1,1);
 
             var pixel = scope.context.getImageData( 1, 1, 1, 1 );//获取一个像素点的数据
             var r=pixel.data[0];

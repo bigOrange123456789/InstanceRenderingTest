@@ -17,17 +17,22 @@
 <script src="js/myLib/InDe.js"></script>
 
 <script>
-    var name="ExhibitionHall";
-    var url1="./ExhibitionHall.glb";
-    var url2="";
+    //http://100.67.173.123:8080/InstanceRenderingTest/handleGltf/split/index2.html
+    var name="building";
+    var url1="../../../_DATA_/floor.glb";
+    var url2="../../../_DATA_/subway.glb";
     var scene=new THREE.Scene();
     //var glb={sce};
-    new THREE.GLTFLoader().load(url1, (glb) => {
-        for(i=0;i<glb.scene.children.length;i++)
-            scene.add(glb.scene.children[i]);
-
-        new GlbHandle().process(name, {scene:scene});
+    new THREE.GLTFLoader().load(url1, (glb1) => {
+        new THREE.GLTFLoader().load(url2, (glb2) => {
+            for(i=0;i<glb1.scene.children.length;i++)
+                scene.add(glb1.scene.children[i]);
+            for(i=0;i<glb2.scene.children.length;i++)
+                scene.add(glb2.scene.children[i]);
+            new GlbHandle().process(name, {scene:scene});
+        });
     });
+
 </script>
 
 </body>

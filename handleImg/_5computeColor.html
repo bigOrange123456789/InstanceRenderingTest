@@ -12,7 +12,6 @@
     var colors=[];
     var imgHandle=new ImgHandle();
     imgHandle.init(10,10);
-    //manColors(0);
     womanColors(0);
     function manColors(index){
         imgHandle.computeColor("./m/m"+index+".jpg",function(color){
@@ -22,7 +21,7 @@
         });
     }
     function womanColors(index){
-        imgHandle.computeColor("./w/w"+index+".jpg",function(color){
+        imgHandle.computeColor2("./w/w"+index+".jpg",function(color){
             colors.push("'#"+color.toString(16)+"'");
             if(index<16)womanColors(index+1);
             else console.log(colors.toString());

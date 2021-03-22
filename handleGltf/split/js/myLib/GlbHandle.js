@@ -23,12 +23,15 @@ GlbHandle.prototype={
 
         var myInterval=setInterval(function () {
             //下载图片
+
+            if(myMaterialHandle.names.length===0)console.log("没有找到纹理贴图");
+            else
             scope.download.canvasDownload(
                 myMaterialHandle.canvass[scope.index],
                 myMaterialHandle.names[scope.index]
             );
             scope.index++;
-            if(scope.index===myMaterialHandle.names.length){
+            if(scope.index>=myMaterialHandle.names.length){
                 scope.index=0;
                 clearInterval(myInterval);
                 console.log(myMaterialHandle.mapsIndex.toString());
