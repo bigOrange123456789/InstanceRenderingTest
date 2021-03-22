@@ -144,7 +144,10 @@ ImgHandle.prototype={
             //scope.init(myImage2.width,myImage2.height);
             myImage2.width=1;
             myImage2.height=1;
-            scope.context.drawImage(myImage2 ,1,1,1,1);
+            scope.context.drawImage(myImage2 ,1,1,1,1,1,1,1,1);
+            //drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+            //sx,sy,swidth,sheight
+            //s是source
 
             var pixel = scope.context.getImageData( 1, 1, 1, 1 );//获取一个像素点的数据
             var r=pixel.data[0];

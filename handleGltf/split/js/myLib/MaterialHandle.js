@@ -29,6 +29,25 @@ MaterialHandle.prototype={
     },
     getColor:function (canvas) {
         var ctx=canvas.getContext( "2d" );  //设置画布类型2d
+        var r=0,g=0,b=0,n;
+        for( var y = 0; y < canvas.height; y++ )
+            for( var x = 0; x < canvas.width ; x++ ) {
+                // 获取当前位置的元素
+                var pixel = ctx.getImageData( x, y, 1, 1 );//获取一个像素点的数据
+                r+=pixel.data[0];
+                g+=pixel.data[1];
+                b+=pixel.data[2];
+            }
+        n=canvas.height*canvas.width;
+        r=Math.floor(r/n);
+        g=Math.floor(g/n);
+        b=Math.floor(b/n);
+        var color=(r*256*256+g*256+b);//.toString(16);
+        console.log(color.toString(16));
+        return color;
+    },
+    getColor0:function (canvas) {
+        var ctx=canvas.getContext( "2d" );  //设置画布类型2d
         var r=0,g=0,b=0,n=0;
         for( var y = 0; y < canvas.height; y++ )
             for( var x = 0; x < canvas.width ; x++ ) {
@@ -45,5 +64,5 @@ MaterialHandle.prototype={
         var color=(r*256*256+g*256+b);//.toString(16);
         console.log(color.toString(16));
         return color;
-    }
+    },
 }
