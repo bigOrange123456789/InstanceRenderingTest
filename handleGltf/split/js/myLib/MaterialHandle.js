@@ -36,7 +36,7 @@ MaterialHandle.prototype={
                 });
             }else this.mapsIndex.push(0);
         }
-        this.resourceManager.mapsInit(this.mapsIndex);
+        this.resourceManager.mapsInit(this.mapsIndex,this.canvass);
     },
     getColor:function (canvas) {//取100个点求平均值
         var ctx=canvas.getContext( "2d" );  //设置画布类型2d

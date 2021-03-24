@@ -32,7 +32,7 @@ ResourceManager.prototype={
             );
         }
     },
-    mapsInit:function(mapsIndex){
+    mapsInit:function(mapsIndex,canvass){
         this.mapsIndex=mapsIndex;
         for(i=0;i<mapsIndex.length;i++){
             var modelName=this.name+""+i+".gltf";
@@ -42,6 +42,7 @@ ResourceManager.prototype={
                 var mapManager=new MapManager();
                 mapManager.fileName=mapName;
                 mapManager.modelName=modelName;
+                mapManager.size=canvass[this.maps.length].toDataURL("image/jpeg").length;
                 this.maps.push(mapManager);
                 model.MapName=mapName;
             }else{
