@@ -2,6 +2,7 @@
 function GlbSplit(){
     this.names;
     this.init();
+    this.resourceManager;
 }
 GlbSplit.prototype={
     init:function(){
@@ -24,7 +25,8 @@ GlbSplit.prototype={
             return names;
         }
     },
-    getArray:function(glb){
+    getArray:function(glb,resourceManager){
+        this.resourceManager=resourceManager;
         var arr=[];
         glb.scene.traverse(node => {
             if (node instanceof THREE.Mesh) {//instanceof THREE.SkinnedMesh
@@ -36,7 +38,7 @@ GlbSplit.prototype={
                 arr.splice(i0,1);
             }
         }
-        return arr;
+        this.resourceManager.meshs=arr;
     },
     needDelete:function(mesh){
         for(i=0;i<this.names.length;i++){
