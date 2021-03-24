@@ -16,18 +16,21 @@ function GlbHandle(){
     // interest
     // boundingSphere
     //    x,y,z,r
-
 }
 GlbHandle.prototype={
     process:function (name,glb) {
         this.resourceManager.name=name;
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
         this.myInDe.process(this.resourceManager);//使用兴趣度进行排序
-        console.log(this.resourceManager);
 
         var myMaterialHandle=new MaterialHandle();
-        myMaterialHandle.init(this.resourceManager.meshs,this.fileName);
+        myMaterialHandle.init(this.resourceManager,this.fileName);
         myMaterialHandle.process();
+
+        console.log(this.resourceManager);
+        this.download.jsonDownload(
+            this.resourceManager.resourceInfoGet(),"resourceInfo.json"
+        );
 
         var scope=this;
         this.downloadMap(myMaterialHandle,function () {//下载贴图
@@ -36,7 +39,7 @@ GlbHandle.prototype={
     },
     downloadMap:function (myMaterialHandle,finishFunction) {
         var scope=this;
-        
+
         var myInterval=setInterval(function () {
             //下载图片
             if(myMaterialHandle.names.length===0)console.log("没有找到纹理贴图");
@@ -50,9 +53,7 @@ GlbHandle.prototype={
                 scope.index=0;
                 clearInterval(myInterval);
                 scope.resourceInfo.mapsIndex=myMaterialHandle.mapsIndex;
-                scope.download.jsonDownload(
-                    scope.resourceInfo,"resourceInfo.json"
-                );
+                //scope.download.jsonDownload(scope.resourceInfo,"resourceInfo.json");
                 if(finishFunction)finishFunction();
             }
         },1000);//有时不需要下载也要等待，这需要优化

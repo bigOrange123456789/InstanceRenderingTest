@@ -4,10 +4,12 @@ function MaterialHandle() {
     this.names;
     this.mapsIndex;
     this.fileName;
+    this.resourceManager;
 }
 MaterialHandle.prototype={
-    init:function (arr,fileName) {
-        this.meshArr=arr;
+    init:function (resourceManager,fileName) {
+        this.resourceManager=resourceManager;
+        this.meshArr=resourceManager.meshs;
         this.canvass=[];
         this.names=[];
         this.mapsIndex=[];
@@ -34,6 +36,7 @@ MaterialHandle.prototype={
                 });
             }else this.mapsIndex.push(0);
         }
+        this.resourceManager.mapsInit(this.mapsIndex);
     },
     getColor:function (canvas) {//取100个点求平均值
         var ctx=canvas.getContext( "2d" );  //设置画布类型2d
