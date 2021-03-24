@@ -42,7 +42,8 @@ ResourceManager.prototype={
                 var mapManager=new MapManager();
                 mapManager.fileName=mapName;
                 mapManager.modelName=modelName;
-                mapManager.size=canvass[this.maps.length].toDataURL("image/jpeg").length;
+                var mapFileSize=canvass[this.maps.length].toDataURL("image/jpeg").length;
+                mapManager.interest=model.spaceVolume/mapFileSize;
                 this.maps.push(mapManager);
                 model.MapName=mapName;
             }else{
@@ -72,7 +73,7 @@ ResourceManager.prototype={
 }
 function MapManager() {
     this.fileName;
-    //this.interest;
+    this.interest;
     this.modelName;
 }
 MapManager.prototype={
