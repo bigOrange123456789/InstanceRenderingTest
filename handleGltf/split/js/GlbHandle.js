@@ -28,11 +28,11 @@ GlbHandle.prototype={
         myMaterialHandle.process();
 
         console.log(this.resourceManager);
-        /*
+
         this.download.jsonDownload(//下载说明信息
             this.resourceManager.resourceInfoGet(),"resourceInfo.json"
         );
-
+        /*
         var scope=this;
         this.downloadMap(myMaterialHandle,function () {//下载贴图
                 scope.downloadModel(scope.resourceManager.meshs)//下载网格
