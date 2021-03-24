@@ -10,12 +10,21 @@
 <script src="js/threeLib/GLTFExporter.js"></script>
 
 <script src="js/myLib/Download.js"></script>
-<script src="js/myLib/GlbHandle.js"></script>
+<script src="js/GlbHandle.js"></script>
 <script src="js/myLib/PicHandle.js"></script>
 <script src="js/myLib/MaterialHandle.js"></script>
 <script src="js/myLib/GlbSplit.js"></script>
 <script src="js/myLib/InDe.js"></script>
 
-<script src="js/index.js"></script>
+<script>
+    var name=
+        prompt(
+            "Please enter a file name to process:",
+            "ExhibitionHall"//"ExhibitionHall"//
+        );
+    new THREE.GLTFLoader().load('./'+name+'.glb', (glb) => {
+        new GlbHandle().process(name,glb);
+    });
+</script>
 
 </body>

@@ -5,13 +5,22 @@ function GlbHandle(){
     this.download=new Download();
     this.myGlbSplit=new GlbSplit();
     this.myInDe=new InDe();
+    this.resourceInfo={}
+    //maps
+    // url
+    // interest
+    // modelURL
+    //models
+    // url
+    // interest
+    // boundingSphere
+    //    x,y,z,r
+
 }
 GlbHandle.prototype={
     process:function (name,glb) {
         var arr=this.myGlbSplit.getArray(glb);//拆分、去除某些部件
         this.myInDe.process(arr);
-
-
         this.downloadArray(arr);//纹理和网格分开下载
     },
     downloadArray:function (arr) {
@@ -34,7 +43,11 @@ GlbHandle.prototype={
             if(scope.index>=myMaterialHandle.names.length){
                 scope.index=0;
                 clearInterval(myInterval);
-                console.log(myMaterialHandle.mapsIndex.toString());
+                scope.resourceInfo.mapsIndex=myMaterialHandle.mapsIndex;
+                scope.download.jsonDownload(
+                    scope.resourceInfo,"resourceInfo.json"
+                );
+                //console.log(myMaterialHandle.mapsIndex.toString());
                 var myInterval2=setInterval(function () {//下载模型
                     var name=scope.fileName+scope.index+'.gltf';
                     scope.download.meshDownload(arr[scope.index],name);

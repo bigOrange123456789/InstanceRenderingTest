@@ -34,7 +34,7 @@ function init(){
   document.body.appendChild( stats.dom );
   stats.dom.style.top = 2*h + 'px';
 
-  occlusionCulling = new OcclusionCulling();
+  occlusionCulling = new OcclusionCulling();//occlusion闭合
   occlusionCulling.setResolution(w,h);
 
   renderer = new THREE.WebGLRenderer();
@@ -70,12 +70,6 @@ function init(){
   controls.attach(cameraObject);
   controls.addEventListener( 'change', function(){} );
   demoScene.add(controls);
-	window.addEventListener( 'resize', function() {
-    demoCamera.aspect = window.innerWidth / window.innerHeight;
-    demoCamera.updateProjectionMatrix();
-    demoRenderer.setSize( window.innerWidth, window.innerHeight );
-  }, false );
-
   tempBBox = new THREE.Box3();
 
   var gui = new dat.GUI();
@@ -97,8 +91,11 @@ function setNumBoxes(num){
     var size = minBoxSize + Math.random() * (maxBoxSize-minBoxSize);
     var occluderScale = 0.9; // Make occluders slightly smaller than the rendered meshes.
 
-    // Create occlusion culling box
-    var box = new THREE.Mesh(new THREE.BoxBufferGeometry(occluderScale*size,occluderScale*size,occluderScale*size), new THREE.MeshDepthMaterial()); box.position.set(Math.random()-0.5,0,Math.random()-0.5).multiplyScalar(5);
+    // Create occlusion culling box  创建遮挡消隐框
+    var box = new THREE.Mesh(
+        new THREE.BoxBufferGeometry(occluderScale*size,occluderScale*size,occluderScale*size),
+        new THREE.MeshDepthMaterial());
+    box.position.set(Math.random()-0.5,0,Math.random()-0.5).multiplyScalar(5);
     box.position.z-=5;
     scene.add(box);
     boxes.push(box);
@@ -109,7 +106,6 @@ function setNumBoxes(num){
     demoScene.add(demoBox);
     demoBoxes.push(demoBox);
 
-    demoBox.frustumCulled = box.frustumCulled = false;
 
     // Pre-compute the approx size
     box.geometry.computeBoundingSphere();
@@ -134,6 +130,7 @@ function animate(time){
 }
 
 function cullObjects(){
+  //计算投影视图矩阵
   viewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
   var numVisible = 0;
   for(var i=0; i<boxes.length; i++){
@@ -142,7 +139,7 @@ function cullObjects(){
   }
 }
 
-function objectIsOccluded(object){
+function objectIsOccluded(object){//判断是否应该剔除
   mvpMatrix.multiplyMatrices(viewProjectionMatrix, object.matrixWorld);
 
   // Compute the bounding rectangle in screen space by using the bounding box.
