@@ -51,6 +51,8 @@ THREE.GLTFLoader = ( function () {
 
 	GLTFLoader.prototype = Object.assign( Object.create( THREE.Loader.prototype ), {
 
+		myString:"",
+
 		constructor: GLTFLoader,
 
 		load: function ( url, onLoad, onProgress, onError ) {
@@ -103,6 +105,8 @@ THREE.GLTFLoader = ( function () {
 			loader.setWithCredentials( this.withCredentials );
 
 			loader.load( url, function ( data ) {
+
+				//if(this.myString!=="")data=this.myString;
 
 				try {
 
@@ -211,9 +215,13 @@ THREE.GLTFLoader = ( function () {
 
 				}
 
+				console.log(content);
+
 			}
 
 			var json = JSON.parse( content );
+
+			console.log(json);
 
 			if ( json.asset === undefined || json.asset.version[ 0 ] < 2 ) {
 

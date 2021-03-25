@@ -51,13 +51,17 @@
 		communication("test");
 		async  function communication(data){//找到房间中所有用户的位置，并把他们渲染出来
 			var result=await asyncAxios.get("communication/",{data:data});
-			console.log(result);
+			//console.log(result);
+
+			var loader= new THREE.GLTFLoader();
+			loader.myString=result;
+			loader.load("test.glb", (gltf) => {
+				console.log(gltf);
+			});
+
 		}
 
-		var loader= new THREE.GLTFLoader();
-		loader.load("test.glb", (gltf) => {
-			console.log(gltf);
-		});
+
 
 	</script>
 	</body>
