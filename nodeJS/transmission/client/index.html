@@ -32,6 +32,7 @@
 	<script src="js/ResourceManager.js"></script>
 	<script src="js/ParamMeasure.js"></script>
 	<script src="js/Main.js"></script>
+	<script src="communication.js"></script>
 
 	<script  type="module">
 		var myMain = new Main();
@@ -47,6 +48,16 @@
 				mesh.position.set(10*i,10*j,0);
 				myMain.scene.add(mesh);
 			}
+		communication("test");
+		async  function communication(data){//找到房间中所有用户的位置，并把他们渲染出来
+			var result=await asyncAxios.get("communication/",{data:data});
+			console.log(result);
+		}
+
+		var loader= new THREE.GLTFLoader();
+		loader.load("test.glb", (gltf) => {
+			console.log(gltf);
+		});
 
 	</script>
 	</body>
