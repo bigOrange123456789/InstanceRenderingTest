@@ -1,0 +1,37 @@
+<html>
+<head>
+    <title>像素点绘制</title>
+    <meta http-equiv="content-type"content="text/html; charset=gb2312">
+</head>
+<body>
+<script src="ImgHandle.js"></script>
+
+
+<script>
+
+
+    //提取背景
+    var src="4.jpg";
+    var image = new Image();
+    image.src = src;
+    image.crossOrigin = 'Anonymous';
+    image.onload = function(){//pos[0],pos[1]是落笔的起始位置，pos[2],pos[3]是落笔区域的大小
+        setTimeout(function () {
+            myLoad1(
+                image.width,
+                image.height
+            )
+        },100)
+    }
+    function myLoad1(w,h) {
+        var imgHandle=new ImgHandle();
+        imgHandle.init(w,h);
+        imgHandle.drawImg(src,[0, 0 ,w,h],function(){
+            imgHandle.getContent();
+        });
+    }
+
+</script>
+</body>
+
+</html>
