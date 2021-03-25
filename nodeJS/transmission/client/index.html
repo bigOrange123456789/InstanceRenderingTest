@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+
+	<body>
+
+	<script src="js/lib/threeJS/three.js"></script>
+	<script src="js/lib/threeJS/OrbitControls.js"></script>
+	<script src="js/lib/threeJS/GLTFLoader.js"></script>
+
+	<script src="js/lib/pmLib/MyPMLoader.js"></script>
+
+	<script src="js/lib/instancedLib/InstancedGroup.js"></script>
+	<script src="js/lib/instancedLib/SkinnedMeshController.js"></script>
+
+	<script src="js/VideoManager.js"></script>
+
+	<script src="js/sceneSet/RoomManager.js"></script>
+	<script src="js/sceneSet/SeatManager.js"></script>
+	<script src="js/sceneSet/AvatarManager.js"></script>
+
+	<script src="js/playerControl/PlayerControl.js"></script>
+	<script src="js/playerControl/PreviewManager.js"></script>
+
+	<script src="js/ResourceManager.js"></script>
+	<script src="js/ParamMeasure.js"></script>
+	<script src="js/Main.js"></script>
+
+	<script  type="module">
+		var myMain = new Main();
+		myMain.start();
+
+		new PlayerControl(myMain.camera);//.cullingTest(myMain.scene)
+
+		for(var i=0;i<5;i++)
+			for(var j=0;j<8;j++){
+				var material = new THREE.MeshNormalMaterial();
+				var geometry= new THREE.CubeGeometry(5,5,5);
+				var mesh= new THREE.Mesh(geometry, material);
+				mesh.position.set(10*i,10*j,0);
+				myMain.scene.add(mesh);
+			}
+
+	</script>
+	</body>
+</html>
