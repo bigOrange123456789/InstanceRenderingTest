@@ -15,6 +15,7 @@
 <script src="js/myLib/MaterialHandle.js"></script>
 <script src="js/myLib/GlbSplit.js"></script>
 <script src="js/myLib/InDe.js"></script>
+<script src="js/myLib/ResourceManager.js"></script>
 
 <script>
     //http://100.67.173.123:8080/InstanceRenderingTest/handleGltf/split/index2.html
@@ -25,11 +26,13 @@
     //var glb={sce};
     new THREE.GLTFLoader().load(url1, (glb1) => {
         new THREE.GLTFLoader().load(url2, (glb2) => {
+            console.log(glb1);
+            console.log(glb2);
             for(i=0;i<glb1.scene.children.length;i++)
                 scene.add(glb1.scene.children[i]);
             for(i=0;i<glb2.scene.children.length;i++)
                 scene.add(glb2.scene.children[i]);
-            new GlbHandle().process(name, {scene:scene});
+            //new GlbHandle().process(name, {scene:scene});
         });
     });
 

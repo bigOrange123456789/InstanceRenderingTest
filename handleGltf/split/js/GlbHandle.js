@@ -28,16 +28,16 @@ GlbHandle.prototype={
         myMaterialHandle.process();
 
         console.log(this.resourceManager);
-
-        this.download.jsonDownload(//下载说明信息
-            this.resourceManager.resourceInfoGet(),"resourceInfo.json"
-        );
         /*
-        var scope=this;
-        this.downloadMap(myMaterialHandle,function () {//下载贴图
-                scope.downloadModel(scope.resourceManager.meshs)//下载网格
-            });//纹理和网格分开下载
-        */
+                this.download.jsonDownload(//下载说明信息
+                    this.resourceManager.resourceInfoGet(),"resourceInfo.json"
+                );
+
+                var scope=this;
+                this.downloadMap(myMaterialHandle,function () {//下载贴图
+                        scope.downloadModel(scope.resourceManager.meshs)//下载网格
+                    });//纹理和网格分开下载
+                */
     },
     downloadMap:function (myMaterialHandle,finishFunction) {
         var scope=this;
