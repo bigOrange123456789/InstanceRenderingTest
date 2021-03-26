@@ -12,25 +12,10 @@
 	<body>
 
 	<script src="js/lib/threeJS/three.js"></script>
-	<script src="js/lib/threeJS/OrbitControls.js"></script>
 	<script src="js/lib/threeJS/GLTFLoader.js"></script>
 
-	<script src="js/lib/pmLib/MyPMLoader.js"></script>
-
-	<script src="js/lib/instancedLib/InstancedGroup.js"></script>
-	<script src="js/lib/instancedLib/SkinnedMeshController.js"></script>
-
-	<script src="js/VideoManager.js"></script>
-
-	<script src="js/sceneSet/RoomManager.js"></script>
-	<script src="js/sceneSet/SeatManager.js"></script>
-	<script src="js/sceneSet/AvatarManager.js"></script>
-
 	<script src="js/playerControl/PlayerControl.js"></script>
-	<script src="js/playerControl/PreviewManager.js"></script>
 
-	<script src="js/ResourceManager.js"></script>
-	<script src="js/ParamMeasure.js"></script>
 	<script src="js/Main.js"></script>
 	<script src="communication.js"></script>
 
@@ -53,12 +38,14 @@
 			var result=await asyncAxios.get("communication/",{data:data});
 			console.log(result);
 
-			var loader= new THREE.GLTFLoader();
-			loader.myString=result;
-			loader.load("test.glb", (gltf) => {
-				console.log(gltf);
-			});
+			let gltfLoader = new THREE.GLTFLoader();
+			//THREE.DRACOLoader.setDecoderPath('./lib/draco/');
+			//THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
+			//gltfLoader.setDRACOLoader(new THREE.DRACOLoader());
 
+			gltfLoader.parse(result, null, (gltf) => {
+				console.log(gltf)
+			});
 		}
 
 
