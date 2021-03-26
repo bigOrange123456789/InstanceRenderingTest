@@ -14,10 +14,10 @@
 	<script src="js/lib/threeJS/three.js"></script>
 	<script src="js/lib/threeJS/GLTFLoader.js"></script>
 
-	<script src="js/playerControl/PlayerControl.js"></script>
+	<script src="js/lib/PlayerControl.js"></script>
 
 	<script src="js/Main.js"></script>
-	<script src="communication.js"></script>
+	<script src="js/lib/communication.js"></script>
 
 	<script  type="module">
 		var myMain = new Main();
@@ -33,22 +33,32 @@
 				mesh.position.set(10*i,10*j,0);
 				myMain.scene.add(mesh);
 			}
+
+
+
+
 		communication("test");
 		async  function communication(data){//找到房间中所有用户的位置，并把他们渲染出来
 			var result=await asyncAxios.get("communication/",{data:data});
-			console.log(result);
-
-			let gltfLoader = new THREE.GLTFLoader();
-			//THREE.DRACOLoader.setDecoderPath('./lib/draco/');
-			//THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
-			//gltfLoader.setDRACOLoader(new THREE.DRACOLoader());
-
-			gltfLoader.parse(result, null, (gltf) => {
-				console.log(gltf)
+			str2buff(result,function(result_buff){
+				let gltfLoader = new THREE.GLTFLoader();
+				//THREE.DRACOLoader.setDecoderPath('./lib/draco/');
+				//THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
+				//gltfLoader.setDRACOLoader(new THREE.DRACOLoader());
+				console.log(result_buff);
+				gltfLoader.parse(result_buff, null, (gltf) => {
+					console.log(gltf)
+				});
 			});
+
 		}
 
-
+		function str2buff(s,f) {
+			var b = new Blob([s],{type:'text/plain'});
+			var r = new FileReader();
+			r.readAsArrayBuffer(b);
+			r.onload = function (){if(f)f.call(null,r.result)}
+		}
 
 	</script>
 	</body>
