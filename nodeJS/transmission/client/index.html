@@ -31,29 +31,6 @@
 				myMain.scene.add(mesh);
 			}
 
-		communication("test");
-		async  function communication(data){//找到房间中所有用户的位置，并把他们渲染出来
-			var result=await asyncAxios.get("communication/",{data:data});
-			str2buff(result,function(result_buff){
-				let gltfLoader = new THREE.GLTFLoader();
-				//THREE.DRACOLoader.setDecoderPath('./lib/draco/');
-				//THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
-				//gltfLoader.setDRACOLoader(new THREE.DRACOLoader());
-				console.log(result_buff);
-				gltfLoader.parse(result_buff, "./", (gltf) => {
-					console.log(gltf)
-				});
-			});
-
-		}
-
-		function str2buff(s,f) {
-			var b = new Blob([s],{type:'text/plain'});
-			var r = new FileReader();
-			r.readAsArrayBuffer(b);
-			r.onload = function (){if(f)f.call(null,r.result)}
-		}
-
 	</script>
 	</body>
 </html>
