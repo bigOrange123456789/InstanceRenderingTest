@@ -8,6 +8,34 @@
 
 	<body>
 
+	<canvas id="canvas" style="position:fixed;top:0px;left:0px;z-index:-1;"></canvas>
+	<video id="video" width="1000px" height="1000px" autoplay="autoplay"style="position:fixed;top:0px;left:0px;z-index:-2;"></video>
+	<script>
+		var w = window.innerWidth;
+		var h = window.innerHeight;
+		//let mediaStreamTrack=null; // 视频对象(全局)
+		//开始进行相机相关代码
+		let video ;
+		function openMedia() {
+			let constraints = {
+				video: { width: w, height: h },
+				audio: false
+			};
+			//获得video摄像头
+			video = document.getElementById('video');
+			video.width=w;
+			video.height=h;
+			let promise = navigator.mediaDevices.getUserMedia(constraints);
+			promise.then((mediaStream) => {
+				// mediaStreamTrack = typeof mediaStream.stop === 'function' ? mediaStream : mediaStream.getTracks()[1];
+				mediaStreamTrack=mediaStream.getVideoTracks()
+				video.srcObject = mediaStream;
+				video.play();
+			});
+		}openMedia();
+		//完成进行相机相关代码
+	</script>
+
 	<script src="js/lib/threeJS/three.js"></script>
 	<script src="js/lib/threeJS/GLTFLoader.js"></script>
 
@@ -22,12 +50,12 @@
 		new PlayerControl(myMain.camera);//.cullingTest(myMain.scene)
 
 		console.log(myMain.renderer.domElement);
-		for(var i=0;i<5;i++)
-			for(var j=0;j<8;j++){
+		for(var i=0;i<1;i++)
+			for(var j=-1;j<3;j++){
 				var material = new THREE.MeshNormalMaterial();
-				var geometry= new THREE.CubeGeometry(5,5,5);
+				var geometry= new THREE.CubeGeometry(50,50,50);
 				var mesh= new THREE.Mesh(geometry, material);
-				mesh.position.set(10*i,10*j,0);
+				mesh.position.set(60*i+100,0,60*j);
 				myMain.scene.add(mesh);
 			}
 
