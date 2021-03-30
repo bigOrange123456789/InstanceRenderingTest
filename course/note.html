@@ -1,0 +1,110 @@
+<h1>
+    mySQL指令
+    <h2>
+        创建表
+
+        create table [if not exists] 表名称 (
+        字段名1  列类型 [属性] [约束] [注释],
+        字段名2  列类型 [属性] [约束] [注释],
+        ......
+        字段名n  列类型 [属性] [约束] [注释]
+        );
+
+        删除表
+            drop table (表名称);
+        查看表结构
+            desc (表名称);
+        查看数据表
+            show tables;
+    </h2>
+    <h2>
+        create table t1(
+            id int primary key auto_increment,
+            name varchar(50) not null
+        )default charset=utf8;
+
+        create table commodity(
+            c_id int primary key auto_increment,
+            c_name varchar(50) not null,
+            c_madein varchar(50) not null,
+            c_type int,
+            constraint fk_1  foreign key  (c_type)  references   commoditytype(ct_id),
+            c_inprice int not null,
+            c_outprice int not null,
+            c_num int default 100
+        )default charset=utf8;
+
+
+    </h2>
+    <h2>
+        属性与约束
+
+        null 空
+        not null 不为空
+        default 默认值如： 上面的 age : age int default 18,
+        unique key 唯一 设置 某个列 的值都是唯一的，也就是没用重复,如 身份证号，一般是唯一的
+        primary key : 主键唯一标示(自带唯一属性，not null属性)一个表中必须有的,一般都是数字自增
+        auto_increment: 自增长 必须给主键设置 ，int ,它 的数值是不会回退的
+        foreign key : 外键 减少冗余，用来与其他表连接。
+        语法： constraint 你给外键取的名字 foreign key (你想引用到外键的列名称) references 参考表的表名(列名称且这个列名称是有主键属性)
+
+
+        PK  primary key
+        NN  not null
+        UQ  unique
+        UN  unsigned 无符号（非负数）
+    </h2>
+</h1>
+
+<h1>
+    github指令
+    <h2>
+        git init
+        git remote add origin ** //远程添加源头
+        git push -u origin master//首次提交数据
+        git pull origin master//master
+
+        git log
+        git commit -m "**"
+        git reset --hard **
+
+        git checkout master//切换的master分支
+        git merge develop//合并
+
+        git push -f//除非只有自己一个人用，不然不要push --force
+    </h2>
+    <h2>
+        由工作区到暂存区：add
+        由暂存区到版本区：commit
+
+        工作区提交到暂存区
+
+        git add xxx ：指定文件提交到暂存区
+        git add . ：全部提交到暂存区，包含修改和增加的，但不包含删除的
+        git add -u：全部提交到暂存区，包含修改和删除的，但不包含新增的
+        git add -A：. 并且 -u
+        　暂存区提交到历史区
+
+        git commit ：提交到历史区（此提交方式注意：需要备注操作信息）
+        git commit -m 'xxx' （操作描述）：提交到历史区
+        git log ： 查看提交记录
+        git reflog ：查看所有历史记录
+        　查看每个区代码区别
+
+        git diff ：工作区 和 暂存区
+        git diff --cached ：暂存区 和 历史区
+
+        3、提交到 github 上（远程有仓库）
+        git remote -v ：查看所有关联信息
+        git remote add xxx[ 远程仓库 git 地址 ] ：建立关联
+        git remote remove xxx[ 默认名：origin 可自定义 ] ：移除关联
+
+        4、拉取
+        前面说了，远程有仓库，提交之前先拉取远程仓库
+        git pull origin（默认名） master
+
+        5、提交
+        正式提交
+        git push origin master
+    </h2>
+</h1>
