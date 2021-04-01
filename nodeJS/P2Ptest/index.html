@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+<script src="https://cdn.webrtc-experiment.com/FileBufferReader.js"></script>
+<script src="RTCMultiConnection.js"></script>
+
+<script>
+    let connectionName="11";
+
+    let connectionReady = false;
+    var connection = new RTCMultiConnection();
+    connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
+    connection.enableFileSharing = true; // by default, it is "false".
+    connection.session = {
+        data : true
+    };
+    connection.onmessage = function (event) {//P2P接受他人发送的数据
+        console.log(event.data);
+    };
+    connection.onopen = function() {
+        console.log("Open the connection");
+        connectionReady = true;
+    };
+
+    connection.onerror = function(){
+        console.log("error, try rejoin the connection");
+        connection.join(connectionName);
+    };
+
+    connection.onclose = function() {
+        console.log("Close the connection");
+        connectionReady = false;
+    };
+
+
+    connection.openOrJoin("123456");
+    setInterval(function(){
+        connection.send("test1122");
+    },10);
+</script>
+</body>
+</html>

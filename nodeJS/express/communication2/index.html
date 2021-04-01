@@ -1,0 +1,44 @@
+<script>
+    //通过http请求获取模型数据包
+    requestModelPackageByHttp();
+    function requestModelPackageByHttp(visibleList) {
+        var oReq = new XMLHttpRequest();
+        oReq.open("POST", `http://0.0.0.0:6969`, true);
+        oReq.responseType = "arraybuffer";
+
+        oReq.onload = function (oEvent) {
+            //console.log(oReq.response)
+            let data = new Uint8Array(oReq.response);
+            // glb file length info
+            let glbLengthData = ab2str(data.slice(0, sliceLength));
+            //glb file
+            let glbData = data.slice(sliceLength);
+
+            let glbLengthArr = glbLengthData.split('/');
+            let totalLength = 0;
+
+            for (let i = 0; i < glbLengthArr.length - 1; i++) {
+                if (!glbLengthArr[i])
+                    continue;
+                let buffer = glbData.slice(totalLength, totalLength + 1.0 * glbLengthArr[i]);
+                reuseDataParser(buffer, i == glbLengthArr.length - 2);
+                totalLength += 1.0 * glbLengthArr[i];
+            }
+            // endTime = performance.now();
+            // tempDelay = (endTime - startTime) / 1000;
+            // synTotalDelay += tempDelay;
+            // console.log("响应间隔：" + tempDelay.toFixed(2) + "S");
+            // startTime = endTime;
+            // //type用于区分可视列表的来源，1：peer 2：服务器
+            // if (type == 1) {
+            //     synTotalTimes++;
+            //     synFromPeerTimes++;
+            // } else {
+            //     synTotalTimes++;
+            //     synFromServerTimes++;
+            // }
+        };
+        oReq.send(JSON.stringify({ 'type': 'requestdata', 'scene': sceneName, 'data': visibleList }));
+    }
+
+</script>
