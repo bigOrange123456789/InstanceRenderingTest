@@ -9,7 +9,9 @@
 <script src="RTCMultiConnection.js"></script>
 
 <script>
-    let connectionName="11";
+    let connectionName="myConnection001";
+    let roomName="myRoom001";
+    let sendData="myData001";
 
     let connectionReady = false;
     var connection = new RTCMultiConnection();
@@ -37,10 +39,10 @@
     };
 
 
-    connection.openOrJoin("123456");
+    connection.openOrJoin(roomName);
     setInterval(function(){
-        connection.send("test1122");
-    },10);
+        connection.send(sendData);
+    },100);
 </script>
 </body>
 </html>
