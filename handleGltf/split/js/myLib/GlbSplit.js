@@ -37,16 +37,35 @@ GlbSplit.prototype={
                 //console.log(matrix)
                 var node2=node.clone();
                 var parent=node.parent;
+                console.log(node2.matrix)
                 while(parent&&parent.matrix){
-                    console.log("parent:",parent.name);
+                    console.log("parent:",parent.name,parent.matrix);
                     parent.updateMatrix();
-                    node2.matrix.multiplyMatrices(
-                        parent.matrix,node2.matrix
-                    );
+                    var m1=parent.matrix.clone();
+                    node2.matrix=m1.multiply(node2.matrix);
                     parent=parent.parent;
                 }
+                console.log(node2.matrix)
+
+                var pos=new THREE.Vector3();
+                var qua=new THREE.Quaternion();
+                var sca=new THREE.Vector3();
+                node2.matrix.decompose ( pos,qua, sca);
+                //console.log(pos,qua, sca);
+                //node2.matrix.needsUpdate=true;
+
                 obj0.add(node2);
                 arr.push(node2);
+                node2.position.x=pos.x;
+                node2.position.y=pos.y;
+                node2.position.z=pos.z;
+                node2.scale.x=sca.x;
+                node2.scale.y=sca.y;
+                node2.scale.z=sca.z;
+                node2.quaternion.x=qua.x;
+                node2.quaternion.y=qua.y;
+                node2.quaternion.z=qua.z;
+                node2.quaternion.w=qua.w;
             }
         });
         for(i0=arr.length-1;i0>0;i0--){
