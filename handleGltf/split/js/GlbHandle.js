@@ -19,6 +19,7 @@ function GlbHandle(){
 }
 GlbHandle.prototype={
     process:function (name,glb) {
+        console.log(glb);
         this.resourceManager.name=name;
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
         this.myInDe.process(this.resourceManager);//使用兴趣度进行排序
@@ -29,15 +30,15 @@ GlbHandle.prototype={
 
         console.log(this.resourceManager);
 
-                this.download.jsonDownload(//下载说明信息
-                    this.resourceManager.resourceInfoGet(),"resourceInfo.json"
-                );
+        /**/this.download.jsonDownload(//下载说明信息
+            this.resourceManager.resourceInfoGet(),"resourceInfo.json"
+        );
 
-                var scope=this;
-                this.downloadMap(myMaterialHandle,function () {//下载贴图
-                        scope.downloadModel(scope.resourceManager.meshs)//下载网格
-                    });//纹理和网格分开下载
-                /**/
+        var scope=this;
+        this.downloadMap(myMaterialHandle,function () {//下载贴图
+                scope.downloadModel(scope.resourceManager.meshs)//下载网格
+            });//纹理和网格分开下载
+
     },
     downloadMap:function (myMaterialHandle,finishFunction) {
         var scope=this;

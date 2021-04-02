@@ -28,14 +28,30 @@ GlbSplit.prototype={
     getArray:function(glb,resourceManager){
         this.resourceManager=resourceManager;
         var arr=[];
+        var obj0=new THREE.Object3D();
         glb.scene.traverse(node => {
             if (node instanceof THREE.Mesh) {//instanceof THREE.SkinnedMesh
-                arr.push(node);
+                console.log(node.name);
+                node.updateMatrix();
+                //var matrix=node.matrix.clone();
+                //console.log(matrix)
+                var node2=node.clone();
+                var parent=node.parent;
+                while(parent&&parent.matrix){
+                    console.log("parent:",parent.name);
+                    parent.updateMatrix();
+                    node2.matrix.multiplyMatrices(
+                        parent.matrix,node2.matrix
+                    );
+                    parent=parent.parent;
+                }
+                obj0.add(node2);
+                arr.push(node2);
             }
         });
         for(i0=arr.length-1;i0>0;i0--){
             if(this.needDelete(arr[i0])){
-                arr.splice(i0,1);
+                //arr.splice(i0,1);
             }
         }
         this.resourceManager.meshs=arr;
