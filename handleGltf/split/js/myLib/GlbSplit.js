@@ -3,6 +3,7 @@ function GlbSplit(){
     this.names;
     this.init();
     this.resourceManager;
+    this.isScreen=false;//是否有筛选
 }
 GlbSplit.prototype={
     init:function(){
@@ -27,53 +28,58 @@ GlbSplit.prototype={
     },
     getArray:function(glb,resourceManager){
         this.resourceManager=resourceManager;
-        var arr=[];
-        var obj0=new THREE.Object3D();
+
+
+
+        var arr0=[];//记录所有mesh
         glb.scene.traverse(node => {
-            if (node instanceof THREE.Mesh) {//instanceof THREE.SkinnedMesh
-                console.log(node.name);
-                node.updateMatrix();
-                //var matrix=node.matrix.clone();
-                //console.log(matrix)
-                var node2=node.clone();
-                var parent=node.parent;
-                console.log(node2.matrix)
-                while(parent&&parent.matrix){
-                    console.log("parent:",parent.name,parent.matrix);
-                    parent.updateMatrix();
-                    var m1=parent.matrix.clone();
-                    node2.matrix=m1.multiply(node2.matrix);
-                    parent=parent.parent;
-                }
-                console.log(node2.matrix)
-
-                var pos=new THREE.Vector3();
-                var qua=new THREE.Quaternion();
-                var sca=new THREE.Vector3();
-                node2.matrix.decompose ( pos,qua, sca);
-                //console.log(pos,qua, sca);
-                //node2.matrix.needsUpdate=true;
-
-                obj0.add(node2);
-                arr.push(node2);
-                node2.position.x=pos.x;
-                node2.position.y=pos.y;
-                node2.position.z=pos.z;
-                node2.scale.x=sca.x;
-                node2.scale.y=sca.y;
-                node2.scale.z=sca.z;
-                node2.quaternion.x=qua.x;
-                node2.quaternion.y=qua.y;
-                node2.quaternion.z=qua.z;
-                node2.quaternion.w=qua.w;
+            if (node instanceof THREE.Mesh) {
+                arr0.push(node);
             }
         });
+        console.log(arr0.length)
+
+        var arr=[];//记录mesh的仿射变换
+        for(var i=0;i<arr0.length;i++){
+            var node=arr0[i];
+            console.log(i+"/"+arr.length+":",node.name);
+
+            node.updateMatrix();
+            var node2=node.clone();
+            var parent=node.parent;
+            while(parent&&parent.matrix){
+                console.log("parent:",parent.name);
+                parent.updateMatrix();
+                var m1=parent.matrix.clone();
+                node2.matrix=m1.multiply(node2.matrix);
+                parent=parent.parent;
+            }
+            var pos=new THREE.Vector3();
+            var qua=new THREE.Quaternion();
+            var sca=new THREE.Vector3();
+            node2.matrix.decompose ( pos,qua, sca);
+
+            arr.push(node2);
+            node2.position.x=pos.x;
+            node2.position.y=pos.y;
+            node2.position.z=pos.z;
+            node2.scale.x=sca.x;
+            node2.scale.y=sca.y;
+            node2.scale.z=sca.z;
+            node2.quaternion.x=qua.x;
+            node2.quaternion.y=qua.y;
+            node2.quaternion.z=qua.z;
+            node2.quaternion.w=qua.w;
+        }
+        if(this.isScreen)
         for(i0=arr.length-1;i0>0;i0--){
             if(this.needDelete(arr[i0])){
-                //arr.splice(i0,1);
+                arr.splice(i0,1);
             }
         }
+
         this.resourceManager.meshs=arr;
+        console.log(arr);
     },
     needDelete:function(mesh){
         for(i=0;i<this.names.length;i++){
