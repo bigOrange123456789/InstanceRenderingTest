@@ -90,24 +90,21 @@ ModelManager.prototype={
         mesh.geometry.computeBoundingBox();
         mesh.geometry.computeBoundingSphere();
 
-        var x=mesh.geometry.boundingSphere.center.x +mesh.matrixWorld.elements[12];
-        var y=mesh.geometry.boundingSphere.center.y +mesh.matrixWorld.elements[13];
-        var z=mesh.geometry.boundingSphere.center.z +mesh.matrixWorld.elements[14];
-
         var box=mesh.geometry.boundingBox;
         var sx=mesh.scale.x;
         var sy=mesh.scale.y;
         var sz=mesh.scale.z;
 
+        var x=sx*mesh.geometry.boundingSphere.center.x +mesh.position.x;
+        var y=sy*mesh.geometry.boundingSphere.center.y +mesh.position.y;
+        var z=sz*mesh.geometry.boundingSphere.center.z +mesh.position.z;
+
         var r=Math.pow(
-            Math.abs(Math.pow(sx*(box.max.x-box.min.x),2))+
-            Math.abs(Math.pow(sy*(box.max.y-box.min.y),2))+
-            Math.abs(Math.pow(sz*(box.max.z-box.min.z),2)),
+            Math.pow(sx*(box.max.x-box.min.x),2)+
+            Math.pow(sy*(box.max.y-box.min.y),2)+
+            Math.pow(sz*(box.max.z-box.min.z),2),
             0.5
         )/2;
-        console.log(
-            sx*Math.pow(box.max.x-box.min.x,2)
-            ,box.max.x,r);
 
         this.boundingSphere={
             x:x*sx,
