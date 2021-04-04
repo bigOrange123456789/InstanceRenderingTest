@@ -87,6 +87,19 @@ function ModelManager() {
 }
 ModelManager.prototype={
     boundingSphereSet:function (mesh) {
+        //mesh.geometry.computeBoundingBox();
+        mesh.geometry.computeBoundingSphere();
+
+        mesh.geometry.boundingSphere.applyMatrix4(mesh.matrix);
+
+        this.boundingSphere={
+            x:mesh.geometry.boundingSphere.center.x,
+            y:mesh.geometry.boundingSphere.center.y,
+            z:mesh.geometry.boundingSphere.center.z,
+            r:mesh.geometry.boundingSphere.radius
+        };
+    },
+    boundingSphereSet0:function (mesh) {
         mesh.geometry.computeBoundingBox();
         mesh.geometry.computeBoundingSphere();
 
@@ -95,9 +108,17 @@ ModelManager.prototype={
         var sy=mesh.scale.y;
         var sz=mesh.scale.z;
 
-        var x=sx*mesh.geometry.boundingSphere.center.x +mesh.position.x;
-        var y=sy*mesh.geometry.boundingSphere.center.y +mesh.position.y;
-        var z=sz*mesh.geometry.boundingSphere.center.z +mesh.position.z;
+        var x0=mesh.geometry.boundingSphere.center.x;
+        var y0=mesh.geometry.boundingSphere.center.y;
+        var z0=mesh.geometry.boundingSphere.center.z;
+
+
+        //var matrix=mesh.matrix;
+        console.log(mesh.matrix);
+
+        var x=sx*x0 +mesh.position.x;
+        var y=sy*y0 +mesh.position.y;
+        var z=sz*z0 +mesh.position.z;
 
         var r=Math.pow(
             Math.pow(sx*(box.max.x-box.min.x),2)+
@@ -106,11 +127,6 @@ ModelManager.prototype={
             0.5
         )/2;
 
-        this.boundingSphere={
-            x:x*sx,
-            y:y*sy,
-            z:z*sz,
-            r:r
-        };
+        this.boundingSphere={x:x, y:y, z:z, r:r};
     },
 }

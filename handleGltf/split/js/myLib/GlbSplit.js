@@ -57,7 +57,7 @@ GlbSplit.prototype={
             var pos=new THREE.Vector3();
             var qua=new THREE.Quaternion();
             var sca=new THREE.Vector3();
-            node2.matrix.decompose ( pos,qua, sca);
+            node2.matrix.decompose(pos,qua, sca);
 
             arr.push(node2);
             node2.position.x=pos.x;
