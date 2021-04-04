@@ -2,14 +2,15 @@ function PicHandle() {//只服务于MaterialHandle对象
     this.image;
     this.h;
     this.w;
+    this.compressionRatio=0.1;//0-1
 }
 PicHandle.prototype={
     getCanvas:function (image) {
         var flipY = true;
         var canvas =  document.createElement( 'canvas' );
         //计算画布的宽、高
-        canvas.width = Math.min( image.width);
-        canvas.height = Math.min( image.height);
+        canvas.width = image.width*this.compressionRatio;
+        canvas.height = image.height*this.compressionRatio;
 
         var ctx = canvas.getContext( '2d' );
 
