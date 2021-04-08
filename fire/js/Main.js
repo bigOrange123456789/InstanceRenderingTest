@@ -39,11 +39,8 @@ function Main(){
         //this.camera.position.set(-22.727691081347608,  31.984448838645086,  6.7328561510);//(-155,41,22,-2.07);//-155,41,22,-2.07,-1.49,-2.07
         //this.camera.rotation.set(-1.5014844872712905,  -0.9816239548295801,  -1.487488);//(-1.5572,-1.47875,-1.55714);//
 
-        window.c=this.camera;
-
         var ambient = new THREE.AmbientLight(0xffffff , 1 );
         this.scene.add( ambient );
-
 
         //性能监视器stats.js开始
         /*var stats = new Stats();

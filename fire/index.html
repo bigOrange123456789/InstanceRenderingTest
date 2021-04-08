@@ -37,14 +37,13 @@
 		var myMain = new Main();
 		myMain.start();
 
-		//myMain.camera.position.set(26.5474101, 9.609053, 10.9);
+		myMain.camera.position.set(90.77123, 3.32845, 196.29243);
 		//myMain.camera.rotation.set(0.0793021902702234, 0.8739098399535151,  -0.0608649);
 		//myMain.camera.position.set(15.577289984462519, 7.463007758096705,  72.15985);
 		//myMain.camera.rotation.set( -0.24654891164364193, 0.12522579956880284, 0.03142280744032);
 
 		var myRoomManager = new RoomManager(null,myMain.camera);
 		myMain.scene.add(myRoomManager.room);
-		console.log(myRoomManager.room);
 
 		new PlayerControl(myMain.camera);
 		window.c=myMain.camera;
@@ -53,7 +52,8 @@
 			console.log(glb);
 			createObj2(glb)
 			myMain.scene.add(glb.scene);
-			glb.scene.scale.set(5,5,5);
+			//glb.scene.scale.set(5,5,5);
+			glb.scene.position.set(90,0,196);
 			function createObj2(G) {
 				var meshMixer2 = new THREE.AnimationMixer(G.scene);
 				meshMixer2.clipAction(G.animations[0]).play();
@@ -82,6 +82,25 @@
 			window.MM=myMoveManager;
 			/**/
 		});
+
+		radiographicTesting();
+		function radiographicTesting(){
+			const raycaster = new THREE.Raycaster();
+			const mouse = new THREE.Vector2();
+			function mouseDown0( event ) {
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				raycaster.setFromCamera( mouse, myMain.camera );
+				//console.log(myMain.scene.children[1].children[0].children);
+				const intersects = raycaster.intersectObjects(
+						myMain.scene.children[1].children[0].children
+				);////myRoomManager.room
+				if(intersects.length)console.log(intersects[0].point);//0好对象是射线穿过的第一个对象
+				else console.log("没有点击到");
+			}
+			window.addEventListener( 'mousedown',mouseDown0, true );
+		}
+
 	</script>
 	</body>
 </html>
