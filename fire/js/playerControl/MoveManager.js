@@ -36,19 +36,25 @@ class MoveManager{
         //arr1:  x,z
         //arr2:  x,y,z,  a,b,c, time
         var arr2=[];
-        var time=400;
+        var timeCoefficient=50;
         arr2.push([
-            arr1[0][0],0,arr1[0][1],
+            arr1[0][0],arr1[0][1],arr1[0][2],
             0,0,0,
-            time
+            Math.pow(
+                40
+                ,0.5)
         ]);
         for(var i=1;i<arr1.length;i++){
+            var time=Math.pow(
+                Math.pow(arr1[i][0]-arr1[i-1][0],2)+
+                Math.pow(arr1[i][1]-arr1[i-1][1],2)+
+                Math.pow(arr1[i][2]-arr1[i-1][2],2)
+                ,0.5)*timeCoefficient
             arr2.push([
-                arr1[i][0],0,arr1[i][1],
+                arr1[i][0],arr1[i][1],arr1[i][2],
                 0,Math.atan2(
-
                     (arr1[i][0]-arr1[i-1][0]),
-                    (arr1[i][1]-arr1[i-1][1])
+                    (arr1[i][2]-arr1[i-1][2])
                 ),0,
                 time
             ]);

@@ -39,7 +39,6 @@
 
 		myMain.camera.position.set(90.77123, 3.32845, 196.29243);
 		//myMain.camera.rotation.set(0.0793021902702234, 0.8739098399535151,  -0.0608649);
-		//myMain.camera.position.set(15.577289984462519, 7.463007758096705,  72.15985);
 		//myMain.camera.rotation.set( -0.24654891164364193, 0.12522579956880284, 0.03142280744032);
 
 		var myRoomManager = new RoomManager(null,myMain.camera);
@@ -49,11 +48,17 @@
 		window.c=myMain.camera;
 
 		new THREE.GLTFLoader().load("../../_DATA_/male_run.glb", (glb) => {
-			console.log(glb);
+			//console.log(glb);
 			createObj2(glb)
 			myMain.scene.add(glb.scene);
 			//glb.scene.scale.set(5,5,5);
-			glb.scene.position.set(90,0,196);
+			glb.scene.position.set(90,1.17,196);
+			//addCamera();
+			function addCamera(){
+				myMain.camera.position.set(0,2,-3);
+				myMain.camera.rotation.set(0,135,0);
+				glb.scene.add(myMain.camera);
+			}
 			function createObj2(G) {
 				var meshMixer2 = new THREE.AnimationMixer(G.scene);
 				meshMixer2.clipAction(G.animations[0]).play();
@@ -66,21 +71,16 @@
 			var myMoveManager=new MoveManager(
 					glb.scene,
 					MoveManager.getArray([
-						[0,0],
-						[0,20],
-						[20,20],
-						[0,20],
-						[0,0],
-						[-20,0],
-						[0,0],
-						[20,20],
-						[40,20],
+						[90,1.17,196],
+						[90.28,1.17,196.0],
+						[75.3,-3.7,196.05],
+						[74.52,-3.7,206.92],
+						[52.29,-3.7,206.17],
+						[49.62,-3.67,203.3],
+						[49.96,-8.53,188.86],
 					])
 			);
-			//myMoveManager.stopFlag=false;
-
 			window.MM=myMoveManager;
-			/**/
 		});
 
 		radiographicTesting();
@@ -95,7 +95,11 @@
 				const intersects = raycaster.intersectObjects(
 						myMain.scene.children[1].children[0].children
 				);////myRoomManager.room
-				if(intersects.length)console.log(intersects[0].point);//0好对象是射线穿过的第一个对象
+				if(intersects.length)console.log('['+
+						Math.floor(intersects[0].point.x*100)/100+','+
+						Math.floor(intersects[0].point.y*100)/100+','+
+						Math.floor(intersects[0].point.z*100)/100+']'
+				);//0是射线穿过的第一个对象
 				else console.log("没有点击到");
 			}
 			window.addEventListener( 'mousedown',mouseDown0, true );
