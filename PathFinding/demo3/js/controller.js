@@ -1,6 +1,6 @@
 /**
- * The visualization controller will works as a state machine.
- * See files under the `doc` folder for transition descriptions.
+ * The visualization controller will works as a state machine.可视化控制器将作为状态机工作。
+ * See files under the `doc` folder for transition descriptions.有关转换说明，请参见“doc”文件夹下的文件。
  * See https://github.com/jakesgordon/javascript-state-machine
  * for the document of the StateMachine module.
  */
