@@ -19,7 +19,7 @@ class RoomManager{
         //this.room.visible=false;
         scope.myVideoManager=myVideoManager0;
         scope.mid=20;
-        scope.url="./myModel/room10/";
+        scope.url="../../_DATA_/room10/";
         scope.camera=camera;
         scope.init();
     }

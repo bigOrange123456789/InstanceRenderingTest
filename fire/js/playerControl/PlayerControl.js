@@ -3,7 +3,7 @@ function PlayerControl(camera){
     this.frustum;
     this.init=function () {
         var scope=this;
-        this.controller.KeyboardMoveStep=1;
+        this.controller.KeyboardMoveStep=8;
         function tool(){
             requestAnimationFrame(tool);
             scope.controller.update();
