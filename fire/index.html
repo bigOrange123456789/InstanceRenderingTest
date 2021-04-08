@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+
+	<body>
+
+	<script src="js/lib/threeJS/three.js"></script>
+	<script src="js/lib/threeJS/OrbitControls.js"></script>
+	<script src="js/lib/threeJS/GLTFLoader.js"></script>
+
+	<script src="js/lib/pmLib/MyPMLoader.js"></script>
+
+	<script src="js/lib/instancedLib/InstancedGroup.js"></script>
+	<script src="js/lib/instancedLib/SkinnedMeshController.js"></script>
+
+	<script src="js/VideoManager.js"></script>
+
+	<script src="js/sceneSet/SeatManager.js"></script>
+	<script src="js/sceneSet/AvatarManager.js"></script>
+
+	<script src="js/playerControl/PlayerControl.js"></script>
+	<script src="js/playerControl/PreviewManager.js"></script>
+
+	<script src="js/ParamMeasure.js"></script>
+	<script src="js/Main.js"></script>
+
+	<script  type="module">
+		import {RoomManager} from './js/sceneSet/RoomManager.js';
+
+		var myMain = new Main();
+		myMain.start();
+
+		//myMain.camera.position.set(26.5474101, 9.609053, 10.9);
+		//myMain.camera.rotation.set(0.0793021902702234, 0.8739098399535151,  -0.0608649);
+		//myMain.camera.position.set(15.577289984462519, 7.463007758096705,  72.15985);
+		//myMain.camera.rotation.set( -0.24654891164364193, 0.12522579956880284, 0.03142280744032);
+
+		var myRoomManager = new RoomManager(null,myMain.camera);
+		myMain.scene.add(myRoomManager.room);
+		console.log(myRoomManager.room);
+
+		new PlayerControl(myMain.camera);
+		window.c=myMain.camera;
+	</script>
+	</body>
+</html>
