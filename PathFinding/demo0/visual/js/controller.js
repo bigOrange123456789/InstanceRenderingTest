@@ -1,6 +1,6 @@
 /**
- * The visualization controller will works as a state machine.可视化控制器将作为状态机工作。
- * See files under the `doc` folder for transition descriptions.有关转换说明，请参见“doc”文件夹下的文件。
+ * The visualization controller will works as a state machine.
+ * See files under the `doc` folder for transition descriptions.
  * See https://github.com/jakesgordon/javascript-state-machine
  * for the document of the StateMachine module.
  */
@@ -91,19 +91,17 @@ var Controller = StateMachine.create({
 });
 
 $.extend(Controller, {
-    gridSize: [150, 100], // number of nodes horizontally and vertically
+    gridSize: [64, 36], // number of nodes horizontally and vertically
     operationsPerSecond: 300,
 
     /**
-     * 从“none”状态到“ready”状态的异步转换。
      * Asynchronous transition from `none` state to `ready` state.
      */
     onleavenone: function() {
         var numCols = this.gridSize[0],
             numRows = this.gridSize[1];
 
-        this.grid = new PF.Grid(numCols, numRows);//生成一张棋盘
-        //console.log(this.grid);
+        this.grid = new PF.Grid(numCols, numRows);
 
         View.init({
             numCols: numCols,
@@ -140,7 +138,6 @@ $.extend(Controller, {
         this.path = finder.findPath(
             this.startX, this.startY, this.endX, this.endY, grid
         );
-        //this.path记录找到的最短路径
         this.operationCount = this.operations.length;
         timeEnd = window.performance ? performance.now() : Date.now();
         this.timeSpent = (timeEnd - timeStart).toFixed(4);
@@ -174,7 +171,6 @@ $.extend(Controller, {
         // => ready
     },
     onfinish: function(event, from, to) {
-        console.log("*");
         View.showStats({
             pathLength: PF.Util.pathLength(this.path),
             timeSpent:  this.timeSpent,
@@ -296,7 +292,6 @@ $.extend(Controller, {
     /**
      * Define setters and getters of PF.Node, then we can get the operations
      * of the pathfinding.
-     * 定义设置者和获取者PF节点，则可以得到寻路操作。
      */
     hookPathFinding: function() {
 

@@ -1,7 +1,7 @@
 /**
  * The control panel.
  */
-var Panel = {//只有两个功能，一个是初始化另一个是发现路径
+var Panel = {
     init: function() {
         var $algo = $('#algorithm_panel');
 
@@ -31,10 +31,10 @@ var Panel = {//只有两个功能，一个是初始化另一个是发现路径
             '#algorithm_panel ' +
             '.ui-accordion-header[aria-selected=true]'
         ).attr('id');
-
+        
         switch (selected_header) {
 
-        case 'astar_header'://选择A*算法
+        case 'astar_header':
             allowDiagonal = typeof $('#astar_section ' +
                                      '.allow_diagonal:checked').val() !== 'undefined';
             biDirectional = typeof $('#astar_section ' +
@@ -47,22 +47,14 @@ var Panel = {//只有两个功能，一个是初始化另一个是发现路径
             weight = weight >= 1 ? weight : 1; /* if negative or 0, use 1 */
 
             heuristic = $('input[name=astar_heuristic]:checked').val();
-            if (biDirectional) {//使用双向算法
+            if (biDirectional) {
                 finder = new PF.BiAStarFinder({
                     allowDiagonal: allowDiagonal,
                     dontCrossCorners: dontCrossCorners,
                     heuristic: PF.Heuristic[heuristic],
                     weight: weight
                 });
-            } else {//不用双向算法
-                console.log({
-                        allowDiagonal: allowDiagonal,
-                        dontCrossCorners: dontCrossCorners,
-                        heuristic: PF.Heuristic[heuristic],
-                        weight: weight
-                    });
-                //allowDiagonal: true//允许对角线
-                //dontCrossCorners:false//
+            } else {
                 finder = new PF.AStarFinder({
                     allowDiagonal: allowDiagonal,
                     dontCrossCorners: dontCrossCorners,

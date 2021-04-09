@@ -36,7 +36,7 @@ class MoveManager{
         //arr1:  x,z
         //arr2:  x,y,z,  a,b,c, time
         var arr2=[];
-        var timeCoefficient=50;
+        var timeCoefficient=20;
         arr2.push([
             arr1[0][0],arr1[0][1],arr1[0][2],
             0,0,0,
