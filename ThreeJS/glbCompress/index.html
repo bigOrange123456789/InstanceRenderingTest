@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+
+	<body>
+
+	<script src="js/lib/threeJS/three.js"></script>
+	<script src="js/lib/threeJS/OrbitControls.js"></script>
+	<script src="js/lib/threeJS/GLTFLoader.js"></script>
+
+	<script src="js/lib/pmLib/MyPMLoader.js"></script>
+
+	<script src="js/lib/instancedLib/InstancedGroup.js"></script>
+	<script src="js/lib/instancedLib/SkinnedMeshController.js"></script>
+
+	<script src="js/VideoManager.js"></script>
+
+	<script src="js/sceneSet/SeatManager.js"></script>
+	<script src="js/sceneSet/AvatarManager.js"></script>
+
+	<script src="js/playerControl/PlayerControl.js"></script>
+
+	<script src="js/ParamMeasure.js"></script>
+	<script src="js/Main.js"></script>
+
+	<script src="DRACOLoader.js"></script>
+	<script  type="module">
+
+		var myMain = new Main();
+		myMain.start();
+
+		new PlayerControl(myMain.camera);
+		window.c=myMain.camera;
+
+		new THREE.GLTFLoader().load("../../DATA/test.glb", (glb) => {
+			console.log(glb);
+			myMain.scene.add(glb.scene)
+		});
+
+		/*var loader2=new THREE.GLTFLoader();
+		THREE.DRACOLoader.setDecoderPath('./lib/draco/');
+		THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
+		loader2.setDRACOLoader(new THREE.DRACOLoader());
+
+		console.log(loader2.load);
+		loader2.load("../../DATA/cgm/1.glb", (glb2) => {
+			console.log(glb2);
+			//myMain.scene.add(glb2.scene)
+		});*/
+
+
+		const loader = new DRACOLoader();// Instantiate a loader
+		loader.setDecoderPath( '/examples/js/libs/draco/' );// Specify path to a folder containing WASM/JS decoding libraries.
+		loader.preload();// Optional: Pre-fetch Draco WASM/JS module.
+		loader.load(// Load a Draco geometry
+				'../../DATA/cgm/1.glb',// resource URL
+				function ( geometry ) {// called when the resource is loaded
+					const material = new THREE.MeshStandardMaterial( { color: 0x606060 } );
+					const mesh = new THREE.Mesh( geometry, material );
+					myMain.scene.add( mesh );
+				},
+				function ( xhr ) {// called as loading progresses
+					console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+				},
+				function ( error ) {// called when loading has errors
+					console.log( 'An error happened:'+error );
+				}
+		);
+	</script>
+	</body>
+</html>
