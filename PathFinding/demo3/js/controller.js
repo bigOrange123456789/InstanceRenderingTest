@@ -174,7 +174,20 @@ $.extend(Controller, {
         // => ready
     },
     onfinish: function(event, from, to) {
-        console.log("*");
+        document.getElementById("myPathLength").innerHTML="The path length is "+getLength(this.path);
+        function getLength(arr){
+            if(arr.length<2)return 0;
+            var length=0;
+            for(var i=1;i<arr.length;i++){
+               var l0=Math.pow(
+                   Math.pow(arr[i][0]-arr[i-1][0],2)
+                   +Math.pow(arr[i][1]-arr[i-1][1],2),
+                   0.5
+               );
+                length+=Math.floor(l0*10)/10;
+            }
+            return Math.floor(length*10)/10;
+        }
         View.showStats({
             pathLength: PF.Util.pathLength(this.path),
             timeSpent:  this.timeSpent,
@@ -205,6 +218,7 @@ $.extend(Controller, {
      */
 
     onready: function() {
+        document.getElementById("myPathLength").innerHTML='=> ready';
         console.log('=> ready');
         this.setButtonStates({
             id: 1,
@@ -224,7 +238,7 @@ $.extend(Controller, {
         // => [starting, draggingStart, draggingEnd, drawingStart, drawingEnd]
     },
     onstarting: function(event, from, to) {
-        console.log('=> starting');
+        document.getElementById("myPathLength").innerHTML='=> starting';
         // Clears any existing search progress
         this.clearFootprints();
         this.setButtonStates({
@@ -235,7 +249,7 @@ $.extend(Controller, {
         // => searching
     },
     onsearching: function() {
-        console.log('=> searching');
+        document.getElementById("myPathLength").innerHTML='=> searching';
         this.setButtonStates({
             id: 1,
             text: 'Restart Search',
