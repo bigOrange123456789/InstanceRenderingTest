@@ -1,9 +1,20 @@
-var fs = require('fs');
-const files = fs.readdirSync('./test');
-files.forEach(function (item, index) {
-    console.log(item,index);
-    if (fs.lstatSync("./test/" + item).isDirectory()) console.log(item);//判断是否为文件夹
-})
+f3();
+function f1() {
+    var fs = require('fs');
+    var files = fs.readdirSync('./test');
+    files.forEach(function (item, index) {
+        console.log(item,index);
+        if (fs.lstatSync("./test/" + item).isDirectory()) console.log(item);//判断是否为文件夹
+    });
+}
+function f2() {
+    var result="";
+    require('fs').readdirSync('./').forEach(function (item) {result+=item+",";});
+    console.log(result);
+}
+function f3() {
+    require('fs').readdirSync('./').forEach(function (s) {console.log("'"+s+"',")});
+}
 /**
  *
  *

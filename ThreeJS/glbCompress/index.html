@@ -57,7 +57,7 @@
 
 
 		const loader = new THREE.GLTFLoader();// Instantiate a loader
-		THREE.DRACOLoader.setDecoderPath( '/js/lib/threeJS/draco/' );// Specify path to a folder containing WASM/JS decoding libraries.
+		THREE.DRACOLoader.setDecoderPath( './js/lib/threeJS/draco/' );// Specify path to a folder containing WASM/JS decoding libraries.
 		THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
 		loader.setDRACOLoader(new THREE.DRACOLoader());
 
@@ -69,7 +69,7 @@
 
 					const material = new THREE.MeshStandardMaterial( { color: 0x606060 } );
 					const mesh = new THREE.Mesh( geometry, material );
-					myMain.scene.add( mesh );
+					//myMain.scene.add( mesh );
 				},
 				function ( xhr ) {// called as loading progresses
 					console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
