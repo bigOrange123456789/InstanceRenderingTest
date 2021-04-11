@@ -39,10 +39,10 @@
 		new PlayerControl(myMain.camera);
 		window.c=myMain.camera;
 
-		new THREE.GLTFLoader().load("../../DATA/test.glb", (glb) => {
-			console.log(glb);
-			myMain.scene.add(glb.scene)
-		});
+		// new THREE.GLTFLoader().load("../../DATA/test.glb", (glb) => {
+		// 	console.log(glb);
+		// 	myMain.scene.add(glb.scene)
+		// });
 
 		/*var loader2=new THREE.GLTFLoader();
 		THREE.DRACOLoader.setDecoderPath('./lib/draco/');
@@ -56,12 +56,17 @@
 		});*/
 
 
-		const loader = new DRACOLoader();// Instantiate a loader
-		loader.setDecoderPath( '/examples/js/libs/draco/' );// Specify path to a folder containing WASM/JS decoding libraries.
-		loader.preload();// Optional: Pre-fetch Draco WASM/JS module.
+		const loader = new THREE.GLTFLoader();// Instantiate a loader
+		THREE.DRACOLoader.setDecoderPath( '/js/lib/threeJS/draco/' );// Specify path to a folder containing WASM/JS decoding libraries.
+		THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
+		loader.setDRACOLoader(new THREE.DRACOLoader());
+
+		//loader.preload();// Optional: Pre-fetch Draco WASM/JS module.
 		loader.load(// Load a Draco geometry
 				'../../DATA/cgm/1.glb',// resource URL
 				function ( geometry ) {// called when the resource is loaded
+					console.log(geometry);
+
 					const material = new THREE.MeshStandardMaterial( { color: 0x606060 } );
 					const mesh = new THREE.Mesh( geometry, material );
 					myMain.scene.add( mesh );
