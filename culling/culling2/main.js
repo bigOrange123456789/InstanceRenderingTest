@@ -143,6 +143,7 @@ function objectIsOccluded(object){//判断是否应该剔除
   mvpMatrix.multiplyMatrices(viewProjectionMatrix, object.matrixWorld);
 
   // Compute the bounding rectangle in screen space by using the bounding box.
+  //使用包围盒计算屏幕空间中的包围矩形。
   var l = object.geometry.boundingBox.min;
   var u = object.geometry.boundingBox.max;
   tempCorners[0].copy(l);
