@@ -1,6 +1,6 @@
 /**
- * A node in grid.
- * This class holds some basic information about a node and custom
+ * A node in grid. 
+ * This class holds some basic information about a node and custom 
  * attributes may be added, depending on the algorithms' needs.
  * @constructor
  * @param {number} x - The x coordinate of the node on the grid.
@@ -26,4 +26,3 @@ function Node(x, y, walkable) {
 }
 
 module.exports = Node;
-
