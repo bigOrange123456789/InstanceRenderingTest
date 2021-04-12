@@ -12,7 +12,7 @@ class MoveManager{
         scope.avatar=avatar;
         scope.roamPath=roamPath;
         scope.myPreviewflag=1;//确定目标节点
-        scope.stopFlag=true;
+        scope.stopFlag=false;//true;
         scope.isLoop=false;//如果不进行循环漫游的话，第一行的初始状态就没用了
 
         scope.myMakeOneRoamStep=new MakeOneRoamStep();
@@ -123,7 +123,7 @@ class MakeOneRoamStep{
         a2=mydata[mystate][3];
         b2=mydata[mystate][4];
         c2=mydata[mystate][5];
-        
+
         if(scope.stepIndex===1){//新的阶段
             scope.#initParam(x1,y1,z1,x2,y2,z2,a1,b1,c1,a2,b2,c2,time);
         }else if(scope.rectify){//如果有路径纠正功能

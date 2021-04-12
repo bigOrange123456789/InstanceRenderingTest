@@ -30,8 +30,10 @@
 	<script src="js/ParamMeasure.js"></script>
 	<script src="js/Main.js"></script>
 
+	<script src="js/lib/PF.js"></script>
+
 	<script  type="module">
-		import {MoveManager} from './js/playerControl/MoveManager.js';
+		import {PeopleController} from './js/PeopleController.js';
 		import {RoomManager} from './js/sceneSet/RoomManager.js';
 
 		var myMain = new Main();
@@ -47,41 +49,8 @@
 		new PlayerControl(myMain.camera);
 		window.c=myMain.camera;
 
-		new THREE.GLTFLoader().load("../../_DATA_/male_run.glb", (glb) => {
-			//console.log(glb);
-			createObj2(glb)
-			myMain.scene.add(glb.scene);
-			//glb.scene.scale.set(5,5,5);
-			glb.scene.position.set(90,1.17,196);
-			//addCamera();
-			function addCamera(){
-				myMain.camera.position.set(0,2,-3);
-				myMain.camera.rotation.set(0,135,0);
-				glb.scene.add(myMain.camera);
-			}
-			function createObj2(G) {
-				var meshMixer2 = new THREE.AnimationMixer(G.scene);
-				meshMixer2.clipAction(G.animations[0]).play();
-				setInterval(function () {
-					meshMixer2.update(0.01);
-				},20);
-			}
-			//AvatarManager
-
-			var myMoveManager=new MoveManager(
-					glb.scene,
-					MoveManager.getArray([
-						[90,1.17,196],
-						[90.28,1.17,196.0],
-						[75.3,-3.7,196.05],
-						[74.52,-3.7,206.92],
-						[52.29,-3.7,206.17],
-						[49.62,-3.67,203.3],
-						[49.96,-8.53,188.86],
-					])
-			);
-			window.MM=myMoveManager;
-		});
+		//console.log(new PeopleController().model);
+		myMain.scene.add(new PeopleController().model)
 
 		radiographicTesting();
 		function radiographicTesting(){

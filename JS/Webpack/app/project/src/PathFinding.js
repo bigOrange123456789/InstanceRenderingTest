@@ -1,4 +1,4 @@
-module.exports =PF={
+PF={
     'Heap'                      : require('./heap'),
     'Node'                      : require('./core/Node'),
     'Grid'                      : require('./core/Grid'),
@@ -18,4 +18,5 @@ module.exports =PF={
     'JumpPointFinder'           : require('./finders/JumpPointFinder'),
 */
 }
+module.exports ={PF}
 
