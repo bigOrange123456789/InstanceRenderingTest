@@ -1,1 +1,1 @@
-document.write("It works.");
+(()=>{var r={191:(r,o,e)=>{e(956)},956:()=>{console.log(123)}},o={};!function e(t){var n=o[t];if(void 0!==n)return n.exports;var s=o[t]={exports:{}};return r[t](s,s.exports,e),s.exports}(191)})();
