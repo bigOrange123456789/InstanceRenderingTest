@@ -12,6 +12,7 @@
           grid.setWalkableAt(2,2,false);
           console.log(grid);
 
+          //console.log(PF.Heuristic["manhattan"])
           var finder = new PF.AStarFinder({
               allowDiagonal: true,//允许对角线
               dontCrossCorners: false,//不要拐弯?

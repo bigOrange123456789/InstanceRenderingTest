@@ -1,3 +1,4 @@
+//var Head= require('../head');
 var Node = require('./Node');
 var DiagonalMovement = require('./DiagonalMovement');
 
@@ -243,3 +244,4 @@ Grid.prototype.clone = function() {
 };
 
 module.exports = Grid;
+
