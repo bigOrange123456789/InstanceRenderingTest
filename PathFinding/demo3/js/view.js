@@ -3,7 +3,7 @@
  * It uses raphael.js to show the grids.
  */
 var View = {
-    nodeSize: document.body.clientWidth/150, // width and height of a single node, in pixel
+    nodeSize: 50,//document.body.clientWidth/150, // width and height of a single node, in pixel
     nodeStyle: {
         normal: {
             fill: 'white',

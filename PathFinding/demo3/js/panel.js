@@ -26,7 +26,7 @@ var Panel = {//只有两个功能，一个是初始化另一个是发现路径
      */
     getFinder: function() {
         var finder, selected_header, heuristic, allowDiagonal, biDirectional, dontCrossCorners, weight, trackRecursion, timeLimit;
-        
+
         selected_header = $(
             '#algorithm_panel ' +
             '.ui-accordion-header[aria-selected=true]'
@@ -54,19 +54,19 @@ var Panel = {//只有两个功能，一个是初始化另一个是发现路径
                     heuristic: PF.Heuristic[heuristic],
                     weight: weight
                 });
-            } else {//不用双向算法
-                console.log({
+                console.log(
+                    {
                         allowDiagonal: allowDiagonal,
                         dontCrossCorners: dontCrossCorners,
                         heuristic: PF.Heuristic[heuristic],
                         weight: weight
-                    });
-                //allowDiagonal: true//允许对角线
-                //dontCrossCorners:false//
+                    }
+                );
+            } else {//不用双向算法
                 finder = new PF.AStarFinder({
-                    allowDiagonal: allowDiagonal,
-                    dontCrossCorners: dontCrossCorners,
-                    heuristic: PF.Heuristic[heuristic],
+                    allowDiagonal: allowDiagonal,//allowDiagonal: true//允许对角线
+                    dontCrossCorners: dontCrossCorners,//dontCrossCorners:false//不要拐弯?
+                    heuristic: PF.Heuristic[heuristic],//heuristic["manhattan"] 启发式["曼哈顿"]
                     weight: weight
                 });
             }
@@ -139,7 +139,7 @@ var Panel = {//只有两个功能，一个是初始化另一个是发现路径
             trackRecursion = typeof $('#jump_point_section ' +
                                      '.track_recursion:checked').val() !== 'undefined';
             heuristic = $('input[name=jump_point_heuristic]:checked').val();
-            
+
             finder = new PF.JumpPointFinder({
               trackJumpRecursion: trackRecursion,
               heuristic: PF.Heuristic[heuristic],

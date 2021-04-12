@@ -91,7 +91,7 @@ var Controller = StateMachine.create({
 });
 
 $.extend(Controller, {
-    gridSize: [150, 100], // number of nodes horizontally and vertically
+    gridSize: [40,30],//[150, 100], // number of nodes horizontally and vertically
     operationsPerSecond: 300,
 
     /**
@@ -125,19 +125,25 @@ $.extend(Controller, {
     ondrawWall: function(event, from, to, gridX, gridY) {
         this.setWalkableAt(gridX, gridY, false);
         // => drawingWall
+        console.log("=> drawingWall");
     },
     oneraseWall: function(event, from, to, gridX, gridY) {
         this.setWalkableAt(gridX, gridY, true);
         // => erasingWall
+        //console.log("=> erasingWall");
     },
     onsearch: function(event, from, to) {
         var grid,
             timeStart, timeEnd,
             finder = Panel.getFinder();
 
+
         timeStart = window.performance ? performance.now() : Date.now();
         grid = this.grid.clone();
         this.path = finder.findPath(
+            this.startX, this.startY, this.endX, this.endY, grid
+        );
+        console.log(
             this.startX, this.startY, this.endX, this.endY, grid
         );
         //this.path记录找到的最短路径
@@ -511,6 +517,7 @@ $.extend(Controller, {
         View.setEndPos(gridX, gridY);
     },
     setWalkableAt: function(gridX, gridY, walkable) {
+        console.log(gridX, gridY, walkable);
         this.grid.setWalkableAt(gridX, gridY, walkable);
         View.setAttributeAt(gridX, gridY, 'walkable', walkable);
     },
