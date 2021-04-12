@@ -50,29 +50,9 @@
 		window.c=myMain.camera;
 
 		//console.log(new PeopleController().model);
-		myMain.scene.add(new PeopleController().model)
+		myMain.scene.add(new PeopleController(myMain).model)
 
-		radiographicTesting();
-		function radiographicTesting(){
-			const raycaster = new THREE.Raycaster();
-			const mouse = new THREE.Vector2();
-			function mouseDown0( event ) {
-				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-				raycaster.setFromCamera( mouse, myMain.camera );
-				//console.log(myMain.scene.children[1].children[0].children);
-				const intersects = raycaster.intersectObjects(
-						myMain.scene.children[1].children[0].children
-				);////myRoomManager.room
-				if(intersects.length)console.log('['+
-						Math.floor(intersects[0].point.x*100)/100+','+
-						Math.floor(intersects[0].point.y*100)/100+','+
-						Math.floor(intersects[0].point.z*100)/100+']'
-				);//0是射线穿过的第一个对象
-				else console.log("没有点击到");
-			}
-			window.addEventListener( 'mousedown',mouseDown0, true );
-		}
+
 
 	</script>
 	</body>

@@ -143,9 +143,7 @@ $.extend(Controller, {
         this.path = finder.findPath(
             this.startX, this.startY, this.endX, this.endY, grid
         );
-        console.log(
-            this.startX, this.startY, this.endX, this.endY, grid
-        );
+        //console.log(this.startX, this.startY, this.endX, this.endY, grid);
         //this.path记录找到的最短路径
         this.operationCount = this.operations.length;
         timeEnd = window.performance ? performance.now() : Date.now();
@@ -517,7 +515,7 @@ $.extend(Controller, {
         View.setEndPos(gridX, gridY);
     },
     setWalkableAt: function(gridX, gridY, walkable) {
-        console.log(gridX, gridY, walkable);
+        //console.log(gridX, gridY, walkable);
         this.grid.setWalkableAt(gridX, gridY, walkable);
         View.setAttributeAt(gridX, gridY, 'walkable', walkable);
     },
