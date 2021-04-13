@@ -11,10 +11,11 @@
         return [].splice.apply(t, [n, n - n].concat(e)), e
     }, s = function (t, e, i) {
         return null == i && (i = r), t.push(e), d(t, 0, t.length - 1, i)
-    }, o = function (t, e) {
-        var i, n;
-        return null == e && (e = r), i = t.pop(), t.length ? (n = t[0], t[0] = i, g(t, 0, e)) : n = i, n
-    }, u = function (t, e, i) {
+    },
+            o = function (t, e) {//pop
+                var i, n;
+                return null == e && (e = r), i = t.pop(), t.length ? (n = t[0], t[0] = i, g(t, 0, e)) : n = i, n
+            }, u = function (t, e, i) {
         var n;
         return null == i && (i = r), n = t[0], t[0] = e, g(t, 0, i), n
     }, a = function (t, e, i) {
@@ -60,15 +61,20 @@
             this.cmp = null != t ? t : r, this.nodes = []
         }
 
-        return t.push = s, t.pop = o, t.replace = u, t.pushpop = a, t.heapify = n, t.nlargest = p, t.nsmallest = c, t.prototype.push = function (t) {
+        return t.push = s, t.pop = o, t.replace = u, t.pushpop = a, t.heapify = n, t.nlargest = p, t.nsmallest = c,
+            t.prototype.push = function (t) {
             return s(this.nodes, t, this.cmp)
-        }, t.prototype.pop = function () {
+        },
+            t.prototype.pop = function () {
             return o(this.nodes, this.cmp)
-        }, t.prototype.peek = function () {
+        },
+            t.prototype.peek = function () {
             return this.nodes[0]
-        }, t.prototype.contains = function (t) {
+        },
+            t.prototype.contains = function (t) {
             return -1 !== this.nodes.indexOf(t)
-        }, t.prototype.replace = function (t) {
+        },
+            t.prototype.replace = function (t) {
             return u(this.nodes, t, this.cmp)
         }, t.prototype.pushpop = function (t) {
             return a(this.nodes, t, this.cmp)
@@ -87,7 +93,14 @@
             return e = new t, e.nodes = this.nodes.slice(0), e
         }, t.prototype.toArray = function () {
             return this.nodes.slice(0)
-        }, t.prototype.insert = t.prototype.push, t.prototype.remove = t.prototype.pop, t.prototype.top = t.prototype.peek, t.prototype.front = t.prototype.peek, t.prototype.has = t.prototype.contains, t.prototype.copy = t.prototype.clone, t
+        },
+            t.prototype.insert = t.prototype.push,
+            t.prototype.remove = t.prototype.pop,
+            t.prototype.top = t.prototype.peek,
+            t.prototype.front = t.prototype.peek,
+            t.prototype.has = t.prototype.contains,
+            t.prototype.copy = t.prototype.clone,
+            t
     }(), ("undefined" != typeof e && null !== e ? e.exports : void 0) ? e.exports = t : window.Heap = t
 
     module.exports=t;

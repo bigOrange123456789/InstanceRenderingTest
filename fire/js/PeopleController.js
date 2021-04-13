@@ -6,19 +6,25 @@ class PeopleController{
     model;
     myPF;
     grid;finder;
+    xMin;zMin;
     goToPosition(pos){
         var scope=this;
-        var x1=Math.floor(Math.abs(scope.model.position.x));
-        var z1=Math.floor(Math.abs(scope.model.position.z));
-        var x2=Math.floor(Math.abs(pos.x));
-        var z2=Math.floor(Math.abs(pos.z));
+        console.log(pos.x,pos.z)
+        //化身当前的位置
+        var x1=Math.floor(scope.model.position.x)-scope.xMin;
+        var z1=Math.floor(scope.model.position.z)-scope.zMin;
+        //目标位置
+        var x2=Math.floor(pos.x)-scope.xMin;
+        var z2=Math.floor(pos.z)-scope.zMin;
         var grid=scope.grid.clone();
         var path = scope.finder.findPath(x1,z1,x2,z2,grid);
         for(var i=0;i<path.length;i++){
             path[i].splice(1,0,scope.model.position.y);
+            path[i][0]+=scope.xMin;
+            path[i][2]+=scope.zMin;
         }
-        console.log(x1,z1,x2,z2);
-        console.log(path);
+        //console.log(x1,z1,x2,z2);
+        //console.log(path);
         new MoveManager(
             scope.model,
             MoveManager.getArray(path)
@@ -30,7 +36,9 @@ class PeopleController{
     #initPF(){
         var scope=this;
 
-        scope.grid = new PF.Grid(500,500);//生成网格
+        scope.grid = new PF.Grid(1000,1000);//生成网格
+        scope.xMin=-500;
+        scope.zMin=-500;
         scope.grid.setWalkableAt(2,2,false);
         scope.#radiographicTesting();
         console.log(scope.grid);

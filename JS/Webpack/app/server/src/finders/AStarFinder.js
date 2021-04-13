@@ -63,21 +63,23 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
         abs = Math.abs, SQRT2 = Math.SQRT2,
         node, neighbors, neighbor, i, l, x, y, ng;
 
-    // set the `g` and `f` value of the start node to be 0
+    // set the `g` and `f` value of the start node to be 0//将开始节点的“g”和“f”值设置为0
     startNode.g = 0;
     startNode.f = 0;
 
-    // push the start node into the open list
+    // push the start node into the open list//将开始节点推入打开列表
     openList.push(startNode);
     startNode.opened = true;
 
-    // while the open list is not empty
+    // while the open list is not empty//当打开列表不为空时
     while (!openList.empty()) {
-        // pop the position of node which has the minimum `f` value.
+        //openList是一个节点集合
+        // pop the position of node which has the minimum `f` value.//弹出具有最小“f”值的节点的位置。
         node = openList.pop();
-        node.closed = true;
+        node.closed = true;//这个节点已经确定在路径上了
+        //console.log(node);
 
-        // if reached the end position, construct the path and return it
+        // if reached the end position, construct the path and return it//如果到达终点位置，构造路径并返回
         if (node === endNode) {
             return Util.backtrace(endNode);
         }
@@ -94,25 +96,26 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
             x = neighbor.x;
             y = neighbor.y;
 
-            // get the distance between current node and the neighbor
-            // and calculate the next g score
+            // get the distance between current node and the neighbor //获取当前节点与邻居的距离
+            // and calculate the next g score //然后计算下一个g分数
             ng = node.g + ((x - node.x === 0 || y - node.y === 0) ? 1 : SQRT2);
 
             // check if the neighbor has not been inspected yet, or
             // can be reached with smaller cost from the current node
             if (!neighbor.opened || ng < neighbor.g) {
-                neighbor.g = ng;
-                neighbor.h = neighbor.h || weight * heuristic(abs(x - endX), abs(y - endY));
-                neighbor.f = neighbor.g + neighbor.h;
-                neighbor.parent = node;
+                neighbor.g = ng;//实际代价
+                neighbor.h = neighbor.h || weight * heuristic(abs(x - endX), abs(y - endY));//启发式函数的输入是dx,dy
+                neighbor.f = neighbor.g + neighbor.h;//f(n)=g(n)+h(n)//g是实际代价 h是估计代价
+                neighbor.parent = node;//设置父节点
 
                 if (!neighbor.opened) {
                     openList.push(neighbor);
                     neighbor.opened = true;
                 } else {
-                    // the neighbor can be reached with smaller cost.
-                    // Since its f value has been updated, we have to
-                    // update its position in the open list
+                    // the neighbor can be reached with smaller cost.//可以以较小的成本联系到邻居。
+                    // Since its f value has been updated, we have to//因为它的f值已经更新了，我们必须
+                    // update its position in the open list//更新其在打开列表中的位置
+
                     openList.updateItem(neighbor);
                 }
             }
