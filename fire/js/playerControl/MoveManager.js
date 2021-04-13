@@ -5,18 +5,19 @@ class MoveManager{
     myPreviewflag;//确定目标节点
     stopFlag;//控制是否开始移动
     isLoop;//如果不进行循环漫游的话，第一行的初始状态就没用了
+    finished;//到达终点后执行的函数
 
     myMakeOneRoamStep=new MakeOneRoamStep();
-    constructor(avatar,roamPath){
+    constructor(avatar,roamPath,finished){
         var scope=this;
         scope.avatar=avatar;
         scope.roamPath=roamPath;
         scope.myPreviewflag=1;//确定目标节点
         scope.stopFlag=false;//true;
         scope.isLoop=false;//如果不进行循环漫游的话，第一行的初始状态就没用了
-
+        scope.finished=finished?finished:function(){};
         scope.myMakeOneRoamStep=new MakeOneRoamStep();
-        this.#autoRoam();//创建后自动执行
+        scope.#autoRoam();//创建后自动执行
     }
     #autoRoam=function () {
         var scope=this;
@@ -25,9 +26,11 @@ class MoveManager{
             if(!scope.stopFlag)//是否停止自动漫游
                 if(scope.myMakeOneRoamStep.preview(scope.myPreviewflag,scope.avatar,scope.roamPath)) {
                     scope.myPreviewflag++;
-                    if(scope.myPreviewflag=== scope.roamPath.length)
+                    if(scope.myPreviewflag=== scope.roamPath.length){//到达了目标点
                         if(scope.isLoop)scope.myPreviewflag = 0;
                         else scope.stopFlag=true;
+                        scope.finished();
+                    }
                 }
             requestAnimationFrame(autoRoam0);
         }
