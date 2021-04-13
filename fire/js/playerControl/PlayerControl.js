@@ -10,8 +10,7 @@ function PlayerControl(camera){
         }tool();
     }
     this.init();
-
-}/**/
+}
 PlayerControl.prototype={
     computeFrustumFromCamera:function(){//求视锥体
         var camera=this.controller.camera;

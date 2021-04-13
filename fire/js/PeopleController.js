@@ -236,7 +236,7 @@ class PeopleController{
     }
     #radiographicTesting=function(){
         var scope=this;
-        console.log(scope.myMain)
+        //console.log(scope.myMain)
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         var flag=0;
