@@ -1,0 +1,30 @@
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="content-type"content="text/html; charset=gb2312">
+</head>
+<body>
+<canvas id="myCanvas"></canvas>
+<script type="text/javascript">
+
+    var canvas=document.getElementById('myCanvas');//画布
+    var context=canvas.getContext('2d');//画笔
+
+
+    //context.fillStyle=;//设置颜色
+    //context.fillRect(50,100,400,200);//画矩形
+
+    context.fillStyle='#FF0000';//设置颜色
+    context.font = "60px Courier New";
+    context.fillText("我是文字",50,50);
+
+    context.lineWidth = 10;
+    context.strokeStyle = '#00FF00';
+
+    context.beginPath();
+    context.moveTo(5, 5);
+    context.lineTo(5,100);
+    context.stroke();
+
+</script>
+</body>
