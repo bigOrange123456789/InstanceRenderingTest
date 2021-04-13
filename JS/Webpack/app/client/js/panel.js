@@ -1,7 +1,7 @@
 /**
  * The control panel.
  */
-var Panel = {//只有两个功能，一个是初始化另一个是发现路径
+var Panel = {
     init: function() {
         var $algo = $('#algorithm_panel');
 
@@ -26,15 +26,15 @@ var Panel = {//只有两个功能，一个是初始化另一个是发现路径
      */
     getFinder: function() {
         var finder, selected_header, heuristic, allowDiagonal, biDirectional, dontCrossCorners, weight, trackRecursion, timeLimit;
-
+        
         selected_header = $(
             '#algorithm_panel ' +
             '.ui-accordion-header[aria-selected=true]'
         ).attr('id');
-
+        
         switch (selected_header) {
 
-        case 'astar_header'://选择A*算法
+        case 'astar_header':
             allowDiagonal = typeof $('#astar_section ' +
                                      '.allow_diagonal:checked').val() !== 'undefined';
             biDirectional = typeof $('#astar_section ' +
@@ -47,19 +47,18 @@ var Panel = {//只有两个功能，一个是初始化另一个是发现路径
             weight = weight >= 1 ? weight : 1; /* if negative or 0, use 1 */
 
             heuristic = $('input[name=astar_heuristic]:checked').val();
-            //biDirectional=true;
-            if (biDirectional) {//使用双向算法
+            if (biDirectional) {
                 finder = new PF.BiAStarFinder({
                     allowDiagonal: allowDiagonal,
                     dontCrossCorners: dontCrossCorners,
                     heuristic: PF.Heuristic[heuristic],
                     weight: weight
                 });
-            } else {//不用双向算法
+            } else {
                 finder = new PF.AStarFinder({
-                    allowDiagonal: allowDiagonal,//allowDiagonal: true//允许对角线
-                    dontCrossCorners: dontCrossCorners,//dontCrossCorners:false//不要拐弯?
-                    heuristic: PF.Heuristic[heuristic],//heuristic["manhattan"] 启发式["曼哈顿"]
+                    allowDiagonal: allowDiagonal,
+                    dontCrossCorners: dontCrossCorners,
+                    heuristic: PF.Heuristic[heuristic],
                     weight: weight
                 });
             }
@@ -132,7 +131,7 @@ var Panel = {//只有两个功能，一个是初始化另一个是发现路径
             trackRecursion = typeof $('#jump_point_section ' +
                                      '.track_recursion:checked').val() !== 'undefined';
             heuristic = $('input[name=jump_point_heuristic]:checked').val();
-
+            
             finder = new PF.JumpPointFinder({
               trackJumpRecursion: trackRecursion,
               heuristic: PF.Heuristic[heuristic],

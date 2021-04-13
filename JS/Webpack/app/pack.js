@@ -1,1 +1,1 @@
-require("./project/index.js")
+require("./server/index.js")

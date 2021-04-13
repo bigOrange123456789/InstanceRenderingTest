@@ -25,7 +25,7 @@ function AStarFinder(opt) {
     this.weight = opt.weight || 1;
     this.diagonalMovement = opt.diagonalMovement;
 
-    if (!this.diagonalMovement) {
+    if (!this.diagonalMovement) {//是否可以沿着对角线移动
         if (!this.allowDiagonal) {
             this.diagonalMovement = DiagonalMovement.Never;
         } else {
@@ -37,8 +37,8 @@ function AStarFinder(opt) {
         }
     }
 
-    // When diagonal movement is allowed the manhattan heuristic is not
-    //admissible. It should be octile instead
+    // When diagonal movement is allowed the manhattan heuristic is not//如果允许对角线移动，则不允许曼哈顿启发式
+    //admissible. It should be octile instead//可接受的。它应该是八进制的
     if (this.diagonalMovement === DiagonalMovement.Never) {
         this.heuristic = opt.heuristic || Heuristic.manhattan;
     } else {
@@ -67,22 +67,22 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
     startNode.g = 0;
     startNode.f = 0;
 
-    // push the start node into the open list
+    // push the start node into the open list将开始节点推入打开列表
     openList.push(startNode);
     startNode.opened = true;
 
-    // while the open list is not empty
+    // while the open list is not empty当打开列表不为空时
     while (!openList.empty()) {
-        // pop the position of node which has the minimum `f` value.
+        // pop the position of node which has the minimum `f` value.弹出具有最小“f”值的节点的位置。
         node = openList.pop();
         node.closed = true;
 
-        // if reached the end position, construct the path and return it
+        // if reached the end position, construct the path and return it//如果到达终点位置，构造路径并返回
         if (node === endNode) {
             return Util.backtrace(endNode);
         }
 
-        // get neigbours of the current node
+        // get neigbours of the current node获取当前节点的邻居
         neighbors = grid.getNeighbors(node, diagonalMovement);
         for (i = 0, l = neighbors.length; i < l; ++i) {
             neighbor = neighbors[i];
