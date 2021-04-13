@@ -50,7 +50,12 @@
 		window.c=myMain.camera;
 
 		//console.log(new PeopleController().model);
-		myMain.scene.add(new PeopleController(myMain).model)
+		var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
+		loader.load("grid.json", function(str){//dataTexture
+			var grid=JSON.parse(str).grid;
+			myMain.scene.add(new PeopleController(myMain,grid).model)
+		});
+
 
 
 

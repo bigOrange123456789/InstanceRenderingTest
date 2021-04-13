@@ -173,13 +173,20 @@ class PeopleController{
 
         }
     }
-    #initPF(){
+    #initPF(grid){
         var scope=this;
 
         scope.grid = new PF.Grid(2000,2000);//生成网格
         scope.xMin=-1000;
         scope.zMin=-1000;
-        scope.grid.setWalkableAt(2,2,false);
+        console.log(grid)
+        for(var i=0;i<grid.length;i++){
+            scope.grid.setWalkableAt(
+                grid[i][0]-scope.xMin,
+                grid[i][1]-scope.zMin,
+                false);
+        }
+
         scope.#radiographicTesting();
         console.log(scope.grid);
 
@@ -193,12 +200,12 @@ class PeopleController{
         var path = scope.finder.findPath(1,1,5,5, scope.grid);
         console.log(path);
     }
-    constructor(myMain){
+    constructor(myMain,grid){
         var scope=this;
         scope.model=new THREE.Object3D();
-        scope.model.position.set(90,0,196);//(90,1.17,196);
+        //scope.model.position.set(90,0,196);//(90,1.17,196);
         scope.myMain=myMain;
-        scope.#initPF();
+        scope.#initPF(grid);
         //scope.goToPosition({x:5,z:5})
         new THREE.GLTFLoader().load("../../_DATA_/male_run.glb", (glb) => {
             scope.model.add(glb.scene);
