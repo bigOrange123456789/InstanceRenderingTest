@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    var xMin=-39;
+    var yMin=112;
     Panel.init();
     Controller.init();
 
@@ -10,21 +12,22 @@ $(document).ready(function() {
         'HSH_1_200.vsg',
         'HSH_1_300.vsg',
         'HSH_1_400.vsg',
+        'grid1',
     ];
     for(var i=0;i<names.length;i++){
         document.getElementById("map"+i).fileName=names[i]+".json";
         document.getElementById("map"+i).onclick=function(){loadMap0(this.fileName);};
     }
     document.getElementById("download").onclick=function(){
-        console.log(Controller.grid);
+        //console.log(Controller.grid);
         var arr=[];
         var nodes=Controller.grid.nodes;
         for(var i=0;i<nodes.length;i++)
             for(var j=0;j<nodes[i].length;j++)
                 if(!nodes[i][j].walkable){
                     arr.push([
-                    nodes[i][j].x,
-                    nodes[i][j].y
+                    nodes[i][j].x+xMin,
+                    nodes[i][j].y+yMin
                 ])
         }
         console.log(arr)
@@ -57,6 +60,8 @@ $(document).ready(function() {
                 console.log("min:",min,"max:",max)
                 for(var i=0;i<arr.length;i++)
                     if(arr[i][0]!==null&&arr[i][1]!==null){
+                        arr[i][0]-=xMin;
+                        arr[i][1]-=yMin;
                         Controller.grid.setWalkableAt(arr[i][0],arr[i][1],false);
                         View.setAttributeAt(arr[i][0],arr[i][1],'walkable',false);
                 }

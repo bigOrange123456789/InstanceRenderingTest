@@ -24,13 +24,12 @@ class PeopleController{
 
 
         function diffFloor() {//路径跨层
-            var pos2=scope.floor0.getPos2(pos);
             if(y1>-1){
                 scope.goToPosition({x:94,z:196},function () {
                     console.log("到了楼梯入口");
                     move0to_1(function () {
                         console.log("到了楼梯出口")
-                        scope.goToPosition(pos2,);
+                        scope.goToPosition(pos);
                     });
                 })
             }
@@ -76,15 +75,17 @@ class PeopleController{
         scope.floor1=new SameFloorPF({
             model:scope.model,obstacle:obstacle1,
             xMin:-39,xMax:262,
-            zMin:112,
-            zMax:531
+            zMin:112, zMax:531
         });
+        /*
+
         scope.floor1.canPass([
                 [56,488],
                 [56,256],
                 [56,308]
             ]);
 
+        */
 
         new THREE.GLTFLoader().load("../../_DATA_/male_run.glb", (glb) => {
             scope.model.add(glb.scene);
@@ -172,27 +173,26 @@ class SameFloorPF{
         }
     }
     goToPosition(pos,finished){
-        var scope=this;
         //化身当前的位置
-        var x1=Math.floor(scope.model.position.x)-scope.xMin;
-        var z1=Math.floor(scope.model.position.z)-scope.zMin;
+        var x1=Math.floor(this.model.position.x)-this.xMin;
+        var z1=Math.floor(this.model.position.z)-this.zMin;
         //目标位置
-        var x2=Math.round(pos.x)-scope.xMin;
-        var z2=Math.round(pos.z)-scope.zMin;
+        var x2=Math.round(pos.x)-this.xMin;
+        var z2=Math.round(pos.z)-this.zMin;
 
         if(x1===x2&&z1===z2){
             if(finished)finished();
         }else{
-            var grid=scope.grid.clone();
-            var path = scope.finder.findPath(x1,z1,x2,z2,grid);
+            var grid=this.grid.clone();
+            var path = this.finder.findPath(x1,z1,x2,z2,grid);
             for(var i=0;i<path.length;i++){
-                path[i].splice(1,0,scope.model.position.y);
-                path[i][0]+=scope.xMin;
-                path[i][2]+=scope.zMin;
+                path[i].splice(1,0,this.model.position.y);
+                path[i][0]+=this.xMin;
+                path[i][2]+=this.zMin;
             }
             if(path.length){
                 new MoveManager(
-                    scope.model,
+                    this.model,
                     MoveManager.getArray(path),
                     finished
                 );
