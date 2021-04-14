@@ -4,57 +4,40 @@ export {PeopleController};
 class PeopleController{
     myMain;
     model;
-    myPF;
-    grid;finder;
     xMin;zMin;
+    floor0;
     goToPosition(pos,finished){
         var scope=this;
-        //化身当前的位置
-        var x1=Math.floor(scope.model.position.x)-scope.xMin;
-        var y1=Math.floor(scope.model.position.y)
-        var z1=Math.floor(scope.model.position.z)-scope.zMin;
-        //目标位置
-        var x2=Math.round(pos.x)-scope.xMin;
-        var y2=pos.y?Math.round(pos.y):y1;
-        var z2=Math.round(pos.z)-scope.zMin;
 
-        if(x1===x2&&y1===y2&&z1===z2){
-            if(finished)finished();
-            return;
-        }
-        console.log(y2,y1,Math.abs(y2-y1)<1)
-        if(Math.abs(y2-y1)<1)
-            sameFloor();
-        else diffFloor();
+        var y1=Math.floor(scope.model.position.y);//化身当前的位置
+        var y2=pos.y?Math.round(pos.y):y1;//目标位置
 
-        function sameFloor() {//路径不跨层//
-            var grid=scope.grid.clone();
-            var path = scope.finder.findPath(x1,z1,x2,z2,grid);
-            for(var i=0;i<path.length;i++){
-                path[i].splice(1,0,scope.model.position.y);
-                path[i][0]+=scope.xMin;
-                path[i][2]+=scope.zMin;
+        if(Math.abs(y2-y1)<1){//路径不跨层//
+            if(y1>-1){//地面
+                scope.floor0.goToPosition(pos,finished);
+            } else {//地下一层
+                console.log("地下一层的移动")
             }
+        } else diffFloor();
 
-            console.log(path);
-            new MoveManager(
-                scope.model,
-                MoveManager.getArray(path),
-                finished
-            );
-        }
+
         function diffFloor() {//路径跨层
+            var pos2=scope.floor0.getPos2(pos);
+            var save_x2=pos2.x;
+            var save_z2=pos2.z;
             if(y1>-1){
-                scope.goToPosition({x:90,z:196},function () {
+                scope.goToPosition({x:94,z:196},function () {
+                    console.log("到了楼梯入口");
                     move0to_1(function () {
-                        scope.goToPosition({x:x2,z:z2},);
+                        console.log("到了楼梯出口")
+                        scope.goToPosition({x:save_x2,z:save_z2},);
                     });
                 })
             }
 
             function move0to_1(f){
                 move([
-                    [90,1.17,196],
+                    [94,1.17,196],
                     [90.28,1.17,196.0],
                     [75.3,-3.7,196.05],
                     [74.52,-3.7,206.92],
@@ -71,7 +54,7 @@ class PeopleController{
                     [74.52,-3.7,206.92],
                     [75.3,-3.7,196.05],
                     [90.28,1.17,196.0],
-                    [90,1.17,196],
+                    [94,1.17,196],
                 ],f);
             }
             function move(arr,f) {
@@ -81,132 +64,16 @@ class PeopleController{
             }
         }
     }
-    #moveByPath(){
-    }
-    #throughStair(pos){
-        var scope=this;
-
-
-        if(type===0){
-            new MoveManager(//从0地面到-1层
-                scope.model,
-                MoveManager.getArray([
-                    [90,1.17,196],
-                    [90.28,1.17,196.0],
-                    [75.3,-3.7,196.05],
-                    [74.52,-3.7,206.92],
-                    [52.29,-3.7,206.17],
-                    [49.62,-3.67,203.3],
-                    [49.96,-8.53,188.86],
-                ]),
-                finished
-            );
-        }else{
-            new MoveManager(//从-1层到0地面
-                scope.model,
-                MoveManager.getArray([
-                    [49.96,-8.53,188.86],
-                    [49.62,-3.67,203.3],
-                    [52.29,-3.7,206.17],
-                    [74.52,-3.7,206.92],
-                    [75.3,-3.7,196.05],
-                    [90.28,1.17,196.0],
-                    [90,1.17,196],
-                ]),
-                finished
-            );
-        }
-
-    }
-    #throughStair1(finished,type){
-        var scope=this;
-        if(type===0){
-            new MoveManager(//从0地面到-1层
-                scope.model,
-                MoveManager.getArray([
-                    [90,1.17,196],
-                    [90.28,1.17,196.0],
-                    [75.3,-3.7,196.05],
-                    [74.52,-3.7,206.92],
-                    [52.29,-3.7,206.17],
-                    [49.62,-3.67,203.3],
-                    [49.96,-8.53,188.86],
-                ]),
-                finished
-            );
-        }else{
-            new MoveManager(//从-1层到0地面
-                scope.model,
-                MoveManager.getArray([
-                    [49.96,-8.53,188.86],
-                    [49.62,-3.67,203.3],
-                    [52.29,-3.7,206.17],
-                    [74.52,-3.7,206.92],
-                    [75.3,-3.7,196.05],
-                    [90.28,1.17,196.0],
-                    [90,1.17,196],
-                ]),
-                finished
-            );
-        }
-
-    }
-    #throughStair2(){
-        var scope=this;
-        var y1=scope.model.position.y;
-        if(y1>-2){//在地面
-            scope.goToPosition({x:90,z:196}, function () {//到楼梯口
-                new MoveManager(//穿过楼梯
-                    scope.model,
-                    MoveManager.getArray([
-                        [90,1.17,196],
-                        [90.28,1.17,196.0],
-                        [75.3,-3.7,196.05],
-                        [74.52,-3.7,206.92],
-                        [52.29,-3.7,206.17],
-                        [49.62,-3.67,203.3],
-                        [49.96,-8.53,188.86],
-                    ])
-                );
-                });
-        }else{//在地下
-
-        }
-    }
-    #initPF(grid){
-        var scope=this;
-
-        scope.grid = new PF.Grid(2000,2000);//生成网格
-        scope.xMin=-1000;
-        scope.zMin=-1000;
-        console.log(grid)
-        for(var i=0;i<grid.length;i++){
-            scope.grid.setWalkableAt(
-                grid[i][0]-scope.xMin,
-                grid[i][1]-scope.zMin,
-                false);
-        }
-
-        scope.#radiographicTesting();
-        console.log(scope.grid);
-
-        scope.finder = new PF.AStarFinder({
-            allowDiagonal: true,//允许对角线
-            dontCrossCorners: false,//不要拐弯?
-            heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
-            weight: 1
-        });
-
-        var path = scope.finder.findPath(1,1,5,5, scope.grid);
-        console.log(path);
-    }
-    constructor(myMain,grid){
+    constructor(myMain,obstacle){
         var scope=this;
         scope.model=new THREE.Object3D();
-        //scope.model.position.set(90,0,196);//(90,1.17,196);
+        scope.model.position.set(100,0.15,194);//(90,0,196);//(90,1.17,196);
+        scope.model.scale.set(0.5,0.5,0.5);
         scope.myMain=myMain;
-        scope.#initPF(grid);
-        //scope.goToPosition({x:5,z:5})
+        scope.#radiographicTesting();
+
+        scope.floor0=new SameFloorPF({model:scope.model,obstacle:obstacle});
+
         new THREE.GLTFLoader().load("../../_DATA_/male_run.glb", (glb) => {
             scope.model.add(glb.scene);
             playAnimation(glb);
@@ -273,5 +140,75 @@ class PeopleController{
         setInterval(function () {
             flag=0;
         },1000);
+    }
+}
+class SameFloorPF{
+    model;
+    obstacle;
+    grid;finder;
+    xMin;zMin;xMax;zMax;
+
+    getPos2(pos){
+        return {
+            x:Math.round(pos.x)-this.xMin,
+            z:Math.round(pos.z)-this.zMin
+        }
+    }
+    goToPosition(pos,finished){
+        var scope=this;
+        //化身当前的位置
+        var x1=Math.floor(scope.model.position.x)-scope.xMin;
+        var z1=Math.floor(scope.model.position.z)-scope.zMin;
+        //目标位置
+        var x2=Math.round(pos.x)-scope.xMin;
+        var z2=Math.round(pos.z)-scope.zMin;
+
+        if(x1===x2&&z1===z2){
+            if(finished)finished();
+        }else{
+            var grid=scope.grid.clone();
+            console.log(x1,z1,x2,z2,grid,scope.finder);
+            var path = scope.finder.findPath(x1,z1,x2,z2,grid);
+            for(var i=0;i<path.length;i++){
+                path[i].splice(1,0,scope.model.position.y);
+                path[i][0]+=scope.xMin;
+                path[i][2]+=scope.zMin;
+            }
+            if(path.length){
+                new MoveManager(
+                    scope.model,
+                    MoveManager.getArray(path),
+                    finished
+                );
+            }else{
+                console.log("没有找到路径!");
+            }
+        }
+    }
+    constructor(options){//model,obstacle//,xMin,zMin
+        options = options || {};
+        var scope=this;
+        scope.model=options.model||new THREE.Object3D();
+        scope.obstacle=options.obstacle||[];
+        scope.xMin=options.xMin||-1000;
+        scope.zMin=options.zMin||-1000;
+        scope.xMax=options.xMax||1000;
+        scope.zMax=options.zMax||1000;
+        initPF();
+        function initPF(){
+            scope.grid = new PF.Grid(scope.xMax-scope.xMin,scope.zMax-scope.zMin);//生成网格
+            for(var i=0;i<scope.obstacle.length;i++){
+                scope.grid.setWalkableAt(
+                    scope.obstacle[i][0]-scope.xMin,
+                    scope.obstacle[i][1]-scope.zMin,
+                    false);
+            }
+            scope.finder = new PF.AStarFinder({
+                allowDiagonal: true,//允许对角线
+                dontCrossCorners: false,//不要拐弯?
+                heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
+                weight: 1
+            });
+        }
     }
 }

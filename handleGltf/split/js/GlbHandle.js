@@ -70,7 +70,7 @@ GlbHandle.prototype={
             if(scope.index===arr.length)clearInterval(myInterval2);
         },1000);
     },
-    getGrid:function (glb) {
+    getGrid:function (glb,minY,maxY) {
         var myGrid=[];
         this.resourceManager.name=name;
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
@@ -92,11 +92,6 @@ GlbHandle.prototype={
                 arr[3*i]  =x*e[0]+y*e[4]+z*e[8]+e[12];
                 arr[3*i+1]=x*e[1]+y*e[5]+z*e[9]+e[13];
                 arr[3*i+2]=x*e[2]+y*e[6]+z*e[10]+e[14];
-                /*if(Y>0.5&&Y<1.8){
-                    myGrid.push([
-                        Math.round(X),Math.round(Z)
-                    ])
-                }*/
             }
 
             var index=geometry.index;
@@ -127,7 +122,7 @@ GlbHandle.prototype={
                 if(p3[1]>max[1])max[1]=p3[1];
                 if(p3[2]>max[2])max[2]=p3[2];
 
-                if(min[1]>1.8||max[1]<0.5) {
+                if(min[1]>maxY||max[1]<minY) {
                 } else {
                     for(var k1=Math.round(min[0]);k1<=Math.round(max[0]);k1++)
                         for(var k2=Math.round(min[2]);k2<=Math.round(max[2]);k2++){
