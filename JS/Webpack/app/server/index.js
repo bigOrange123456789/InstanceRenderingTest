@@ -7,7 +7,7 @@ PF={
     'Heuristic'                 : require('./src/core/Heuristic'),
 
     'AStarFinder'               : require('./src/finders/AStarFinder'),
-    /*'BestFirstFinder'           : require('./src/finders/BestFirstFinder'),
+    'BestFirstFinder'           : require('./src/finders/BestFirstFinder'),
     'BreadthFirstFinder'        : require('./src/finders/BreadthFirstFinder'),
     'DijkstraFinder'            : require('./src/finders/DijkstraFinder'),
     'BiAStarFinder'             : require('./src/finders/BiAStarFinder'),
@@ -16,6 +16,6 @@ PF={
     'BiDijkstraFinder'          : require('./src/finders/BiDijkstraFinder'),
     'IDAStarFinder'             : require('./src/finders/IDAStarFinder'),
     'JumpPointFinder'           : require('./src/finders/JumpPointFinder'),
-*/
+/**/
 }
 module.exports =PF;

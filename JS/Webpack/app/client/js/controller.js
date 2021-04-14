@@ -91,7 +91,7 @@ var Controller = StateMachine.create({
 });
 
 $.extend(Controller, {
-    gridSize: [300, 300], // number of nodes horizontally and vertically
+    gridSize: [401, 221], //[30,30],// number of nodes horizontally and vertically
     operationsPerSecond: 300,
 
     /**
@@ -133,6 +133,7 @@ $.extend(Controller, {
             timeStart, timeEnd,
             finder = Panel.getFinder();
 
+        console.log(Panel,finder)
         timeStart = window.performance ? performance.now() : Date.now();
         grid = this.grid.clone();
         this.path = finder.findPath(
@@ -171,6 +172,20 @@ $.extend(Controller, {
         // => ready
     },
     onfinish: function(event, from, to) {
+        document.getElementById("myPathLength").innerHTML="path length:"+getLength(this.path);
+        function getLength(arr){
+            if(arr.length<2)return 0;
+            var length=0;
+            for(var i=1;i<arr.length;i++){
+                var l0=Math.pow(
+                    Math.pow(arr[i][0]-arr[i-1][0],2)
+                    +Math.pow(arr[i][1]-arr[i-1][1],2),
+                    0.5
+                );
+                length+=Math.floor(l0*10)/10;
+            }
+            return Math.floor(length*10)/10;
+        }
         View.showStats({
             pathLength: PF.Util.pathLength(this.path),
             timeSpent:  this.timeSpent,

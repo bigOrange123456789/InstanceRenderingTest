@@ -13,29 +13,72 @@
 
 		<script src="three.js"></script>
 		<script>
-			var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
-			loader.load("test.txt", function (str) {
-				arr=str.split("\n");
+			var names=[
+				'FJK_1.vsg',
+				'FJK_2.vsg',
+				'FJK_3.vsg',
+				'HSH_1_100.vsg',
+				'HSH_1_200.vsg',
+				'HSH_1_300.vsg',
+				'HSH_1_400.vsg',
+			];
+			for(var k=0;k<names.length;k++){
+				load2(names[k]);
+			}
+			function load1() {
+				var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
+				loader.load("test.txt", function (str) {
+					arr=str.split("\n");
 
-				var arr2=[];
-				for(var i=0;i<arr.length;i++){
-					arr2.push([]);
-					var arr0=arr[i].split("\t");
-					for(var j=0;j<2;j++){
-						arr2[i].push(
-								parseFloat(arr0[j])
-						);
+					var arr2=[];
+					for(var i=0;i<arr.length;i++){
+						arr2.push([]);
+						var arr0=arr[i].split("\t");
+						for(var j=0;j<2;j++){
+							arr2[i].push(
+									parseFloat(arr0[j])
+							);
+						}
 					}
-				}
 
-				console.log(arr2)
-				let link = document.createElement('a');
-				link.style.display = 'none';
-				document.body.appendChild(link);
-				link.href = URL.createObjectURL(new Blob([JSON.stringify({data:arr2})], { type: 'text/plain' }));
-				link.download ="map.json";
-				link.click();
-			});
+					console.log(arr2)
+					let link = document.createElement('a');
+					link.style.display = 'none';
+					document.body.appendChild(link);
+					link.href = URL.createObjectURL(new Blob([JSON.stringify({data:arr2})], { type: 'text/plain' }));
+					link.download ="map.json";
+					link.click();
+				});
+			}
+			function load2(name) {
+				var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
+				loader.load("Map/"+name, function (str) {
+					var k=69;
+					str=str.substr(k, str.length-k);
+					console.log(str)
+					arr=str.split("\n");
+
+					var arr2=[];
+					for(var i=0;i<arr.length;i++){
+						arr2.push([]);
+						var arr0=arr[i].split("\t");
+						for(var j=0;j<2;j++){
+							arr2[i].push(
+									parseFloat(arr0[j])
+							);
+						}
+					}
+
+					console.log(arr2)
+					let link = document.createElement('a');
+					link.style.display = 'none';
+					document.body.appendChild(link);
+					link.href = URL.createObjectURL(new Blob([JSON.stringify({data:arr2})], { type: 'text/plain' }));
+					link.download =name+".json";
+					link.click();
+				});
+			}
+			load2();
 		</script>
 	</body>
 </html>
