@@ -1,13 +1,4 @@
 $(document).ready(function() {
-    if (!Raphael.svg) {
-        window.location = './notsupported.html';
-    }
-
-    // suppress select events
-    $(window).bind('selectstart', function(event) {
-        event.preventDefault();
-    });
-
     Panel.init();
     Controller.init();
 
@@ -24,6 +15,28 @@ $(document).ready(function() {
         document.getElementById("map"+i).fileName=names[i]+".json";
         document.getElementById("map"+i).onclick=function(){loadMap0(this.fileName);};
     }
+    document.getElementById("download").onclick=function(){
+        console.log(Controller.grid);
+        var arr=[];
+        var nodes=Controller.grid.nodes;
+        for(var i=0;i<nodes.length;i++)
+            for(var j=0;j<nodes[i].length;j++)
+                if(!nodes[i][j].walkable){
+                    arr.push([
+                    nodes[i][j].x,
+                    nodes[i][j].y
+                ])
+        }
+        console.log(arr)
+        let link = document.createElement('a');
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.href = URL.createObjectURL(new Blob([JSON.stringify({data:arr})], { type: 'text/plain' }));
+        link.download ="map.json";
+        link.click();
+
+    };
+
     function loadMap0(url) {
         var request = new XMLHttpRequest();
         request.open("get", url);/*设置请求方法与路径*/
@@ -45,7 +58,7 @@ $(document).ready(function() {
                 for(var i=0;i<arr.length;i++)
                     if(arr[i][0]!==null&&arr[i][1]!==null){
                         Controller.grid.setWalkableAt(arr[i][0],arr[i][1],false);
-                        View.setWalkableAt(arr[i][0],arr[i][1],false);
+                        View.setAttributeAt(arr[i][0],arr[i][1],'walkable',false);
                 }
 
             }
