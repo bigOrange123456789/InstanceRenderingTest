@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING--softwareTest</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+
+	<body>
+
+		<script src="three.js"></script>
+		<script>
+			var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
+			loader.load("test.txt", function (str) {
+				arr=str.split("\n");
+
+				var arr2=[];
+				for(var i=0;i<arr.length;i++){
+					arr2.push([]);
+					var arr0=arr[i].split("\t");
+					for(var j=0;j<2;j++){
+						arr2[i].push(
+								parseFloat(arr0[j])
+						);
+					}
+				}
+
+				console.log(arr2)
+				let link = document.createElement('a');
+				link.style.display = 'none';
+				document.body.appendChild(link);
+				link.href = URL.createObjectURL(new Blob([JSON.stringify({data:arr2})], { type: 'text/plain' }));
+				link.download ="map.json";
+				link.click();
+			});
+		</script>
+	</body>
+</html>

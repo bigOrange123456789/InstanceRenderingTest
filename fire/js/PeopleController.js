@@ -5,7 +5,7 @@ class PeopleController{
     myMain;
     model;
     xMin;zMin;
-    floor0;
+    floor0;floor1;
     goToPosition(pos,finished){
         var scope=this;
 
@@ -14,23 +14,23 @@ class PeopleController{
 
         if(Math.abs(y2-y1)<1){//路径不跨层//
             if(y1>-1){//地面
+                console.log("地面的移动");
                 scope.floor0.goToPosition(pos,finished);
             } else {//地下一层
-                console.log("地下一层的移动")
+                console.log("地下一层的移动");
+                scope.floor1.goToPosition(pos,finished);
             }
         } else diffFloor();
 
 
         function diffFloor() {//路径跨层
             var pos2=scope.floor0.getPos2(pos);
-            var save_x2=pos2.x;
-            var save_z2=pos2.z;
             if(y1>-1){
                 scope.goToPosition({x:94,z:196},function () {
                     console.log("到了楼梯入口");
                     move0to_1(function () {
                         console.log("到了楼梯出口")
-                        scope.goToPosition({x:save_x2,z:save_z2},);
+                        scope.goToPosition(pos2,);
                     });
                 })
             }
@@ -64,7 +64,7 @@ class PeopleController{
             }
         }
     }
-    constructor(myMain,obstacle){
+    constructor(myMain,obstacle0,obstacle1){
         var scope=this;
         scope.model=new THREE.Object3D();
         scope.model.position.set(100,0.15,194);//(90,0,196);//(90,1.17,196);
@@ -72,7 +72,19 @@ class PeopleController{
         scope.myMain=myMain;
         scope.#radiographicTesting();
 
-        scope.floor0=new SameFloorPF({model:scope.model,obstacle:obstacle});
+        scope.floor0=new SameFloorPF({model:scope.model,obstacle:obstacle0});
+        scope.floor1=new SameFloorPF({
+            model:scope.model,obstacle:obstacle1,
+            xMin:-39,xMax:262,
+            zMin:112,
+            zMax:531
+        });
+        scope.floor1.canPass([
+                [56,488],
+                [56,256],
+                [56,308]
+            ]);
+
 
         new THREE.GLTFLoader().load("../../_DATA_/male_run.glb", (glb) => {
             scope.model.add(glb.scene);
@@ -110,19 +122,16 @@ class PeopleController{
     }
     #radiographicTesting=function(){
         var scope=this;
-        //console.log(scope.myMain)
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         var flag=0;
         function mouseDown0( event ) {
-            console.log(flag)
             flag++;
             if(flag!==2)return;
             flag=0;
             mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
             mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
             raycaster.setFromCamera( mouse, scope.myMain.camera );
-            //console.log(myMain.scene.children[1].children[0].children);
             const intersects = raycaster.intersectObjects(
                 scope.myMain.scene.children[1].children[0].children
             );////myRoomManager.room
@@ -148,6 +157,14 @@ class SameFloorPF{
     grid;finder;
     xMin;zMin;xMax;zMax;
 
+    canPass(area){
+        for(var i=0;i<area.length;i++){
+            this.grid.setWalkableAt(
+                area[i][0]-this.xMin,
+                area[i][1]-this.zMin,
+                true);
+        }
+    }
     getPos2(pos){
         return {
             x:Math.round(pos.x)-this.xMin,
@@ -167,7 +184,6 @@ class SameFloorPF{
             if(finished)finished();
         }else{
             var grid=scope.grid.clone();
-            console.log(x1,z1,x2,z2,grid,scope.finder);
             var path = scope.finder.findPath(x1,z1,x2,z2,grid);
             for(var i=0;i<path.length;i++){
                 path[i].splice(1,0,scope.model.position.y);
@@ -190,13 +206,13 @@ class SameFloorPF{
         var scope=this;
         scope.model=options.model||new THREE.Object3D();
         scope.obstacle=options.obstacle||[];
-        scope.xMin=options.xMin||-1000;
-        scope.zMin=options.zMin||-1000;
-        scope.xMax=options.xMax||1000;
-        scope.zMax=options.zMax||1000;
+        scope.xMin=(typeof(options.xMin)==="undefined")?-1000:options.xMin;
+        scope.zMin=(typeof(options.zMin)==="undefined")?-1000:options.zMin;
+        scope.xMax=(typeof(options.xMax)==="undefined")?1000:options.xMax;//options.xMax||1000;
+        scope.zMax=(typeof(options.zMax)==="undefined")?1000:options.zMax;//options.zMax||1000;
         initPF();
         function initPF(){
-            scope.grid = new PF.Grid(scope.xMax-scope.xMin,scope.zMax-scope.zMin);//生成网格
+            scope.grid = new PF.Grid(scope.xMax-scope.xMin+1,scope.zMax-scope.zMin+1);//生成网格
             for(var i=0;i<scope.obstacle.length;i++){
                 scope.grid.setWalkableAt(
                     scope.obstacle[i][0]-scope.xMin,

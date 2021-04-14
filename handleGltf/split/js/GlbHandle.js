@@ -71,10 +71,12 @@ GlbHandle.prototype={
         },1000);
     },
     getGrid:function (glb,minY,maxY) {
-        var myGrid=[];
+        var myObstacle=[];
         this.resourceManager.name=name;
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
 
+        var allMax;
+        var allMin;
         for(var k=0;k<this.resourceManager.meshs.length;k++){
             var node=this.resourceManager.meshs[k];
             var geometry=node.geometry;
@@ -126,10 +128,19 @@ GlbHandle.prototype={
                 } else {
                     for(var k1=Math.round(min[0]);k1<=Math.round(max[0]);k1++)
                         for(var k2=Math.round(min[2]);k2<=Math.round(max[2]);k2++){
-                            myGrid.push([k1,k2]);
+                            myObstacle.push([k1,k2]);
                         }
+                    if(allMax){
+                        for(var ii=0;ii<3;ii++){
+                            if(max[ii]>allMax[ii])allMax[ii]=max[ii];
+                            if(min[ii]<allMin[ii])allMin[ii]=min[ii];
+                        }
+                    }else{
+                        allMax=max;
+                        allMin=min;
+                    }
                 }
-                function getPosByIndex(position,i0){
+                function getPosByIndex(position,i0){//通过索引获取顶点
                     return [
                         position.array[3*i0],
                         position.array[3*i0+1],
@@ -139,7 +150,12 @@ GlbHandle.prototype={
             }
         }
         this.download.jsonDownload(//下载说明信息
-            {grid:myGrid},"grid.json"
+            {
+                obstacle:myObstacle,
+                allMax:allMax,
+                allMin:allMin
+            },"grid.json"
         );
+        console.log(allMax,allMin);
     }
 }

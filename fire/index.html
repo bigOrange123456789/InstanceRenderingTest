@@ -52,8 +52,11 @@
 		//console.log(new PeopleController().model);
 		var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
 		loader.load("grid.json", function(str){//dataTexture
-			var grid=JSON.parse(str).grid;
-			myMain.scene.add(new PeopleController(myMain,grid).model)
+			var grid0=JSON.parse(str).grid;
+			loader.load("grid_1.json", function(str1){//dataTexture
+				var grid1=JSON.parse(str1).grid;
+				myMain.scene.add(new PeopleController(myMain,grid0,grid1).model)
+			});
 		});
 
 
