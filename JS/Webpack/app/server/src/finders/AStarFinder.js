@@ -59,7 +59,8 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
             if(typeof(angle)!=="undefined")
                 boards.push([i,j,angle]);
         }
-    console.log(boards)
+    console.log("boards:",boards);
+    console.log("boards_l:",boards.length);
 
     var openList = new Heap(function(nodeA, nodeB) {
             return nodeA.f - nodeB.f;
@@ -113,8 +114,12 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
             if (!neighbor.opened || ng < neighbor.g) {
                 neighbor.g = ng;//实际代价
                 neighbor.h = neighbor.h || weight * heuristic(abs(x - endX), abs(y - endY));//如果已经计算过就不用再计算了//启发式函数的输入是dx,dy
-                neighbor.l = neighbor.l ||getL(x,y);
-                neighbor.f = (neighbor.g + neighbor.h)*(neighbor.l+0.05);//f=g+h//g是实际代价 h是估计代价
+                if(boards.length>0){
+                    neighbor.l = neighbor.l ||getL(x,y);
+                    neighbor.f = (neighbor.g + neighbor.h)*(neighbor.l+0.05);//f=g+h//g是实际代价 h是估计代价
+                }else{
+                    neighbor.f = neighbor.g + neighbor.h;
+                }
                 neighbor.parent = node;//设置父节点
 
                 function getL(x2,y2) {
