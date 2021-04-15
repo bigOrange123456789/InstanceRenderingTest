@@ -150,12 +150,11 @@ var View = {
         var color, nodeStyle = this.nodeStyle;
         console.log("attr:"+attr)
         switch (attr) {
-            /*
-                 */
             case 'setBoard':
                 this.colorizeNode(this.rects[gridY][gridX], "Yellow");
-                //this.colorizeNode(this.rects[gridY][gridX], 0xFF00FF);
-                //this.setCoordDirty(gridX, gridY, true);
+                var angle=prompt("boardAngle:",0);
+                Controller.grid.nodes[gridY][gridX].boardAngle=angle*Math.PI/180;
+                console.log(Controller.grid)
                 break;
         case 'walkable'://放置or取消 障碍物
             color = value ? nodeStyle.normal.fill : nodeStyle.blocked.fill;

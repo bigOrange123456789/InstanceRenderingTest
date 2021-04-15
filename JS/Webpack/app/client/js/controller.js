@@ -134,9 +134,16 @@ $.extend(Controller, {
             timeStart, timeEnd,
             finder = Panel.getFinder();
 
-        console.log(Panel,Panel.getFinder(),finder)
         timeStart = window.performance ? performance.now() : Date.now();
         grid = this.grid.clone();
+        for(var i=0;i<this.grid.nodes.length;i++)
+            for(var j=0;j<this.grid.nodes.length;j++){
+                var angle=this.grid.nodes[i][j].boardAngle;
+                if(typeof (angle)!=="undefined")
+                    grid.nodes[i][j].boardAngle=angle;
+            }
+        console.log(this.grid)
+        console.log(grid)
         this.path = finder.findPath(
             this.startX, this.startY, this.endX, this.endY, grid
         );

@@ -51,7 +51,16 @@ function AStarFinder(opt) {
  * @return {Array<Array<number>>} The path, including both start and
  *     end positions.
  */
-AStarFinder.prototype.findPath1 = function(startX, startY, endX, endY, grid) {
+AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
+    var boards=[];
+    for(var i=0;i<grid.nodes.length;i++)
+        for(var j=0;j<grid.nodes.length;j++){
+            var angle=grid.nodes[i][j].boardAngle;
+            if(typeof(angle)!=="undefined")
+                boards.push([i,j,angle]);
+        }
+    console.log(boards)
+
     var openList = new Heap(function(nodeA, nodeB) {
             return nodeA.f - nodeB.f;
         }),
@@ -104,46 +113,44 @@ AStarFinder.prototype.findPath1 = function(startX, startY, endX, endY, grid) {
             if (!neighbor.opened || ng < neighbor.g) {
                 neighbor.g = ng;//实际代价
                 neighbor.h = neighbor.h || weight * heuristic(abs(x - endX), abs(y - endY));//如果已经计算过就不用再计算了//启发式函数的输入是dx,dy
-                neighbor.l = neighbor.l ||getL(x,y,Math.PI/4);
+                neighbor.l = neighbor.l ||getL(x,y);
                 neighbor.f = (neighbor.g + neighbor.h)*(neighbor.l+0.05);//f=g+h//g是实际代价 h是估计代价
                 neighbor.parent = node;//设置父节点
 
-                function getL(x2,y2,a) {
-                    var da=getDa(x2,y2,a);
+                function getL(x2,y2) {
+                    var board=getBoard(x2,y2);
+                    var da=getDa(x2,y2,board);
                     var distance= getDistance(0,x2,0,y2);
                     if(distance===0)distance=0.0001;
-                    return da/distance;
+                    return da/distance;//角度差➗距离
+                    function getDa(x2,y2,board) {
+                        var x1=board[0],y1=board[1],a=board[2];
+                        var dx=x2-x1;
+                        var dy=y2-y1;
+                        var angle=Math.atan2(dx,dy);
+                        var da=Math.abs(angle-a);
+                        if(da>Math.PI)da-=2*Math.PI;
+                        return da;
+                    }
+                    function getBoard(x2,y2) {//boards
+                        if(boards.length===0)return null;
+                        var dis_min=getDistance(boards[0][0],x2,boards[0][1],y2);
+                        var k=0;
+                        for(var i=1;i<boards.length;i++){
+                            var dis0=getDistance(boards[0][0],x2,boards[0][1],y2);
+                            if(dis0<dis_min){
+                                dis_min=dis0;
+                                k=i;
+                            }
+                        }
+                        return boards[k];
+                    }
                 }
                 function getDistance(x1,x2,y1,y2) {
                     return Math.pow(
                         Math.pow(x1-x2,2)+
                         Math.pow(y1-y2,2),
                         2);
-                }
-                function getDa(x2,y2,a) {
-                    var x1=0,y1=0;
-                    var dx=x2-x1;
-                    var dy=y2-y1;
-                    console.log(dx,dy)
-                    var angle=Math.atan2(dx,dy);
-                    console.log(angle);
-                    var da=Math.abs(angle-a);
-                    if(da>Math.PI)da-=2*Math.PI;
-                    return da;
-                }
-                function getAngle0(dx,dy) {
-                    console.log("--",dx,dy);
-                    var angle=0;
-                    if(dx===1&&dy===0){
-                    }else if(dx===1&&dy===1){angle+=Math.PI/4;
-                    }else if(dx===0&&dy===1){angle+=Math.PI/4;
-                    }else if(dx===-1&&dy===1){angle+=Math.PI/4;
-                    }else if(dx===-1&&dy===0){angle+=Math.PI/4;
-                    }else if(dx===-1&&dy===-1){angle+=Math.PI/4;
-                    }else if(dx===0&&dy===-1){angle+=Math.PI/4;
-                    }else if(dx===1&&dy===-1){angle+=Math.PI/4;
-                    }else console.log("dx,dy:",dx,dy);//"dx:0,dy:0!"
-                    return angle;
                 }
 
                 if (!neighbor.opened) {
@@ -163,7 +170,7 @@ AStarFinder.prototype.findPath1 = function(startX, startY, endX, endY, grid) {
     // fail to find the path
     return [];
 };
-AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
+AStarFinder.prototype.findPath0 = function(startX, startY, endX, endY, grid) {
     var openList = new Heap(function(nodeA, nodeB) {
             return nodeA.f - nodeB.f;
         }),
