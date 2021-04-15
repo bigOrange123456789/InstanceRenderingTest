@@ -148,16 +148,25 @@ var View = {
      */
     setAttributeAt: function(gridX, gridY, attr, value) {
         var color, nodeStyle = this.nodeStyle;
+        console.log("attr:"+attr)
         switch (attr) {
-        case 'walkable':
+            /*
+                 */
+            case 'setBoard':
+                this.colorizeNode(this.rects[gridY][gridX], "Yellow");
+                //this.colorizeNode(this.rects[gridY][gridX], 0xFF00FF);
+                //this.setCoordDirty(gridX, gridY, true);
+                break;
+        case 'walkable'://放置or取消 障碍物
             color = value ? nodeStyle.normal.fill : nodeStyle.blocked.fill;
+            console.log(color)
             this.setWalkableAt(gridX, gridY, value);
             break;
-        case 'opened':
+        case 'opened'://即将找到从起点到该点的路径
             this.colorizeNode(this.rects[gridY][gridX], nodeStyle.opened.fill);
             this.setCoordDirty(gridX, gridY, true);
             break;
-        case 'closed':
+        case 'closed'://找出了从起点到该点的路径
             this.colorizeNode(this.rects[gridY][gridX], nodeStyle.closed.fill);
             this.setCoordDirty(gridX, gridY, true);
             break;
@@ -189,8 +198,9 @@ var View = {
         }, this.nodeZoomEffect.duration);
     },
     setWalkableAt: function(gridX, gridY, value) {
+        //blockedNodes是一个信息数组
         var node, i, blockedNodes = this.blockedNodes;
-        if (!blockedNodes) {
+        if (!blockedNodes) {//blockedNodes为空//第一次启用这个函数
             blockedNodes = this.blockedNodes = new Array(this.numRows);
             for (i = 0; i < this.numRows; ++i) {
                 blockedNodes[i] = [];

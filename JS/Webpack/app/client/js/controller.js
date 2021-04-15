@@ -427,22 +427,29 @@ $.extend(Controller, {
             gridX = coord[0],
             gridY = coord[1],
             grid  = this.grid;
+        console.log(event.button)
+        if(event.button===0){
 
-        if (this.can('dragStart') && this.isStartPos(gridX, gridY)) {
-            this.dragStart();
-            return;
+
+            if (this.can('dragStart') && this.isStartPos(gridX, gridY)) {
+                this.dragStart();
+                return;
+            }
+            if (this.can('dragEnd') && this.isEndPos(gridX, gridY)) {
+                this.dragEnd();
+                return;
+            }
+            if (this.can('drawWall') && grid.isWalkableAt(gridX, gridY)) {
+                this.drawWall(gridX, gridY);
+                return;
+            }
+            if (this.can('eraseWall') && !grid.isWalkableAt(gridX, gridY)) {
+                this.eraseWall(gridX, gridY);
+            }
+        }else{
+            this.setBoardAt(gridX, gridY);
         }
-        if (this.can('dragEnd') && this.isEndPos(gridX, gridY)) {
-            this.dragEnd();
-            return;
-        }
-        if (this.can('drawWall') && grid.isWalkableAt(gridX, gridY)) {
-            this.drawWall(gridX, gridY);
-            return;
-        }
-        if (this.can('eraseWall') && !grid.isWalkableAt(gridX, gridY)) {
-            this.eraseWall(gridX, gridY);
-        }
+
     },
     mousemove: function(event) {
         var coord = View.toGridCoordinate(event.pageX, event.pageY),
@@ -539,6 +546,10 @@ $.extend(Controller, {
     setWalkableAt: function(gridX, gridY, walkable) {
         this.grid.setWalkableAt(gridX, gridY, walkable);
         View.setAttributeAt(gridX, gridY, 'walkable', walkable);
+    },
+    setBoardAt: function(gridX, gridY, walkable) {
+        //this.grid.setWalkableAt(gridX, gridY, walkable);
+        View.setAttributeAt(gridX, gridY, 'setBoard', walkable);
     },
     isStartPos: function(gridX, gridY) {
         return gridX === this.startX && gridY === this.startY;

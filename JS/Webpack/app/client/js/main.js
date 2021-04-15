@@ -1,3 +1,4 @@
+//function doNothing(){window.event.returnValue=false;}
 $(document).ready(function() {
     var xMin=0;//-39;
     var yMin=0;//112;
