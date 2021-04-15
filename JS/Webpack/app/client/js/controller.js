@@ -140,6 +140,23 @@ $.extend(Controller, {
         this.path = finder.findPath(
             this.startX, this.startY, this.endX, this.endY, grid
         );
+        console.log(grid)
+
+
+
+        function PFAreaSize(grid0){
+            var count=0;
+            for(var i=0;i<grid0.nodes.length;i++){
+                for(var j=0;j<grid0.nodes[i].length;j++){
+                    if(grid0.nodes[i][j].closed===true){
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+        console.log("搜索过的区域大小为："+PFAreaSize(grid));
+
         this.operationCount = this.operations.length;
         timeEnd = window.performance ? performance.now() : Date.now();
         this.timeSpent = (timeEnd - timeStart).toFixed(4);

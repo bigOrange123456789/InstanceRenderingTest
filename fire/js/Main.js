@@ -24,6 +24,7 @@ function Main(){
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true});
         this.renderer.autoClear = false;
         this.renderer.setPixelRatio( window.devicePixelRatio );
+        //this.renderer.setSize();
 
         this.renderer.gammaInput = true;
         this.renderer.gammaOutput = true;
