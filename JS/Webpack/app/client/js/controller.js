@@ -141,7 +141,14 @@ $.extend(Controller, {
             this.startX, this.startY, this.endX, this.endY, grid
         );
         console.log(grid)
-
+        document.getElementById("myPathLength").innerHTML="path length:"+getLength2(this,grid);
+        function getLength2(scope,r){
+            var j=scope.endX;
+            var i=scope.endY;
+            var g=r.nodes[i][j].g;
+            console.log(i,j,r.nodes[i][j])
+            return Math.round(g*100)/100;
+        }
 
 
         function PFAreaSize(grid0){
@@ -190,7 +197,8 @@ $.extend(Controller, {
         // => ready
     },
     onfinish: function(event, from, to) {
-        document.getElementById("myPathLength").innerHTML="path length:"+getLength(this.path);
+        //document.getElementById("myPathLength").innerHTML="path length:"+getLength(this.path);
+        //console.log(arr);
         function getLength(arr){
             if(arr.length<2)return 0;
             var length=0;

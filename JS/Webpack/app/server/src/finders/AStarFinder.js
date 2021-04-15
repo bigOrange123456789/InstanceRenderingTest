@@ -66,15 +66,14 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
     // set the `g` and `f` value of the start node to be 0//将开始节点的“g”和“f”值设置为0
     startNode.g = 0;
     startNode.f = 0;
-    //f=g+h
+    //f=g+h//弄清g,h是如何计算的
 
     // push the start node into the open list//将开始节点推入打开列表
     openList.push(startNode);
     startNode.opened = true;
 
     // while the open list is not empty//当打开列表不为空时
-    while (!openList.empty()) {
-        //openList是一个节点集合
+    while (!openList.empty()) {//openList是待加入区域的列表//openList是一个节点集合
         // pop the position of node which has the minimum `f` value.//弹出具有最小“f”值的节点的位置。
         node = openList.pop();
         node.closed = true;//这个节点已经确定在路径上了
@@ -98,7 +97,7 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
 
             // get the distance between current node and the neighbor //获取当前节点与邻居的距离
             // and calculate the next g score //然后计算下一个g分数
-            ng = node.g + ((x - node.x === 0 || y - node.y === 0) ? 1 : SQRT2);
+            ng = node.g + ((x - node.x === 0 || y - node.y === 0) ? 1 : SQRT2);//起点验证路径到这里的长度
 
             // check if the neighbor has not been inspected yet, or
             // can be reached with smaller cost from the current node
