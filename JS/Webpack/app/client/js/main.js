@@ -31,10 +31,14 @@ $(document).ready(function() {
                 ])
         }
         console.log(arr)
+        var json={};
+        json.data=arr;
+        json.start=[Controller.startX, Controller.startY];
+        json.end=[Controller.endX, Controller.endY];
         let link = document.createElement('a');
         link.style.display = 'none';
         document.body.appendChild(link);
-        link.href = URL.createObjectURL(new Blob([JSON.stringify({data:arr})], { type: 'text/plain' }));
+        link.href = URL.createObjectURL(new Blob([JSON.stringify(json)], { type: 'text/plain' }));
         link.download ="map.json";
         link.click();
 
@@ -72,7 +76,10 @@ $(document).ready(function() {
                         Controller.grid.setWalkableAt(arr[i][0],arr[i][1],false);
                         View.setAttributeAt(arr[i][0],arr[i][1],'walkable',false);
                 }
-
+                var start=json.start;
+                var end=json.end;
+                if(start)Controller.setStartPos(start[0],start[1]);
+                if(end)Controller.setEndPos(end[0],end[1]);
             }
         }
     }
