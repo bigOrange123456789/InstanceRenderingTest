@@ -1,6 +1,6 @@
 $(document).ready(function() {
-    var xMin=-39;
-    var yMin=112;
+    var xMin=0;//-39;
+    var yMin=0;//112;
     Panel.init();
     Controller.init();
 

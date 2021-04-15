@@ -12,7 +12,7 @@ class PeopleController{
         var y1=Math.floor(scope.model.position.y);//化身当前的位置
         var y2=pos.y?Math.round(pos.y):y1;//目标位置
 
-        if(Math.abs(y2-y1)<1){//路径不跨层//
+        if(Math.abs(y2-y1)<2){//路径不跨层//
             if(y1>-1){//地面
                 console.log("地面的移动");
                 scope.floor0.goToPosition(pos,finished);
@@ -24,14 +24,19 @@ class PeopleController{
 
 
         function diffFloor() {//路径跨层
-            if(y1>-1){
-                scope.goToPosition({x:94,z:196},function () {
-                    console.log("到了楼梯入口");
-                    move0to_1(function () {
-                        console.log("到了楼梯出口")
-                        scope.goToPosition(pos);
-                    });
-                })
+            console.log(y1,y2)
+            if(y1>-1){//起点在地面
+                console.log("起点在地面");
+                move0to_1(function () {
+                    console.log("到了楼梯出口");
+                    scope.goToPosition(pos);
+                });
+            }else if(y2>-1){//终点在地面
+                console.log("终点在地面");
+                move_1to0(function () {
+                    console.log("到了楼梯出口");
+                    scope.goToPosition(pos);
+                });
             }
 
             function move0to_1(f){
@@ -47,7 +52,7 @@ class PeopleController{
             }
             function move_1to0(f){
                 move([
-                    [49.96,-8.53,188.86],
+                    [50,-8.53,189],
                     [49.62,-3.67,203.3],
                     [52.29,-3.7,206.17],
                     [74.52,-3.7,206.92],
@@ -66,7 +71,7 @@ class PeopleController{
     constructor(myMain,obstacle0,obstacle1){
         var scope=this;
         scope.model=new THREE.Object3D();
-        scope.model.position.set(100,0.15,194);//(90,0,196);//(90,1.17,196);
+        scope.model.position.set(100,0,194);//(90,0,196);//(90,1.17,196);
         scope.model.scale.set(0.5,0.5,0.5);
         scope.myMain=myMain;
         scope.#radiographicTesting();
@@ -77,15 +82,6 @@ class PeopleController{
             xMin:-39,xMax:262,
             zMin:112, zMax:531
         });
-        /*
-
-        scope.floor1.canPass([
-                [56,488],
-                [56,256],
-                [56,308]
-            ]);
-
-        */
 
         new THREE.GLTFLoader().load("../../_DATA_/male_run.glb", (glb) => {
             scope.model.add(glb.scene);
@@ -219,7 +215,7 @@ class SameFloorPF{
                     scope.obstacle[i][1]-scope.zMin,
                     false);
             }
-            scope.finder = new PF.AStarFinder({
+            scope.finder = new PF.BiAStarFinder({
                 allowDiagonal: true,//允许对角线
                 dontCrossCorners: false,//不要拐弯?
                 heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
