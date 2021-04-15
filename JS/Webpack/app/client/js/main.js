@@ -39,7 +39,14 @@ $(document).ready(function() {
         link.click();
 
     };
-
+    document.getElementById("savePath").onclick=function () {
+        let link = document.createElement('a');
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.href = URL.createObjectURL(new Blob([JSON.stringify({data:Controller.path})], { type: 'text/plain' }));
+        link.download ="path.json";
+        link.click();
+    }
     function loadMap0(url) {
         var request = new XMLHttpRequest();
         request.open("get", url);/*设置请求方法与路径*/
