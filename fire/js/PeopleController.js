@@ -26,17 +26,25 @@ class PeopleController{
         function diffFloor() {//路径跨层
             console.log(y1,y2)
             if(y1>-1){//起点在地面
-                console.log("起点在地面");
-                move0to_1(function () {
-                    console.log("到了楼梯出口");
-                    scope.goToPosition(pos);
+                console.log("-起点在地面-");
+                scope.goToPosition({x:94,y:1.17,z:196},function () {
+                    console.log("到了楼梯入口");
+                    move0to_1(function () {
+                        console.log("到了楼梯出口");
+                        scope.goToPosition(pos);
+                    });
                 });
+
             }else if(y2>-1){//终点在地面
-                console.log("终点在地面");
-                move_1to0(function () {
-                    console.log("到了楼梯出口");
-                    scope.goToPosition(pos);
+                console.log("-终点在地面-");
+                scope.goToPosition({x:50,y:-8.53,z:189},function () {
+                    console.log("到了楼梯入口");
+                    move_1to0(function () {
+                        console.log("到了楼梯出口");
+                        scope.goToPosition(pos);
+                    });
                 });
+
             }
 
             function move0to_1(f){
@@ -68,10 +76,10 @@ class PeopleController{
             }
         }
     }
-    constructor(myMain,obstacle0,obstacle1){
+    constructor(myMain,obstacle0,obstacle1,pos){
         var scope=this;
         scope.model=new THREE.Object3D();
-        scope.model.position.set(100,0,194);//(90,0,196);//(90,1.17,196);
+        scope.model.position.set(pos[0],pos[1],pos[2]);//(58.91,-8.54,181.01);//(100,0,194);//(90,0,196);//(90,1.17,196);
         scope.model.scale.set(0.5,0.5,0.5);
         scope.myMain=myMain;
         scope.#radiographicTesting();
@@ -146,6 +154,15 @@ class PeopleController{
         setInterval(function () {
             flag=0;
         },1000);
+        test();
+        function test() {
+            if(window.testFlag>0){
+                window.testFlag--;
+                scope.goToPosition({x:96.53,y:0.15,z:194.53})
+            }
+            //[96.53,0.15,194.53]
+            requestAnimationFrame(test);
+        }
     }
 }
 class SameFloorPF{
