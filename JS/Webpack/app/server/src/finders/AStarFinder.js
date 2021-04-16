@@ -127,7 +127,7 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
 
 
                     var LD=get_L_D(node.x,node.y,x,y);
-                    neighbor.l=LD[0]*100;
+                    neighbor.l=LD[0]*40;
 
                     //var k=Math.exp(-1*LD[1]);
                     var dis_max=
