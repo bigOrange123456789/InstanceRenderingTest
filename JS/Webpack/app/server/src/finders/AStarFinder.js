@@ -115,26 +115,26 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
                 neighbor.g = ng;//实际代价
                 neighbor.h = neighbor.h || weight * heuristic(abs(x - endX), abs(y - endY));//如果已经计算过就不用再计算了//启发式函数的输入是dx,dy
                 if(boards.length>0){
-                    neighbor.l = neighbor.l ||getL(x,y);
-                    neighbor.f = (neighbor.g + neighbor.h)*(neighbor.l+0.05);//f=g+h//g是实际代价 h是估计代价
+                    neighbor.l = neighbor.l ||getL(node.x,node.y,x,y);
+                    neighbor.f = (neighbor.g + neighbor.h)*(neighbor.l+0.01);//f=g+h//g是实际代价 h是估计代价
                 }else{
                     neighbor.f = neighbor.g + neighbor.h;
                 }
                 neighbor.parent = node;//设置父节点
 
-                function getL(x2,y2) {
+                function getL(x1,y1,x2,y2) {
+                    //console.log(getDa(0,0,1,1,-Math.PI), "=", Math.PI*3/4);
                     var board=getBoard(x2,y2);
-                    var da=getDa(x2,y2,board);
-                    var distance= getDistance(0,x2,0,y2);
+                    var da=getDa(x1,y1,x2,y2,board[2]);
+                    var distance= getDistance(board[0],x2,board[1],y2);
                     if(distance===0)distance=0.0001;
                     return da/distance;//角度差➗距离
-                    function getDa(x2,y2,board) {
-                        var x1=board[0],y1=board[1],a=board[2];
+                    function getDa(x1,y1,x2,y2,a) {
                         var dx=x2-x1;
                         var dy=y2-y1;
                         var angle=Math.atan2(dx,dy);
                         var da=Math.abs(angle-a);
-                        if(da>Math.PI)da-=2*Math.PI;
+                        if(da>Math.PI)da=2*Math.PI-da;
                         return da;
                     }
                     function getBoard(x2,y2) {//boards
