@@ -1,7 +1,7 @@
 //function doNothing(){window.event.returnValue=false;}
 $(document).ready(function() {
-    var xMin=0;//-39;
-    var yMin=0;//112;
+    var xMin=-39;//0;//
+    var yMin=112;//0;//
     Panel.init();
     Controller.init();
 
