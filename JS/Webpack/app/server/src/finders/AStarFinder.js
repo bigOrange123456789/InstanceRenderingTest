@@ -128,9 +128,14 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
                     var da=getDa(x1,y1,x2,y2,board[2]);
                     var distance= getDistance(board[0],x2,board[1],y2);
                     if(distance===0)distance=0.00001;
+<<<<<<< HEAD
                     //console.log("angle:",board[2])
                     console.log("x1,x2,y1,y2:",board[0],x2,board[1],y2)
                     console.log("distance:",distance);
+=======
+                    console.log("angle:",board[2])
+                    //console.log("distance:",distance);
+>>>>>>> af40f365d26e5d7568fd5d7e65e7da50c9bed8ca
                     return da/distance;//角度差➗距离
                     function getDa(x1,y1,x2,y2,a) {
                         var dx=x2-x1;
