@@ -115,28 +115,50 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
                 neighbor.g = ng;//实际代价
                 neighbor.h = neighbor.h || weight * heuristic(abs(x - endX), abs(y - endY));//如果已经计算过就不用再计算了//启发式函数的输入是dx,dy
                 if(boards.length>0){
-                    neighbor.l = neighbor.l ||getL(node.x,node.y,x,y);
-                    neighbor.f = (neighbor.g + neighbor.h)*(neighbor.l+0.01);//f=g+h//g是实际代价 h是估计代价
+                    //neighbor.l = neighbor.l ||getL(node.x,node.y,x,y);
+                    //neighbor.f = (neighbor.g + neighbor.h)*(neighbor.l+0.01);//f=g+h//g是实际代价 h是估计代价
+
+                    //neighbor.l = getL(node.x,node.y,x,y);
+                    //neighbor.f = (neighbor.g + neighbor.h)*(neighbor.l+0.01);//f=g+h//g是实际代价 h是估计代价
+
+                    //var k= Math.pow(getDistance(startNode.x,endNode.x,startNode.y,endNode.y), 5)/Math.PI;
+                    //neighbor.l = k*getL(node.x,node.y,x,y);
+                    //neighbor.f = neighbor.g + neighbor.h+neighbor.l;//f=g+h//g是实际代价 h是估计代价
+
+
+                    var LD=get_L_D(node.x,node.y,x,y);
+                    neighbor.l=LD[0]*100;
+
+                    //var k=Math.exp(-1*LD[1]);
+                    var dis_max=
+                        getDistance(startNode.x,endNode.x,startNode.y,endNode.y);//(boards.length+1);
+                    var k=LD[1]/dis_max ;//Math.pow(LD[1],4);
+                    console.log("k1",k);
+                    if(k<0)k=0;
+                    else if(k>1)k=1;
+                    console.log("k2",k);
+
+                    neighbor.f = k*(neighbor.g + neighbor.h)+(1-k)*neighbor.l;//f=g+h//g是实际代价 h是估计代价
+
                 }else{
                     neighbor.f = neighbor.g + neighbor.h;
                 }
                 neighbor.parent = node;//设置父节点
 
-                function getL(x1,y1,x2,y2) {
+                function get_L_D(x1,y1,x2,y2) {
                     //console.log(getDa(0,0,1,1,-Math.PI), "=", Math.PI*3/4);
                     var board=getBoard(x2,y2);
                     var da=getDa(x1,y1,x2,y2,board[2]);
                     var distance= getDistance(board[0],x2,board[1],y2);
-                    if(distance===0)distance=0.00001;
-<<<<<<< HEAD
+                    //if(distance===0)distance=0.00001;
+
                     //console.log("angle:",board[2])
-                    console.log("x1,x2,y1,y2:",board[0],x2,board[1],y2)
-                    console.log("distance:",distance);
-=======
-                    console.log("angle:",board[2])
+                    //console.log("x1,x2,y1,y2:",board[0],x2,board[1],y2)
                     //console.log("distance:",distance);
->>>>>>> af40f365d26e5d7568fd5d7e65e7da50c9bed8ca
-                    return da/distance;//角度差➗距离
+                    //console.log("angle:",board[2])
+                    //console.log("distance:",distance);
+
+                    return [da,distance];//角度差➗距离
                     function getDa(x1,y1,x2,y2,a) {
                         var dx=x2-x1;
                         var dy=y2-y1;
