@@ -8,11 +8,6 @@ class MachineLearning{
     grid;
     finder;
     constructor(){
-        var scope=this;
-        this.load("../client/grid1.json",function () {
-            scope.initPF();
-            scope.train();
-        })
     }
     load(url,finished){
         var scope=this;
@@ -40,7 +35,10 @@ class MachineLearning{
                 scope.end=json.end;
 
                 scope.board=json.board;
+                scope.initPF();
+                console.log(scope.grid)
                 if(finished)finished();
+
             }
         }
     }
@@ -55,11 +53,10 @@ class MachineLearning{
         for(i=0;i<this.board.length;i++) {
             var I=this.board[i][0],
                 J=this.board[i][1];
-            this.grid.nodes[I][J].boardAngle
-                =this.board[i][2];
-            console.log(this.grid.nodes[I][J].boardAngle)
-        }
-        this.finder = new PF.BiAStarFinder({
+            this.grid.nodes[I][J].boardAngle =this.board[i][2];
+            console.log(I,J,this.grid.nodes[I][J].boardAngle)
+        }/**/
+        this.finder = new PF.AStarFinder({
             allowDiagonal: true,//允许对角线
             dontCrossCorners: false,//不要拐弯?
             heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
@@ -67,26 +64,77 @@ class MachineLearning{
         });
     }
 
-    train(){
-        var grid=this.grid.clone();
-        var path = this.finder.findPath(
-            this.start[0],this.start[1],
-            this.end[0],this.end[1],
-            grid);
-        console.log(path)
-        console.log("搜索过的区域大小为："+this.PFAreaSize(grid));
+    getAngle(){
+        console.log(this.grid)
+        return this.train({"i":0,"j":1});
     }
-    PFAreaSize(grid0){
-        console.log(grid0)
-        var count=0;
-        for(var i=0;i<grid0.nodes.length;i++){
-            for(var j=0;j<grid0.nodes[i].length;j++){
-                if(grid0.nodes[i][j].closed===true){
-                    count++;
-                    console.log(i,j)
+    train(x){
+        var w_init=0;
+        var time=100;
+        var step=Math.PI/180;
+
+        var w=w_init;
+        var test=[];
+        for(var t=0;t<time;t++){
+            x.angle=w;
+            var g=this.grad(x);
+            w=w-g*step;
+            test.push(g);
+        }
+        for(t=10;t>0;t--)
+            console.log(test[test.length-t]);
+
+        return w;
+    }
+    grad(x0){
+        var l1=this.loss(x0);
+        x0.angle+=0.01;
+        var l2=this.loss(x0);
+        return (l2-l1)/0.01;
+    }
+    loss(x){//损失函数
+        this.grid.nodes[x.i][x.j].boardAngle=x.angle;
+
+        var sum=0;
+        var rMax=5,cMax=5;
+        var err=0;
+        for(var r=0;r<rMax;r++)
+            for(var c=0;c<cMax;c++){
+                var l=this.find(
+                    this.start[0]+c,
+                    this.start[1]+c,
+                    this.end[0]+r,
+                    this.end[1]+r);
+                if(l>0)sum+=l;
+                else err++;
+            }
+        return sum/((rMax+1)*(cMax+1)-err);
+    }
+    find(start1,start2,end1,end2){//返回搜索过的区域大小为
+        if(!this.grid.nodes[start1][start2].walkable)return 0;
+        var grid=this.grid.clone();
+        for(var i=0;i<this.grid.nodes.length;i++)
+            for(var j=0;j<this.grid.nodes.length;j++){
+                var angle=this.grid.nodes[i][j].boardAngle;
+                if(typeof (angle)!=="undefined")
+                    grid.nodes[i][j].boardAngle=angle;
+            }
+        var path = this.finder.findPath(
+            start1,start2,
+            end1,end2,
+            grid);
+        if(path.length===0)return 0;
+        else return PFAreaSize(grid);//搜索过的区域大小
+        function PFAreaSize(grid0){
+            var count=0;
+            for(var i=0;i<grid0.nodes.length;i++){
+                for(var j=0;j<grid0.nodes[i].length;j++){
+                    if(grid0.nodes[i][j].closed===true){
+                        count++;
+                    }
                 }
             }
+            return count;
         }
-        return count;
     }
 }

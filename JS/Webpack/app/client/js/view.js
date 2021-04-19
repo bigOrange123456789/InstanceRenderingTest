@@ -152,7 +152,21 @@ var View = {
             case 'setBoard':
                 this.colorizeNode(this.rects[gridY][gridX], "Yellow");
                 console.log(this.rects[gridY][gridX]);
-                var angle=prompt("boardAngle:",0);
+
+                window.ml.grid=Controller.grid;
+                window.ml.start=[0,0];
+                window.ml.end=[Controller.endX, Controller.endY];
+                window.ml.finder= new PF.AStarFinder({
+                    allowDiagonal: true,//允许对角线
+                    dontCrossCorners: false,//不要拐弯?
+                    heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
+                    weight: 1
+                });
+                var angle=window.ml.getAngle();
+                console.log("boardAngle:",angle)
+
+                alert("标志牌方向为:"+(angle*180/Math.PI))
+                //prompt("标志牌方向为:",(angle*180/Math.PI));
                 Controller.grid.nodes[gridY][gridX].boardAngle=angle*Math.PI/180;
                 //console.log(Controller.grid)
                 break;

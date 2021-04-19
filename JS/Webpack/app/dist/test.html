@@ -8,6 +8,12 @@
 <script type="module">
     import {MachineLearning} from "./MachineLearning.js"
     var ml=new MachineLearning();
+    ml.load("../client/grid1.json",function () {
+        var w=(ml.getAngle());
+        console.log("最佳角度为:"+w*180/Math.PI)
+        alert("最佳角度为:"+w*180/Math.PI);
+    })
+
     console.log(ml);
 
     function test() {

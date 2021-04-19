@@ -59,8 +59,6 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
             if(typeof(angle)!=="undefined")
                 boards.push([i,j,angle]);
         }
-    console.log("boards:",boards);
-    console.log("boards_l:",boards.length);
 
     var openList = new Heap(function(nodeA, nodeB) {
             return nodeA.f - nodeB.f;
@@ -133,10 +131,8 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
                     var dis_max=
                         getDistance(startNode.x,endNode.x,startNode.y,endNode.y);//(boards.length+1);
                     var k=LD[1]/dis_max ;//Math.pow(LD[1],4);
-                    console.log("k1",k);
                     if(k<0)k=0;
                     else if(k>1)k=1;
-                    console.log("k2",k);
 
                     neighbor.f = k*(neighbor.g + neighbor.h)+(1-k)*neighbor.l;//f=g+h//g是实际代价 h是估计代价
 
@@ -146,17 +142,10 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
                 neighbor.parent = node;//设置父节点
 
                 function get_L_D(x1,y1,x2,y2) {
-                    //console.log(getDa(0,0,1,1,-Math.PI), "=", Math.PI*3/4);
                     var board=getBoard(x2,y2);
                     var da=getDa(x1,y1,x2,y2,board[2]);
                     var distance= getDistance(board[0],x2,board[1],y2);
                     //if(distance===0)distance=0.00001;
-
-                    //console.log("angle:",board[2])
-                    //console.log("x1,x2,y1,y2:",board[0],x2,board[1],y2)
-                    //console.log("distance:",distance);
-                    //console.log("angle:",board[2])
-                    //console.log("distance:",distance);
 
                     return [da,distance];//角度差➗距离
                     function getDa(x1,y1,x2,y2,a) {
