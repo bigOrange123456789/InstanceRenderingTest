@@ -6,17 +6,23 @@ $(document).ready(function() {
     Controller.init();
 
     var names=[
-        'FJK_1.vsg',
-        'FJK_2.vsg',
-        'FJK_3.vsg',
-        'HSH_1_100.vsg',
-        'HSH_1_200.vsg',
-        'HSH_1_300.vsg',
-        'HSH_1_400.vsg',
-        'grid1',
+        'FJK-1 S Dir-map.json',
+        'FJK-1 S Dir-map反方向.json',
+        'FJK-1 S Dir-sub1-map.json',
+        'FJK-1 S Dir-sub2-map.json',
+        'HSY 200 S Dir-map.json',
+        'HSY 200 S Dir-map反方向.json',
+        'HSY 200-1 S Dir-map.json',
+        'HSY 200-1 S Dir-map反方向.json',
+        'HSY 400 S Dir-map.json',
+        'HSY 400 S Dir-map反方向.json',
+        'HSY 400 论文对比 S Dir-map.json',
+        'HSY 400 论文对比 S Dir-map反方向.json',
+        'HSY 400 论文对比 分块 B Dir－map.json',
     ];
     for(var i=0;i<names.length;i++){
-        document.getElementById("map"+i).fileName=names[i]+".json";
+        document.getElementById("map"+i).innerHTML=names[i];
+        document.getElementById("map"+i).fileName=names[i];
         document.getElementById("map"+i).onclick=function(){loadMap0(this.fileName);};
     }
     document.getElementById("download").onclick=function(){

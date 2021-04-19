@@ -13,7 +13,7 @@ function f2() {
     console.log(result);
 }
 function f3() {
-    require('fs').readdirSync('./').forEach(function (s) {console.log("'"+s+"',")});
+    require('fs').readdirSync('./ttt').forEach(function (s) {console.log("'"+s+"',")});
 }
 /**
  *
