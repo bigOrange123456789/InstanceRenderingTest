@@ -9,7 +9,7 @@ class MachineLearning{
     finder;
     constructor(){
         var scope=this;
-        this.load("map.json",function () {
+        this.load("../client/grid1.json",function () {
             scope.initPF();
             scope.train();
         })
@@ -74,5 +74,19 @@ class MachineLearning{
             this.end[0],this.end[1],
             grid);
         console.log(path)
+        console.log("搜索过的区域大小为："+this.PFAreaSize(grid));
+    }
+    PFAreaSize(grid0){
+        console.log(grid0)
+        var count=0;
+        for(var i=0;i<grid0.nodes.length;i++){
+            for(var j=0;j<grid0.nodes[i].length;j++){
+                if(grid0.nodes[i][j].closed===true){
+                    count++;
+                    console.log(i,j)
+                }
+            }
+        }
+        return count;
     }
 }

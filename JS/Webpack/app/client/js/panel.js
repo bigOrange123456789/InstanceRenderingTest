@@ -26,12 +26,12 @@ var Panel = {
      */
     getFinder: function() {
         var finder, selected_header, heuristic, allowDiagonal, biDirectional, dontCrossCorners, weight, trackRecursion, timeLimit;
-        
+
         selected_header = $(
             '#algorithm_panel ' +
             '.ui-accordion-header[aria-selected=true]'
         ).attr('id');
-        
+
         switch (selected_header) {
 
         case 'astar_header':
@@ -61,6 +61,12 @@ var Panel = {
                     heuristic: PF.Heuristic[heuristic],
                     weight: weight
                 });
+                console.log({
+                    allowDiagonal: allowDiagonal,
+                    dontCrossCorners: dontCrossCorners,
+                    heuristic: PF.Heuristic[heuristic],
+                    weight: weight
+                })
             }
             break;
 
@@ -131,7 +137,7 @@ var Panel = {
             trackRecursion = typeof $('#jump_point_section ' +
                                      '.track_recursion:checked').val() !== 'undefined';
             heuristic = $('input[name=jump_point_heuristic]:checked').val();
-            
+
             finder = new PF.JumpPointFinder({
               trackJumpRecursion: trackRecursion,
               heuristic: PF.Heuristic[heuristic],

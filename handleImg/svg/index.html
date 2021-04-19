@@ -52,6 +52,9 @@
 		img.setAttribute("src", "data:image/svg+xml;base64," + window.btoa(unescape(encodeURIComponent(svgData))));
 
 		img.onload = function() {
+			console.log(img.width)
+			img.width/=10;//=500;
+
 			ctx.drawImage(img, 0, 0);
 			var texture = new THREE.Texture(canvas);
 			texture.needsUpdate = true;
