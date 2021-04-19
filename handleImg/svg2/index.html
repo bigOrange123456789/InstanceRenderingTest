@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+
+<body>
+
+<script src="js/lib/threeJS/three.js"></script>
+<script src="js/lib/threeJS/GLTFLoader.js"></script>
+<script src="js/playerControl/PlayerControl.js"></script>
+
+<script src="js/Main.js"></script>
+<div id="svgContainer" >
+	<svg  xmlns="http://www.w3.org/2000/svg" version="1.1" width="500" height="500">
+		<text  x="0" y="100" fill="#00ff00" font-size="120" width="6">安全出口</text>
+		<text  x="110" y="250" fill="#00ff00" font-size="120" width="6">EXIT</text>
+	</svg>
+</div>
+<div id="svgContainer2" >
+	<svg t="1618576863045" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3053" xmlns:xlink="http://www.w3.org/1999/xlink" width="500" height="500"><defs><style type="text/css"></style></defs><path d="M959.86800001 405.184l-580.64900001 0 0-158.27-316.696 263.788L379.219 774.64l0-158.269L959.86800001 616.371l0-211.187z" fill="#00ff00" p-id="3054"></path></svg>
+</div>
+
+
+<script  type="module">
+	//生成场景相机渲染器
+	var myMain = new Main();
+	myMain.start();
+
+	//第一人称控制
+	new PlayerControl(myMain.camera);
+
+	//
+	//测试
+	test();
+	function test() {
+		var mesh;
+		var scene =myMain.scene;// new THREE.Scene();
+
+		var svg = document.getElementById("svgContainer").querySelector("svg");
+		var svg2 = document.getElementById("svgContainer2").querySelector("svg");
+		console.log(svg)
+		//var svg = document.getElementById("svgContainer").querySelector("svg");
+		var svgData = (new XMLSerializer()).serializeToString(svg);
+		var svgData2 = (new XMLSerializer()).serializeToString(svg2);
+
+
+		var canvas = document.createElement("canvas");
+		var svgSize = svg.getBoundingClientRect();
+		canvas.width = svgSize.width;
+		canvas.height = svgSize.height;
+		var ctx = canvas.getContext("2d");
+
+		var img = document.createElement("img");
+		var material;
+		img.setAttribute("src", "data:image/svg+xml;base64," + window.btoa(unescape(encodeURIComponent(svgData))));
+		img.onload = function() {
+			var img2 = document.createElement("img");
+			img2.setAttribute("src", "data:image/svg+xml;base64," + window.btoa(unescape(encodeURIComponent(svgData2))));
+			img2.onload = function() {
+				ctx.drawImage(img, 0, 0);
+				ctx.drawImage(img2, 0, 0);
+				var texture = new THREE.Texture(canvas);
+				texture.needsUpdate = true;
+				var geometry = new THREE.CubeGeometry(5,5,0);//new THREE.SphereGeometry(3, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+				material = new THREE.MeshBasicMaterial({map: texture});
+				material.map.minFilter = THREE.LinearFilter;
+				mesh = new THREE.Mesh(geometry, material);
+				scene.add(mesh);
+				console.log(mesh)
+			};
+
+		};
+
+
+	}
+
+</script>
+</body>
+</html>
