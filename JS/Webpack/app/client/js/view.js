@@ -151,6 +151,7 @@ var View = {
         switch (attr) {
             case 'setBoard':
                 this.colorizeNode(this.rects[gridY][gridX], "Yellow");
+                console.log(this.rects[gridY][gridX]);
                 var angle=prompt("boardAngle:",0);
                 Controller.grid.nodes[gridY][gridX].boardAngle=angle*Math.PI/180;
                 //console.log(Controller.grid)

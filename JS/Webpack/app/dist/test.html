@@ -5,23 +5,31 @@
     <script src="./main.js"></script>
 </head>
 <body>
-<script>
-    console.log(PF);
+<script type="module">
 
-    var grid = new PF.Grid(10,6);//生成网格
-    grid.setWalkableAt(2,2,false);
-    console.log(grid);
+    import {MachineLearning} from "./MachineLearning.js"
+    var ml=new MachineLearning();
+    console.log(ml);
 
-    var finder = new PF.AStarFinder({
-        allowDiagonal: true,//允许对角线
-        dontCrossCorners: false,//不要拐弯?
-        heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
-        weight: 1
-    });
-    console.log(finder);
+    function test() {
+        console.log(PF);
 
-    var path = finder.findPath(1,1,5,5, grid);
-    console.log(path);
+        var grid = new PF.Grid(10,6);//生成网格
+        grid.setWalkableAt(2,2,false);
+        console.log(grid);
+
+        var finder = new PF.AStarFinder({
+            allowDiagonal: true,//允许对角线
+            dontCrossCorners: false,//不要拐弯?
+            heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
+            weight: 1
+        });
+        console.log(finder);
+
+        var path = finder.findPath(1,1,5,5, grid);
+        console.log(path);
+    }
+
     /**/
 </script>
 </body>

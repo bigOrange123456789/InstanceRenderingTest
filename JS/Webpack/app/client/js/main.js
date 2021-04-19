@@ -1,7 +1,7 @@
 //function doNothing(){window.event.returnValue=false;}
 $(document).ready(function() {
-    var xMin=-39;//0;//
-    var yMin=112;//0;//
+    var xMin=0;//-39;//
+    var yMin=0;//112;//
     Panel.init();
     Controller.init();
 
@@ -22,20 +22,28 @@ $(document).ready(function() {
     document.getElementById("download").onclick=function(){
         //console.log(Controller.grid);
         var arr=[];
+        var board=[];
         var nodes=Controller.grid.nodes;
         for(var i=0;i<nodes.length;i++)
-            for(var j=0;j<nodes[i].length;j++)
-                if(!nodes[i][j].walkable){
+            for(var j=0;j<nodes[i].length;j++){
+                if(!nodes[i][j].walkable)
                     arr.push([
-                    nodes[i][j].x+xMin,
-                    nodes[i][j].y+yMin
-                ])
+                        nodes[i][j].x+xMin,
+                        nodes[i][j].y+yMin
+                    ])
+                if(typeof (nodes[i][j].boardAngle)!=="undefined")
+                    board.push([
+                        i,j,
+                        nodes[i][j].boardAngle
+                    ])
         }
         console.log(arr)
         var json={};
         json.data=arr;
         json.start=[Controller.startX, Controller.startY];
         json.end=[Controller.endX, Controller.endY];
+        json.board=board;
+
         let link = document.createElement('a');
         link.style.display = 'none';
         document.body.appendChild(link);
