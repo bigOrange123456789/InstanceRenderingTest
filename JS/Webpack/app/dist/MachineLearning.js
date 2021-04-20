@@ -36,7 +36,7 @@ class MachineLearning{
 
                 scope.board=json.board;
                 scope.initPF();
-                console.log(scope.grid)
+
                 if(finished)finished();
 
             }
@@ -50,12 +50,12 @@ class MachineLearning{
                 this.wall[i][1],
                 false);
         }
-        for(i=0;i<this.board.length;i++) {
+        /*for(i=0;i<this.board.length;i++) {
             var I=this.board[i][0],
                 J=this.board[i][1];
             this.grid.nodes[I][J].boardAngle =this.board[i][2];
             console.log(I,J,this.grid.nodes[I][J].boardAngle)
-        }/**/
+        }*/
         this.finder = new PF.AStarFinder({
             allowDiagonal: true,//允许对角线
             dontCrossCorners: false,//不要拐弯?
@@ -102,8 +102,8 @@ class MachineLearning{
             var l_min=scope.loss(x);
 
             var test="";
-            for(var t=w_init;t<Math.PI*2;t+=step){
-                x.angle+=t;
+            for(var t=w_init;t<2*Math.PI;t+=step){
+                x.angle=t;
                 var l=scope.loss(x);
                 test=test+","+(Math.floor(l*100)/100);
                 if(l<l_min){
@@ -111,14 +111,9 @@ class MachineLearning{
                     w_opt=x.angle;
                 }
             }
+            console.log(l_min,w_opt)
+
             console.log(test)
-
-            x.angle=1;
-            console.log(scope.loss(x));
-
-            x.angle=1+Math.PI*2;
-            console.log(scope.loss(x));
-
             return w_opt;
         }
     }
@@ -164,7 +159,8 @@ class MachineLearning{
         this.grid.nodes[x.i][x.j].boardAngle=x.angle;
 
         var sum=0;
-        var rMax=10,cMax=10;
+        var rMax=this.grid.width-10,cMax=this.grid.height-10;
+        //var rMax=1,cMax=1;
         var err=0;
         for(var r=0;r<rMax;r++)
             for(var c=0;c<cMax;c++){
@@ -176,7 +172,7 @@ class MachineLearning{
                 if(l>0)sum+=l;
                 else err++;
             }
-        return sum/((rMax+1)*(cMax+1)-err);
+        return sum/(rMax*cMax-err);
     }
     find(start1,start2,end1,end2){//返回搜索过的区域大小为
         if(!this.grid.nodes[start1][start2].walkable)return 0;

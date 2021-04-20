@@ -142,8 +142,6 @@ $.extend(Controller, {
                 if(typeof (angle)!=="undefined")
                     grid.nodes[i][j].boardAngle=angle;
             }
-        console.log(this.grid)
-        console.log(grid)
         this.path = finder.findPath(
             this.startX, this.startY, this.endX, this.endY, grid
         );
@@ -153,7 +151,7 @@ $.extend(Controller, {
             var j=scope.endX;
             var i=scope.endY;
             var g=r.nodes[i][j].g;
-            console.log(i,j,r.nodes[i][j])
+            //console.log(i,j,r.nodes[i][j])
             return Math.round(g*100)/100;
         }
 

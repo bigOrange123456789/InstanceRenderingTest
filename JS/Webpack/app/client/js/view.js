@@ -154,22 +154,29 @@ var View = {
                 console.log(gridX,gridY)
                 console.log(this.rects[gridY][gridX]);
 
-                window.ml.grid=Controller.grid;
-                window.ml.start=[0,0];
-                window.ml.end=[Controller.endX, Controller.endY];
-                window.ml.finder= new PF.AStarFinder({
-                    allowDiagonal: true,//允许对角线
-                    dontCrossCorners: false,//不要拐弯?
-                    heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
-                    weight: 1
-                });
-                var angle=window.ml.getAngle3(gridY,gridX);
-                console.log(gridY+","+gridX+",boardAngle:",angle)
 
-                alert("标志牌方向为:"+(angle*180/Math.PI))
-                Controller.grid.nodes[gridY][gridX].boardAngle=angle;
-                //prompt("标志牌方向为:",(angle*180/Math.PI));Controller.grid.nodes[gridY][gridX].boardAngle=angle*Math.PI/180;
-                //console.log(Controller.grid)
+                function auto(){
+                    window.ml.grid=Controller.grid;
+                    window.ml.start=[0,0];
+                    window.ml.end=[Controller.endX, Controller.endY];
+                    window.ml.finder= new PF.AStarFinder({
+                        allowDiagonal: true,//允许对角线
+                        dontCrossCorners: false,//不要拐弯?
+                        heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
+                        weight: 1
+                    });
+                    var angle=window.ml.getAngle3(gridY,gridX);
+                    console.log(gridY+","+gridX+",boardAngle:",angle)
+
+                    alert("标志牌方向为:"+(angle*180/Math.PI))
+                    Controller.grid.nodes[gridY][gridX].boardAngle=angle;
+                }
+                function userSet(){
+                    var angle=prompt("标志牌方向为:",0);
+                    Controller.grid.nodes[gridY][gridX].boardAngle=angle*Math.PI/180;
+                }
+                userSet()
+                ////console.log(Controller.grid)
                 break;
         case 'walkable'://放置or取消 障碍物
             color = value ? nodeStyle.normal.fill : nodeStyle.blocked.fill;

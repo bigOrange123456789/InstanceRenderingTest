@@ -7,15 +7,25 @@
 <body>
 <script type="module">
     import {MachineLearning} from "./MachineLearning.js"
-    var ml=new MachineLearning();
-    ml.load("../client/grid1.json",function () {
-        var w=(ml.getAngle3(2,1));
-        console.log("最佳角度为:"+w*180/Math.PI)
-        alert("最佳角度为:"+w*180/Math.PI);
-    })
+    test2()
+    function test3() {
+        var ml=new MachineLearning();
+        ml.load("../client/grid1.json",function () {
+            var w=ml.find(0,0,2,2);
+            alert("搜索过的区域为:"+w);
+        })
+    }
 
-    console.log(ml);
+    function test2() {
+        var ml=new MachineLearning();
+        ml.load("../client/grid1.json",function () {
+            var w=(ml.getAngle3(5,5));
+            console.log("最佳角度为:"+(w*180/Math.PI))
+            alert("最佳角度为:"+(w*180/Math.PI));
+        })
 
+        console.log(ml);
+    }
     function test() {
         console.log(PF);
 

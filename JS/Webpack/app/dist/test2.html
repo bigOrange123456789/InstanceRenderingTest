@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script>
+    function getDa(x1,y1,x2,y2,a) {
+        while(a>2*Math.PI)a-=2*Math.PI;
+        var dx=x2-x1;
+        var dy=y2-y1;
+        var angle=Math.atan2(dy,dx);
+        var da=Math.abs(angle-a);
+        if(da>Math.PI)da=2*Math.PI-da;
+        return da;
+    }
+    function test(dx,dy,a) {
+        a=a*Math.PI/180;
+        var result=getDa(0,0,dx,dy,a);
+        return Math.round(
+            180*result/Math.PI
+        );
+    }
+    for(var i=0;i<180;i++){
+        console.log(
+            test(1,0,i)===i
+        )
+    }
+    for(i=180;i<360;i++){
+        console.log(
+            test(1,0,i)===(360-i)
+        )
+    }
+    for(i=360;i<360+180;i++){
+        console.log(
+            test(1,0,i)===(i-360)
+        )
+    }
+
+    console.log(test(1,1,90),45)
+    console.log(test(1,1,180),135)
+</script>
+</body>
+</html>
+
