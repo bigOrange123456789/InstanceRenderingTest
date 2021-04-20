@@ -88,7 +88,6 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
 
         // if reached the end position, construct the path and return it//如果到达终点位置，构造路径并返回
         if (node === endNode) {
-            //console.log("***************")
             return Util.backtrace(endNode);//通过节点的parent对象可以很容易得到路径
         }
 
@@ -128,6 +127,7 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
                     var LD=get_L_D(node.x,node.y,x,y);
                     neighbor.l=LD[0]*40;
 
+
                     //var k=Math.exp(-1*LD[1]);
                     var dis_max=
                         getDistance(startNode.x,endNode.x,startNode.y,endNode.y);//(boards.length+1);
@@ -138,6 +138,8 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
                     neighbor.k=k;//test
                     neighbor.distance_board=LD[1];
                     neighbor.f = k*(neighbor.g + neighbor.h)+(1-k)*neighbor.l;//f=g+h//g是实际代价 h是估计代价
+
+
 
                 }else{
                     neighbor.f = neighbor.g + neighbor.h;
@@ -157,7 +159,8 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
                         var dy=y2-y1;
                         var angle=Math.atan2(dy,dx);
                         var da=Math.abs(angle-a);
-                        if(da>Math.PI)da=2*Math.PI-da;
+                        if(da>Math.PI)da=Math.abs(2*Math.PI-da);
+                        //console.log(angle*180/Math.PI,da*180/Math.PI);
                         return da;
                     }
                     function getBoard(x2,y2) {//boards
