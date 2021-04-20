@@ -5,6 +5,7 @@ function GlbHandle(){
     this.download=new Download();
     this.myGlbSplit=new GlbSplit();
     this.myInDe=new InDe();
+    this.duplication=new DuplicateRemoval();
     this.resourceInfo={}
     this.resourceManager=new ResourceManager();
     //maps
@@ -24,13 +25,15 @@ GlbHandle.prototype={
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
         this.myInDe.process(this.resourceManager);//使用兴趣度进行排序
 
+        //this.duplication.process(this.resourceManager);//模型去重
+
         var myMaterialHandle=new MaterialHandle();
         myMaterialHandle.init(this.resourceManager,this.fileName);
         myMaterialHandle.process();
 
         console.log(this.resourceManager);
 
-        /**/this.download.jsonDownload(//下载说明信息
+        /*this.download.jsonDownload(//下载说明信息
             this.resourceManager.resourceInfoGet(),"resourceInfo.json"
         );
 
@@ -38,6 +41,7 @@ GlbHandle.prototype={
         this.downloadMap(myMaterialHandle,function () {//下载贴图
                 scope.downloadModel(scope.resourceManager.meshs)//下载网格
             });//纹理和网格分开下载
+    */
 
     },
     downloadMap:function (myMaterialHandle,finishFunction) {

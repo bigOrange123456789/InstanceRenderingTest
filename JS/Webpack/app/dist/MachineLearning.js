@@ -43,7 +43,7 @@ class MachineLearning{
         }
     }
     initPF(){
-        this.grid = new PF.Grid(20,20);//生成网格
+        this.grid = new PF.Grid(30,30);//生成网格
         for(var i=0;i<this.wall.length;i++){
             this.grid.setWalkableAt(
                 this.wall[i][0],
@@ -63,10 +63,64 @@ class MachineLearning{
             weight: 1
         });
     }
-
-    getAngle(){
+    getAngle(i,j){
         console.log(this.grid)
-        return this.train({"i":0,"j":1});
+        return this.train({"i":i,"j":j});
+    }
+    getAngle2(i,j){
+        var scope=this;
+        return train2({"i":i,"j":j});
+        function train2(x){
+            var w_init=0;
+            var time=100;
+            var step=Math.PI/180;
+
+            var w=w_init;
+            //var test=[];
+            for(var t=0;t<time;t++){
+                x.angle=w;
+                var l1=scope.loss(x);x.angle+=step;
+                var l2=scope.loss(x);x.angle-=step;
+
+                if(l1<l2)w+=step;
+                else w-=step;
+                console.log(w)
+            }
+
+            return w;
+        }
+    }
+    getAngle3(i,j){
+        var scope=this;
+        return train2({"i":i,"j":j});
+        function train2(x){
+            var w_init=0;
+            var step=Math.PI/180;
+
+            x.angle=w_init;
+            var w_opt=w_init;
+            var l_min=scope.loss(x);
+
+            var test="";
+            for(var t=w_init;t<Math.PI*2;t+=step){
+                x.angle+=t;
+                var l=scope.loss(x);
+                test=test+","+(Math.floor(l*100)/100);
+                if(l<l_min){
+                    l_min=l;
+                    w_opt=x.angle;
+                }
+            }
+            console.log(test)
+
+            x.angle=1;
+            console.log(scope.loss(x));
+
+            x.angle=1+Math.PI*2;
+            console.log(scope.loss(x));
+
+            return w_opt;
+        }
     }
     train(x){
         var w_init=0;
@@ -80,23 +134,37 @@ class MachineLearning{
             var g=this.grad(x);
             w=w-g*step;
             test.push(g);
+            console.log(g)
         }
-        for(t=10;t>0;t--)
-            console.log(test[test.length-t]);
+        for(t=10;t>0;t--) console.log(test[test.length-t]);
 
         return w;
     }
+
     grad(x0){
-        var l1=this.loss(x0);
-        x0.angle+=0.01;
-        var l2=this.loss(x0);
-        return (l2-l1)/0.01;
+        var step=0.01;
+        var l1=this.loss(x0);x0.angle+=step;
+        var l2=this.loss(x0);x0.angle-=step;
+
+        //var dl=l2-l1;
+        //if(dl===0)return 0;
+
+        /*var g=0;
+        var d=l2-l1;
+        while(d!==0){
+            g=d/step;
+            step/=2;
+            l1=this.loss(x0);x0.angle+=step;
+            l2=this.loss(x0);x0.angle-=step;
+            d=l2-l1;
+        }*/
+        return (l2-l1)/step;//g;//
     }
     loss(x){//损失函数
         this.grid.nodes[x.i][x.j].boardAngle=x.angle;
 
         var sum=0;
-        var rMax=5,cMax=5;
+        var rMax=10,cMax=10;
         var err=0;
         for(var r=0;r<rMax;r++)
             for(var c=0;c<cMax;c++){

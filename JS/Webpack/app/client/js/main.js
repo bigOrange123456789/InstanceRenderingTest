@@ -19,6 +19,7 @@ $(document).ready(function() {
         'HSY 400 论文对比 S Dir-map.json',
         'HSY 400 论文对比 S Dir-map反方向.json',
         'HSY 400 论文对比 分块 B Dir－map.json',
+        'grid1.json',
     ];
     for(var i=0;i<names.length;i++){
         document.getElementById("map"+i).innerHTML=names[i];

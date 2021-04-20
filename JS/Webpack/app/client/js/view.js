@@ -151,6 +151,7 @@ var View = {
         switch (attr) {
             case 'setBoard':
                 this.colorizeNode(this.rects[gridY][gridX], "Yellow");
+                console.log(gridX,gridY)
                 console.log(this.rects[gridY][gridX]);
 
                 window.ml.grid=Controller.grid;
@@ -162,12 +163,12 @@ var View = {
                     heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
                     weight: 1
                 });
-                var angle=window.ml.getAngle();
-                console.log("boardAngle:",angle)
+                var angle=window.ml.getAngle3(gridY,gridX);
+                console.log(gridY+","+gridX+",boardAngle:",angle)
 
                 alert("标志牌方向为:"+(angle*180/Math.PI))
-                //prompt("标志牌方向为:",(angle*180/Math.PI));
-                Controller.grid.nodes[gridY][gridX].boardAngle=angle*Math.PI/180;
+                Controller.grid.nodes[gridY][gridX].boardAngle=angle;
+                //prompt("标志牌方向为:",(angle*180/Math.PI));Controller.grid.nodes[gridY][gridX].boardAngle=angle*Math.PI/180;
                 //console.log(Controller.grid)
                 break;
         case 'walkable'://放置or取消 障碍物
