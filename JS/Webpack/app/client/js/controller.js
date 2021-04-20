@@ -89,8 +89,16 @@ var Controller = StateMachine.create({
         },
     ],
 });
-var gridWidth=prompt("请输入横向方格数：",401);
-var gridHeight=prompt("请输入纵向方格数：",221);
+var gridWidth;
+var gridHeight;
+if(typeof(myFirstFlag)==="undefined"){
+    gridWidth=prompt("请输入横向方格数：",401);
+    gridHeight=prompt("请输入纵向方格数：",221);
+}else{
+    gridWidth=20;
+    gridHeight=20;
+}
+
 $.extend(Controller, {
     gridSize: [gridWidth, gridHeight], //[30,30],// number of nodes horizontally and vertically
     operationsPerSecond: 300,
@@ -133,7 +141,7 @@ $.extend(Controller, {
         var grid,
             timeStart, timeEnd,
             finder = Panel.getFinder();
-
+        
         timeStart = window.performance ? performance.now() : Date.now();
         grid = this.grid.clone();
         for(var i=0;i<this.grid.nodes.length;i++)
@@ -142,6 +150,7 @@ $.extend(Controller, {
                 if(typeof (angle)!=="undefined")
                     grid.nodes[i][j].boardAngle=angle;
             }
+        console.log(finder)
         this.path = finder.findPath(
             this.startX, this.startY, this.endX, this.endY, grid
         );

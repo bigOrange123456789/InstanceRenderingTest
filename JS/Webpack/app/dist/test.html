@@ -19,7 +19,7 @@
     function test2() {
         var ml=new MachineLearning();
         ml.load("../client/grid1.json",function () {
-            var w=(ml.getAngle3(5,5));
+            var w=(ml.getAngle3(5,0));
             console.log("最佳角度为:"+(w*180/Math.PI))
             alert("最佳角度为:"+(w*180/Math.PI));
         })

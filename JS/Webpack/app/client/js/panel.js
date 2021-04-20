@@ -32,6 +32,10 @@ var Panel = {
             '.ui-accordion-header[aria-selected=true]'
         ).attr('id');
 
+        console.log(selected_header)
+        if(typeof(selected_header)==="undefined")
+            selected_header='astar_header';
+
         switch (selected_header) {
 
         case 'astar_header':
