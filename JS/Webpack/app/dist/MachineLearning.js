@@ -68,9 +68,6 @@ class MachineLearning{
     getAngle3(i,j){//5,0
         return this.exhaustion(i,j);
     }
-    getI0(j,angle){//0,182
-
-    }
     exhaustion(i,j){
         var step=Math.PI/180;
 
@@ -93,6 +90,33 @@ class MachineLearning{
         console.log(test)
         return w_opt;
     }
+    getI0(j,angle){//0,182
+        var scope=this;
+        
+        function exhaustion(i,j){
+            var step=Math.PI/180;
+
+            var x=scope.xInit(i,j);
+
+            var w_opt=x.angle;
+            var l_min=scope.loss(x);
+
+            var test="";
+            for(var t=0;t<2*Math.PI;t+=step){
+                x.angle=t;
+                var l=scope.loss(x);
+                test=test+","+(Math.floor(l*100)/100);
+                if(l<l_min){
+                    l_min=l;
+                    w_opt=x.angle;
+                }
+            }
+            console.log(l_min,w_opt)
+            console.log(test)
+            return w_opt;
+        }
+    }
+
 
     //梯度下降法
     getAngle(i,j){
@@ -168,7 +192,7 @@ class MachineLearning{
     find(start1,start2,end1,end2){//返回搜索过的区域大小为
         if(!this.grid.nodes[start1][start2].walkable)return 0;
         var grid=this.grid.clone();
-        
+
         if(typeof (this.grid.boards)!=="undefined"){
             grid.boards=this.grid.boards;
         }else{
