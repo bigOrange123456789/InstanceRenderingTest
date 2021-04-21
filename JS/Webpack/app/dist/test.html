@@ -7,45 +7,80 @@
 <body>
 <script type="module">
     import {MachineLearning} from "./MachineLearning.js"
-    test2()
-    function test3() {
-        var ml=new MachineLearning();
-        ml.load("../client/grid1.json",function () {
-            var w=ml.find(0,0,2,2);
-            alert("搜索过的区域为:"+w);
-        })
+    class Test{
+        error;
+        assert(a,b) {
+            if(a===b){
+                console.log("success!");
+                return true;
+            } else {
+                console.log("fail");
+                this.error++;
+                return false;
+            }
+        }
+        check(ml){
+            this.error=0;
+            console.log("1.最佳函数测试")
+            this.assert(
+                p2a(ml.getAngle3(5,0)),
+                183//最佳角度
+            )
+
+            console.log("错误个数："+this.error);
+            function p2a(p){
+                return Math.round(p*180/Math.PI);
+            }
+        }
+        test4() {
+            var scope=this;
+            var ml=new MachineLearning();
+            ml.load("../client/grid1.json",function () {
+                //var w=ml.getAngle3(5,0);
+                //console.log("最佳角度为:"+(w*180/Math.PI))
+                scope.check(ml);
+                //alert("最佳角度为:"+(w*180/Math.PI));
+            })
+        }
+        test3() {
+            var ml=new MachineLearning();
+            ml.load("../client/grid1.json",function () {
+                var w=ml.find(0,0,2,2);
+                alert("搜索过的区域为:"+w);
+            })
+        }
+        test2() {
+            var ml=new MachineLearning();
+            ml.load("../client/grid1.json",function () {
+                var w=(ml.getAngle3(5,0));
+                console.log("最佳角度为:"+(w*180/Math.PI))
+                alert("最佳角度为:"+(w*180/Math.PI));
+            })
+
+            console.log(ml);
+        }
+        test() {
+            console.log(PF);
+
+            var grid = new PF.Grid(10,6);//生成网格
+            grid.setWalkableAt(2,2,false);
+            console.log(grid);
+
+            var finder = new PF.AStarFinder({
+                allowDiagonal: true,//允许对角线
+                dontCrossCorners: false,//不要拐弯?
+                heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
+                weight: 1
+            });
+            console.log(finder);
+
+            var path = finder.findPath(1,1,5,5, grid);
+            console.log(path);
+        }
+
     }
 
-    function test2() {
-        var ml=new MachineLearning();
-        ml.load("../client/grid1.json",function () {
-            var w=(ml.getAngle3(5,0));
-            console.log("最佳角度为:"+(w*180/Math.PI))
-            alert("最佳角度为:"+(w*180/Math.PI));
-        })
-
-        console.log(ml);
-    }
-    function test() {
-        console.log(PF);
-
-        var grid = new PF.Grid(10,6);//生成网格
-        grid.setWalkableAt(2,2,false);
-        console.log(grid);
-
-        var finder = new PF.AStarFinder({
-            allowDiagonal: true,//允许对角线
-            dontCrossCorners: false,//不要拐弯?
-            heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
-            weight: 1
-        });
-        console.log(finder);
-
-        var path = finder.findPath(1,1,5,5, grid);
-        console.log(path);
-    }
-
-    /**/
+    new Test().test4();
 </script>
 </body>
 </html>

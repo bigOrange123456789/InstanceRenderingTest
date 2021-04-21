@@ -63,101 +63,92 @@ class MachineLearning{
             weight: 1
         });
     }
-    getAngle(i,j){
-        console.log(this.grid)
-        return this.train({"i":i,"j":j});
+
+    //穷举法
+    getAngle3(i,j){//5,0
+        return this.exhaustion(i,j);
     }
-    getAngle2(i,j){
-        var scope=this;
-        return train2({"i":i,"j":j});
-        function train2(x){
-            var w_init=0;
-            var time=100;
-            var step=Math.PI/180;
+    getI0(j,angle){//0,182
 
-            var w=w_init;
-            //var test=[];
-            for(var t=0;t<time;t++){
-                x.angle=w;
-                var l1=scope.loss(x);x.angle+=step;
-                var l2=scope.loss(x);x.angle-=step;
-
-                if(l1<l2)w+=step;
-                else w-=step;
-                console.log(w)
-            }
-
-            return w;
-        }
     }
-    getAngle3(i,j){
-        var scope=this;
-        return train2({"i":i,"j":j});
-        function train2(x){
-            var w_init=0;
-            var step=Math.PI/180;
-
-            x.angle=w_init;
-            var w_opt=w_init;
-            var l_min=scope.loss(x);
-
-            var test="";
-            for(var t=w_init;t<2*Math.PI;t+=step){
-                x.angle=t;
-                var l=scope.loss(x);
-                test=test+","+(Math.floor(l*100)/100);
-                if(l<l_min){
-                    l_min=l;
-                    w_opt=x.angle;
-                }
-            }
-            console.log(l_min,w_opt)
-
-            console.log(test)
-            return w_opt;
-        }
-    }
-    train(x){
-        var w_init=0;
-        var time=100;
+    exhaustion(i,j){
         var step=Math.PI/180;
 
-        var w=w_init;
-        var test=[];
-        for(var t=0;t<time;t++){
-            x.angle=w;
-            var g=this.grad(x);
-            w=w-g*step;
-            test.push(g);
-            console.log(g)
+        var x=this.xInit(i,j);
+
+        var w_opt=x.angle;
+        var l_min=this.loss(x);
+
+        var test="";
+        for(var t=0;t<2*Math.PI;t+=step){
+            x.angle=t;
+            var l=this.loss(x);
+            test=test+","+(Math.floor(l*100)/100);
+            if(l<l_min){
+                l_min=l;
+                w_opt=x.angle;
+            }
         }
-        for(t=10;t>0;t--) console.log(test[test.length-t]);
-
-        return w;
+        console.log(l_min,w_opt)
+        console.log(test)
+        return w_opt;
     }
 
-    grad(x0){
-        var step=0.01;
-        var l1=this.loss(x0);x0.angle+=step;
-        var l2=this.loss(x0);x0.angle-=step;
-
-        //var dl=l2-l1;
-        //if(dl===0)return 0;
-
-        /*var g=0;
-        var d=l2-l1;
-        while(d!==0){
-            g=d/step;
-            step/=2;
-            l1=this.loss(x0);x0.angle+=step;
-            l2=this.loss(x0);x0.angle-=step;
-            d=l2-l1;
-        }*/
-        return (l2-l1)/step;//g;//
+    //梯度下降法
+    getAngle(i,j){
+        console.log(this.grid)
+        return this.train(i,j);
     }
+    getI(){
+
+    }
+    train(i,j){
+        var time=100;
+        var step=0.25*Math.PI/180;//变参步长
+
+        var x=this.xInit(i,j);
+        for(var t=0;t<time;t++){
+            var g=this.grad(x,0.02);
+            //console.log(Math.round(w*180/Math.PI), g)
+            x.angle=x.angle-g*step;
+        }
+        return x.angle;
+    }
+
+    xInit(i,j){
+        var x={"i":i,"j":j};
+        x.angle=325*Math.PI/180;//角度
+        return x;
+    }
+    xPlus(x0,step){
+        var x=clone(x0);
+        x.angle+=step;//求导步长
+        return x;
+        function clone(obj){
+            console.log(obj)
+            var newObj = {};
+            if (obj instanceof Array) {
+                newObj = [];
+            }
+            for (var key in obj) {
+                var val = obj[key];
+                newObj[key] = typeof val === 'object' ? cloneObj(val): val;
+            }
+            return newObj;
+        }
+    }
+
+    grad(x0,step){
+        var l2=this.loss(this.xPlus(x0,step));
+        var l1=this.loss(x0);
+        return (l2-l1)/step;
+    }
+
     loss(x){//损失函数
-        this.grid.nodes[x.i][x.j].boardAngle=x.angle;
-
+        //this.grid.nodes[x.i][x.j].boardAngle=x.angle;
+        this.grid.boards=[
+            [x.i,x.j,x.angle]
+        ];
         var sum=0;
         var rMax=this.grid.width-10,cMax=this.grid.height-10;
         //var rMax=1,cMax=1;
@@ -177,12 +168,18 @@ class MachineLearning{
     find(start1,start2,end1,end2){//返回搜索过的区域大小为
         if(!this.grid.nodes[start1][start2].walkable)return 0;
         var grid=this.grid.clone();
-        for(var i=0;i<this.grid.nodes.length;i++)
-            for(var j=0;j<this.grid.nodes.length;j++){
-                var angle=this.grid.nodes[i][j].boardAngle;
-                if(typeof (angle)!=="undefined")
-                    grid.nodes[i][j].boardAngle=angle;
-            }
+        
+        if(typeof (this.grid.boards)!=="undefined"){
+            grid.boards=this.grid.boards;
+        }else{
+            for(var i=0;i<this.grid.nodes.length;i++)
+                for(var j=0;j<this.grid.nodes.length;j++){
+                    var angle=this.grid.nodes[i][j].boardAngle;
+                    if(typeof (angle)!=="undefined")
+                        grid.nodes[i][j].boardAngle=angle;
+                }
+        }
+
         var path = this.finder.findPath(
             start1,start2,
             end1,end2,
@@ -201,4 +198,14 @@ class MachineLearning{
             return count;
         }
     }
+}
+
+class AngleTrain{
+
+}
+class GradientDescent{
+    static loss(){
+
+    }
+
 }
