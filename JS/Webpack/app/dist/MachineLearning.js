@@ -71,7 +71,7 @@ class MachineLearning{
     exhaustion(i,j){
         var step=Math.PI/180;
 
-        var x=this.xInit(i,j);
+        var x=this.xInit({"i":i,"j":j});
 
         var w_opt=x.angle;
         var l_min=this.loss(x);
@@ -90,25 +90,25 @@ class MachineLearning{
         console.log(test)
         return w_opt;
     }
-    getI0(j,angle){//0,182
+    getI0(){//0,182
         var scope=this;
-        
-        function exhaustion(i,j){
-            var step=Math.PI/180;
+        exhaustion();
+        function exhaustion(){
+            var step=1;
 
-            var x=scope.xInit(i,j);
+            var x=scope.xInit({i:-100});
 
-            var w_opt=x.angle;
+            var w_opt=x.i;
             var l_min=scope.loss(x);
 
             var test="";
-            for(var t=0;t<2*Math.PI;t+=step){
-                x.angle=t;
+            for(var t=x.i;t<100;t+=step){
+                x.i=t;
                 var l=scope.loss(x);
                 test=test+","+(Math.floor(l*100)/100);
                 if(l<l_min){
                     l_min=l;
-                    w_opt=x.angle;
+                    w_opt=x.i;
                 }
             }
             console.log(l_min,w_opt)
@@ -130,7 +130,7 @@ class MachineLearning{
         var time=100;
         var step=0.25*Math.PI/180;//变参步长
 
-        var x=this.xInit(i,j);
+        var x=this.xInit({"i":i,"j":j});
         for(var t=0;t<time;t++){
             var g=this.grad(x,0.02);
             //console.log(Math.round(w*180/Math.PI), g)
@@ -139,10 +139,14 @@ class MachineLearning{
         return x.angle;
     }
 
-    xInit(i,j){
-        var x={"i":i,"j":j};
-        x.angle=325*Math.PI/180;//角度
-        return x;
+    xInit(x0){
+        //var x={"i":i,"j":j};
+        if(typeof (x0)==="undefined")x0={};
+        if(typeof (x0.i)==="undefined")x0.i=5;
+        if(typeof (x0.j)==="undefined")x0.j=0;
+        if(typeof (x0.angle)==="undefined")x0.angle=325*Math.PI/180;//角度
+        console.log(x0)
+        return x0;
     }
     xPlus(x0,step){
         var x=clone(x0);
