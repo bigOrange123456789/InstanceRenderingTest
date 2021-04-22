@@ -1,4 +1,4 @@
-export {MachineLearning}
+export {MachineLearning}//nv dun
 class MachineLearning{
     //loadJson获得
     max;min;
