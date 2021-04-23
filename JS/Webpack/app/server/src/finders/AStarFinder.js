@@ -49,7 +49,6 @@ function AStarFinder(opt) {
     this.disScope;//距离的最大范围
 }
 AStarFinder.prototype={
-
     //计算每个指示牌作用范围的大小
     computeDisScope:function(startX, startY, endX, endY){
         var disScope=[];
@@ -112,7 +111,7 @@ AStarFinder.prototype={
         var distance=getDistance(board[0],neighbor.x,board[1],neighbor.y);
 
         neighbor.h=getH();
-        var k=getK();
+        var k=getK();//g//h
 
         neighbor.f = k*neighbor.g+(1-k)*neighbor.h;//k*neighbor.g+(1-k)*neighbor.h;//f=g+h//g是实际代价 h是估计代价
 
@@ -388,7 +387,6 @@ AStarFinder.prototype={
  * @return {Array<Array<number>>} The path, including both start and
  *     end positions.
  */
-
 
 //单独输入标志牌
 AStarFinder.prototype.findPath2 = function(startX, startY, endX, endY, grid) {
