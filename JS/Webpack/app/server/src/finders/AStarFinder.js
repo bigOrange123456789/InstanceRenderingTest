@@ -58,7 +58,7 @@ AStarFinder.prototype={
             for(var j=0;j<this.boards.length;j++)
                 if(i!==j){
                     var distance=getDistance(this.boards[i][0],this.boards[j][0],this.boards[i][1],this.boards[j][1]);
-                    if(distance<disScope[i])disScope[i]=distance;
+                    if(distance<disScope[i])disScope[i]=distance/2;
                 }
 
         }

@@ -71,13 +71,14 @@ class MachineLearning{
     exhaustion(i,j){
         var step=Math.PI/180;
 
-        var x=this.xInit({"i":i,"j":j});
+        var x=this.xInit({"i":i,"j":j,"angle":0});
 
         var w_opt=x.angle;
         var l_min=this.loss(x);
 
         var test="";
         for(var t=0;t<2*Math.PI;t+=step){
+            console.log(Math.round(t/step)+":"+x.angle)
             x.angle=t;
             var l=this.loss(x);
             test=test+","+(Math.floor(l*100)/100);
@@ -131,7 +132,9 @@ class MachineLearning{
         var step=0.25*Math.PI/180;//变参步长
 
         var x=this.xInit({"i":i,"j":j});
+
         for(var t=0;t<time;t++){
+            console.log(t+":"+x.angle)
             var g=this.grad(x,0.02);
             //console.log(Math.round(w*180/Math.PI), g)
             x.angle=x.angle-g*step;
@@ -178,8 +181,8 @@ class MachineLearning{
             [x.i,x.j,x.angle]
         ];
         var sum=0;
-        var rMax=this.grid.width-10,cMax=this.grid.height-10;
-        //var rMax=1,cMax=1;
+        var rMax=this.grid.width,cMax=this.grid.height;
+        //var rMax=5,cMax=5;
         var err=0;
         for(var r=0;r<rMax;r++)
             for(var c=0;c<cMax;c++){
