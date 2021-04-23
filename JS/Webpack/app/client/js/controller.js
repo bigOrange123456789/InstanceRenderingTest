@@ -141,7 +141,7 @@ $.extend(Controller, {
         var grid,
             timeStart, timeEnd,
             finder = Panel.getFinder();
-        
+
         timeStart = window.performance ? performance.now() : Date.now();
         grid = this.grid.clone();
         for(var i=0;i<this.grid.nodes.length;i++)
