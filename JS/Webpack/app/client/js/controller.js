@@ -141,7 +141,7 @@ $.extend(Controller, {
         var grid,
             timeStart, timeEnd,
             finder = Panel.getFinder();
-
+        
         timeStart = window.performance ? performance.now() : Date.now();
         grid = this.grid.clone();
         for(var i=0;i<this.grid.nodes.length;i++)
@@ -153,16 +153,12 @@ $.extend(Controller, {
         this.path = finder.findPath(
             this.startX, this.startY, this.endX, this.endY, grid
         );
-        console.log(grid)
-        document.getElementById("myPathLength").innerHTML="path length:"+getLength2(this,grid);
-        function getLength2(scope,r){
-            var j=scope.endX;
-            var i=scope.endY;
-            var g=r.nodes[i][j].g;
-            //console.log(i,j,r.nodes[i][j])
-            return Math.round(g*100)/100;
-        }
 
+        this.operationCount = this.operations.length;
+
+        timeEnd = window.performance ? performance.now() : Date.now();
+        this.timeSpent = (timeEnd - timeStart).toFixed(4);//精确到小数点后第4位
+        console.log("寻路算法所用的时间为："+this.timeSpent)
 
         function PFAreaSize(grid0){
             var count=0;
@@ -177,9 +173,15 @@ $.extend(Controller, {
         }
         console.log("搜索过的区域大小为："+PFAreaSize(grid));
 
-        this.operationCount = this.operations.length;
-        timeEnd = window.performance ? performance.now() : Date.now();
-        this.timeSpent = (timeEnd - timeStart).toFixed(4);
+        this.preGrid=grid;
+        document.getElementById("myPathLength").innerHTML="path length:"+getLength2(this,grid);
+        function getLength2(scope,r){
+            var j=scope.endX;
+            var i=scope.endY;
+            var g=r.nodes[i][j].g;
+            //console.log(i,j,r.nodes[i][j])
+            return Math.round(g*100)/100;
+        }
 
         this.loop();
         // => searching
@@ -440,10 +442,7 @@ $.extend(Controller, {
             gridX = coord[0],
             gridY = coord[1],
             grid  = this.grid;
-        console.log(event.button)
         if(event.button===0){
-
-
             if (this.can('dragStart') && this.isStartPos(gridX, gridY)) {
                 this.dragStart();
                 return;
@@ -459,8 +458,10 @@ $.extend(Controller, {
             if (this.can('eraseWall') && !grid.isWalkableAt(gridX, gridY)) {
                 this.eraseWall(gridX, gridY);
             }
-        }else{
+        }else if(event.button===1){
             this.setBoardAt(gridX, gridY);
+        }else{
+            View.setAttributeAt(gridX, gridY, 'test');
         }
 
     },

@@ -184,7 +184,12 @@ var View = {
      */
     setAttributeAt: function(gridX, gridY, attr, value) {
         var color, nodeStyle = this.nodeStyle;
+
         switch (attr) {
+            case 'test':
+                if(typeof (Controller.preGrid)==="undefined")console.log(Controller.grid.nodes[gridY][gridX]);
+                else console.log(Controller.preGrid.nodes[gridY][gridX]);
+                break;
             case 'setBoard':
                 this.colorizeNode(this.rects[gridY][gridX], "Yellow");
                 console.log(gridX,gridY)

@@ -50,6 +50,7 @@ function AStarFinder(opt) {
 }
 AStarFinder.prototype={
 
+    //计算每个指示牌作用范围的大小
     computeDisScope:function(startX, startY, endX, endY){
         var disScope=[];
         var max=getDistance(startX,endX,startY,endY);
@@ -70,6 +71,7 @@ AStarFinder.prototype={
                 0.5);
         }
     },
+    //获取所有指示牌
     computeBoards:function (endX, endY, grid) {
         if(typeof(grid.boards)!=="undefined")
             boards=grid.boards;
@@ -86,7 +88,81 @@ AStarFinder.prototype={
         boards.push([endX, endY]);
         return boards;
     },
+    //计算一个方格的权重
     computeWeight:function(node,neighbor){
+        var scope=this;
+        var board,dis_scope;
+        [board,dis_scope]=getBoard(neighbor.x,neighbor.y);
+        function getBoard(x2,y2) {//boards
+            var boards=this.boards;
+            if(boards.length===0)return null;
+            var dis_min=getDistance(boards[0][0],x2,boards[0][1],y2);
+            var k=0;
+            for(var i=1;i<boards.length;i++){
+                var dis0=getDistance(boards[i][0],x2,boards[i][1],y2);
+                if(dis0<dis_min){
+                    dis_min=dis0;
+                    k=i;
+                }
+            }
+            return [boards[k],scope.disScope[k]];
+        }
+
+        //到指示牌的距离
+        var distance=getDistance(board[0],neighbor.x,board[1],neighbor.y);
+
+        neighbor.h=getH();
+        var k=getK();
+
+        neighbor.f = k*neighbor.g+(1-k)*neighbor.h;//k*neighbor.g+(1-k)*neighbor.h;//f=g+h//g是实际代价 h是估计代价
+
+        function getK() {
+            //var dis_max= getDistance(startNode.x,endNode.x,startNode.y,endNode.y);//(boards.length+1);
+            //var dis_scope=1.5*dis_max /(scope.boards.length+1);//常数系数需要考虑 路线的弯曲度，分支路径的长度和个数
+            var dis=distance/dis_scope;//Math.pow(LD[1],4);
+            if(dis>1)dis=1;
+            return dis;
+        }
+        function getH() {
+            var x1=node.x,
+                y1=node.y,
+                x2=neighbor.x,
+                y2=neighbor.y;
+            //角度差和距离之间如何放到一起进行比较
+            var w;
+            if(board.length===3){
+                var da=getDa(x1,y1,x2,y2,board[2]);
+                neighbor.da=da*180/Math.PI;
+                //w=da*40;
+                if(da>Math.PI/2){
+                    w=distance;
+                }else{
+                    w=da*40;//=-distance;
+                }
+            }else{
+                w=distance;
+            }
+            return w;//角度差➗距离
+            function getDa(x1,y1,x2,y2,a) {
+                while(a>2*Math.PI)a-=2*Math.PI;
+                var dx=x2-x1;
+                var dy=y2-y1;
+                var angle=Math.atan2(dy,dx);
+                var da=Math.abs(angle-a);
+                if(da>Math.PI)da=Math.abs(2*Math.PI-da);
+                //console.log(angle*180/Math.PI,da*180/Math.PI);
+                return da;
+            }
+
+        }
+        function getDistance(x1,x2,y1,y2) {
+            return Math.pow(
+                Math.pow(x1-x2,2)+
+                Math.pow(y1-y2,2),
+                0.5);
+        }
+    },
+    computeWeight0:function(node,neighbor){
         var scope=this;
         var board,dis_scope;
         [board,dis_scope]=getBoard(neighbor.x,neighbor.y);

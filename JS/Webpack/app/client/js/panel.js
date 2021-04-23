@@ -32,7 +32,6 @@ var Panel = {
             '.ui-accordion-header[aria-selected=true]'
         ).attr('id');
 
-        console.log(selected_header)
         if(typeof(selected_header)==="undefined")
             selected_header='astar_header';
 
@@ -65,12 +64,6 @@ var Panel = {
                     heuristic: PF.Heuristic[heuristic],
                     weight: weight
                 });
-                console.log({
-                    allowDiagonal: allowDiagonal,
-                    dontCrossCorners: dontCrossCorners,
-                    heuristic: PF.Heuristic[heuristic],
-                    weight: weight
-                })
             }
             break;
 
