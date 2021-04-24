@@ -101,7 +101,7 @@ if(typeof(myFirstFlag)==="undefined"){
 
 $.extend(Controller, {
     gridSize: [gridWidth, gridHeight], //[30,30],// number of nodes horizontally and vertically
-    operationsPerSecond: 3,
+    operationsPerSecond: 300,
 
     /**
      * Asynchronous transition from `none` state to `ready` state.

@@ -78,7 +78,7 @@ class MachineLearning{
 
         var test="";
         for(var t=0;t<2*Math.PI;t+=step){
-            console.log(Math.round(t/step)+":"+x.angle)
+            console.log(Math.round(t/step)+":"+x.i+","+x.j+","+x.angle)
             x.angle=t;
             var l=this.loss(x);
             test=test+","+(Math.floor(l*100)/100);
@@ -187,10 +187,9 @@ class MachineLearning{
         for(var r=0;r<rMax;r++)
             for(var c=0;c<cMax;c++){
                 var l=this.find(
-                    this.start[0]+c,
-                    this.start[1]+c,
-                    this.end[0]+r,
-                    this.end[1]+r);
+                    r, c,
+                    this.end[0],
+                    this.end[1]);
                 if(l>0)sum+=l;
                 else err++;
             }
@@ -210,6 +209,7 @@ class MachineLearning{
                         grid.nodes[i][j].boardAngle=angle;
                 }
         }
+
 
         var path = this.finder.findPath(
             start1,start2,

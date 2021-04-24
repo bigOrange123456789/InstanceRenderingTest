@@ -302,7 +302,7 @@ AStarFinder.prototype={
         }
     },
     //将出口也看作标志牌
-    findPath:function(startX, startY, endX, endY, grid) {
+    findPath3:function(startX, startY, endX, endY, grid) {
         //标志牌类型：
         // 0：终点指示牌 i,j
         // 1：指引方向   i,j,a
@@ -389,7 +389,7 @@ AStarFinder.prototype={
  */
 
 //单独输入标志牌
-AStarFinder.prototype.findPath2 = function(startX, startY, endX, endY, grid) {
+AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
     var boards;
     if(typeof(grid.boards)!=="undefined")
         boards=grid.boards;
