@@ -48,14 +48,14 @@
 			var names=JSON.parse(json);
 			console.log(names.length)
 			for(var ii=0;ii<100;ii++)
-				load('../../../_DATA_/cgm/'+names[ii],function ( gltf ) {// called when the resource is loaded
-					console.log(gltf)
-					let mesh = gltf.scene.children[0];
-					mesh.geometry.computeVertexNormals();//normal
-					mesh.material =new THREE.MeshNormalMaterial();
-					mesh.scale.set(0.0001,0.0001,0.0001);
-					myMain.scene.add(mesh);
-				});
+			load('../../../_DATA_/cgm/'+names[ii],function ( gltf ) {// called when the resource is loaded
+				console.log(gltf)
+				let mesh = gltf.scene.children[0];
+				mesh.geometry.computeVertexNormals();//normal
+				mesh.material =new THREE.MeshNormalMaterial();
+				mesh.scale.set(0.0001,0.0001,0.0001);
+				myMain.scene.add(mesh);
+			});
 		})
 
 		myMain.camera.position.set(0,0,40)
@@ -68,6 +68,7 @@
 			loader.setDRACOLoader(new THREE.DRACOLoader());
 			loader.load(url,process);
 		}
+
 	</script>
 	</body>
 </html>
