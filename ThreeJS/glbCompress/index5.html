@@ -35,7 +35,8 @@
 
 		var myMain = new Main();
 		myMain.start();
-
+		myMain.camera.position.set(0,0,40)
+		
 		new PlayerControl(myMain.camera);
 		window.c=myMain.camera;
 
@@ -51,13 +52,10 @@
 			load('../../../_DATA_/cgm/'+names[ii],function ( gltf ) {// called when the resource is loaded
 				let matrixObj = gltf.parser.json.nodes[0].matrixArrs;
 				var mesh = gltf.scene.children[0];
+				mesh.geometry.computeVertexNormals();//normal
 				console.log(ii+"/"+names.length)
 				if (matrixObj === undefined) {
-					/*
-					mesh.geometry.computeVertexNormals();//normal
 					mesh.material =new THREE.MeshNormalMaterial();
-
-					*/
 				}else{
 					console.log(gltf);
 					let name = gltf.parser.json.nodes[0].name;
@@ -80,29 +78,19 @@
 						}
 						let color = selectMaterialByType(type);
 
-						var material = new THREE.RawShaderMaterial({
-							// uniforms: uniforms,
-							vertexShader: vert,
-							fragmentShader: frag
-						});
-						// geometry
+						var material = new THREE.RawShaderMaterial({vertexShader: vert, fragmentShader: frag});
 						var igeo = new THREE.InstancedBufferGeometry();
 
+						console.log(geo)
 						var vertices = geo.attributes.position.clone();
+						var normal=geo.attributes.normal.clone();
 						igeo.addAttribute('position', vertices);
+						igeo.addAttribute('uv', normal);
 						igeo.setIndex(geo.index);
-						var mcol0 = new THREE.InstancedBufferAttribute(
-								new Float32Array(instanceCount * 3), 3
-						);
-						var mcol1 = new THREE.InstancedBufferAttribute(
-								new Float32Array(instanceCount * 3), 3
-						);
-						var mcol2 = new THREE.InstancedBufferAttribute(
-								new Float32Array(instanceCount * 3), 3
-						);
-						var mcol3 = new THREE.InstancedBufferAttribute(
-								new Float32Array(instanceCount * 3), 3
-						);
+						var mcol0 = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+						var mcol1 = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+						var mcol2 = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+						var mcol3 = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
 
 						//设置原始mesh的变换矩阵与名称
 						//setXYZ(i,x,y,z)
@@ -125,9 +113,7 @@
 						igeo.addAttribute('mcol2', mcol2);
 						igeo.addAttribute('mcol3', mcol3);
 
-						var colors = new THREE.InstancedBufferAttribute(
-								new Float32Array(instanceCount * 3), 3
-						);
+						var colors = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
 						for (let i = 0, ul = colors.count; i < ul; i++) {
 							colors.setXYZ(i, color.r, color.g, color.b);
 						}
@@ -139,15 +125,15 @@
 						mesh.material.side = THREE.DoubleSide;
 						mesh.frustumCulled = false;
 						mesh.name = oriName;
-						mesh.scale.set(0.01,0.01,0.01);
-						myMain.scene.add(mesh);
+
 					}
 				}
-				//myMain.scene.add(mesh);
+				mesh.scale.set(0.01,0.01,0.01);
+				myMain.scene.add(mesh);
 			});
 		})
 
-		myMain.camera.position.set(0,0,40)
+
 
 
 		function load(url,process) {
