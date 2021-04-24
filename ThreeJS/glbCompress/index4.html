@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+
+	<body>
+
+	<script src="js/lib/threeJS/three.js"></script>
+	<script src="js/lib/threeJS/OrbitControls.js"></script>
+	<script src="js/lib/threeJS/GLTFLoader.js"></script>
+
+	<script src="js/lib/pmLib/MyPMLoader.js"></script>
+
+	<script src="js/lib/instancedLib/InstancedGroup.js"></script>
+	<script src="js/lib/instancedLib/SkinnedMeshController.js"></script>
+
+	<script src="js/VideoManager.js"></script>
+
+	<script src="js/sceneSet/SeatManager.js"></script>
+	<script src="js/sceneSet/AvatarManager.js"></script>
+
+	<script src="js/playerControl/PlayerControl.js"></script>
+
+	<script src="js/ParamMeasure.js"></script>
+	<script src="js/Main.js"></script>
+
+	<script src="DRACOLoader.js"></script>
+	<script  type="module">
+
+		var myMain = new Main();
+		myMain.start();
+
+		new PlayerControl(myMain.camera);
+		window.c=myMain.camera;
+
+		var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+		myMain.scene.add( directionalLight );
+		var light = new THREE.PointLight( 0xffffff, 1, 1000 );
+		myMain.scene.add( light );
+
+		new THREE.XHRLoader(THREE.DefaultLoadingManager).load("name.json",function (json) {
+			var names=JSON.parse(json);
+			for(var ii=0;ii<names.length;ii++)
+			load('../../DATA/cgm/'+names[ii],function ( gltf ) {// called when the resource is loaded
+				let geo = gltf.scene.children[0].geometry;
+
+				geo.computeVertexNormals();//normal
+
+				let mesh = gltf.scene.children[0];
+				myMain.scene.add(mesh);
+				mesh.scale.set(0.0001,0.0001,0.0001);
+
+				mesh.material =new THREE.MeshNormalMaterial();// new THREE.MeshPhongMaterial({color: new THREE.Color(0x194354), side: THREE.DoubleSide, shininess: 64});
+
+			});
+		})
+
+		myMain.camera.position.set(0,0,40)
+
+
+		function load(url,process) {
+			const loader = new THREE.GLTFLoader();// Instantiate a loader
+			THREE.DRACOLoader.setDecoderPath( './js/lib/threeJS/draco/' );// Specify path to a folder containing WASM/JS decoding libraries.
+			THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
+			loader.setDRACOLoader(new THREE.DRACOLoader());
+			loader.load(url,process);
+		}
+
+	</script>
+	</body>
+</html>
