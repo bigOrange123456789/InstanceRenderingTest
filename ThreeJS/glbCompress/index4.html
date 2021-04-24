@@ -46,8 +46,7 @@
 
 		new THREE.XHRLoader(THREE.DefaultLoadingManager).load("../../../_DATA_/name.json",function (json) {
 			var names=JSON.parse(json);
-			console.log(names.length)
-			for(var ii=0;ii<100;ii++)
+			for(var ii=0;ii<names.length;ii++)
 				load('../../../_DATA_/cgm/'+names[ii],function ( gltf ) {// called when the resource is loaded
 					console.log(gltf)
 					let mesh = gltf.scene.children[0];
