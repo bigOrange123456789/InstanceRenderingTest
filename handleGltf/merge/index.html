@@ -53,19 +53,24 @@
         console.log(names.length)
 
         var model_url_index=0;
+        var myLength=5000;
         myLoad();
         function myLoad() {
             console.log(model_url_index+"/"+names.length)
             var url='../../../_DATA_/cgm/'+names[model_url_index++];
             var finished=function(){
-                var myLength=names.length;
+                myLength
                 if(model_url_index<myLength){//names.length
                     myLoad();
                 } else {
                     var interval=setInterval(function () {
                         if(scene.children.length===myLength){
-                            clearInterval(interval)
+                            clearInterval(interval);
                             myDownload();
+
+                            myLength+=5000;
+                            if(myLength>names.length)myLength=names.length;
+                            myLoad();
                         }
                     },10)
 
@@ -76,7 +81,7 @@
                     console.log(scene)
                     gltfExporter.parse(scene, function (result) {
                         console.log(result)
-                        jsonDownload(result,"model.gltf");
+                        jsonDownload(result,"model"+myLength+".gltf");
                     })
                     function jsonDownload(json,name) {
                         return strDownload(
