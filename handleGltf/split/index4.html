@@ -21,10 +21,16 @@
     var name="building";
 
     var urls=[
-        "../../../_DATA_/floor.glb",
-        "../../../_DATA_/subway.glb"
+        "../../../_DATA_/M/model22450.gltf"
     ];
     var scene=new THREE.Scene();
+    scene.applyMatrix(new THREE.Matrix4().set(
+        -1, 0, 0, 0,
+        0, 0, 1, 0,
+        0, 1, 0, 0,
+        0, 0, 0, 1
+    ));
+    scene.scale.set(0.001,0.001,0.001);
     var urls_index=0;
     start();
     function start() {
@@ -36,7 +42,12 @@
             if(urls_index<urls.length)start();
             else{
                 console.log(scene);
-                new GlbHandle().process("test", {scene:scene});
+                new GlbHandle().process({
+                    name:"test",
+                    glb: {scene:scene},
+                    needCorrectName:true,
+                    needDownload:false
+                });
             }
         });
     }

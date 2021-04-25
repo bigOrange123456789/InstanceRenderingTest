@@ -8,6 +8,7 @@ function GlbHandle(){
     this.duplication=new DuplicateRemoval();
     this.resourceInfo={}
     this.resourceManager=new ResourceManager();
+    this.needCorrectName=false;
     //maps
     // url
     // interest
@@ -19,8 +20,13 @@ function GlbHandle(){
     //    x,y,z,r
 }
 GlbHandle.prototype={
-    process:function (name,glb) {
-        console.log(glb);
+    process:function (opt) {
+        console.log(opt);
+        var name=opt.name;
+        var glb=opt.glb;
+        var needDownload=opt.needDownload===undefined?true:opt.glb;
+        var needCorrectName=opt.needCorrectName===undefined?false:opt.needCorrectName;
+
         this.resourceManager.name=name;
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
         this.myInDe.process(this.resourceManager);//使用兴趣度进行排序
@@ -32,17 +38,29 @@ GlbHandle.prototype={
         myMaterialHandle.process();
 
         console.log(this.resourceManager);
+        if(needCorrectName)this.correctName();
 
-        /* this.download.jsonDownload(//下载说明信息
-             this.resourceManager.resourceInfoGet(),"resourceInfo.json"
-         );
+        this.download.jsonDownload(//下载说明信息
+            this.resourceManager.resourceInfoGet(),"resourceInfo.json"
+        );
 
-         var scope=this;
-         this.downloadMap(myMaterialHandle,function () {//下载贴图
-                 scope.downloadModel(scope.resourceManager.meshs)//下载网格
-             });//纹理和网格分开下载
-     */
+        console.log(opt)
+        console.log(needDownload)
+        if(needDownload){
+            /*
+            var scope=this;
+            this.downloadMap(myMaterialHandle,function () {//下载贴图
+                scope.downloadModel(scope.resourceManager.meshs)//下载网格
+            });//纹理和网格分开下载
+            */
+        }
 
+
+    },
+    correctName:function(){
+        for(var i=0;i<this.resourceManager.meshs.length;i++){
+            this.resourceManager.models[i].fileName=this.resourceManager.meshs[i].name;
+        }
     },
     downloadMap:function (myMaterialHandle,finishFunction) {
         var scope=this;
