@@ -11,11 +11,17 @@ class ResourceLoader{
     loader;//模型加载器
     resourceList;
     test=false;//true;//
-    constructor(url,camera,unitProcess){
+    successNumber;
+    failNumber;
+    useDraco;
+    constructor(opt){
+        this.useDraco=opt.useDraco===undefined?false:opt.useDraco;
         this.NumberWaitMaps=0;//等待加载的贴图个数
-        this.url=url;
-        this.camera=camera;
-        this.unitProcess=unitProcess;
+        this.url=opt.url;
+        this.camera=opt.camera;
+        this.unitProcess=opt.unitProcess;
+        this.successNumber=0;//加载成功的次数
+        this.failNumber=0;//加载失败的次数
 
         this.cameraPre={};
         this.object=new THREE.Object3D();
@@ -48,7 +54,7 @@ class ResourceLoader{
                         clearInterval(myInterval);
                     }
                 },100);
-            }else{
+            }else if(!scope.useDraco){
                 scope.loader.load(scope.url+fileName, (gltf) => {
                     if(scope.resourceList.getModelByName(fileName)!=="")
                         scope.NumberWaitMaps++;//如果这个几何数据需要加载对应的贴图资源
@@ -57,7 +63,39 @@ class ResourceLoader{
                     scope.unitProcess(gltf);
                     scope.object.add(mesh0);
                     load();
+                    scope.successNumber++;
+                    console.log("成功次数:"+scope.successNumber)
+                },function () {
+                    load();
+                    scope.failNumber++;
+                    console.log("失败次数:"+scope.failNumber)
                 });
+            }else{
+                loadGlb(
+                    scope.url+fileName,
+                    (gltf) => {
+                        if(scope.resourceList.getModelByName(fileName)!=="")
+                            scope.NumberWaitMaps++;//如果这个几何数据需要加载对应的贴图资源
+                        var mesh0=gltf.scene.children[0];
+                        mesh0.nameFlag=fileName;
+                        scope.unitProcess(gltf);
+                        scope.object.add(mesh0);
+                        load();
+                        scope.successNumber++;
+                        console.log("成功次数:"+scope.successNumber)
+                    }
+                );
+                function loadGlb(url,process,finished) {
+                    const loader = new THREE.GLTFLoader();// Instantiate a loader
+                    THREE.DRACOLoader.setDecoderPath( './js/lib/threeJS/draco/' );// Specify path to a folder containing WASM/JS decoding libraries.
+                    THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
+                    loader.setDRACOLoader(new THREE.DRACOLoader());
+                    loader.load(url,process, function (xhr) {
+                        if( finished!==undefined &&xhr.loaded === xhr.total){
+                            finished();
+                        }
+                    });
+                }
             }
             function updateCameraPre(){
                 scope.cameraPre.position=scope.camera.position.clone();
