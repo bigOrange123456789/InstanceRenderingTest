@@ -14,7 +14,6 @@ Download.prototype={
         var scope=this;
         var gltfExporter = new THREE.GLTFExporter();
         gltfExporter.parse(scene, function (result) {
-            console.log(result)
             scope.jsonDownload(result,name);
         });
     },

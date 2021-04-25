@@ -33,7 +33,7 @@ GlbHandle.prototype={
 
         console.log(this.resourceManager);
 
-        this.download.jsonDownload(//下载说明信息
+        /*this.download.jsonDownload(//下载说明信息
             this.resourceManager.resourceInfoGet(),"resourceInfo.json"
         );
 
@@ -41,7 +41,7 @@ GlbHandle.prototype={
         this.downloadMap(myMaterialHandle,function () {//下载贴图
                 scope.downloadModel(scope.resourceManager.meshs)//下载网格
             });//纹理和网格分开下载
-    /**/
+    */
 
     },
     downloadMap:function (myMaterialHandle,finishFunction) {

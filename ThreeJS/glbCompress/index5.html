@@ -36,7 +36,7 @@
 		var myMain = new Main();
 		myMain.start();
 		myMain.camera.position.set(0,0,40)
-		
+
 		new PlayerControl(myMain.camera);
 		window.c=myMain.camera;
 
@@ -136,12 +136,16 @@
 
 
 
-		function load(url,process) {
+		function load(url,process,finished) {
 			const loader = new THREE.GLTFLoader();// Instantiate a loader
 			THREE.DRACOLoader.setDecoderPath( './js/lib/threeJS/draco/' );// Specify path to a folder containing WASM/JS decoding libraries.
 			THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
 			loader.setDRACOLoader(new THREE.DRACOLoader());
-			loader.load(url,process);
+			loader.load(url,process, function (xhr) {
+				if( finished!==undefined &&xhr.loaded === xhr.total){
+					finished();
+				}
+			});
 		}
 		function selectMaterialByType(type, name) {
 			let color = new THREE.Color(0xaaaaaa);

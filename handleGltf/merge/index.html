@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MEETING</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {overflow:hidden;}
+    </style>
+</head>
+
+<body>
+
+<script src="js/lib/threeJS/three.js"></script>
+<script src="js/lib/threeJS/OrbitControls.js"></script>
+<script src="js/lib/threeJS/GLTFLoader.js"></script>
+<script src="js/threeLib/GLTFExporter.js"></script>
+
+<script src="js/lib/pmLib/MyPMLoader.js"></script>
+
+<script src="js/lib/instancedLib/InstancedGroup.js"></script>
+<script src="js/lib/instancedLib/SkinnedMeshController.js"></script>
+
+<script src="js/VideoManager.js"></script>
+
+<script src="js/sceneSet/SeatManager.js"></script>
+<script src="js/sceneSet/AvatarManager.js"></script>
+
+<script src="js/playerControl/PlayerControl.js"></script>
+
+<script src="js/ParamMeasure.js"></script>
+<script src="js/Main.js"></script>
+
+<script src="DRACOLoader.js"></script>
+<script  type="module">
+    var material1 =new THREE.MeshStandardMaterial({color:0x00FFFF});
+    //new THREE.MeshPhongMaterial({color: new THREE.Color(0x00FFFF), side: THREE.DoubleSide, shininess: 64});
+    var material2 =new THREE.MeshPhongMaterial({color: new THREE.Color(0xFF0000), side: THREE.DoubleSide, shininess: 64});
+
+    //var myMain = new Main();
+    //myMain.start();
+    //new PlayerControl(myMain.camera);
+
+    var scene=new THREE.Scene();//myMain.scene;//
+    var gltfExporter = new THREE.GLTFExporter();
+
+    gltfExporter.parse(scene, function (result) {
+        console.log(result)
+    })
+
+    new THREE.XHRLoader(THREE.DefaultLoadingManager).load("../../../_DATA_/name.json",function (json) {
+        var names=JSON.parse(json);
+        console.log(names.length)
+
+        var model_url_index=0;
+        myLoad();
+        function myLoad() {
+            console.log(model_url_index+"/"+names.length)
+            var url='../../../_DATA_/cgm/'+names[model_url_index++];
+            var finished=function(){
+                var myLength=names.length;
+                if(model_url_index<myLength){//names.length
+                    myLoad();
+                } else {
+                    var interval=setInterval(function () {
+                        if(scene.children.length===myLength){
+                            clearInterval(interval)
+                            myDownload();
+                        }
+                    },10)
+
+                }
+                function myDownload(){
+                    var gltfExporter = new THREE.GLTFExporter();
+                    console.log(scene.children.length)
+                    console.log(scene)
+                    gltfExporter.parse(scene, function (result) {
+                        console.log(result)
+                        jsonDownload(result,"model.gltf");
+                    })
+                    function jsonDownload(json,name) {
+                        return strDownload(
+                            JSON.stringify(json),
+                            name
+                        );
+                    }
+                    function strDownload(str,name) {//无后缀名
+                        var myBlob=new Blob([str], { type: 'text/plain' })
+                        let link = document.createElement('a');
+                        link.href = URL.createObjectURL(myBlob);
+                        link.download = name;
+                        link.click();
+                        return myBlob.size;
+                    }
+                }
+            }
+            load(url,function ( gltf ) {// called when the resource is loaded
+                let matrixObj = gltf.parser.json.nodes[0].matrixArrs;
+                var mesh = gltf.scene.children[0];
+                mesh.geometry.computeVertexNormals();//normal
+                if (matrixObj === undefined) {
+                    mesh.material =material1;
+                }else{
+                    mesh.material =material2;
+                }
+                scene.add(mesh);
+            },finished);
+        }
+    })
+
+
+
+
+    function load(url,process,finished) {
+        const loader = new THREE.GLTFLoader();// Instantiate a loader
+        THREE.DRACOLoader.setDecoderPath( './js/lib/threeJS/draco/' );// Specify path to a folder containing WASM/JS decoding libraries.
+        THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
+        loader.setDRACOLoader(new THREE.DRACOLoader());
+        loader.load(url,process, function (xhr) {
+            if( finished!==undefined &&xhr.loaded === xhr.total){
+                finished();
+            }
+        });
+    }
+    function selectMaterialByType(type, name) {
+        let color = new THREE.Color(0xaaaaaa);
+        switch (type) {
+            case "IfcFooting":
+                color = new THREE.Color(0xFFBFFF);
+                break;
+            case "IfcWallStandardCase"://ok
+                color = new THREE.Color(0xaeb1b3);
+                break;
+            case "IfcSlab"://ok
+                color = new THREE.Color(0x505050);
+                break;
+            case "IfcStair"://ok
+                color = new THREE.Color(0xa4a592);
+                break;
+            case "IfcDoor"://ok
+                color = new THREE.Color(0x6f6f6f);
+                break;
+            case "IfcWindow":
+                color = new THREE.Color(0x9ea3ef);
+                break;
+            case "IfcBeam"://ok
+                color = new THREE.Color(0x949584);
+                break;
+            case "IfcCovering":
+                color = new THREE.Color(0x777a6f);
+                break;
+            case "IfcFlowSegment"://ok
+                color = new THREE.Color(0x999999);
+                break;
+            case "IfcWall"://ok
+                color = new THREE.Color(0xbb9f7c);
+                break;
+            case "IfcRamp":
+                color = new THREE.Color(0x4d5053);
+                break;
+            case "IfcRailing"://ok
+                color = new THREE.Color(0x4f4f4f);
+                break;
+            case "IfcFlowTerminal"://ok
+                color = new THREE.Color(0xe9f5f8);
+                break;
+            case "IfcBuildingElementProxy"://ok
+                color = new THREE.Color(0x6f6f6f);
+                break;
+            case "IfcColumn"://ok
+                color = new THREE.Color(0x8a8f80);
+                break;
+            case "IfcFlowController"://ok
+                color = new THREE.Color(0x2c2d2b);
+                break;
+            case "IfcFlowFitting"://ok
+                color = new THREE.Color(0x93a5aa);
+                break;
+            case "IfcPlate"://ok外体窗户
+                color = new THREE.Color(0x2a4260);
+                break;
+            case "IfcMember"://ok外体窗户
+                color = new THREE.Color(0x2f2f2f);
+                break;
+            default:
+                color = new THREE.Color(0x194354);
+                break;
+        }
+        return color;
+    }
+</script>
+</body>
+</html>
