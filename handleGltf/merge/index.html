@@ -51,7 +51,7 @@
     new THREE.XHRLoader(THREE.DefaultLoadingManager).load("../../../_DATA_/name.json",function (json) {
         var names=JSON.parse(json);
         console.log(names.length)
-
+        
         var load_step=4000;
         var model_url_index=0;
         var myLength=load_step;
@@ -66,17 +66,18 @@
                     console.log(myLength)
                     var interval=setInterval(function () {
                         if(scene.children.length===load_step||
-                            (myLength===names.length&&scene.children.length===names.length%load_step)
+                            (myLength===names.length&&scene.children.length===(names.length%load_step))
                         ){
                             clearInterval(interval);
                             myDownload(function () {
-                                scene=new THREE.Scene();
-                                myLength+=load_step;
-
-                                console.log(myLength>names.length)
-
-                                if(myLength>names.length)myLength=names.length;//退出
-                                else myLoad();
+                                if(myLength===names.length) {
+                                    console.log("end!");//退出
+                                } else {
+                                    scene=new THREE.Scene();
+                                    myLength+=load_step;
+                                    if(myLength>names.length)myLength=names.length;
+                                    myLoad();
+                                }
 
                             });
                         }
@@ -85,7 +86,7 @@
                 }
                 function myDownload(finished){
                     var gltfExporter = new THREE.GLTFExporter();
-                    console.log(scene.children.length)
+                    //console.log(scene.children.length)
                     console.log(scene)
                     gltfExporter.parse(scene, function (result) {
                         console.log(result)
