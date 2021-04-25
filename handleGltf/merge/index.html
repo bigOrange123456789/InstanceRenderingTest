@@ -53,7 +53,7 @@
         console.log(names.length)
 
         var model_url_index=0;
-        var myLength=5000;
+        var myLength=4000;
         myLoad();
         function myLoad() {
             console.log(model_url_index+"/"+names.length)
@@ -67,10 +67,10 @@
                         if(scene.children.length===myLength){
                             clearInterval(interval);
                             myDownload();
-
-                            myLength+=5000;
-                            if(myLength>names.length)myLength=names.length;
                             myLoad();
+
+                            myLength+=4000;
+                            if(myLength>names.length)myLength=names.length;
                         }
                     },10)
 
