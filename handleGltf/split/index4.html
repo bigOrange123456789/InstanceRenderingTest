@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>MEETING</title>
+    <title>静态模型处理</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-        body {overflow:hidden;}
-    </style>
 </head>
-
 <body>
 <script src="js/threeLib/three.js"></script>
 <script src="js/threeLib/GLTFLoader.js"></script>
@@ -22,18 +17,29 @@
 <script src="js/myLib/InDe.js"></script>
 <script src="js/myLib/ResourceManager.js"></script>
 
+<script>
+    var name="building";
 
-<script  type="module">
-
-
-
+    var urls=[
+        "../../../_DATA_/floor.glb",
+        "../../../_DATA_/subway.glb"
+    ];
     var scene=new THREE.Scene();
-    var gltfExporter = new THREE.GLTFExporter();
-
-    gltfExporter.parse(scene, function (result) {
-        console.log(result)
-    })
+    var urls_index=0;
+    start();
+    function start() {
+        new THREE.GLTFLoader().load(urls[urls_index], (glb) => {
+            console.log(glb.scene.children.length)
+            for(i=glb.scene.children.length-1;i>=0;i--)
+                scene.add(glb.scene.children[i]);
+            urls_index++;
+            if(urls_index<urls.length)start();
+            else{
+                console.log(scene)
+            }
+        });
+    }
 
 </script>
+
 </body>
-</html>

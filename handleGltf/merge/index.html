@@ -52,44 +52,48 @@
         var names=JSON.parse(json);
         console.log(names.length)
 
+        var load_step=4000;
         var model_url_index=0;
-        var myLength=4000;
+        var myLength=load_step;
         myLoad();
         function myLoad() {
             console.log(model_url_index+"/"+names.length)
             var url='../../../_DATA_/cgm/'+names[model_url_index++];
             var finished=function(){
-                myLength
                 if(model_url_index<myLength){//names.length
                     myLoad();
                 } else {
+                    console.log(myLength)
                     var interval=setInterval(function () {
-                        if(scene.children.length===myLength){
+                        if(scene.children.length===load_step||
+                            (myLength===names.length&&scene.children.length===names.length%load_step)
+                        ){
                             clearInterval(interval);
-                            myDownload();
-                            myLoad();
+                            myDownload(function () {
+                                scene=new THREE.Scene();
+                                myLength+=load_step;
 
-                            myLength+=4000;
-                            if(myLength>names.length)myLength=names.length;
+                                console.log(myLength>names.length)
+
+                                if(myLength>names.length)myLength=names.length;//退出
+                                else myLoad();
+
+                            });
                         }
                     },10)
 
                 }
-                function myDownload(){
+                function myDownload(finished){
                     var gltfExporter = new THREE.GLTFExporter();
                     console.log(scene.children.length)
                     console.log(scene)
                     gltfExporter.parse(scene, function (result) {
                         console.log(result)
                         jsonDownload(result,"model"+myLength+".gltf");
+                        if(finished)finished();
                     })
                     function jsonDownload(json,name) {
-                        return strDownload(
-                            JSON.stringify(json),
-                            name
-                        );
-                    }
-                    function strDownload(str,name) {//无后缀名
+                        var str=JSON.stringify(json);
                         var myBlob=new Blob([str], { type: 'text/plain' })
                         let link = document.createElement('a');
                         link.href = URL.createObjectURL(myBlob);
@@ -126,72 +130,6 @@
                 finished();
             }
         });
-    }
-    function selectMaterialByType(type, name) {
-        let color = new THREE.Color(0xaaaaaa);
-        switch (type) {
-            case "IfcFooting":
-                color = new THREE.Color(0xFFBFFF);
-                break;
-            case "IfcWallStandardCase"://ok
-                color = new THREE.Color(0xaeb1b3);
-                break;
-            case "IfcSlab"://ok
-                color = new THREE.Color(0x505050);
-                break;
-            case "IfcStair"://ok
-                color = new THREE.Color(0xa4a592);
-                break;
-            case "IfcDoor"://ok
-                color = new THREE.Color(0x6f6f6f);
-                break;
-            case "IfcWindow":
-                color = new THREE.Color(0x9ea3ef);
-                break;
-            case "IfcBeam"://ok
-                color = new THREE.Color(0x949584);
-                break;
-            case "IfcCovering":
-                color = new THREE.Color(0x777a6f);
-                break;
-            case "IfcFlowSegment"://ok
-                color = new THREE.Color(0x999999);
-                break;
-            case "IfcWall"://ok
-                color = new THREE.Color(0xbb9f7c);
-                break;
-            case "IfcRamp":
-                color = new THREE.Color(0x4d5053);
-                break;
-            case "IfcRailing"://ok
-                color = new THREE.Color(0x4f4f4f);
-                break;
-            case "IfcFlowTerminal"://ok
-                color = new THREE.Color(0xe9f5f8);
-                break;
-            case "IfcBuildingElementProxy"://ok
-                color = new THREE.Color(0x6f6f6f);
-                break;
-            case "IfcColumn"://ok
-                color = new THREE.Color(0x8a8f80);
-                break;
-            case "IfcFlowController"://ok
-                color = new THREE.Color(0x2c2d2b);
-                break;
-            case "IfcFlowFitting"://ok
-                color = new THREE.Color(0x93a5aa);
-                break;
-            case "IfcPlate"://ok外体窗户
-                color = new THREE.Color(0x2a4260);
-                break;
-            case "IfcMember"://ok外体窗户
-                color = new THREE.Color(0x2f2f2f);
-                break;
-            default:
-                color = new THREE.Color(0x194354);
-                break;
-        }
-        return color;
     }
 </script>
 </body>
