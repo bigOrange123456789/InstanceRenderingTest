@@ -64,11 +64,11 @@ class ResourceLoader{
                     scope.object.add(mesh0);
                     load();
                     scope.successNumber++;
-                    console.log("成功次数:"+scope.successNumber)
+                    //console.log("成功次数:"+scope.successNumber)
                 },function () {
                     load();
                     scope.failNumber++;
-                    console.log("失败次数:"+scope.failNumber)
+                    //console.log("失败次数:"+scope.failNumber)
                 });
             }else{
                 loadGlb(

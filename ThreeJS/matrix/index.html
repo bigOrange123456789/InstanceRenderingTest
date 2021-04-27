@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+
+	<body>
+
+
+	<script src="js/lib/threeJS/three.js"></script>
+	<script src="js/lib/threeJS/GLTFLoader.js"></script>
+
+	<script src="js/lib/PlayerControl.js"></script>
+
+	<script src="js/Main.js"></script>
+
+	<script  type="module">
+		var mesh1=new THREE.Mesh();
+		mesh1.rotation.set(0,0,Math.PI/2);
+		var mesh2=new THREE.Mesh();
+		mesh2.rotation.set(0,0,-Math.PI/2)
+		mesh2.applyMatrix(new THREE.Matrix4().set(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1
+		));
+		mesh1.applyMatrix(mesh2.matrix);
+		console.log(mesh1.matrix)
+		console.log(mesh1.rotation.z)
+
+
+		function test1() {
+			var mesh=new THREE.Mesh();
+			mesh.rotation.set(0,0,Math.PI/2)
+			mesh.applyMatrix(new THREE.Matrix4().set(
+					1, 0, 0, 0,
+					0, 1, 0, 0,
+					0, 0, 1, 0,
+					0, 0, 0, 1
+			));//使用position等更新到矩阵，通过矩阵计算完再返回position等
+
+			//mesh.updateMatrix();
+			console.log(mesh);//.matrix.elements
+
+			// Vector3, quaternion : Quaternion, scale : Vector3
+			//new THREE.Vector3()
+			var qua=new THREE.Quaternion();
+			mesh.matrix.decompose(
+					new THREE.Vector3(),
+					qua,
+					new THREE.Vector3()
+			);
+			console.log(qua)
+
+			var rot=q2e(qua);
+			console.log(rot)
+
+
+			var rot1=new THREE.Euler(0,0,Math.PI, 'XYZ');
+			var rot2=new THREE.Euler(0,Math.PI,0, 'XYZ');
+			var qua1=e2q(rot1);
+			var qua2=e2q(rot2);
+			var qua3=new THREE.Quaternion().multiplyQuaternions(qua1,qua2);
+			console.log(q2e(qua3))
+			console.log(eulerMultiply(rot1,rot2))
+
+			function q2e(quaternion) {//quaternion2euler
+				var euler=new THREE.Euler(0,0,0, 'XYZ');
+				euler.setFromQuaternion(quaternion);
+				return euler;
+			}
+			function e2q(euler) {//euler2quaternion
+				var quaternion=new THREE.Quaternion();
+				quaternion.setFromEuler(euler);
+				return quaternion;
+			}
+
+			function eulerMultiply(rot1,rot2) {
+				var qua1=e2q(rot1);
+				var qua2=e2q(rot2);
+				var qua3=new THREE.Quaternion().multiplyQuaternions(qua1,qua2);
+				return q2e(qua3);
+				function q2e(quaternion) {//quaternion2euler
+					var euler=new THREE.Euler(0,0,0, 'XYZ');
+					euler.setFromQuaternion(quaternion);
+					return euler;
+				}
+				function e2q(euler) {//euler2quaternion
+					var quaternion=new THREE.Quaternion();
+					quaternion.setFromEuler(euler);
+					return quaternion;
+				}
+			}
+		}
+	</script>
+	</body>
+</html>
