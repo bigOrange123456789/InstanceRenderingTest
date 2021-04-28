@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MEETING</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {overflow:hidden;}
+    </style>
+</head>
+
+<body>
+
+<script src="js/lib/threeJS/three.js"></script>
+<script src="js/lib/threeJS/OrbitControls.js"></script>
+<script src="js/lib/threeJS/GLTFLoader.js"></script>
+<script src="js/threeLib/GLTFExporter.js"></script>
+
+<script src="js/lib/pmLib/MyPMLoader.js"></script>
+
+<script src="js/lib/instancedLib/InstancedGroup.js"></script>
+<script src="js/lib/instancedLib/SkinnedMeshController.js"></script>
+
+<script src="js/VideoManager.js"></script>
+
+<script src="js/sceneSet/SeatManager.js"></script>
+<script src="js/sceneSet/AvatarManager.js"></script>
+
+<script src="js/playerControl/PlayerControl.js"></script>
+
+<script src="js/ParamMeasure.js"></script>
+<script src="js/Main.js"></script>
+
+<script src="DRACOLoader.js"></script>
+<script  type="module">
+    //var scene=new THREE.Scene();//myMain.scene;//
+
+
+    var animations=[];
+    var scene;
+
+    const loader = new THREE.GLTFLoader();// Instantiate a loader
+    function load(name,finish) {
+        loader.load("../../../_DATA_/M/"+name,finish);
+    }
+
+    start(0)
+    function start(i) {
+        if(i<5){
+            load("male"+i+".glb",function (glb) {
+                animations.push(glb.animations[0])
+                scene=glb.scene;
+                console.log(glb)
+                start(i+1)
+            })
+        }else{
+            var gltfExporter = new THREE.GLTFExporter();
+            gltfExporter.parse(scene, function (result) {
+                var str=JSON.stringify(result);
+                var myBlob=new Blob([str], { type: 'text/plain' })
+                let link = document.createElement('a');
+                link.href = URL.createObjectURL(myBlob);
+                link.download = "test.gltf";
+                link.click();
+            },{animations: animations});
+        }
+
+    }
+
+
+
+
+
+</script>
+</body>
+</html>

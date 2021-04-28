@@ -63,9 +63,8 @@
 
             void main () {
               vec3 normal = normalize(v_normal);
-              float light = dot(u_lightDirection, normal) * .5 + .5;
+              float light = dot(u_lightDirection, normal) * .5 + .5;//光照强度
               outColor = vec4(u_diffuse.rgb * light, u_diffuse.a);
-
             }
         `;
 
