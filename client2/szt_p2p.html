@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PathFinding.js</title>
+
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="./lib/themes/jquery.ui.all.css" />
+
+
+
+
+  <script type="text/javascript" src="./lib/ui2/jquery-1.7.2.min.js"></script>
+
+</head>
+<body>
+
+<script src="./lib/ui/jquery.ui.core.min.js"></script>
+<script src="./lib/ui/jquery.ui.widget.min.js"></script>
+<script src="./lib/ui/jquery.ui.mouse.min.js"></script>
+<script src="./lib/ui/jquery.ui.draggable.min.js"></script>
+<script src="./lib/ui/jquery.ui.accordion.min.js"></script>
+<script src="./lib/ui2/panel.js"></script>
+
+<div id="instructions_panel" class="panel">
+  <header>
+    <h2 class="header_title">说明：</h2>
+    <span id="hide_instructions">hide</span>
+  </header>
+  1.请填写您的姓名<br>
+  2.请点击屏幕右侧的图标（点击后会进入<span class="red">自动漫游</span>）<br>
+  3.漫游结束后您可以在场景中自由浏览，直到弹出测试完成的提示窗口<br>
+</div>
+
+
+
+<div id="algorithm_panel" class="panel right_panel">
+  <header><h2 class="header_title">控制面板</h2></header>
+
+  <div class="accordion">
+
+    <h3 id="test"><a href="#">性能分析</a></h3>
+    <div  class="finder_section">
+      <div class="sub_options">
+        <label>三角面片数:</label>
+        <label id="triNum">0</label><br>
+        <label>初始加载时间:</label>
+        <label id="sceneLoadTime">0</label>
+      </div>
+    </div>
+
+    <h3 id="breadthfirst_header"><a href="#">填写姓名</a></h3>
+    <div id="breadthfirst_section" class="finder_section">
+
+      <button id="inputUserName" style="width:80px;height:40px">姓名:</button>
+      <input class="spinner" name="inputUserName" value="张三" style="width:80px;height:35px"><br>
+    </div>
+
+    <h3 id="astar_header"><a href="#">切换场景</a></h3>
+    <div id="astar_section" class="finder_section">
+
+      <header class="option_header">
+        <h3>场景名</h3>
+      </header>
+      <div id="style_scene" class="sub_options">
+        <input type="radio" name="cgm" value="cgm" checked />
+        <label class="option_label">cgm</label> <br>
+        <input type="radio" name="astar_heuristic" value="szt"/>
+        <label class="option_label">双子塔</label> <br>
+        <input type="radio" name="demo3" value="demo3"/>
+        <label class="option_label">demo3</label> <br>
+      </div>
+
+      <header class="option_header">
+        <h3>使用P2P技术</h3>
+      </header>
+      <div id="style_p2p" class="sub_options">
+        <input type="radio" name="astar_heuristic" value=true checked />
+        <label class="option_label">是</label> <br>
+        <input type="radio" name="astar_heuristic" value=false/>
+        <label class="option_label">否</label> <br>
+      </div>
+
+      <header class="option_header">
+        <h3>可视资源列表</h3>
+      </header>
+      <div id="style_list" class="sub_options">
+        <input type="radio" name="astar_heuristic" value=1 checked />
+        <label class="option_label">服务器计算</label> <br>
+        <input type="radio" name="astar_heuristic" value=2/>
+        <label class="option_label">浏览器计算</label> <br>
+      </div>
+
+
+      <button id="change" style="width:120px;height:30px">确定切换</button>
+    </div>
+
+    <h3 id="ida_header"><a href="#">漫游路线</a></h3>
+    <div id="ida_section" class="finder_section">
+      <header class="option_header">
+        <h3>当前只有一条路径</h3>
+      </header>
+    </div>
+
+
+  </div><!-- .accordion -->
+</div><!-- #algorithm_panel -->
+
+<div id="play_panel" class="panel right_panel">
+  <button id="startMove" style="width:250px;height:60px">进入漫游</button>
+</div>
+
+
+<script src="lib/three_93.js"></script>
+<script src="lib/stats.min.js"></script>
+<script src="lib/OrbitControls.js"></script>
+<script src="lib/TouchFPC.js"></script>
+<script src="lib/GLTFLoader.js"></script>
+<script src="lib/DRACOLoader.js"></script>
+<script src="lib/FlyControls.js"></script>
+<script src="lib/BufferGeometryUtils.js"></script>
+
+<script src="PlayerControl.js"></script>
+
+
+<script src="lib/webrtc/adapter-latest.js"></script>
+<script src="lib/webrtc/socket.io.js"></script>
+<script src="lib/webrtc/FileBufferReader.js"></script>
+<script src="lib/RTCMultiConnection.js"></script>
+<script>
+  let sceneName = "szt"//"cgm";//"newModel"//"demo1";//
+  let haveP2P=true;
+</script>
+<script src="config.js"></script>
+<script src="src/main_V11.js"></script>
+<script src="roam.js"></script>
+<script type="module">
+  import {PreviewManager} from './PreviewManager.js';
+  var myPreviewManager = new PreviewManager(camera, mydata);
+</script>
+
+</body>
+</html>
