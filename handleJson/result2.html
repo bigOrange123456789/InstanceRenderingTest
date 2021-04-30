@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING--softwareTest</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+
+	<body>
+
+
+		<script>
+			class AnalysisResult{
+				oldData;
+				sceneNames;
+				init=function (arr){
+					var scope=this;
+					scope.oldData=arr;
+				}
+				process=function(){
+					var scope=this;
+					scope.#computeSceneName();
+					scope.#split();
+					for(var i=0;i<scope.sceneNames.length;i++){
+						scope[scope.sceneNames[i]].process();
+					}
+					scope.#print()
+				}
+				#computeSceneName=function () {
+					var scope=this;
+					var sceneNames=[];
+					var arr=scope.oldData;
+					for(var j=0;j<arr.length;j++){
+						if(!hasSceneName(arr[j].sceneName))
+							sceneNames.push(arr[j].sceneName);
+					}
+					console.log(sceneNames)
+
+					scope.sceneNames=sceneNames;
+					for(var i=0;i<sceneNames.length;i++){
+						scope[sceneNames[i]]=new Scene();
+						console.log(
+								scope[sceneNames[i]],
+								sceneNames[i]
+						)
+					}
+					function hasSceneName(name) {
+						for(var i=0;i<sceneNames.length;i++){
+							if(sceneNames[i]===name)return true;
+						}
+						return false;
+					}
+				}
+				#split=function () {
+					var scope=this;
+					var arr=scope.oldData;
+					for(var i=arr.length-1;i>=0;i--){
+						if(arr[i].haveP2P===1){//haveP2P
+							scope[arr[i].sceneName].p2p.AllData.push(arr[i])
+						}else if(arr[i].haveP2P===0){
+							scope[arr[i].sceneName].nop2p.AllData.push(arr[i])
+						}else{
+							alert("未考虑的情况："+arr[i].haveP2P)
+						}
+					}
+				}
+				#print=function(){
+					var scope=this;
+					console.log(this)
+					console.log(
+							"szt.p2p="
+							+AnalysisResult.arr2str(scope.szt.p2p.print)
+							+";"+
+							"szt.nop2p="
+							+AnalysisResult.arr2str(scope.szt.nop2p.print)
+							+";"
+					);
+					console.log("szt.nop2p")
+					console.log(AnalysisResult.arr2str(scope.szt.nop2p.print))
+					console.log("demo3.p2p")
+					console.log(AnalysisResult.arr2str(scope.demo3.p2p.print))
+					console.log("demo3.nop2p")
+					console.log(AnalysisResult.arr2str(scope.demo3.nop2p.print))
+
+
+				}
+				static arr2str(arr){
+					var str="["
+					for(var i=0;i<arr.length;i++){
+						str+="["
+						for(var j=0;j<arr[i].length;j++){
+							if(str!=="[")str+=",";
+							str+="'"+arr[i][j]+"'";
+						}
+						str+="]"
+						if(i!==arr.length-1)str+=","
+						else str+="]";
+					}
+					return str;
+				}
+			}
+			class Scene{
+				param;
+				p2p;
+				nop2p;
+				constructor() {
+					var scope=this;
+					scope.p2p={};
+					scope.nop2p={}
+					scope.p2p.AllData=[];
+					scope.nop2p.AllData=[];
+					scope.param=[
+						"averageDelayTime",
+						"initialTime",
+						"responseTimes",
+						"rpstFromPeer",
+						"rpstFromServer"
+					];
+				}
+				process(){
+					console.log("p2p")
+					this.#analysis(this.p2p)
+					console.log("nop2p")
+					this.#analysis(this.nop2p)
+				}
+				#analysis(data){
+					var param=this.param;
+					var arr=data.AllData;
+					for(var i=0;i<param.length;i++){
+						data[param[i]]=MaMiAvEr(arr,"averageDelayTime");
+					}
+					data.userNumber=arr.length;
+					for (i=0;i<param.length;i++) {
+						var key=param[i];
+						data[key]=MaMiAvEr(arr,key)
+					}
+					data.print=print();
+					console.log(data.print)
+					console.log(data.print.toString())
+					function MaMiAvEr(arr,name) {
+						console.log(name);
+						var max=-99999999;//arr[0][name];
+						var min=999999999;//arr[0][name];
+						var sum=0;
+						var error=0;
+						for(var i=0;i<arr.length;i++){
+							var n=arr[i][name];
+							if(n===null){
+								error++;
+								continue;
+							}
+							if(n>max)max=n;
+							if(n<min)min=n;
+							sum+=n;
+						}
+						return {
+							max:max,
+							min:min,
+							ave:sum/(arr.length-error),
+							err:error
+						};
+					}
+					function print(){
+						var arr=[];
+						arr.push(["","max","min","ave","err"])
+						for(var i=0;i<param.length;i++){
+							var key=param[i];
+							arr.push([
+								key,
+								data[key].max,
+								data[key].min,
+								data[key].ave,
+								data[key].err
+							]);
+						}
+						return arr;
+					}
+				}
+
+			}
+
+			load("testResult.json");
+			function load(url) {
+				var request = new XMLHttpRequest();
+				request.open("get", url);/*设置请求方法与路径*/
+				request.send(null);/*不发送数据到服务器*/
+				request.onload = function () {/*XHR对象获取到返回信息后执行*/
+					if (request.status === 200) {/*返回状态为200，即为数据获取成功*/
+						var json = JSON.parse(request.responseText);
+						console.log(json)
+						process(json);//
+						//process(json.data);
+					}
+				}
+			}
+			function process(arr) {
+				//
+				var analysisResult=new AnalysisResult();
+				analysisResult.init(arr);
+				analysisResult.process();
+				console.log(analysisResult)
+
+				//
+				for(i=0;i<sceneNames.length;i++){
+					result=analysis(analysisResult[sceneNames[i]].p2p.AllData)
+					console.log(sceneNames[i])
+				}
+				//analysis(cgmp2p)
+
+				for(var i=arr.length-1;i>=0;i--){
+					if(arr[i].sceneName==='cgm'){
+						if(arr[i].haveP2P===1)cgmp2p.push(arr[i]);
+						else cgm.push(arr[i]);
+					}else{
+						if(arr[i].haveP2P===1)demo1p2p.push(arr[i]);
+						else demo1.push(arr[i]);
+					}
+				}
+
+				var cgm=[];
+				var cgmp2p=[];
+				var demo1=[];
+				var demo1p2p=[];
+
+				for(var i=arr.length-1;i>=0;i--){
+					if(arr[i].sceneName==='cgm'){
+						if(arr[i].haveP2P===1)cgmp2p.push(arr[i]);
+						else cgm.push(arr[i]);
+					}else{
+						if(arr[i].haveP2P===1)demo1p2p.push(arr[i]);
+						else demo1.push(arr[i]);
+					}
+				}
+				console.log(
+						"cgmp2p",cgmp2p,
+						"cgm",cgm,
+						"demo1p2p",demo1p2p,
+						"demo1",demo1
+				);
+
+				var data1={
+					cgmp2p:analysis(cgmp2p),
+					cgm:analysis(cgm),
+					demo1p2p:analysis(demo1p2p),
+					demo1:analysis(demo1),
+				}
+				console.log(data1)
+
+				var data2={
+					averageDelayTime:{
+						cgmp2p:data1.cgmp2p.averageDelayTime,
+						cgm:data1.cgm.averageDelayTime,
+						demo1p2p:data1.demo1p2p.averageDelayTime,
+						demo1:data1.demo1.averageDelayTime
+					},
+					initialTime:{
+						cgmp2p:data1.cgmp2p.initialTime,
+						cgm:data1.cgm.initialTime,
+						demo1p2p:data1.demo1p2p.initialTime,
+						demo1:data1.demo1.initialTime
+					},
+					responseTimes:{
+						cgmp2p:data1.cgmp2p.responseTimes,
+						cgm:data1.cgm.responseTimes,
+						demo1p2p:data1.demo1p2p.responseTimes,
+						demo1:data1.demo1.responseTimes
+					},
+					rpstFromPeer:{
+						cgmp2p:data1.cgmp2p.rpstFromPeer,
+						cgm:data1.cgm.rpstFromPeer,
+						demo1p2p:data1.demo1p2p.rpstFromPeer,
+						demo1:data1.demo1.rpstFromPeer
+					},
+					rpstFromServer:{
+						cgmp2p:data1.cgmp2p.rpstFromServer,
+						cgm:data1.cgm.rpstFromServer,
+						demo1p2p:data1.demo1p2p.rpstFromServer,
+						demo1:data1.demo1.rpstFromServer
+					}
+				}
+				console.log(data2);
+			}
+			function f() {
+				var name1=[
+					"cgmp2p",
+					"cgm",
+					"demo1p2p",
+					"demo1"
+				];
+				var name2=[
+					"averageDelayTime",
+					"initialTime",
+					"responseTimes",
+					"rpstFromPeer",
+					"rpstFromServer",
+				];
+				var data2= {};
+				for(var i=0;i<name1.length;i++){
+					data2[name1[i]]={};
+					for(var j=0;j<name2.length;j++){
+						data2[name1[i]][name2[j]]=data1[name2[j]][name1[i]];
+					}
+				}
+				console.log(data2)
+			}
+
+			function analysis(arr){
+				var result={};
+				result.userNumber=arr.length;
+				console.log(
+						MaMiAvEr(arr,"averageDelayTime"),//平均漫游延迟时间
+						MaMiAvEr(arr,"initialTime"),
+						MaMiAvEr(arr,"responseTimes"),//视点同步总次数
+						MaMiAvEr(arr,"rpstFromPeer"),//可视列表来自自己或者邻居
+						MaMiAvEr(arr,"rpstFromServer"),//可视列表来自服务器的计算
+				);
+				return {
+					"averageDelayTime":MaMiAvEr(arr,"averageDelayTime"),//平均漫游延迟时间
+					"initialTime":MaMiAvEr(arr,"initialTime"),
+					"responseTimes":MaMiAvEr(arr,"responseTimes"),//视点同步总次数
+					"rpstFromPeer":MaMiAvEr(arr,"rpstFromPeer"),//可视列表来自自己或者邻居
+					"rpstFromServer":MaMiAvEr(arr,"rpstFromServer"),//可视列表来自服务器的计算
+				}
+			}
+			function MaMiAvEr(arr,name) {
+				console.log(name);
+				var max=-99999999;//arr[0][name];
+				var min=999999999;//arr[0][name];
+				var sum=0;
+				var error=0;
+				for(var i=0;i<arr.length;i++){
+					var n=arr[i][name];
+					if(n===null){
+						error++;
+						continue;
+					}
+					if(n>max)max=n;
+					if(n<min)min=n;
+					sum+=n;
+				}
+				return {
+					max:max,
+					min:min,
+					ave:sum/(arr.length-error),
+					err:error
+				};
+			}
+
+		</script>
+	</body>
+</html>

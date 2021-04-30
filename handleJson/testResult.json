@@ -1,0 +1,2882 @@
+[
+	{
+		"userID": "616219848497519694084null",
+		"sceneName": "szt",
+		"initialTime": 6.3689,
+		"averageDelayTime": 1.0003,
+		"responseTimes": 7,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 3,
+		"haveP2P": 1
+	},
+	{
+		"userID": "251529068224519693990吴越",
+		"sceneName": "szt",
+		"initialTime": 2.89348,
+		"averageDelayTime": 0.307999,
+		"responseTimes": 9,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 4,
+		"haveP2P": 1
+	},
+	{
+		"userID": "807872618536319694000马莞强",
+		"sceneName": "szt",
+		"initialTime": 1.7632,
+		"averageDelayTime": 0.0214059,
+		"responseTimes": 68,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 59,
+		"haveP2P": 1
+	},
+	{
+		"userID": "205563961916219693992张艺腾",
+		"sceneName": "szt",
+		"initialTime": 3.1169,
+		"averageDelayTime": 0.0424863,
+		"responseTimes": 51,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 47,
+		"haveP2P": 1
+	},
+	{
+		"userID": "267025215654819693995沈天宇",
+		"sceneName": "szt",
+		"initialTime": 1.56703,
+		"averageDelayTime": 0.218866,
+		"responseTimes": 9,
+		"rpstFromServer": 8,
+		"rpstFromPeer": 1,
+		"haveP2P": 1
+	},
+	{
+		"userID": "623843684039219694003邓欣凌",
+		"sceneName": "szt",
+		"initialTime": 8.36329,
+		"averageDelayTime": 0.179982,
+		"responseTimes": 5,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "836775850642319694006杨煜",
+		"sceneName": "szt",
+		"initialTime": 1.32253,
+		"averageDelayTime": 0.284385,
+		"responseTimes": 6,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "931291252102819694022null",
+		"sceneName": "szt",
+		"initialTime": 14.6961,
+		"averageDelayTime": 0.0223521,
+		"responseTimes": 48,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 43,
+		"haveP2P": 1
+	},
+	{
+		"userID": "9952723069497196940201851350 陈扬森",
+		"sceneName": "szt",
+		"initialTime": 11.9448,
+		"averageDelayTime": 0.156469,
+		"responseTimes": 8,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 3,
+		"haveP2P": 1
+	},
+	{
+		"userID": "7622037866831196940221750655 李嘉杰",
+		"sceneName": "szt",
+		"initialTime": 12.528,
+		"averageDelayTime": 0.365197,
+		"responseTimes": 9,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 3,
+		"haveP2P": 1
+	},
+	{
+		"userID": "66430525578631969404211",
+		"sceneName": "szt",
+		"initialTime": 12.4967,
+		"averageDelayTime": 0.872461,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "703127942393319694015null",
+		"sceneName": "szt",
+		"initialTime": 10.169,
+		"averageDelayTime": 0.04335,
+		"responseTimes": 18,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 12,
+		"haveP2P": 1
+	},
+	{
+		"userID": "530028263254219694026陆天一",
+		"sceneName": "szt",
+		"initialTime": 5.9146,
+		"averageDelayTime": 0.31412,
+		"responseTimes": 5,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "517185464989119694023null",
+		"sceneName": "szt",
+		"initialTime": 17.9662,
+		"averageDelayTime": 0.685944,
+		"responseTimes": 18,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 14,
+		"haveP2P": 1
+	},
+	{
+		"userID": "265839671209919694050叶莱",
+		"sceneName": "szt",
+		"initialTime": 7.613,
+		"averageDelayTime": 0.255364,
+		"responseTimes": 22,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 18,
+		"haveP2P": 1
+	},
+	{
+		"userID": "954223510187419694054郑德来",
+		"sceneName": "szt",
+		"initialTime": 5.91027,
+		"averageDelayTime": 0.0354773,
+		"responseTimes": 170,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 166,
+		"haveP2P": 1
+	},
+	{
+		"userID": "182711033149819694046Railgun2",
+		"sceneName": "szt",
+		"initialTime": 14.5281,
+		"averageDelayTime": 0.0673179,
+		"responseTimes": 39,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 35,
+		"haveP2P": 1
+	},
+	{
+		"userID": "156114532491619694028null",
+		"sceneName": "szt",
+		"initialTime": 29.6831,
+		"averageDelayTime": 0.500654,
+		"responseTimes": 57,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 54,
+		"haveP2P": 1
+	},
+	{
+		"userID": "602851071825719694034李鑫康",
+		"sceneName": "szt",
+		"initialTime": 21.7615,
+		"averageDelayTime": 0.187423,
+		"responseTimes": 5,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "970037113926319694043null",
+		"sceneName": "szt",
+		"initialTime": 11.7973,
+		"averageDelayTime": 0.0612952,
+		"responseTimes": 42,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 36,
+		"haveP2P": 1
+	},
+	{
+		"userID": "012532259682219694043null",
+		"sceneName": "szt",
+		"initialTime": 18.5888,
+		"averageDelayTime": 0.0506771,
+		"responseTimes": 144,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 139,
+		"haveP2P": 1
+	},
+	{
+		"userID": "855964014383219694056null",
+		"sceneName": "szt",
+		"initialTime": 33.4307,
+		"averageDelayTime": 0.225667,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "616243459620419694059like",
+		"sceneName": "szt",
+		"initialTime": 6.26713,
+		"averageDelayTime": 0.124104,
+		"responseTimes": 17,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 17,
+		"haveP2P": 1
+	},
+	{
+		"userID": "090137585464619694042null",
+		"sceneName": "szt",
+		"initialTime": 18.1801,
+		"averageDelayTime": 0.358,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "247198762925919694068null",
+		"sceneName": "szt",
+		"initialTime": 21.7812,
+		"averageDelayTime": 0.0175397,
+		"responseTimes": 58,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 54,
+		"haveP2P": 1
+	},
+	{
+		"userID": "058561044443919694061...",
+		"sceneName": "szt",
+		"initialTime": 29.0753,
+		"averageDelayTime": 0.0460188,
+		"responseTimes": 65,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 61,
+		"haveP2P": 1
+	},
+	{
+		"userID": "090495946796019694049韩佳乐",
+		"sceneName": "szt",
+		"initialTime": 6.94706,
+		"averageDelayTime": 0.277989,
+		"responseTimes": 16,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 13,
+		"haveP2P": 1
+	},
+	{
+		"userID": "050273480731019694079刘文怡",
+		"sceneName": "szt",
+		"initialTime": 9.93777,
+		"averageDelayTime": 0.450799,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "382036408714019694071null",
+		"sceneName": "szt",
+		"initialTime": 21.2586,
+		"averageDelayTime": 0.0446614,
+		"responseTimes": 83,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 79,
+		"haveP2P": 1
+	},
+	{
+		"userID": "779525268912819694085马一珂",
+		"sceneName": "szt",
+		"initialTime": 8.2413,
+		"averageDelayTime": 0.0687513,
+		"responseTimes": 228,
+		"rpstFromServer": 8,
+		"rpstFromPeer": 220,
+		"haveP2P": 1
+	},
+	{
+		"userID": "171332889118019694065蔡姝悦",
+		"sceneName": "szt",
+		"initialTime": 24.2613,
+		"averageDelayTime": 0.121333,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "629801009547619694090梁正扬",
+		"sceneName": "szt",
+		"initialTime": 41.5726,
+		"averageDelayTime": 0.132878,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "110316046438119694112null",
+		"sceneName": "szt",
+		"initialTime": 5.6026,
+		"averageDelayTime": 0.22745,
+		"responseTimes": 4,
+		"rpstFromServer": 1,
+		"rpstFromPeer": 3,
+		"haveP2P": 1
+	},
+	{
+		"userID": "471551325304819694205null",
+		"sceneName": "szt",
+		"initialTime": 19.2387,
+		"averageDelayTime": 0.1392,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "058539353858719694089侯祖光",
+		"sceneName": "szt",
+		"initialTime": 42.5949,
+		"averageDelayTime": 0.152309,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "488819684574719694091罗林",
+		"sceneName": "szt",
+		"initialTime": 43.4628,
+		"averageDelayTime": 0.113667,
+		"responseTimes": 6,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 2,
+		"haveP2P": 1
+	},
+	{
+		"userID": "537035824574619694042null",
+		"sceneName": "szt",
+		"initialTime": 14.3787,
+		"averageDelayTime": 0.110221,
+		"responseTimes": 179,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 174,
+		"haveP2P": 1
+	},
+	{
+		"userID": "805312404401119694100null",
+		"sceneName": "szt",
+		"initialTime": 33.815,
+		"averageDelayTime": 0.10775,
+		"responseTimes": 6,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "807846542344319694103艾庆旺",
+		"sceneName": "szt",
+		"initialTime": 26.7487,
+		"averageDelayTime": 0.10224,
+		"responseTimes": 5,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "495538138472719694127黄文昆",
+		"sceneName": "szt",
+		"initialTime": 3.564,
+		"averageDelayTime": 0.361455,
+		"responseTimes": 11,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 8,
+		"haveP2P": 1
+	},
+	{
+		"userID": "129201352690919694128null",
+		"sceneName": "szt",
+		"initialTime": 38.285,
+		"averageDelayTime": 0.34325,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "626939363398919694116林滏",
+		"sceneName": "szt",
+		"initialTime": 15.2608,
+		"averageDelayTime": 0.1785,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "441860252101019694120null",
+		"sceneName": "szt",
+		"initialTime": 10.077,
+		"averageDelayTime": 0.137806,
+		"responseTimes": 31,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 25,
+		"haveP2P": 1
+	},
+	{
+		"userID": "3818694200318196941421854204陈博文",
+		"sceneName": "szt",
+		"initialTime": 26.5329,
+		"averageDelayTime": 0.125895,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "328727087333419694170杨雨辰",
+		"sceneName": "szt",
+		"initialTime": 27.9349,
+		"averageDelayTime": 0.06402,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "277436919121719694157null",
+		"sceneName": "szt",
+		"initialTime": 7.0813,
+		"averageDelayTime": 0.0365804,
+		"responseTimes": 92,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 88,
+		"haveP2P": 1
+	},
+	{
+		"userID": "470603874399919694170李源峰",
+		"sceneName": "szt",
+		"initialTime": 27.3577,
+		"averageDelayTime": 0.363244,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "354693673334819694026齐小钰",
+		"sceneName": "szt",
+		"initialTime": 45.4507,
+		"averageDelayTime": 0.254877,
+		"responseTimes": 3,
+		"rpstFromServer": 2,
+		"rpstFromPeer": 1,
+		"haveP2P": 1
+	},
+	{
+		"userID": "398743039054319694178屈钢",
+		"sceneName": "szt",
+		"initialTime": 19.4595,
+		"averageDelayTime": 0.12292,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "379867223305819694195吴熠",
+		"sceneName": "szt",
+		"initialTime": 2.16717,
+		"averageDelayTime": 0.261772,
+		"responseTimes": 11,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 5,
+		"haveP2P": 1
+	},
+	{
+		"userID": "045533408733719694193null",
+		"sceneName": "szt",
+		"initialTime": 30.4532,
+		"averageDelayTime": 0.366126,
+		"responseTimes": 19,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 15,
+		"haveP2P": 1
+	},
+	{
+		"userID": "425533306951919694210马一珂",
+		"sceneName": "szt",
+		"initialTime": 16.5934,
+		"averageDelayTime": 0.0241976,
+		"responseTimes": 42,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 37,
+		"haveP2P": 1
+	},
+	{
+		"userID": "517761651916419694169null",
+		"sceneName": "szt",
+		"initialTime": 30.0322,
+		"averageDelayTime": 0.1899,
+		"responseTimes": 11,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 5,
+		"haveP2P": 1
+	},
+	{
+		"userID": "790867534484519694264李德涛",
+		"sceneName": "szt",
+		"initialTime": 7.948,
+		"averageDelayTime": 0.5086,
+		"responseTimes": 5,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "726305826207719694264李阳",
+		"sceneName": "szt",
+		"initialTime": 4.916,
+		"averageDelayTime": 0.163167,
+		"responseTimes": 15,
+		"rpstFromServer": 7,
+		"rpstFromPeer": 8,
+		"haveP2P": 1
+	},
+	{
+		"userID": "320713858204719694293梁正扬",
+		"sceneName": "szt",
+		"initialTime": 2.67425,
+		"averageDelayTime": 0.16914,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "233036183320719694291吴越",
+		"sceneName": "szt",
+		"initialTime": 4.79544,
+		"averageDelayTime": 0.108722,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "226992861847719694289null",
+		"sceneName": "szt",
+		"initialTime": 9.7605,
+		"averageDelayTime": 0.2121,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "344563291779419694305null",
+		"sceneName": "szt",
+		"initialTime": 22.9346,
+		"averageDelayTime": 0.776467,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "730735261002419694291null",
+		"sceneName": "szt",
+		"initialTime": 7.1697,
+		"averageDelayTime": 0.445642,
+		"responseTimes": 12,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 7,
+		"haveP2P": 0
+	},
+	{
+		"userID": "800904532100819694309王子睿",
+		"sceneName": "szt",
+		"initialTime": null,
+		"averageDelayTime": null,
+		"responseTimes": 0,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "310620654178519694309贾小玉",
+		"sceneName": "szt",
+		"initialTime": 15.2618,
+		"averageDelayTime": 0.391436,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "159788794043219694308null",
+		"sceneName": "szt",
+		"initialTime": 18.851,
+		"averageDelayTime": 0.357,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "0823231318423196943121851350 陈扬森",
+		"sceneName": "szt",
+		"initialTime": 12.0593,
+		"averageDelayTime": 0.0529138,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "159500708695919694289null",
+		"sceneName": "szt",
+		"initialTime": 6.2709,
+		"averageDelayTime": 0.173725,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "232555803919019694297like",
+		"sceneName": "szt",
+		"initialTime": 30.3167,
+		"averageDelayTime": 9.21593,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "9702163819273196943031854204陈博文",
+		"sceneName": "szt",
+		"initialTime": 22.1581,
+		"averageDelayTime": 0.0754048,
+		"responseTimes": 148,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 143,
+		"haveP2P": 0
+	},
+	{
+		"userID": "302819389617219694295邓欣凌",
+		"sceneName": "szt",
+		"initialTime": 1.25391,
+		"averageDelayTime": 0.270099,
+		"responseTimes": 7,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "256303306583219694302null",
+		"sceneName": "szt",
+		"initialTime": 26.0429,
+		"averageDelayTime": 0.0386986,
+		"responseTimes": 141,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 136,
+		"haveP2P": 0
+	},
+	{
+		"userID": "010654870510319694303ff",
+		"sceneName": "szt",
+		"initialTime": 22.2023,
+		"averageDelayTime": 0.126263,
+		"responseTimes": 66,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 63,
+		"haveP2P": 0
+	},
+	{
+		"userID": "994087557305619694301杨煜",
+		"sceneName": "szt",
+		"initialTime": 22.8201,
+		"averageDelayTime": 0.0272193,
+		"responseTimes": 112,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 107,
+		"haveP2P": 0
+	},
+	{
+		"userID": "402244678564319694318null",
+		"sceneName": "szt",
+		"initialTime": 8.8418,
+		"averageDelayTime": 0.259425,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "349834414102019694309null",
+		"sceneName": "szt",
+		"initialTime": 20.4876,
+		"averageDelayTime": 0.750933,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "901315675429319694315韩佳乐",
+		"sceneName": "szt",
+		"initialTime": 10.6199,
+		"averageDelayTime": 0.216309,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "338664429241819694305null",
+		"sceneName": "szt",
+		"initialTime": 23.522,
+		"averageDelayTime": 0.5644,
+		"responseTimes": 11,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 7,
+		"haveP2P": 0
+	},
+	{
+		"userID": "563917248784119694301叶莱",
+		"sceneName": "szt",
+		"initialTime": 23.877,
+		"averageDelayTime": 0.1565,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "740690417198419694305null",
+		"sceneName": "szt",
+		"initialTime": 22.9431,
+		"averageDelayTime": 0.0229758,
+		"responseTimes": 33,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 29,
+		"haveP2P": 0
+	},
+	{
+		"userID": "054862044442119694325侯祖光",
+		"sceneName": "szt",
+		"initialTime": 57.84,
+		"averageDelayTime": 0.0533417,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "307728628821419694315艾庆旺",
+		"sceneName": "szt",
+		"initialTime": 10.2444,
+		"averageDelayTime": 0.2769,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "4560417214305196943291750655 李嘉杰",
+		"sceneName": "szt",
+		"initialTime": 52.7545,
+		"averageDelayTime": 0.0208967,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "828886081741619694320陆昱珉",
+		"sceneName": "szt",
+		"initialTime": 5.089,
+		"averageDelayTime": 0.2855,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "224864335231819694322杨雨辰",
+		"sceneName": "szt",
+		"initialTime": 3.688,
+		"averageDelayTime": 0.257037,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "189485452792119694415null",
+		"sceneName": "szt",
+		"initialTime": 3.8412,
+		"averageDelayTime": 0.1485,
+		"responseTimes": 7,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 4,
+		"haveP2P": 0
+	},
+	{
+		"userID": "172939292651519694322王子睿",
+		"sceneName": "szt",
+		"initialTime": 2.93551,
+		"averageDelayTime": 0.306491,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "060770132832719694342黄文昆",
+		"sceneName": "szt",
+		"initialTime": null,
+		"averageDelayTime": null,
+		"responseTimes": 0,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "420619247365519694312null",
+		"sceneName": "szt",
+		"initialTime": 16.323,
+		"averageDelayTime": 1.02871,
+		"responseTimes": 7,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 4,
+		"haveP2P": 0
+	},
+	{
+		"userID": "492902712124319694313张艺腾",
+		"sceneName": "szt",
+		"initialTime": null,
+		"averageDelayTime": null,
+		"responseTimes": 0,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "572195743609419694344王传坤",
+		"sceneName": "szt",
+		"initialTime": 44.3876,
+		"averageDelayTime": 0.459933,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "908157391464119694347于明润",
+		"sceneName": "szt",
+		"initialTime": 35.7738,
+		"averageDelayTime": 0.164368,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "705237601397419694344沈天宇",
+		"sceneName": "szt",
+		"initialTime": 38.9709,
+		"averageDelayTime": 0.152753,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "794872299385419694332陆天一",
+		"sceneName": "szt",
+		"initialTime": 48.7592,
+		"averageDelayTime": 6.92367,
+		"responseTimes": 7,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 2,
+		"haveP2P": 0
+	},
+	{
+		"userID": "605427614638019694336null",
+		"sceneName": "szt",
+		"initialTime": 49.204,
+		"averageDelayTime": 0.08096,
+		"responseTimes": 5,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "175230532490919694337吴熠",
+		"sceneName": "szt",
+		"initialTime": 66.049,
+		"averageDelayTime": 0.0844845,
+		"responseTimes": 56,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 52,
+		"haveP2P": 1
+	},
+	{
+		"userID": "756167346006219694346李鑫康",
+		"sceneName": "szt",
+		"initialTime": 36.2139,
+		"averageDelayTime": 0.284163,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "349561666181119694379null",
+		"sceneName": "szt",
+		"initialTime": 3.0927,
+		"averageDelayTime": 0.329812,
+		"responseTimes": 8,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 4,
+		"haveP2P": 0
+	},
+	{
+		"userID": "706803992351419694368孙向尧",
+		"sceneName": "szt",
+		"initialTime": 12.2326,
+		"averageDelayTime": 0.410133,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "488701688447619694366周文",
+		"sceneName": "szt",
+		"initialTime": 8.886,
+		"averageDelayTime": 0.477235,
+		"responseTimes": 17,
+		"rpstFromServer": 2,
+		"rpstFromPeer": 15,
+		"haveP2P": 1
+	},
+	{
+		"userID": "879059965605019694365李德涛",
+		"sceneName": "szt",
+		"initialTime": 26.371,
+		"averageDelayTime": 1.2435,
+		"responseTimes": 2,
+		"rpstFromServer": 2,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "582843212398619694366null",
+		"sceneName": "szt",
+		"initialTime": 19.8867,
+		"averageDelayTime": 0.505631,
+		"responseTimes": 13,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 10,
+		"haveP2P": 0
+	},
+	{
+		"userID": "563697636645819694386null",
+		"sceneName": "szt",
+		"initialTime": null,
+		"averageDelayTime": 0.0933667,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "261804380418019694390贾金原1",
+		"sceneName": "szt",
+		"initialTime": 38.08,
+		"averageDelayTime": 0.135855,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "330715415780319694391null",
+		"sceneName": "szt",
+		"initialTime": 38.0386,
+		"averageDelayTime": 13.0118,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "761802857422119694411罗林",
+		"sceneName": "szt",
+		"initialTime": 18.1299,
+		"averageDelayTime": 0.2046,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "283328204498819694400梁正扬",
+		"sceneName": "szt",
+		"initialTime": 27.2149,
+		"averageDelayTime": 0.232073,
+		"responseTimes": 5,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "571029740398419694257null",
+		"sceneName": "szt",
+		"initialTime": 15.683,
+		"averageDelayTime": 0.660417,
+		"responseTimes": 24,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 18,
+		"haveP2P": 1
+	},
+	{
+		"userID": "447934267527819694429null",
+		"sceneName": "szt",
+		"initialTime": 68.848,
+		"averageDelayTime": 0.464333,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "180157641285019694430杨煜",
+		"sceneName": "szt",
+		"initialTime": 65.9496,
+		"averageDelayTime": 0.355067,
+		"responseTimes": 4,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "131037134868119694422林滏",
+		"sceneName": "szt",
+		"initialTime": 6.0817,
+		"averageDelayTime": 0.40046,
+		"responseTimes": 5,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "904152016000219694353QQ",
+		"sceneName": "szt",
+		"initialTime": 30.5903,
+		"averageDelayTime": 0.48096,
+		"responseTimes": 5,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 2,
+		"haveP2P": 0
+	},
+	{
+		"userID": "832124429554019694415444",
+		"sceneName": "szt",
+		"initialTime": 12.0044,
+		"averageDelayTime": 0.181239,
+		"responseTimes": 5,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "018490102826119694345null",
+		"sceneName": "szt",
+		"initialTime": 40.0449,
+		"averageDelayTime": 13.2297,
+		"responseTimes": 9,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 5,
+		"haveP2P": 1
+	},
+	{
+		"userID": "2366066711648196944421852039王少卿",
+		"sceneName": "szt",
+		"initialTime": 24.6512,
+		"averageDelayTime": 0.158082,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "644680299414719694437赵俊豪",
+		"sceneName": "szt",
+		"initialTime": 33.566,
+		"averageDelayTime": 0.240267,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "886817992809419694467刘建国",
+		"sceneName": "szt",
+		"initialTime": 5.10855,
+		"averageDelayTime": 0.209174,
+		"responseTimes": 7,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 3,
+		"haveP2P": 0
+	},
+	{
+		"userID": "526295145213719694268蒋林毅",
+		"sceneName": "szt",
+		"initialTime": null,
+		"averageDelayTime": null,
+		"responseTimes": 0,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "449275423214119694449杨奇璇",
+		"sceneName": "szt",
+		"initialTime": 17.493,
+		"averageDelayTime": 0.125333,
+		"responseTimes": 6,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 3,
+		"haveP2P": 0
+	},
+	{
+		"userID": "3481564001627196944791852039王少卿",
+		"sceneName": "szt",
+		"initialTime": 22.3009,
+		"averageDelayTime": 0.176149,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "453790927092019694478屈钢",
+		"sceneName": "szt",
+		"initialTime": 22.6322,
+		"averageDelayTime": 0.0172735,
+		"responseTimes": 78,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 73,
+		"haveP2P": 0
+	},
+	{
+		"userID": "891826158645119694518王传坤",
+		"sceneName": "szt",
+		"initialTime": 17.3433,
+		"averageDelayTime": 0.0444882,
+		"responseTimes": 51,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 46,
+		"haveP2P": 1
+	},
+	{
+		"userID": "137046335353719694518马莞强",
+		"sceneName": "szt",
+		"initialTime": 18.1476,
+		"averageDelayTime": 0.364475,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "584522094853719694530null",
+		"sceneName": "szt",
+		"initialTime": 5.7888,
+		"averageDelayTime": 0.04915,
+		"responseTimes": 22,
+		"rpstFromServer": 8,
+		"rpstFromPeer": 14,
+		"haveP2P": 0
+	},
+	{
+		"userID": "369248442760219694559null",
+		"sceneName": "demo3",
+		"initialTime": 1.8882,
+		"averageDelayTime": 0.074212,
+		"responseTimes": 75,
+		"rpstFromServer": 15,
+		"rpstFromPeer": 60,
+		"haveP2P": 0
+	},
+	{
+		"userID": "974258335342619694567null",
+		"sceneName": "demo3",
+		"initialTime": 1.8041,
+		"averageDelayTime": 0.1834,
+		"responseTimes": 4,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "707559774441619694558null",
+		"sceneName": "szt",
+		"initialTime": 8.582,
+		"averageDelayTime": 0.116625,
+		"responseTimes": 8,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 4,
+		"haveP2P": 0
+	},
+	{
+		"userID": "213050718412519694560null",
+		"sceneName": "demo3",
+		"initialTime": 1.9712,
+		"averageDelayTime": 0.340647,
+		"responseTimes": 15,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "886082445244919694576null",
+		"sceneName": "demo3",
+		"initialTime": 2.80212,
+		"averageDelayTime": 0.571125,
+		"responseTimes": 5,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 2,
+		"haveP2P": 0
+	},
+	{
+		"userID": "120360596877619694560null",
+		"sceneName": "demo3",
+		"initialTime": 1.6374,
+		"averageDelayTime": 0.123035,
+		"responseTimes": 111,
+		"rpstFromServer": 33,
+		"rpstFromPeer": 78,
+		"haveP2P": 0
+	},
+	{
+		"userID": "787141133121619694579刘志成",
+		"sceneName": "demo3",
+		"initialTime": 7.15429,
+		"averageDelayTime": 0.0599924,
+		"responseTimes": 189,
+		"rpstFromServer": 18,
+		"rpstFromPeer": 171,
+		"haveP2P": 0
+	},
+	{
+		"userID": "693102129847119694571梁正扬",
+		"sceneName": "demo3",
+		"initialTime": 2.14353,
+		"averageDelayTime": 0.127258,
+		"responseTimes": 46,
+		"rpstFromServer": 39,
+		"rpstFromPeer": 7,
+		"haveP2P": 0
+	},
+	{
+		"userID": "755131482489119694583like",
+		"sceneName": "demo3",
+		"initialTime": 5.43972,
+		"averageDelayTime": 0.393934,
+		"responseTimes": 27,
+		"rpstFromServer": 27,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "050090242787119694562修磊",
+		"sceneName": "szt",
+		"initialTime": 7.03232,
+		"averageDelayTime": 0.0381146,
+		"responseTimes": 76,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 67,
+		"haveP2P": 0
+	},
+	{
+		"userID": "019690142053519694571吴越",
+		"sceneName": "demo3",
+		"initialTime": 2.21246,
+		"averageDelayTime": 0.430175,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "7263394143784196945791854204陈博文",
+		"sceneName": "demo3",
+		"initialTime": 5.47539,
+		"averageDelayTime": 0.0843054,
+		"responseTimes": 112,
+		"rpstFromServer": 29,
+		"rpstFromPeer": 83,
+		"haveP2P": 0
+	},
+	{
+		"userID": "367734295902319694593叶莱",
+		"sceneName": "demo3",
+		"initialTime": 1.653,
+		"averageDelayTime": 0.544,
+		"responseTimes": 4,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "291233220773119694588沈天宇",
+		"sceneName": "demo3",
+		"initialTime": 7.66494,
+		"averageDelayTime": 0.0699211,
+		"responseTimes": 67,
+		"rpstFromServer": 29,
+		"rpstFromPeer": 38,
+		"haveP2P": 0
+	},
+	{
+		"userID": "966688003399519694595王传坤",
+		"sceneName": "demo3",
+		"initialTime": 15.2212,
+		"averageDelayTime": 0.38812,
+		"responseTimes": 5,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "365423473183919694586null",
+		"sceneName": "demo3",
+		"initialTime": 13.0726,
+		"averageDelayTime": 1.87417,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "7539574578332196945741851350 陈扬森",
+		"sceneName": "demo3",
+		"initialTime": 4.13253,
+		"averageDelayTime": 0.0331729,
+		"responseTimes": 289,
+		"rpstFromServer": 35,
+		"rpstFromPeer": 254,
+		"haveP2P": 0
+	},
+	{
+		"userID": "114407916845919694589付佳",
+		"sceneName": "szt",
+		"initialTime": 10.953,
+		"averageDelayTime": 0.178,
+		"responseTimes": 6,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "381079430567419694579赵俊豪",
+		"sceneName": "demo3",
+		"initialTime": 6.3329,
+		"averageDelayTime": 0.141547,
+		"responseTimes": 276,
+		"rpstFromServer": 29,
+		"rpstFromPeer": 247,
+		"haveP2P": 0
+	},
+	{
+		"userID": "953805305347319694574陆天一",
+		"sceneName": "demo3",
+		"initialTime": 4.2782,
+		"averageDelayTime": 0.0193582,
+		"responseTimes": 411,
+		"rpstFromServer": 34,
+		"rpstFromPeer": 377,
+		"haveP2P": 0
+	},
+	{
+		"userID": "596049252094519694679null",
+		"sceneName": "demo3",
+		"initialTime": 9.5184,
+		"averageDelayTime": 0.113389,
+		"responseTimes": 179,
+		"rpstFromServer": 16,
+		"rpstFromPeer": 163,
+		"haveP2P": 0
+	},
+	{
+		"userID": "932200997147619694586邓欣凌1850477",
+		"sceneName": "demo3",
+		"initialTime": 9.17561,
+		"averageDelayTime": 0.100812,
+		"responseTimes": 45,
+		"rpstFromServer": 29,
+		"rpstFromPeer": 16,
+		"haveP2P": 0
+	},
+	{
+		"userID": "969211813024519694589null",
+		"sceneName": "demo3",
+		"initialTime": 6.979,
+		"averageDelayTime": 0.312425,
+		"responseTimes": 8,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 4,
+		"haveP2P": 0
+	},
+	{
+		"userID": "769349381401819694598屈钢",
+		"sceneName": "demo3",
+		"initialTime": 11.0558,
+		"averageDelayTime": 0.0956404,
+		"responseTimes": 24,
+		"rpstFromServer": 24,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "527349443820019694581null",
+		"sceneName": "demo3",
+		"initialTime": 8.2139,
+		"averageDelayTime": 0.121773,
+		"responseTimes": 84,
+		"rpstFromServer": 20,
+		"rpstFromPeer": 64,
+		"haveP2P": 0
+	},
+	{
+		"userID": "030339317017619694591杨煜",
+		"sceneName": "demo3",
+		"initialTime": 3.23272,
+		"averageDelayTime": 0.0351007,
+		"responseTimes": 221,
+		"rpstFromServer": 30,
+		"rpstFromPeer": 191,
+		"haveP2P": 0
+	},
+	{
+		"userID": "756697853469619694605马莞强",
+		"sceneName": "demo3",
+		"initialTime": 4.5193,
+		"averageDelayTime": 0.198145,
+		"responseTimes": 22,
+		"rpstFromServer": 12,
+		"rpstFromPeer": 10,
+		"haveP2P": 0
+	},
+	{
+		"userID": "200917913734719694593黄文昆",
+		"sceneName": "demo3",
+		"initialTime": 1.575,
+		"averageDelayTime": 0.46575,
+		"responseTimes": 4,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "198179288636519694611null",
+		"sceneName": "szt",
+		"initialTime": 11.767,
+		"averageDelayTime": 0.677,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "022437422710519694599张艺腾",
+		"sceneName": "demo3",
+		"initialTime": 11.4245,
+		"averageDelayTime": 1.13839,
+		"responseTimes": 36,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 30,
+		"haveP2P": 0
+	},
+	{
+		"userID": "159826810098319694610刘志成",
+		"sceneName": "demo3",
+		"initialTime": 21.7728,
+		"averageDelayTime": 0.447914,
+		"responseTimes": 7,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 4,
+		"haveP2P": 0
+	},
+	{
+		"userID": "964744658805119694621杨奇璇",
+		"sceneName": "demo3",
+		"initialTime": 8.944,
+		"averageDelayTime": 0.40125,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "804249007202119694609杨雨辰",
+		"sceneName": "demo3",
+		"initialTime": 1.25445,
+		"averageDelayTime": 0.0979396,
+		"responseTimes": 47,
+		"rpstFromServer": 26,
+		"rpstFromPeer": 21,
+		"haveP2P": 0
+	},
+	{
+		"userID": "481589195766619694626耿楚涵",
+		"sceneName": "demo3",
+		"initialTime": 7.17126,
+		"averageDelayTime": 0.105046,
+		"responseTimes": 23,
+		"rpstFromServer": 23,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "198848562243219694606侯祖光",
+		"sceneName": "demo3",
+		"initialTime": 5.28058,
+		"averageDelayTime": 0.0350136,
+		"responseTimes": 256,
+		"rpstFromServer": 17,
+		"rpstFromPeer": 239,
+		"haveP2P": 0
+	},
+	{
+		"userID": "797813820062119694628null",
+		"sceneName": "demo3",
+		"initialTime": 1.8987,
+		"averageDelayTime": 0.0429052,
+		"responseTimes": 330,
+		"rpstFromServer": 10,
+		"rpstFromPeer": 320,
+		"haveP2P": 0
+	},
+	{
+		"userID": "523163638103619694647杨雪",
+		"sceneName": "szt",
+		"initialTime": 10.9996,
+		"averageDelayTime": 0.123125,
+		"responseTimes": 77,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 71,
+		"haveP2P": 1
+	},
+	{
+		"userID": "0752594860995196946281852039王少卿",
+		"sceneName": "demo3",
+		"initialTime": 2.16599,
+		"averageDelayTime": 0.0356279,
+		"responseTimes": 91,
+		"rpstFromServer": 28,
+		"rpstFromPeer": 63,
+		"haveP2P": 0
+	},
+	{
+		"userID": "862159284870019694629null",
+		"sceneName": "demo3",
+		"initialTime": 2.1447,
+		"averageDelayTime": 0.221444,
+		"responseTimes": 18,
+		"rpstFromServer": 12,
+		"rpstFromPeer": 6,
+		"haveP2P": 0
+	},
+	{
+		"userID": "528714059213419694605贾小玉",
+		"sceneName": "demo3",
+		"initialTime": 4.49697,
+		"averageDelayTime": 0.0430032,
+		"responseTimes": 381,
+		"rpstFromServer": 34,
+		"rpstFromPeer": 347,
+		"haveP2P": 0
+	},
+	{
+		"userID": "424614595578519694626周楷彬",
+		"sceneName": "szt",
+		"initialTime": 1.89548,
+		"averageDelayTime": 0.024515,
+		"responseTimes": 115,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 110,
+		"haveP2P": 0
+	},
+	{
+		"userID": "0616070926529196946581750655 李嘉杰",
+		"sceneName": "demo3",
+		"initialTime": 19.6634,
+		"averageDelayTime": 0.0372941,
+		"responseTimes": 127,
+		"rpstFromServer": 23,
+		"rpstFromPeer": 104,
+		"haveP2P": 0
+	},
+	{
+		"userID": "067278826222619694669林滏",
+		"sceneName": "demo3",
+		"initialTime": 6.9649,
+		"averageDelayTime": 0.242153,
+		"responseTimes": 15,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "769594861050319694610周楷彬",
+		"sceneName": "demo3",
+		"initialTime": 12.8375,
+		"averageDelayTime": 0.0583298,
+		"responseTimes": 686,
+		"rpstFromServer": 42,
+		"rpstFromPeer": 644,
+		"haveP2P": 0
+	},
+	{
+		"userID": "216717025130919694681刘诗涵",
+		"sceneName": "szt",
+		"initialTime": 14.7477,
+		"averageDelayTime": 3.14509,
+		"responseTimes": 7,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 1,
+		"haveP2P": 1
+	},
+	{
+		"userID": "194141063147419694696郑徳来",
+		"sceneName": "szt",
+		"initialTime": 7.86403,
+		"averageDelayTime": 0.200906,
+		"responseTimes": 44,
+		"rpstFromServer": 8,
+		"rpstFromPeer": 36,
+		"haveP2P": 0
+	},
+	{
+		"userID": "379828204409919694701null",
+		"sceneName": "demo3",
+		"initialTime": 9.4843,
+		"averageDelayTime": 0.161459,
+		"responseTimes": 116,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 107,
+		"haveP2P": 0
+	},
+	{
+		"userID": "921668408209019694589李鑫康",
+		"sceneName": "demo3",
+		"initialTime": 20.7523,
+		"averageDelayTime": 0.0498755,
+		"responseTimes": 320,
+		"rpstFromServer": 23,
+		"rpstFromPeer": 297,
+		"haveP2P": 0
+	},
+	{
+		"userID": "630154349641219694704null",
+		"sceneName": "demo3",
+		"initialTime": 4.3107,
+		"averageDelayTime": 0.234986,
+		"responseTimes": 21,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 7,
+		"haveP2P": 0
+	},
+	{
+		"userID": "127535499113919694711李源峰",
+		"sceneName": "demo3",
+		"initialTime": 7.197,
+		"averageDelayTime": 0.118758,
+		"responseTimes": 16,
+		"rpstFromServer": 16,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "7245443146486196947221852039王少卿",
+		"sceneName": "szt",
+		"initialTime": 3.3541,
+		"averageDelayTime": 0.156644,
+		"responseTimes": 8,
+		"rpstFromServer": 8,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "550839809529419694721null",
+		"sceneName": "szt",
+		"initialTime": 14.2946,
+		"averageDelayTime": 3.5001,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "841465061755219694718杨煜",
+		"sceneName": "demo3",
+		"initialTime": 15.1756,
+		"averageDelayTime": 0.361117,
+		"responseTimes": 7,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 3,
+		"haveP2P": 0
+	},
+	{
+		"userID": "765445143857119694711付佳",
+		"sceneName": "szt",
+		"initialTime": 5.194,
+		"averageDelayTime": 0.125143,
+		"responseTimes": 7,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 2,
+		"haveP2P": 0
+	},
+	{
+		"userID": "648650618415719694729陆昱珉",
+		"sceneName": "demo3",
+		"initialTime": 4.395,
+		"averageDelayTime": 0.0249516,
+		"responseTimes": 124,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 110,
+		"haveP2P": 0
+	},
+	{
+		"userID": "977545242571119694706323",
+		"sceneName": "demo3",
+		"initialTime": 12.8821,
+		"averageDelayTime": 0.0692209,
+		"responseTimes": 182,
+		"rpstFromServer": 32,
+		"rpstFromPeer": 150,
+		"haveP2P": 0
+	},
+	{
+		"userID": "580855296745819694727韩佳乐",
+		"sceneName": "demo3",
+		"initialTime": 7.65778,
+		"averageDelayTime": 0.0986977,
+		"responseTimes": 210,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 201,
+		"haveP2P": 0
+	},
+	{
+		"userID": "441993662324019694724null",
+		"sceneName": "demo3",
+		"initialTime": 10.878,
+		"averageDelayTime": 0.45275,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "174322158394319694725修磊",
+		"sceneName": "demo3",
+		"initialTime": 9.3239,
+		"averageDelayTime": 0.115125,
+		"responseTimes": 33,
+		"rpstFromServer": 31,
+		"rpstFromPeer": 2,
+		"haveP2P": 0
+	},
+	{
+		"userID": "598933922587319694755杨雪",
+		"sceneName": "szt",
+		"initialTime": 3.4024,
+		"averageDelayTime": 0.0519333,
+		"responseTimes": 63,
+		"rpstFromServer": 7,
+		"rpstFromPeer": 56,
+		"haveP2P": 0
+	},
+	{
+		"userID": "110978105091119694736罗林",
+		"sceneName": "demo3",
+		"initialTime": 15.4556,
+		"averageDelayTime": 0.100236,
+		"responseTimes": 241,
+		"rpstFromServer": 16,
+		"rpstFromPeer": 225,
+		"haveP2P": 0
+	},
+	{
+		"userID": "403683612243519694736王子睿",
+		"sceneName": "demo3",
+		"initialTime": null,
+		"averageDelayTime": null,
+		"responseTimes": 0,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "867856938370719694785李阳",
+		"sceneName": "demo3",
+		"initialTime": 8.571,
+		"averageDelayTime": 0.3667,
+		"responseTimes": 5,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "915482067603219694794刘诗涵",
+		"sceneName": "szt",
+		"initialTime": 9.874,
+		"averageDelayTime": 0.107014,
+		"responseTimes": 49,
+		"rpstFromServer": 7,
+		"rpstFromPeer": 42,
+		"haveP2P": 0
+	},
+	{
+		"userID": "920281464249619694812null",
+		"sceneName": "demo3",
+		"initialTime": 9.0113,
+		"averageDelayTime": 0.336246,
+		"responseTimes": 13,
+		"rpstFromServer": 13,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "379787323530119694815王振燕",
+		"sceneName": "szt",
+		"initialTime": 7.4184,
+		"averageDelayTime": 0.0493969,
+		"responseTimes": 65,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 60,
+		"haveP2P": 1
+	},
+	{
+		"userID": "438685242603019694822null",
+		"sceneName": "demo3",
+		"initialTime": 4.4018,
+		"averageDelayTime": 0.21164,
+		"responseTimes": 10,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 1,
+		"haveP2P": 1
+	},
+	{
+		"userID": "154808994950819694806null",
+		"sceneName": "demo3",
+		"initialTime": 5.8314,
+		"averageDelayTime": 0.406,
+		"responseTimes": 13,
+		"rpstFromServer": 7,
+		"rpstFromPeer": 6,
+		"haveP2P": 0
+	},
+	{
+		"userID": "095791212028419694817null",
+		"sceneName": "demo3",
+		"initialTime": 6.0277,
+		"averageDelayTime": 0.114595,
+		"responseTimes": 107,
+		"rpstFromServer": 10,
+		"rpstFromPeer": 97,
+		"haveP2P": 1
+	},
+	{
+		"userID": "299005199513319694827黄文昆",
+		"sceneName": "demo3",
+		"initialTime": null,
+		"averageDelayTime": null,
+		"responseTimes": 0,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "130269958742619694828林滏",
+		"sceneName": "demo3",
+		"initialTime": 7.9719,
+		"averageDelayTime": 2.4452,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "751088626769919694842刘志成",
+		"sceneName": "demo3",
+		"initialTime": 4.92578,
+		"averageDelayTime": 0.036745,
+		"responseTimes": 3,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 3,
+		"haveP2P": 1
+	},
+	{
+		"userID": "4091424725833196948391851350 陈扬森",
+		"sceneName": "demo3",
+		"initialTime": 19.3871,
+		"averageDelayTime": 0.0883327,
+		"responseTimes": 11,
+		"rpstFromServer": 11,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "203075831417519694815null",
+		"sceneName": "demo3",
+		"initialTime": 6.7055,
+		"averageDelayTime": 0.046036,
+		"responseTimes": 542,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 528,
+		"haveP2P": 1
+	},
+	{
+		"userID": "224306013760919694841叶莱",
+		"sceneName": "demo3",
+		"initialTime": 17.542,
+		"averageDelayTime": 0.192714,
+		"responseTimes": 7,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 4,
+		"haveP2P": 1
+	},
+	{
+		"userID": "7079285887889196948361850477 邓欣凌",
+		"sceneName": "demo3",
+		"initialTime": 1.13644,
+		"averageDelayTime": 0.197774,
+		"responseTimes": 18,
+		"rpstFromServer": 18,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "142174982735219694510徐平",
+		"sceneName": "szt",
+		"initialTime": null,
+		"averageDelayTime": null,
+		"responseTimes": 0,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "372731923682919694842苏苏",
+		"sceneName": "demo3",
+		"initialTime": 20.7882,
+		"averageDelayTime": 0.0715177,
+		"responseTimes": 164,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 150,
+		"haveP2P": 0
+	},
+	{
+		"userID": "515470289161619694852陆昱珉",
+		"sceneName": "demo3",
+		"initialTime": 6.806,
+		"averageDelayTime": 0.0257407,
+		"responseTimes": 135,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 126,
+		"haveP2P": 1
+	},
+	{
+		"userID": "118822557862219694826吴越",
+		"sceneName": "demo3",
+		"initialTime": 10.5132,
+		"averageDelayTime": 0.197612,
+		"responseTimes": 85,
+		"rpstFromServer": 17,
+		"rpstFromPeer": 68,
+		"haveP2P": 1
+	},
+	{
+		"userID": "459020919407119694856zrh",
+		"sceneName": "demo3",
+		"initialTime": 5.053,
+		"averageDelayTime": 0.113133,
+		"responseTimes": 15,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 9,
+		"haveP2P": 0
+	},
+	{
+		"userID": "887201396960319694837null",
+		"sceneName": "demo3",
+		"initialTime": null,
+		"averageDelayTime": null,
+		"responseTimes": 0,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "971524980273619694830null",
+		"sceneName": "demo3",
+		"initialTime": 7.0537,
+		"averageDelayTime": 0.111987,
+		"responseTimes": 117,
+		"rpstFromServer": 13,
+		"rpstFromPeer": 104,
+		"haveP2P": 1
+	},
+	{
+		"userID": "173519922292219694828李晓明",
+		"sceneName": "demo3",
+		"initialTime": 8.929,
+		"averageDelayTime": 0.390994,
+		"responseTimes": 16,
+		"rpstFromServer": 16,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "498902878063519694856null",
+		"sceneName": "demo3",
+		"initialTime": 3.121,
+		"averageDelayTime": 0.153111,
+		"responseTimes": 18,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 13,
+		"haveP2P": 0
+	},
+	{
+		"userID": "136465531431419694838王子睿",
+		"sceneName": "demo3",
+		"initialTime": null,
+		"averageDelayTime": null,
+		"responseTimes": 0,
+		"rpstFromServer": 0,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "138759428515219694853杨煜",
+		"sceneName": "demo3",
+		"initialTime": 5.66643,
+		"averageDelayTime": 0.184162,
+		"responseTimes": 4,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 1,
+		"haveP2P": 1
+	},
+	{
+		"userID": "683799238176819694835于明润",
+		"sceneName": "demo3",
+		"initialTime": 1.6565,
+		"averageDelayTime": 0.0937376,
+		"responseTimes": 250,
+		"rpstFromServer": 16,
+		"rpstFromPeer": 234,
+		"haveP2P": 1
+	},
+	{
+		"userID": "439802591742619694850小学生",
+		"sceneName": "demo3",
+		"initialTime": 11.7737,
+		"averageDelayTime": 0.16485,
+		"responseTimes": 6,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "517635784281219694851沈天宇",
+		"sceneName": "demo3",
+		"initialTime": 5.25345,
+		"averageDelayTime": 0.028639,
+		"responseTimes": 149,
+		"rpstFromServer": 12,
+		"rpstFromPeer": 137,
+		"haveP2P": 1
+	},
+	{
+		"userID": "3287086159377196948561750655 李嘉杰",
+		"sceneName": "demo3",
+		"initialTime": 3.55401,
+		"averageDelayTime": 0.0191328,
+		"responseTimes": 434,
+		"rpstFromServer": 19,
+		"rpstFromPeer": 415,
+		"haveP2P": 1
+	},
+	{
+		"userID": "574489109238319694867null",
+		"sceneName": "demo3",
+		"initialTime": 24.0302,
+		"averageDelayTime": 0.138433,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "1332365918023196948356565",
+		"sceneName": "demo3",
+		"initialTime": 2.18842,
+		"averageDelayTime": 0.0920451,
+		"responseTimes": 244,
+		"rpstFromServer": 16,
+		"rpstFromPeer": 228,
+		"haveP2P": 1
+	},
+	{
+		"userID": "357218846045419694844马莞强",
+		"sceneName": "demo3",
+		"initialTime": 15.2621,
+		"averageDelayTime": 0.31042,
+		"responseTimes": 5,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "371963809552019694857王传坤",
+		"sceneName": "demo3",
+		"initialTime": 2.74234,
+		"averageDelayTime": 0.268132,
+		"responseTimes": 15,
+		"rpstFromServer": 15,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "540712240818419694848刘建国",
+		"sceneName": "demo3",
+		"initialTime": 13.6236,
+		"averageDelayTime": 0.0212396,
+		"responseTimes": 552,
+		"rpstFromServer": 28,
+		"rpstFromPeer": 524,
+		"haveP2P": 1
+	},
+	{
+		"userID": "890771481304819694851屈钢",
+		"sceneName": "demo3",
+		"initialTime": 8.01744,
+		"averageDelayTime": 0.202,
+		"responseTimes": 14,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 5,
+		"haveP2P": 1
+	},
+	{
+		"userID": "563723397958519694748金美辰",
+		"sceneName": "szt",
+		"initialTime": 17.951,
+		"averageDelayTime": 0.151667,
+		"responseTimes": 3,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "654657771408519694943null",
+		"sceneName": "demo3",
+		"initialTime": 9.6366,
+		"averageDelayTime": 0.0977128,
+		"responseTimes": 141,
+		"rpstFromServer": 13,
+		"rpstFromPeer": 128,
+		"haveP2P": 1
+	},
+	{
+		"userID": "3235179510602196948711852039王少卿",
+		"sceneName": "demo3",
+		"initialTime": 16.8552,
+		"averageDelayTime": 0.0382088,
+		"responseTimes": 123,
+		"rpstFromServer": 24,
+		"rpstFromPeer": 99,
+		"haveP2P": 1
+	},
+	{
+		"userID": "925259549232619694862杨雨辰",
+		"sceneName": "demo3",
+		"initialTime": 26.671,
+		"averageDelayTime": 0.0177627,
+		"responseTimes": 303,
+		"rpstFromServer": 15,
+		"rpstFromPeer": 288,
+		"haveP2P": 1
+	},
+	{
+		"userID": "936788574842919694883李娇娇",
+		"sceneName": "szt",
+		"initialTime": 7.77644,
+		"averageDelayTime": 0.0462899,
+		"responseTimes": 207,
+		"rpstFromServer": 11,
+		"rpstFromPeer": 196,
+		"haveP2P": 1
+	},
+	{
+		"userID": "3654121016432196948291853562梁正扬",
+		"sceneName": "demo3",
+		"initialTime": 7.63329,
+		"averageDelayTime": 0.0275617,
+		"responseTimes": 229,
+		"rpstFromServer": 16,
+		"rpstFromPeer": 213,
+		"haveP2P": 1
+	},
+	{
+		"userID": "042312947479819694874like",
+		"sceneName": "demo3",
+		"initialTime": 15.7489,
+		"averageDelayTime": 0.367977,
+		"responseTimes": 16,
+		"rpstFromServer": 13,
+		"rpstFromPeer": 3,
+		"haveP2P": 1
+	},
+	{
+		"userID": "900324565494219694881杨奇璇",
+		"sceneName": "demo3",
+		"initialTime": 6.375,
+		"averageDelayTime": 0.0330621,
+		"responseTimes": 177,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 163,
+		"haveP2P": 1
+	},
+	{
+		"userID": "905349183263019694876杨雪",
+		"sceneName": "demo3",
+		"initialTime": 11.9075,
+		"averageDelayTime": 0.0410633,
+		"responseTimes": 300,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 291,
+		"haveP2P": 0
+	},
+	{
+		"userID": "233397251423119694883耿楚涵",
+		"sceneName": "demo3",
+		"initialTime": 8.31081,
+		"averageDelayTime": 0.0261685,
+		"responseTimes": 339,
+		"rpstFromServer": 13,
+		"rpstFromPeer": 326,
+		"haveP2P": 1
+	},
+	{
+		"userID": "934874168531819694858null",
+		"sceneName": "szt",
+		"initialTime": 4.834,
+		"averageDelayTime": 0.72925,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "820842161423919694900侯祖光",
+		"sceneName": "demo3",
+		"initialTime": 19.4874,
+		"averageDelayTime": 0.159426,
+		"responseTimes": 14,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "991029229296219694896陆天一",
+		"sceneName": "demo3",
+		"initialTime": 21.9866,
+		"averageDelayTime": 0.0766286,
+		"responseTimes": 14,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "536844832592119694881jjy2",
+		"sceneName": "demo3",
+		"initialTime": 6.85608,
+		"averageDelayTime": 0.0194071,
+		"responseTimes": 686,
+		"rpstFromServer": 20,
+		"rpstFromPeer": 666,
+		"haveP2P": 1
+	},
+	{
+		"userID": "196963014743519694873null",
+		"sceneName": "demo3",
+		"initialTime": 16.2788,
+		"averageDelayTime": 0.13137,
+		"responseTimes": 179,
+		"rpstFromServer": 10,
+		"rpstFromPeer": 169,
+		"haveP2P": 1
+	},
+	{
+		"userID": "232292451428819694890null",
+		"sceneName": "demo3",
+		"initialTime": 28.5449,
+		"averageDelayTime": 0.478014,
+		"responseTimes": 7,
+		"rpstFromServer": 7,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "651611652248119694909李煜",
+		"sceneName": "demo3",
+		"initialTime": 9.2919,
+		"averageDelayTime": 0.09163,
+		"responseTimes": 10,
+		"rpstFromServer": 10,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "708197083495419694905null",
+		"sceneName": "demo3",
+		"initialTime": 4.4627,
+		"averageDelayTime": 0.0267216,
+		"responseTimes": 102,
+		"rpstFromServer": 2,
+		"rpstFromPeer": 100,
+		"haveP2P": 1
+	},
+	{
+		"userID": "8061725930230196948591854204陈博文",
+		"sceneName": "demo3",
+		"initialTime": 28.8661,
+		"averageDelayTime": 0.0448956,
+		"responseTimes": 343,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 329,
+		"haveP2P": 1
+	},
+	{
+		"userID": "378683839007119694913罗林",
+		"sceneName": "demo3",
+		"initialTime": 8.4274,
+		"averageDelayTime": 0.272984,
+		"responseTimes": 88,
+		"rpstFromServer": 16,
+		"rpstFromPeer": 72,
+		"haveP2P": 1
+	},
+	{
+		"userID": "102392304254719694931刘诗涵",
+		"sceneName": "demo3",
+		"initialTime": 21.2303,
+		"averageDelayTime": 0.1569,
+		"responseTimes": 4,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "162191753946219694911null",
+		"sceneName": "demo3",
+		"initialTime": 8.918,
+		"averageDelayTime": 0.0506509,
+		"responseTimes": 275,
+		"rpstFromServer": 20,
+		"rpstFromPeer": 255,
+		"haveP2P": 1
+	},
+	{
+		"userID": "562225526192219694917马天 西科大",
+		"sceneName": "demo3",
+		"initialTime": 2.9036,
+		"averageDelayTime": 0.21503,
+		"responseTimes": 20,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 11,
+		"haveP2P": 0
+	},
+	{
+		"userID": "187947499922219694920张艺腾",
+		"sceneName": "demo3",
+		"initialTime": 27.7868,
+		"averageDelayTime": 0.0726531,
+		"responseTimes": 49,
+		"rpstFromServer": 12,
+		"rpstFromPeer": 37,
+		"haveP2P": 1
+	},
+	{
+		"userID": "148015917591519694943null",
+		"sceneName": "demo3",
+		"initialTime": 4.04,
+		"averageDelayTime": 0.129841,
+		"responseTimes": 63,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 57,
+		"haveP2P": 1
+	},
+	{
+		"userID": "149141808075619694923修磊",
+		"sceneName": "demo3",
+		"initialTime": 3.12072,
+		"averageDelayTime": 0.033159,
+		"responseTimes": 459,
+		"rpstFromServer": 22,
+		"rpstFromPeer": 437,
+		"haveP2P": 1
+	},
+	{
+		"userID": "406334953845419694947王爽",
+		"sceneName": "demo3",
+		"initialTime": 49.0575,
+		"averageDelayTime": 0.423233,
+		"responseTimes": 9,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "306142718011019694938李阳",
+		"sceneName": "demo3",
+		"initialTime": 8.8761,
+		"averageDelayTime": 0.332925,
+		"responseTimes": 4,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "761308990022719694943吕德生",
+		"sceneName": "demo3",
+		"initialTime": 4.8766,
+		"averageDelayTime": 0.302821,
+		"responseTimes": 14,
+		"rpstFromServer": 7,
+		"rpstFromPeer": 7,
+		"haveP2P": 0
+	},
+	{
+		"userID": "160061037039919694950韩佳乐",
+		"sceneName": "demo3",
+		"initialTime": 25.7115,
+		"averageDelayTime": 0.0841454,
+		"responseTimes": 169,
+		"rpstFromServer": 8,
+		"rpstFromPeer": 161,
+		"haveP2P": 1
+	},
+	{
+		"userID": "080102012737619694943周楷彬",
+		"sceneName": "demo3",
+		"initialTime": 23.154,
+		"averageDelayTime": 0.0486652,
+		"responseTimes": 136,
+		"rpstFromServer": 8,
+		"rpstFromPeer": 128,
+		"haveP2P": 1
+	},
+	{
+		"userID": "768123697962719694961null",
+		"sceneName": "demo3",
+		"initialTime": 11.8286,
+		"averageDelayTime": 0.15321,
+		"responseTimes": 41,
+		"rpstFromServer": 10,
+		"rpstFromPeer": 31,
+		"haveP2P": 0
+	},
+	{
+		"userID": "970644214346019694962周辰",
+		"sceneName": "demo3",
+		"initialTime": 13.9308,
+		"averageDelayTime": 0.255725,
+		"responseTimes": 12,
+		"rpstFromServer": 8,
+		"rpstFromPeer": 4,
+		"haveP2P": 0
+	},
+	{
+		"userID": "729548081506419694957李晓明",
+		"sceneName": "demo3",
+		"initialTime": 17.2647,
+		"averageDelayTime": 0.0364997,
+		"responseTimes": 599,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 594,
+		"haveP2P": 1
+	},
+	{
+		"userID": "319329477947319694949null",
+		"sceneName": "demo3",
+		"initialTime": 6.5088,
+		"averageDelayTime": 0.0884306,
+		"responseTimes": 72,
+		"rpstFromServer": 46,
+		"rpstFromPeer": 26,
+		"haveP2P": 1
+	},
+	{
+		"userID": "202243066198619694973余辰",
+		"sceneName": "demo3",
+		"initialTime": 26.6284,
+		"averageDelayTime": 0.633283,
+		"responseTimes": 6,
+		"rpstFromServer": 3,
+		"rpstFromPeer": 3,
+		"haveP2P": 0
+	},
+	{
+		"userID": "588008992949519694983null",
+		"sceneName": "demo3",
+		"initialTime": 16.58,
+		"averageDelayTime": 0.2736,
+		"responseTimes": 5,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "072301622883919694981null",
+		"sceneName": "szt",
+		"initialTime": 6.6767,
+		"averageDelayTime": 0.0576536,
+		"responseTimes": 153,
+		"rpstFromServer": 10,
+		"rpstFromPeer": 143,
+		"haveP2P": 1
+	},
+	{
+		"userID": "788603520762419694972null",
+		"sceneName": "demo3",
+		"initialTime": 2.4856,
+		"averageDelayTime": 0.0634157,
+		"responseTimes": 115,
+		"rpstFromServer": 11,
+		"rpstFromPeer": 104,
+		"haveP2P": 1
+	},
+	{
+		"userID": "253640633098419694989null",
+		"sceneName": "demo3",
+		"initialTime": 10.6624,
+		"averageDelayTime": 0.0249078,
+		"responseTimes": 243,
+		"rpstFromServer": 8,
+		"rpstFromPeer": 235,
+		"haveP2P": 0
+	},
+	{
+		"userID": "854593271217019695008李煜",
+		"sceneName": "demo3",
+		"initialTime": 13.7936,
+		"averageDelayTime": 0.0314712,
+		"responseTimes": 125,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 116,
+		"haveP2P": 1
+	},
+	{
+		"userID": "879977057590119694998null",
+		"sceneName": "demo3",
+		"initialTime": 25.6099,
+		"averageDelayTime": 0.241271,
+		"responseTimes": 7,
+		"rpstFromServer": 7,
+		"rpstFromPeer": 0,
+		"haveP2P": 1
+	},
+	{
+		"userID": "886426438809519695016null",
+		"sceneName": "demo3",
+		"initialTime": 8.704,
+		"averageDelayTime": 0.0797857,
+		"responseTimes": 28,
+		"rpstFromServer": 22,
+		"rpstFromPeer": 6,
+		"haveP2P": 0
+	},
+	{
+		"userID": "507779624913019695004沈卓玥",
+		"sceneName": "demo3",
+		"initialTime": 19.6395,
+		"averageDelayTime": 0.38968,
+		"responseTimes": 15,
+		"rpstFromServer": 15,
+		"rpstFromPeer": 0,
+		"haveP2P": 0
+	},
+	{
+		"userID": "906328291292419695021小学生",
+		"sceneName": "demo3",
+		"initialTime": 27.1564,
+		"averageDelayTime": 0.545786,
+		"responseTimes": 7,
+		"rpstFromServer": 6,
+		"rpstFromPeer": 1,
+		"haveP2P": 1
+	},
+	{
+		"userID": "442405877542919695043耿楚涵",
+		"sceneName": "szt",
+		"initialTime": 2.09987,
+		"averageDelayTime": 0.094456,
+		"responseTimes": 39,
+		"rpstFromServer": 11,
+		"rpstFromPeer": 28,
+		"haveP2P": 1
+	},
+	{
+		"userID": "694238007725719695019null",
+		"sceneName": "demo3",
+		"initialTime": 6.2307,
+		"averageDelayTime": 0.11717,
+		"responseTimes": 37,
+		"rpstFromServer": 15,
+		"rpstFromPeer": 22,
+		"haveP2P": 0
+	},
+	{
+		"userID": "988203329988219695037打打",
+		"sceneName": "demo3",
+		"initialTime": 9.1649,
+		"averageDelayTime": 0.0527487,
+		"responseTimes": 374,
+		"rpstFromServer": 19,
+		"rpstFromPeer": 355,
+		"haveP2P": 1
+	},
+	{
+		"userID": "267220312984419695015邵慧慧",
+		"sceneName": "demo3",
+		"initialTime": 6.0334,
+		"averageDelayTime": 0.0415002,
+		"responseTimes": 481,
+		"rpstFromServer": 10,
+		"rpstFromPeer": 471,
+		"haveP2P": 0
+	},
+	{
+		"userID": "698575620009119695054李娇娇",
+		"sceneName": "szt",
+		"initialTime": 3.9974,
+		"averageDelayTime": 0.11628,
+		"responseTimes": 69,
+		"rpstFromServer": 7,
+		"rpstFromPeer": 62,
+		"haveP2P": 1
+	},
+	{
+		"userID": "373817566006519694848李鑫康",
+		"sceneName": "demo3",
+		"initialTime": 11.787,
+		"averageDelayTime": 0.0501607,
+		"responseTimes": 445,
+		"rpstFromServer": 21,
+		"rpstFromPeer": 424,
+		"haveP2P": 1
+	},
+	{
+		"userID": "002731893322519695041石敏江",
+		"sceneName": "demo3",
+		"initialTime": 5.5181,
+		"averageDelayTime": 0.0304672,
+		"responseTimes": 174,
+		"rpstFromServer": 17,
+		"rpstFromPeer": 157,
+		"haveP2P": 0
+	},
+	{
+		"userID": "477517673589819695072叶智杭",
+		"sceneName": "demo3",
+		"initialTime": 14.0544,
+		"averageDelayTime": 0.0414006,
+		"responseTimes": 128,
+		"rpstFromServer": 34,
+		"rpstFromPeer": 94,
+		"haveP2P": 0
+	},
+	{
+		"userID": "254997356227519695018周舟",
+		"sceneName": "demo3",
+		"initialTime": 5.1108,
+		"averageDelayTime": 0.223991,
+		"responseTimes": 23,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 14,
+		"haveP2P": 0
+	},
+	{
+		"userID": "337590243441219695092陈帅言",
+		"sceneName": "demo3",
+		"initialTime": 6.3247,
+		"averageDelayTime": 0.229132,
+		"responseTimes": 53,
+		"rpstFromServer": 42,
+		"rpstFromPeer": 11,
+		"haveP2P": 0
+	},
+	{
+		"userID": "787564609336519695110董雨",
+		"sceneName": "szt",
+		"initialTime": 3.895,
+		"averageDelayTime": 0.0383676,
+		"responseTimes": 330,
+		"rpstFromServer": 10,
+		"rpstFromPeer": 320,
+		"haveP2P": 0
+	},
+	{
+		"userID": "607695988472519695124盘江涛",
+		"sceneName": "demo3",
+		"initialTime": 4.40893,
+		"averageDelayTime": 0.101685,
+		"responseTimes": 44,
+		"rpstFromServer": 41,
+		"rpstFromPeer": 3,
+		"haveP2P": 0
+	},
+	{
+		"userID": "206903346813319695123耿楚涵",
+		"sceneName": "szt",
+		"initialTime": 2.31066,
+		"averageDelayTime": 0.0548913,
+		"responseTimes": 67,
+		"rpstFromServer": 15,
+		"rpstFromPeer": 52,
+		"haveP2P": 0
+	},
+	{
+		"userID": "083192303934819695124王泽",
+		"sceneName": "demo3",
+		"initialTime": 3.9256,
+		"averageDelayTime": 0.0766045,
+		"responseTimes": 67,
+		"rpstFromServer": 24,
+		"rpstFromPeer": 43,
+		"haveP2P": 0
+	},
+	{
+		"userID": "657483284807919695212王艺霖",
+		"sceneName": "demo3",
+		"initialTime": 7.5246,
+		"averageDelayTime": 0.109244,
+		"responseTimes": 18,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 4,
+		"haveP2P": 0
+	},
+	{
+		"userID": "723049295354419695205null",
+		"sceneName": "demo3",
+		"initialTime": 11.5008,
+		"averageDelayTime": 0.0587116,
+		"responseTimes": 232,
+		"rpstFromServer": 20,
+		"rpstFromPeer": 212,
+		"haveP2P": 1
+	},
+	{
+		"userID": "481944001085519695226余金艳",
+		"sceneName": "demo3",
+		"initialTime": 13.5709,
+		"averageDelayTime": 0.0480353,
+		"responseTimes": 674,
+		"rpstFromServer": 37,
+		"rpstFromPeer": 637,
+		"haveP2P": 1
+	},
+	{
+		"userID": "543066876774819695275董雨",
+		"sceneName": "demo3",
+		"initialTime": 11.095,
+		"averageDelayTime": 0.096377,
+		"responseTimes": 187,
+		"rpstFromServer": 28,
+		"rpstFromPeer": 159,
+		"haveP2P": 1
+	},
+	{
+		"userID": "669822701808619695272任珊珊",
+		"sceneName": "demo3",
+		"initialTime": 3.8795,
+		"averageDelayTime": 0.0483158,
+		"responseTimes": 202,
+		"rpstFromServer": 27,
+		"rpstFromPeer": 175,
+		"haveP2P": 0
+	},
+	{
+		"userID": "076418142397119695265贾小玉",
+		"sceneName": "demo3",
+		"initialTime": 7.79389,
+		"averageDelayTime": 0.111642,
+		"responseTimes": 29,
+		"rpstFromServer": 19,
+		"rpstFromPeer": 10,
+		"haveP2P": 1
+	},
+	{
+		"userID": "266809505397119695256何鑫",
+		"sceneName": "szt",
+		"initialTime": 5.9287,
+		"averageDelayTime": 0.328833,
+		"responseTimes": 15,
+		"rpstFromServer": 5,
+		"rpstFromPeer": 10,
+		"haveP2P": 0
+	},
+	{
+		"userID": "917106117810319695307null",
+		"sceneName": "szt",
+		"initialTime": 3.2346,
+		"averageDelayTime": 0.0727442,
+		"responseTimes": 104,
+		"rpstFromServer": 14,
+		"rpstFromPeer": 90,
+		"haveP2P": 1
+	},
+	{
+		"userID": "633388119666419695381余金艳",
+		"sceneName": "demo3",
+		"initialTime": 8.80678,
+		"averageDelayTime": 0.0849925,
+		"responseTimes": 295,
+		"rpstFromServer": 24,
+		"rpstFromPeer": 271,
+		"haveP2P": 0
+	},
+	{
+		"userID": "497469660479819695430栗菲旋",
+		"sceneName": "demo3",
+		"initialTime": 7.999,
+		"averageDelayTime": 0.172167,
+		"responseTimes": 6,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 2,
+		"haveP2P": 1
+	},
+	{
+		"userID": "764892992190419695434null",
+		"sceneName": "szt",
+		"initialTime": 4.327,
+		"averageDelayTime": 0.0654581,
+		"responseTimes": 74,
+		"rpstFromServer": 9,
+		"rpstFromPeer": 65,
+		"haveP2P": 0
+	}
+]
