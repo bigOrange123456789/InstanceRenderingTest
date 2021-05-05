@@ -1,0 +1,42 @@
+[
+	{
+		"userID": "251529068224519693990吴越",
+		"sceneName": "szt",
+		"initialTime": 1,
+		"averageDelayTime": 1,
+		"responseTimes": 1,
+		"rpstFromServer": 1,
+		"rpstFromPeer": 1,
+		"haveP2P": 0
+	},
+	{
+		"userID": "807872618536319694000马莞强",
+		"sceneName": "szt",
+		"initialTime": 2,
+		"averageDelayTime": 2,
+		"responseTimes": 2,
+		"rpstFromServer": 2,
+		"rpstFromPeer": 2,
+		"haveP2P": 1
+	},
+	{
+		"userID": "205563961916219693992张艺腾",
+		"sceneName": "demo3",
+		"initialTime": 3.1169,
+		"averageDelayTime": 0.0424863,
+		"responseTimes": 51,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 47,
+		"haveP2P": 1
+	},
+	{
+		"userID": "205563961916219693992张艺腾",
+		"sceneName": "demo3",
+		"initialTime": 3.1169,
+		"averageDelayTime": 0.0424863,
+		"responseTimes": 51,
+		"rpstFromServer": 4,
+		"rpstFromPeer": 47,
+		"haveP2P": 0
+	}
+]

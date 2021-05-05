@@ -27,7 +27,17 @@
 					for(var i=0;i<scope.sceneNames.length;i++){
 						scope[scope.sceneNames[i]].process();
 					}
-					scope.#print()
+					//scope.#print()
+					//scope.download(scope.demo3.p2p,"demo3.p2p");
+					//scope.download(scope.demo3.nop2p,"demo3.nop2p");
+				}
+				download=function (json,name) {
+					var str=JSON.stringify(json);
+					var myBlob=new Blob([str], { type: 'text/plain' })
+					let link = document.createElement('a');
+					link.href = URL.createObjectURL(myBlob);
+					link.download = name+".json";
+					link.click();
 				}
 				#computeSceneName=function () {
 					var scope=this;
@@ -135,19 +145,20 @@
 					data.userNumber=arr.length;
 					for (i=0;i<param.length;i++) {
 						var key=param[i];
-						data[key]=MaMiAvEr(arr,key)
+						data[key]=MaMiAvEr(arr,key);
 					}
 					data.print=print();
-					console.log(data.print)
-					console.log(data.print.toString())
+					//console.log(data.print)
+					//console.log(data.print.toString())
 					function MaMiAvEr(arr,name) {
-						console.log(name);
+						var data=[]
 						var max=-99999999;//arr[0][name];
 						var min=999999999;//arr[0][name];
 						var sum=0;
 						var error=0;
 						for(var i=0;i<arr.length;i++){
 							var n=arr[i][name];
+							data.push(n);
 							if(n===null){
 								error++;
 								continue;
@@ -156,11 +167,15 @@
 							if(n<min)min=n;
 							sum+=n;
 						}
+
+						//var ave=sum/(arr.length-error);
+						var ave=(sum-max-min)/(arr.length-error-2);
 						return {
 							max:max,
 							min:min,
-							ave:sum/(arr.length-error),
-							err:error
+							ave:ave,
+							err:error,
+							data:data
 						};
 					}
 					function print(){
@@ -189,166 +204,14 @@
 				request.send(null);/*不发送数据到服务器*/
 				request.onload = function () {/*XHR对象获取到返回信息后执行*/
 					if (request.status === 200) {/*返回状态为200，即为数据获取成功*/
-						var json = JSON.parse(request.responseText);
-						console.log(json)
-						process(json);//
-						//process(json.data);
+						var arr = JSON.parse(request.responseText);
+						var analysisResult=new AnalysisResult();
+						analysisResult.init(arr);
+						analysisResult.process();
+						console.log(analysisResult)
 					}
 				}
 			}
-			function process(arr) {
-				//
-				var analysisResult=new AnalysisResult();
-				analysisResult.init(arr);
-				analysisResult.process();
-				console.log(analysisResult)
-
-				//
-				for(i=0;i<sceneNames.length;i++){
-					result=analysis(analysisResult[sceneNames[i]].p2p.AllData)
-					console.log(sceneNames[i])
-				}
-				//analysis(cgmp2p)
-
-				for(var i=arr.length-1;i>=0;i--){
-					if(arr[i].sceneName==='cgm'){
-						if(arr[i].haveP2P===1)cgmp2p.push(arr[i]);
-						else cgm.push(arr[i]);
-					}else{
-						if(arr[i].haveP2P===1)demo1p2p.push(arr[i]);
-						else demo1.push(arr[i]);
-					}
-				}
-
-				var cgm=[];
-				var cgmp2p=[];
-				var demo1=[];
-				var demo1p2p=[];
-
-				for(var i=arr.length-1;i>=0;i--){
-					if(arr[i].sceneName==='cgm'){
-						if(arr[i].haveP2P===1)cgmp2p.push(arr[i]);
-						else cgm.push(arr[i]);
-					}else{
-						if(arr[i].haveP2P===1)demo1p2p.push(arr[i]);
-						else demo1.push(arr[i]);
-					}
-				}
-				console.log(
-						"cgmp2p",cgmp2p,
-						"cgm",cgm,
-						"demo1p2p",demo1p2p,
-						"demo1",demo1
-				);
-
-				var data1={
-					cgmp2p:analysis(cgmp2p),
-					cgm:analysis(cgm),
-					demo1p2p:analysis(demo1p2p),
-					demo1:analysis(demo1),
-				}
-				console.log(data1)
-
-				var data2={
-					averageDelayTime:{
-						cgmp2p:data1.cgmp2p.averageDelayTime,
-						cgm:data1.cgm.averageDelayTime,
-						demo1p2p:data1.demo1p2p.averageDelayTime,
-						demo1:data1.demo1.averageDelayTime
-					},
-					initialTime:{
-						cgmp2p:data1.cgmp2p.initialTime,
-						cgm:data1.cgm.initialTime,
-						demo1p2p:data1.demo1p2p.initialTime,
-						demo1:data1.demo1.initialTime
-					},
-					responseTimes:{
-						cgmp2p:data1.cgmp2p.responseTimes,
-						cgm:data1.cgm.responseTimes,
-						demo1p2p:data1.demo1p2p.responseTimes,
-						demo1:data1.demo1.responseTimes
-					},
-					rpstFromPeer:{
-						cgmp2p:data1.cgmp2p.rpstFromPeer,
-						cgm:data1.cgm.rpstFromPeer,
-						demo1p2p:data1.demo1p2p.rpstFromPeer,
-						demo1:data1.demo1.rpstFromPeer
-					},
-					rpstFromServer:{
-						cgmp2p:data1.cgmp2p.rpstFromServer,
-						cgm:data1.cgm.rpstFromServer,
-						demo1p2p:data1.demo1p2p.rpstFromServer,
-						demo1:data1.demo1.rpstFromServer
-					}
-				}
-				console.log(data2);
-			}
-			function f() {
-				var name1=[
-					"cgmp2p",
-					"cgm",
-					"demo1p2p",
-					"demo1"
-				];
-				var name2=[
-					"averageDelayTime",
-					"initialTime",
-					"responseTimes",
-					"rpstFromPeer",
-					"rpstFromServer",
-				];
-				var data2= {};
-				for(var i=0;i<name1.length;i++){
-					data2[name1[i]]={};
-					for(var j=0;j<name2.length;j++){
-						data2[name1[i]][name2[j]]=data1[name2[j]][name1[i]];
-					}
-				}
-				console.log(data2)
-			}
-
-			function analysis(arr){
-				var result={};
-				result.userNumber=arr.length;
-				console.log(
-						MaMiAvEr(arr,"averageDelayTime"),//平均漫游延迟时间
-						MaMiAvEr(arr,"initialTime"),
-						MaMiAvEr(arr,"responseTimes"),//视点同步总次数
-						MaMiAvEr(arr,"rpstFromPeer"),//可视列表来自自己或者邻居
-						MaMiAvEr(arr,"rpstFromServer"),//可视列表来自服务器的计算
-				);
-				return {
-					"averageDelayTime":MaMiAvEr(arr,"averageDelayTime"),//平均漫游延迟时间
-					"initialTime":MaMiAvEr(arr,"initialTime"),
-					"responseTimes":MaMiAvEr(arr,"responseTimes"),//视点同步总次数
-					"rpstFromPeer":MaMiAvEr(arr,"rpstFromPeer"),//可视列表来自自己或者邻居
-					"rpstFromServer":MaMiAvEr(arr,"rpstFromServer"),//可视列表来自服务器的计算
-				}
-			}
-			function MaMiAvEr(arr,name) {
-				console.log(name);
-				var max=-99999999;//arr[0][name];
-				var min=999999999;//arr[0][name];
-				var sum=0;
-				var error=0;
-				for(var i=0;i<arr.length;i++){
-					var n=arr[i][name];
-					if(n===null){
-						error++;
-						continue;
-					}
-					if(n>max)max=n;
-					if(n<min)min=n;
-					sum+=n;
-				}
-				return {
-					max:max,
-					min:min,
-					ave:sum/(arr.length-error),
-					err:error
-				};
-			}
-
 		</script>
 	</body>
 </html>
