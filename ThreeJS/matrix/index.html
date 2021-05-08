@@ -18,15 +18,10 @@
 
 	<script  type="module">
 		var mesh1=new THREE.Mesh();
-		mesh1.rotation.set(0,0,Math.PI/2);
+		mesh1.rotation.set(0,0,1);
 		var mesh2=new THREE.Mesh();
-		mesh2.rotation.set(0,0,-Math.PI/2)
-		mesh2.applyMatrix(new THREE.Matrix4().set(
-				1, 0, 0, 0,
-				0, 1, 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1
-		));
+		mesh2.rotation.set(0,0,-2)
+		mesh2.applyMatrix(new THREE.Matrix4().identity ());
 		mesh1.applyMatrix(mesh2.matrix);
 		console.log(mesh1.matrix)
 		console.log(mesh1.rotation.z)
