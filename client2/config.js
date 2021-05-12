@@ -1,4 +1,4 @@
-let ipconfig ='47.117.83.255';// '101.132.25.75'
+let ipconfig ='100.67.124.45';// '101.132.25.75'
 //unity视点服务器：cgm的端口是8081； demo1的端口是8082；
 let host = ipconfig;
 let port;
