@@ -28,7 +28,7 @@ class RoomManager{
 
         scope.loader= new THREE.GLTFLoader();
         scope.room=new THREE.Object3D();
-        scope.room.applyMatrix(new THREE.Matrix4().set(
+        scope.room.applyMatrix4(new THREE.Matrix4().set(
             -1, 0, 0, 0,
             0, 0, 1, 0,
             0, 1, 0, 0,
