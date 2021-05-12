@@ -1,4 +1,4 @@
-export {ResourceLoader};
+export {ResourceLoader,ResourceList};
 class ResourceLoader{
     url;//资源路径
     camera;
@@ -159,6 +159,23 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
     testObj;//=new THREE.Object3D();
     //每接收一次数据进行一次计算
+    static remove(arr,element){
+        for(var i=0;i<arr.length;i++)
+            if(typeof(element)==="string"){
+                if(arr[i].fileName===element)arr.splice(i,1);
+            }else{
+                if(arr[i]===element)arr.splice(i,1);
+            }
+    }
+    modelsPop(element){
+        if(element instanceof Array){
+            for(var i=0;i<element.length;i++)
+                this.modelsPop(element[i])
+            //ResourceList.remove(this.models,elements[i])
+        }else{
+            ResourceList.remove(this.models,element)
+        }
+    }
     constructor (input) {
         var scope=this;
         window.l=this;
@@ -198,21 +215,57 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             }
         }
     }
-    getOneModelFileName=function(){
+    getOneModelFileName=function(opt){
+        var scope=this;
+        return scope.getModelFileName(opt);
+    }
+    getModelFileName=function(opt){
+        opt=opt||{};
+        var n=opt.n===undefined?1:opt.n;
+        var finishLoad=opt.finishLoad===undefined?true:opt.finishLoad;
+
         var scope=this;
         var list=getModelList();
         if(list.length===0)return null;
-        var _model= {interest:-1};//记录兴趣度最大的资源
 
+        if(n===1){
+            var model_max= {interest:-1};//记录兴趣度最大的资源
 
-        for(var i=0;i<list.length;i++){
-            var model=scope.getModelByName(list[i]);
-            if(model.interest>_model.interest){
-                _model=model;
+            //arr.splice
+            for(var i=0;i<list.length;i++){
+                var model=scope.getModelByName(list[i]);
+                if(model.interest>model_max.interest){
+                    model_max=model;
+                }
             }
+            if(finishLoad)model_max.finishLoad=true;
+            //scope.modelsPop(model_max)
+            return model_max.fileName;
+        }else{
+            var models_max=[];
+            if(n>list.length)n=list.length;
+            for(i=0;i<n;i++){
+                models_max.push({interest:-1});//记录兴趣度最大的资源
+            }
+            for(i=0;i<list.length;i++)
+                insert(
+                    models_max,
+                    scope.getModelByName(list[i])
+                )
+            function insert(arr,element) {
+                for(var k=arr.length-1;k>=0;k--)
+                    if(arr[k].interest>=element.interest)break;
+                if(k<arr.length-1)
+                    models_max.splice(k+1,1,element);
+            }
+            var result=[];
+            for(i=0;i<models_max.length;i++){
+                if(finishLoad)models_max[i].finishLoad=true;
+                result.push(models_max[i].fileName);
+            }
+            return result;
         }
-        _model.finishLoad=true;
-        return _model.fileName;
+
         function getModelList(){//返回在视锥内且未被加载的资源列表
             scope.#update();//计算每个模型的inView
             var list=[];
@@ -244,10 +297,11 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             var list=[];
             for(let i=0;i<scope.maps.length;i++){
                 var model=scope.getModelByName(scope.maps[i].modelName);
-                if(model.finishLoad
-                    &&model.inView
-                    &&!scope.maps[i].finishLoad)
-                    list.push(scope.maps[i].fileName);
+                if(model.finishLoad&&model.inView){
+                    if(!scope.maps[i].finishLoad)
+                        list.push(scope.maps[i].fileName);
+                }
+
             }
             return list;
         }
@@ -270,6 +324,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
             const projScreenMatrix = new THREE.Matrix4();
             projScreenMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
+            //console.log(frustum,projScreenMatrix)
             frustum.setFromProjectionMatrix(projScreenMatrix);
             scope.frustum=frustum;
         }

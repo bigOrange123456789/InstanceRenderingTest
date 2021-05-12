@@ -87,21 +87,6 @@
 			resourceList.modelsPop(name0);
 		}
 		myCallback_get=function (){//加载成功了一个后立即加载另一个
-			/*var names=resourceList.getModelFileName({n:500});
-			if(names){
-				var visibleList0=getVisibleList(names);
-				requestModelPackage(visibleList0, 0);
-			}
-			function getVisibleList(names){
-				var visibleList="";
-				for(var i=0;i<names.length;i++){
-					var name=names[i];
-					name=name.substr(0,name.length-4);
-					visibleList=visibleList+name+"/";
-				}
-				return visibleList;
-			}
-			*/
 		}
 		var myCallback_get0=function (n){//加载成功了一个后立即加载另一个
 			var names=resourceList.getModelFileName({n:n});

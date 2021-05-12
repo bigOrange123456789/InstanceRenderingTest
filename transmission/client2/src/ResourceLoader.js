@@ -1,88 +1,5 @@
-export {ResourceList};
+export {ResourceLoader,ResourceList};
 class ResourceLoader{
-    url;//资源路径
-    camera;
-    cameraPre;
-    unitProcess;
-
-    NumberWaitMaps;//等待加载的贴图个数
-
-    object;
-    loader;//模型加载器
-    resourceList;
-    test=false;//true;//
-    successNumber;
-    failNumber;
-    useDraco;
-    constructor(opt){
-        this.useDraco=opt.useDraco===undefined?false:opt.useDraco;
-        this.NumberWaitMaps=0;//等待加载的贴图个数
-        this.url=opt.url;
-        this.camera=opt.camera;
-        this.unitProcess=opt.unitProcess;
-        this.successNumber=0;//加载成功的次数
-        this.failNumber=0;//加载失败的次数
-
-        this.cameraPre={};
-        this.object=new THREE.Object3D();
-        this.loader= new THREE.GLTFLoader();
-        var scope=this;
-        var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
-        loader.load(this.url+"resourceInfo.json", function(str){//dataTexture
-            var resourceInfo=JSON.parse(str);
-            scope.resourceList=new ResourceList(
-                {resourceInfo:resourceInfo,camera:scope.camera,test:scope.test}
-            );
-            if(scope.test)scope.object.add(scope.resourceList.testObj);
-            scope.#loadGeometry();
-        });
-    }
-    #loadGeometry=function(){
-        var scope=this;
-        load();
-        function load() {
-            var fileName=scope.resourceList.getModelFileName();
-            if(!fileName){//如果当前没有需要加载的几何文件
-                updateCameraPre();
-                var myInterval=setInterval(function () {
-                    if(cameraHasChanged()){//如果相机位置和角度发生了变化
-                        load();
-                        clearInterval(myInterval);
-                    }
-                },100);
-            }else {//scope.useDraco
-                scope.loader.load(scope.url+fileName, (gltf) => {
-                    if(scope.resourceList.getModelByName(fileName)!=="")
-                        scope.NumberWaitMaps++;//如果这个几何数据需要加载对应的贴图资源
-                    var mesh0=gltf.scene.children[0];
-                    mesh0.nameFlag=fileName;
-                    scope.unitProcess(gltf);
-                    scope.object.add(mesh0);
-                    load();
-                    scope.successNumber++;
-                    console.log("成功次数:"+scope.successNumber)
-                },function () {
-                    load();
-                    scope.failNumber++;
-                    console.log("失败次数:"+scope.failNumber)
-                });
-            }
-            function updateCameraPre(){
-                scope.cameraPre.position=scope.camera.position.clone();
-                scope.cameraPre.rotation=scope.camera.rotation.clone();
-            }
-            function cameraHasChanged(){
-                return scope.camera.position.x !== scope.cameraPre.position.x ||
-                    scope.camera.position.y !== scope.cameraPre.position.y ||
-                    scope.camera.position.z !== scope.cameraPre.position.z ||
-                    scope.camera.rotation.x !== scope.cameraPre.rotation.x ||
-                    scope.camera.rotation.y !== scope.cameraPre.rotation.y ||
-                    scope.camera.rotation.z !== scope.cameraPre.rotation.z;
-            }
-        }
-    }
-}
-class ResourceLoader0{
     url;//资源路径
     camera;
     cameraPre;
@@ -128,7 +45,7 @@ class ResourceLoader0{
         var scope=this;
         load();
         function load() {
-            var fileName=scope.resourceList.getModelFileName();
+            var fileName=scope.resourceList.getOneModelFileName();
             if(!fileName){//如果当前没有需要加载的几何文件
                 updateCameraPre();
                 var myInterval=setInterval(function () {
@@ -147,11 +64,11 @@ class ResourceLoader0{
                     scope.object.add(mesh0);
                     load();
                     scope.successNumber++;
-                    console.log("成功次数:"+scope.successNumber)
+                    //console.log("成功次数:"+scope.successNumber)
                 },function () {
                     load();
                     scope.failNumber++;
-                    console.log("失败次数:"+scope.failNumber)
+                    //console.log("失败次数:"+scope.failNumber)
                 });
             }else{
                 loadGlb(
@@ -254,7 +171,6 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         if(element instanceof Array){
             for(var i=0;i<element.length;i++)
                 this.modelsPop(element[i])
-                //ResourceList.remove(this.models,elements[i])
         }else{
             ResourceList.remove(this.models,element)
         }
@@ -298,6 +214,10 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             }
         }
     }
+    getOneModelFileName=function(opt){
+        var scope=this;
+        return scope.getModelFileName(opt);
+    }
     getModelFileName=function(opt){
         opt=opt||{};
         var n=opt.n===undefined?1:opt.n;
@@ -330,7 +250,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 insert(
                     models_max,
                     scope.getModelByName(list[i])
-                    )
+                )
             function insert(arr,element) {
                 for(var k=arr.length-1;k>=0;k--)
                     if(arr[k].interest>=element.interest)break;

@@ -374,13 +374,7 @@ function makeInstanced(geo, mtxObj, oriName, type) {
     }
 
     let color = selectMaterialByType(type);
-    // let myTexture = selectTextureByType(type,sceneScale);
-
-    // var uniforms = {
-    //     texture: {type: 't', value: myTexture}
-    // };
     var material = new THREE.RawShaderMaterial({
-        // uniforms: uniforms,
         vertexShader: vert,
         fragmentShader: frag
     });
@@ -406,7 +400,6 @@ function makeInstanced(geo, mtxObj, oriName, type) {
     );
 
     //设置原始mesh的变换矩阵与名称
-    //setXYZ(i,x,y,z)
     mcol0.setXYZ(0, 1, 0, 0);
     mcol1.setXYZ(0, 0, 1, 0);
     mcol2.setXYZ(0, 0, 0, 1);
@@ -433,14 +426,6 @@ function makeInstanced(geo, mtxObj, oriName, type) {
         colors.setXYZ(i, color.r, color.g, color.b);
     }
     igeo.addAttribute('color', colors);
-
-    // var uvs = new THREE.InstancedBufferAttribute(
-    // new Float32Array(geo.attributes.uv.length * instanceCount), 2
-    // );
-    // for (let i = 0, ul = instanceCount; i < ul; i++) {
-    // uvs.set(geo.attributes.uv.array, geo.attributes.uv.length * i);
-    // }
-    // igeo.addAttribute('uv', geo.attributes.uv.clone());
 
     // mesh
     var mesh = new THREE.Mesh(igeo, material);
