@@ -75,15 +75,6 @@ function init() {
 
     // controls
     new PlayerControl(camera);
-    /*controls = new THREE.OrbitControls(camera, renderer.domElement);
-    // controls.target.set(16, 6, -61);//newModel
-    // controls.target.set(-2, 46, 4);//hyModel
-    // controls.target.set(11, -61, 3);//cgm_old
-    controls.target.set(-25, -5, 63);//cgm_new
-    // controls.target.set(-28, 24, 10);//szt
-    // controls.target.set(10, 7, 9);//demo1
-    controls.saveState();*/
-
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.8));
 
@@ -241,12 +232,12 @@ function requestModelPackage(visibleList, type) {//获取模型资源
     let postData = "";
     let tempModelArr = visibleList.split('/');
     for (let i = 0; i < tempModelArr.length - 1; i++) {
-        if (ModelHasBeenLoaded.indexOf(tempModelArr[i]) == -1) {
+        if (ModelHasBeenLoaded.indexOf(tempModelArr[i]) === -1) {
             postData += tempModelArr[i] + '/';
             packSize++;
         }
-        if (packSize >= NUM_PACKAGE || i == tempModelArr.length - 2) {
-            if (postData.length != 0) {
+        if (packSize >= NUM_PACKAGE || i === tempModelArr.length - 2) {
+            if (postData.length !== 0) {
                 requestModelPackageByHttp(postData, type);
                 packSize = 0;
                 postData = "";
@@ -277,7 +268,7 @@ function requestModelPackageByHttp(visibleList, type) {
             if (!glbLengthArr[i])
                 continue;
             let buffer = glbData.slice(totalLength, totalLength + 1.0 * glbLengthArr[i]);
-            reuseDataParser(buffer, i == glbLengthArr.length - 2);
+            reuseDataParser(buffer, i === glbLengthArr.length - 2);
             totalLength += 1.0 * glbLengthArr[i];
         }
         if(myCallback_get)myCallback_get();//myCallback_pop,myCallback_get//收到一个数据包后再请求对方发一个数据包
@@ -288,7 +279,7 @@ function requestModelPackageByHttp(visibleList, type) {
         //console.log("响应间隔：" + tempDelay.toFixed(2) + "S");
         startTime = endTime;
         //type用于区分可视列表的来源，1：peer 2：服务器
-        if (type == 1) {
+        if (type === 1) {
             synTotalTimes++;
             synFromPeerTimes++;
         } else {
@@ -333,10 +324,16 @@ function reuseDataParser(data, isLastModel) {
             }
             // mesh.material.color = color;
             // mesh.material.side = THREE.DoubleSide;
-            sceneRoot.add(mesh);
+            setTimeout(function () {
+                sceneRoot.add(mesh);
+                window.n++;
+            },window.n*window.time)
             ModelHasBeenLoaded.push(mesh.name);
         } else {
-            makeInstanced(geo, JSON.parse(matrixObj), name, type);
+            setTimeout(function () {
+                makeInstanced(geo, JSON.parse(matrixObj), name, type);
+                window.n++;
+            },window.n*window.time)
         }
 
         //初始加载时间

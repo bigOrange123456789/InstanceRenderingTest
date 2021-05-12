@@ -78,47 +78,42 @@
 	var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
 	loader.load('../resourceInfo.json', function(str){//dataTexture
 		var resourceInfo=JSON.parse(str);
-		//console.log(resourceInfo)
-		var resourceList=new ResourceList(
-				{resourceInfo:resourceInfo,camera:camera,test:false}
-		);
+		var models=resourceInfo.models;
+		console.log(models)
+		/*
+		for(var kk=0;kk<models.length;kk++){
+			var name=models[kk].fileName;
+			name=name.substr(0,name.length-4);
+			console.log(kk,name)
+			requestModelPackage(name+"/", 0);
+		}
+		*/
 
-		myCallback_pop=function (name0){//加载成功了一个后立即加载另一个
-		}
-		myCallback_get=function (){//加载成功了一个后立即加载另一个
-		}
-		var myCallback_get0=function (n){//加载成功了一个后立即加载另一个
-			var names=resourceList.getModelFileInf({n:n});
-			if(names){
-				var visibleList0=getVisibleList(names);
-				requestModelPackage(visibleList0, 0);
+
+
+		var total=0;
+		var n=1000;
+		function load() {
+			for(var kk=0;kk<n&&total<models.length;kk++){
+				var name=models[total].fileName;
+				name=name.substr(0,name.length-4);
+				//console.log(total,name)
+				requestModelPackage(name+"/", 0);
+				total++;
 			}
-			function getVisibleList(names){
-				var visibleList="";
-				for(var i=0;i<names.length;i++){
-					var name=names[i].fileName;
-					name=name.substr(0,name.length-4);
-					visibleList=visibleList+name+"/";
-				}
-				return visibleList;
-			}
+			console.log(total/models.length)
+			if(total<models.length)setTimeout(function () {
+				window.time=0;
+				window.n=0;
+				load()
+			},1000)
 		}
-		myCallback_get0(1000);
-		setInterval(function (){
-			window.time=0;
-			window.n=0;
-			myCallback_get0(500);
-		},5000)
-
-
+		load();
 		setInterval(function () {
 			window.time+=10;
 		},10)
-		//var names=resourceList.getModelFileName({n:10});
-		//var visibleList0=getVisibleList(names);
-		//requestModelPackage(visibleList0, 0)
-		//scope.#loadGeometry();
 	});
+
 
 
 
