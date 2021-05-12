@@ -1,5 +1,5 @@
 export {ResourceLoader,ResourceList};
-class ResourceLoader{
+class ResourceLoader{//逐个加载
     url;//资源路径
     camera;
     cameraPre;
@@ -11,8 +11,6 @@ class ResourceLoader{
     loader;//模型加载器
     resourceList;
     test=false;//true;//
-    successNumber;
-    failNumber;
     useDraco;
     constructor(opt){
         this.useDraco=opt.useDraco===undefined?false:opt.useDraco;
@@ -20,8 +18,6 @@ class ResourceLoader{
         this.url=opt.url;
         this.camera=opt.camera;
         this.unitProcess=opt.unitProcess;
-        this.successNumber=0;//加载成功的次数
-        this.failNumber=0;//加载失败的次数
 
         this.cameraPre={};
         this.object=new THREE.Object3D();
@@ -45,7 +41,9 @@ class ResourceLoader{
         var scope=this;
         load();
         function load() {
-            var fileName=scope.resourceList.getOneModelFileName();
+            var fileInf=scope.resourceList.getModelFileInf();
+            var fileName=fileInf?fileInf.fileName:null;
+            var mapName=fileInf?fileInf.MapName:null;
             if(!fileName){//如果当前没有需要加载的几何文件
                 updateCameraPre();
                 var myInterval=setInterval(function () {
@@ -56,33 +54,27 @@ class ResourceLoader{
                 },100);
             }else if(!scope.useDraco){
                 scope.loader.load(scope.url+fileName, (gltf) => {
-                    if(scope.resourceList.getModelByName(fileName)!=="")
+                    if(mapName!=="")
                         scope.NumberWaitMaps++;//如果这个几何数据需要加载对应的贴图资源
                     var mesh0=gltf.scene.children[0];
                     mesh0.nameFlag=fileName;
                     scope.unitProcess(gltf);
                     scope.object.add(mesh0);
                     load();
-                    scope.successNumber++;
-                    //console.log("成功次数:"+scope.successNumber)
                 },function () {
                     load();
-                    scope.failNumber++;
-                    //console.log("失败次数:"+scope.failNumber)
                 });
             }else{
                 loadGlb(
                     scope.url+fileName,
                     (gltf) => {
-                        if(scope.resourceList.getModelByName(fileName)!=="")
+                        if(mapName!=="")
                             scope.NumberWaitMaps++;//如果这个几何数据需要加载对应的贴图资源
                         var mesh0=gltf.scene.children[0];
                         mesh0.nameFlag=fileName;
                         scope.unitProcess(gltf);
                         scope.object.add(mesh0);
                         load();
-                        scope.successNumber++;
-                        console.log("成功次数:"+scope.successNumber)
                     }
                 );
                 function loadGlb(url,process,finished) {
@@ -171,7 +163,6 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         if(element instanceof Array){
             for(var i=0;i<element.length;i++)
                 this.modelsPop(element[i])
-            //ResourceList.remove(this.models,elements[i])
         }else{
             ResourceList.remove(this.models,element)
         }
@@ -215,6 +206,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             }
         }
     }
+    /*
     getOneModelFileName=function(opt){
         var scope=this;
         return scope.getModelFileName(opt);
@@ -238,6 +230,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                     model_max=model;
                 }
             }
+            //ResourceList.remove(list,model_max);//
             if(finishLoad)model_max.finishLoad=true;
             //scope.modelsPop(model_max)
             return model_max.fileName;
@@ -260,8 +253,68 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             }
             var result=[];
             for(i=0;i<models_max.length;i++){
-                if(finishLoad)models_max[i].finishLoad=true;
+                ResourceList.remove(list,models_max[i]);//if(finishLoad)models_max[i].finishLoad=true;
                 result.push(models_max[i].fileName);
+            }
+            return result;
+        }
+
+        function getModelList(){//返回在视锥内且未被加载的资源列表
+            scope.#update();//计算每个模型的inView
+            var list=[];
+            for(var i=0;i<scope.models.length;i++){
+                if(scope.models[i].inView&&!scope.models[i].finishLoad)
+                    list.push(scope.models[i].fileName);
+            }
+            return list;
+        }
+    }
+    */
+    getModelFileInf=function(opt){
+        opt=opt||{};
+        var n=opt.n===undefined?1:opt.n;
+
+        var scope=this;
+        var list=getModelList();
+        if(list.length===0)return null;
+
+        if(n===1){
+            var model_max= {interest:-1};//记录兴趣度最大的资源
+
+            //arr.splice
+            for(var i=0;i<list.length;i++){
+                var model=scope.getModelByName(list[i]);
+                if(model.interest>model_max.interest){
+                    model_max=model;
+                }
+            }
+
+            if(scope.maps.length===0)ResourceList.remove(scope.models,model_max);
+            else model_max.finishLoad=true;//有贴图的场景不能删除模型信息
+
+            //scope.modelsPop(model_max)
+            return model_max;
+        }else{
+            var models_max=[];
+            if(n>list.length)n=list.length;
+            for(i=0;i<n;i++){
+                models_max.push({interest:-1});//记录兴趣度最大的资源
+            }
+            for(i=0;i<list.length;i++)
+                insert(
+                    models_max,
+                    scope.getModelByName(list[i])
+                )
+            function insert(arr,element) {
+                for(var k=arr.length-1;k>=0;k--)
+                    if(arr[k].interest>=element.interest)break;
+                if(k<arr.length-1)
+                    models_max.splice(k+1,1,element);
+            }
+            var result=[];
+            for(i=0;i<models_max.length;i++){
+                ResourceList.remove(list,models_max[i]);//if(finishLoad)models_max[i].finishLoad=true;
+                result.push(models_max[i]);
             }
             return result;
         }
@@ -297,6 +350,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             var list=[];
             for(let i=0;i<scope.maps.length;i++){
                 var model=scope.getModelByName(scope.maps[i].modelName);
+                //if(model)//如果模型信息还没有被删除
                 if(model.finishLoad&&model.inView){
                     if(!scope.maps[i].finishLoad)
                         list.push(scope.maps[i].fileName);

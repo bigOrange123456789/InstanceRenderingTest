@@ -77,19 +77,17 @@
 	var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
 	loader.load('../resourceInfo.json', function(str){//dataTexture
 		var resourceInfo=JSON.parse(str);
-		console.log(resourceInfo)
+		//console.log(resourceInfo)
 		var resourceList=new ResourceList(
 				{resourceInfo:resourceInfo,camera:camera,test:false}
 		);
 
 		myCallback_pop=function (name0){//加载成功了一个后立即加载另一个
-			name0=name0+'.glb';
-			resourceList.modelsPop(name0);
 		}
 		myCallback_get=function (){//加载成功了一个后立即加载另一个
 		}
 		var myCallback_get0=function (n){//加载成功了一个后立即加载另一个
-			var names=resourceList.getModelFileName({n:n});
+			var names=resourceList.getModelFileInf({n:n});
 			if(names){
 				var visibleList0=getVisibleList(names);
 				requestModelPackage(visibleList0, 0);
@@ -97,7 +95,7 @@
 			function getVisibleList(names){
 				var visibleList="";
 				for(var i=0;i<names.length;i++){
-					var name=names[i];
+					var name=names[i].fileName;
 					name=name.substr(0,name.length-4);
 					visibleList=visibleList+name+"/";
 				}

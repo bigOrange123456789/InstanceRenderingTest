@@ -11,6 +11,6 @@ let assetHost = ipconfig, assetPort = 9091;
 //P2P服务器的端口是9092
 let p2pHost = ipconfig, p2pPort = 9092;
 //测试时间60秒
-let browsingtime=60000;
+let browsingtime=600000;
 //let userName="user_x";//prompt("请输入您的姓名", "");
 //document.getElementById("inputUserName").onclick=function (){userName=prompt("请输入您的姓名", "");}
