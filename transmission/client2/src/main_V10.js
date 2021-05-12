@@ -34,7 +34,7 @@ let synTotalDelay = 0, tempDelay;
 let radianceWidth = Math.floor(window.innerWidth / 2), radianceHeight = Math.floor(window.innerHeight / 2);
 let cameraForward = new THREE.Vector3();
 let gltfLoader = new THREE.GLTFLoader();
-THREE.DRACOLoader.setDecoderPath('./lib/draco/');
+THREE.DRACOLoader.setDecoderPath('../lib/draco/');
 THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
 gltfLoader.setDRACOLoader(new THREE.DRACOLoader());
 
@@ -362,8 +362,8 @@ function makeInstanced(geo, mtxObj, oriName, type) {
     // material
     //var vert = document.getElementById('vertInstanced').textContent;
     //var frag = document.getElementById('fragInstanced').textContent;
-    var vert = loadShader("./shader/vertex.vert");
-    var frag = loadShader("./shader/fragment.frag");
+    var vert = loadShader("../shader/vertex.vert");
+    var frag = loadShader("../shader/fragment.frag");
     function loadShader(name) {
         let xhr = new XMLHttpRequest(),
             okStatus = document.location.protocol === "file:" ? 0 : 200;
