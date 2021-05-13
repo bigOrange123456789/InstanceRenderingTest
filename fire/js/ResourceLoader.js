@@ -42,6 +42,7 @@ class ResourceLoader{//逐个加载
         load();
         function load() {
             var fileInf=scope.resourceList.getModelFileInf();
+            fileInf=fileInf[0];
             var fileName=fileInf?fileInf.fileName:null;
             var mapName=fileInf?fileInf.MapName:null;
             if(!fileName){//如果当前没有需要加载的几何文件
@@ -147,11 +148,12 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     models;//所有模型几何的说明信息
     mapsIndex;
     camera;
-    frustum;
+    frustum;//存储相机的视锥体
+    list;//按照优先级排序
+    testObj;//测试对象//=new THREE.Object3D();
 
-    testObj;//=new THREE.Object3D();
     //每接收一次数据进行一次计算
-    static remove(arr,element){
+    static remove(arr,element){//从数组中移除元素
         for(var i=0;i<arr.length;i++)
             if(typeof(element)==="string"){
                 if(arr[i].fileName===element)arr.splice(i,1);
@@ -169,8 +171,9 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     }
     constructor (input) {
         var scope=this;
-        window.l=this;
+        scope.list=[];//这里应当初始化
         scope.camera=input.camera;
+        scope.frustum=new THREE.Frustum();
         var resourceInfo=input.resourceInfo;
         if(input.test)scope.testObj=new THREE.Object3D();
         else scope.testObj=null;
@@ -205,6 +208,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 scope.testObj.add(mesh);
             }
         }
+        console.log(scope)
     }
     /*
     getOneModelFileName=function(opt){
@@ -273,61 +277,20 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     getModelFileInf=function(opt){
         opt=opt||{};
         var n=opt.n===undefined?1:opt.n;
-
         var scope=this;
-        var list=getModelList();
-        if(list.length===0)return null;
+        scope.#update();
 
-        if(n===1){
-            var model_max= {interest:-1};//记录兴趣度最大的资源
-
-            //arr.splice
-            for(var i=0;i<list.length;i++){
-                var model=scope.getModelByName(list[i]);
-                if(model.interest>model_max.interest){
-                    model_max=model;
-                }
+        var result0=[];
+        for(var k=0;k<scope.models.length;k++){
+            if(scope.models[k].inView&&!scope.models[k].finishLoad){
+                result0.push(scope.models[k]);
+                if(scope.maps.length===0) ResourceList.remove(scope.models,scope.models[k--]);
+                else scope.models[k].finishLoad=true;//有贴图的场景不能删除模型信息
             }
-
-            if(scope.maps.length===0)ResourceList.remove(scope.models,model_max);
-            else model_max.finishLoad=true;//有贴图的场景不能删除模型信息
-
-            //scope.modelsPop(model_max)
-            return model_max;
-        }else{
-            var models_max=[];
-            if(n>list.length)n=list.length;
-            for(i=0;i<n;i++){
-                models_max.push({interest:-1});//记录兴趣度最大的资源
-            }
-            for(i=0;i<list.length;i++)
-                insert(
-                    models_max,
-                    scope.getModelByName(list[i])
-                )
-            function insert(arr,element) {
-                for(var k=arr.length-1;k>=0;k--)
-                    if(arr[k].interest>=element.interest)break;
-                if(k<arr.length-1)
-                    models_max.splice(k+1,1,element);
-            }
-            var result=[];
-            for(i=0;i<models_max.length;i++){
-                ResourceList.remove(list,models_max[i]);//if(finishLoad)models_max[i].finishLoad=true;
-                result.push(models_max[i]);
-            }
-            return result;
+            if(result0.length===n)break;
         }
-
-        function getModelList(){//返回在视锥内且未被加载的资源列表
-            scope.#update();//计算每个模型的inView
-            var list=[];
-            for(var i=0;i<scope.models.length;i++){
-                if(scope.models[i].inView&&!scope.models[i].finishLoad)
-                    list.push(scope.models[i].fileName);
-            }
-            return list;
-        }
+        console.log(result0)
+        return result0;
     }
     getOneMapFileName=function(){
         var scope=this;
@@ -360,28 +323,31 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             return list;
         }
     }
+
     #update=function(){//判断哪些资源在视锥内
         var scope=this;
-        computeFrustumFromCamera();
+        scope.#updateFrustum();
         for(var i=0;i<scope.models.length;i++){
-            scope.models[i].inView= intersectsSphere(
-                scope.models[i].boundingSphere.x,
-                scope.models[i].boundingSphere.y,
-                scope.models[i].boundingSphere.z,
-                scope.models[i].boundingSphere.r
+            scope.#culling(i);
+        }
+    }
+    #updateFrustum=function () {
+        var scope=this;
+        scope.frustum.setFromProjectionMatrix(
+            new THREE.Matrix4().multiplyMatrices(
+                scope.camera.projectionMatrix,
+                scope.camera.matrixWorldInverse
             )
-        }
-        function computeFrustumFromCamera(){//求视锥体
-            var camera=scope.camera;
-            var frustum = new THREE.Frustum();
-            //frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix,camera.matrixWorldInverse ) );
-
-            const projScreenMatrix = new THREE.Matrix4();
-            projScreenMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
-            //console.log(frustum,projScreenMatrix)
-            frustum.setFromProjectionMatrix(projScreenMatrix);
-            scope.frustum=frustum;
-        }
+        );
+    }
+    #culling=function(i){
+        var scope=this;
+        scope.models[i].inView=intersectsSphere(
+            scope.models[i].boundingSphere.x,
+            scope.models[i].boundingSphere.y,
+            scope.models[i].boundingSphere.z,
+            scope.models[i].boundingSphere.r
+        )
         function intersectsSphere(x,y,z,radius ) {
             var center=new THREE.Vector3(x,y,z)
             const planes = scope.frustum.planes;
@@ -396,6 +362,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             return true;//相交
         }
     }
+
     getMapByName=function (name) {
         var scope=this;
         for(var i=0;i<scope.maps.length;i++){
