@@ -1,4 +1,110 @@
-export {ResourceLoader,ResourceList};
+export {ResourceLoader,ResourceLoader_Multiple};
+class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
+    url;
+    camera;
+    firstList;
+    time1;fileNumber;
+    time2;dTime;ratio;
+
+    jsonLoader;//json加载工具
+    constructor(opt){
+        var scope=this;
+        scope.url=opt.url;
+        scope.camera=opt.camera;
+
+        scope.time1=500;
+        scope.fileNumber=50;
+        scope.time2=10;
+        scope.dTime=scope.time1/scope.fileNumber;
+        scope.ratio=scope.time2/scope.time1;
+        scope.jsonLoader=new THREE.XHRLoader(THREE.DefaultLoadingManager);
+    }
+    start(){
+        var scope=this;
+        window.getTime=function () {//距离下次发送的时间
+            var time_delay=window.time1*window.n/window.fileNumber0;
+            window.n++;
+            return time_delay;
+        }
+        window.time1=scope.time1;
+
+        scope.jsonLoader.load('../json/cgmFirstList.json', function(data){//dataTexture
+            var arr=JSON.parse(data);
+            scope.firstList=arr;
+            var str="";
+            for(var i=0;i<arr.length;i++)
+                str+=(arr[i]+"/");
+            window.fileNumber0=arr.length;
+            requestModelPackage(str, 0);
+        });
+        scope.jsonLoader.load(scope.url, function(str){//dataTexture
+            var resourceInfo=JSON.parse(str);
+            var resourceList=new ResourceList(
+                {resourceInfo:resourceInfo,camera:scope.camera,test:false}
+            );
+            for(var jj=0;jj<scope.firstList.length;jj++){
+                ResourceList.remove(
+                    resourceList.models,
+                    scope.firstList[jj]+".glb"
+                )
+            }
+            resourceList.update(1);
+            var myCallback_get0=function (n){//加载成功了一个后立即加载另一个
+                var names=resourceList.getModelFileInf({n:n,update:false});
+                window.fileNumber0=names.length;
+                window.n=0;//第几个文件
+                if(names){
+                    var visibleList0=getVisibleList(names);
+                    requestModelPackage(visibleList0, 0);
+                }
+                function getVisibleList(names){
+                    var visibleList="";
+                    for(var i=0;i<names.length;i++){
+                        var name=names[i].fileName;
+                        name=name.substr(0,name.length-4);
+                        visibleList=visibleList+name+"/";
+                    }
+                    return visibleList;
+                }
+            }
+
+            setInterval(function (){//加载资源
+                //window.time=0;//上次加载资源到现在过来多长时间
+                myCallback_get0(scope.fileNumber);
+            },scope.time1)
+            setInterval(function () {//分散计算
+                //window.time+=scope.dTime;
+                resourceList.update(scope.ratio);
+            },scope.time2)
+        });
+    }
+    computeFirstList(){
+        var scope=this;
+        scope.jsonLoader.load(scope.url, function(str){//dataTexture
+            var resourceInfo=JSON.parse(str);
+            var resourceList=new ResourceList(
+                {resourceInfo:resourceInfo,camera:scope.camera,test:false}
+            );
+            resourceList.update(1);
+            var list=resourceList.getModelFileInf({n:1000,update:false});
+
+            for(var i=0;i<list.length;i++){
+                var name=list[i].fileName;
+                list[i]=name.substr(0,name.length-4)
+            }
+            console.log(list);
+            download(list,"firstList.json")
+            function download(json,name) {
+                let link = document.createElement('a');
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.href = URL.createObjectURL(new Blob([JSON.stringify(json)], { type: 'text/plain' }));
+                link.download =name;
+                link.click();
+            }
+        });
+    }
+}
 class ResourceLoader{//逐个加载
     url;//资源路径
     camera;
