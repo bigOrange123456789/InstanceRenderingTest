@@ -71,7 +71,7 @@
 	import {ResourceList}from '../src/ResourceLoader.js';
 
 	var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
-	loader.load('../resourceInfo.json', function(str){//dataTexture
+	loader.load('../json/'+sceneName+'Info.json', function(str){//dataTexture
 		var resourceInfo=JSON.parse(str);
 		var resourceList=new ResourceList(
 				{resourceInfo:resourceInfo,camera:camera,test:false}
