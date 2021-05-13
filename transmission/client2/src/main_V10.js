@@ -210,18 +210,22 @@ function requestModelPackageByHttp(visibleList, type) {
     oReq.onload = function (oEvent) {
         //console.log(oReq.response)
         let data = new Uint8Array(oReq.response);
-        // glb file length info
-        let glbLengthData = ab2str(data.slice(0, sliceLength));
-        //glb file
-        let glbData = data.slice(sliceLength);
+        var headLength= parseInt(ab2str(data.slice(0, 10)));
 
-        let glbLengthArr = glbLengthData.split('/');
+        console.log(headLength)
+        // glb file length info
+        let glbLengthData = ab2str(data.slice(10,10+ headLength-1));//数据包头部
+        //glb file
+        let glbData = data.slice(10+ headLength);//数据包内容
+
+        let glbLengthArr = glbLengthData.split('/');//将头部进行划分
+        console.log(glbLengthArr)
         let totalLength = 0;
 
-        for (let i = 0; i < glbLengthArr.length - 1; i++) {
-            if (!glbLengthArr[i])
+        for (let i = 0; i < glbLengthArr.length - 1; i++) {//通过头部缺点模型个数
+            if (!glbLengthArr[i])//文件大小
                 continue;
-            let buffer = glbData.slice(totalLength, totalLength + 1.0 * glbLengthArr[i]);
+            let buffer = glbData.slice(totalLength, totalLength + 1.0 * glbLengthArr[i]);//将内容进行划分
             reuseDataParser(buffer, i === glbLengthArr.length - 2);
             totalLength += 1.0 * glbLengthArr[i];
         }

@@ -109,22 +109,25 @@ function ProcessData(scene, list, response) {//文件数据的读取似乎不是
     if(list==="first"){
         console.log("first!")
         packet=cgmFirstPacket;
-        console.log(packet)
+        response.write(packet);
+        response.write(packet);
+        response.end();
     }else{
         let models = list.split('/');//用字符将文件名称分开
         models=models.splice(0,models.length-1)
         packet=getPacket(scene,models)
         console.log("资源列表长度："+models.length);
+        response.write(packet);
+        response.end();
     }
-    response.write(packet);
-    response.end();
 }
 
 function getPacket(scene,models) {
-    const Header_Length = 1000;
+    const Header_Length = 10*models.length;
     let byteNeedToSend;//准备被发送的二进制数据
     let modelDataByte = Buffer.alloc(0);//分配一个大小为 size 字节的新 Buffer。 如果 fill 为 undefined，则用零填充 Buffer。
     let modelLengthHeader = "";
+    let modelLengthHeaderBytePre;
     let modelLengthHeaderByte;
 
     for (let i = 0; i < models.length; i++) {
@@ -140,16 +143,19 @@ function getPacket(scene,models) {
         }
     }
 
-    //pack the models
-    byteNeedToSend = Buffer.alloc(Header_Length + modelDataByte.length);//生成缓冲区
+    //pack the models//设置文件包文件包
+    byteNeedToSend = Buffer.alloc(10+Header_Length + modelDataByte.length);//生成缓冲区
     //pack header
+    modelLengthHeaderBytePre=Buffer.from(""+Header_Length)
     modelLengthHeaderByte = Buffer.from(modelLengthHeader)
+
     if (modelLengthHeaderByte.length < Header_Length) {
-        modelLengthHeaderByte.copy(byteNeedToSend, 0, 0);
-        //pack model data
-        modelDataByte.copy(byteNeedToSend, Header_Length, 0);
+        modelLengthHeaderBytePre.copy(byteNeedToSend, 0, 0)
+        modelLengthHeaderByte.copy(byteNeedToSend, 10, 0);// 拷贝 `buf1` 中第 16 至 19 字节偏移量的数据到 `buf2` 第 8 字节偏移量开始。
+        modelDataByte.copy(byteNeedToSend, 10+Header_Length, 0);
     } else {
         console.error("headerBytes is too short!!!");
     }
-    return byteNeedToSend;
+
+    return byteNeedToSend;//Buffer数据包
 }

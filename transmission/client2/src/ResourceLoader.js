@@ -32,12 +32,12 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
         scope.jsonLoader.load('../json/cgmFirstList.json', function(data){//dataTexture
             var arr=JSON.parse(data);
             scope.firstList=arr;
+            window.fileNumber0=arr.length;
+
             var str="";
             for(var i=0;i<arr.length;i++)
                 str+=(arr[i]+"/");
-            window.fileNumber0=arr.length;
             requestModelPackage(str, 0);
-
         });
         scope.jsonLoader.load(scope.url, function(str){//dataTexture
             var resourceInfo=JSON.parse(str);

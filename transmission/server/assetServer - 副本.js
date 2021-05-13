@@ -107,23 +107,21 @@ myServer.listen(9091, '0.0.0.0', function () {
 function ProcessData(scene, list, response) {//文件数据的读取似乎不是异步进行的
     var packet;
     if(list==="first"){
-        console.log(list)
+        console.log("first!")
         packet=cgmFirstPacket;
+        console.log(packet)
     }else{
         let models = list.split('/');//用字符将文件名称分开
-        models=models.splice(0,models.length-1);
+        models=models.splice(0,models.length-1)
+        packet=getPacket(scene,models)
         console.log("资源列表长度："+models.length);
-        packet=getPacket(
-            scene,models
-        );
-
     }
     response.write(packet);
     response.end();
 }
 
 function getPacket(scene,models) {
-    const Header_Length = 1000;
+    const Header_Length = 10*models.length;
     let byteNeedToSend;//准备被发送的二进制数据
     let modelDataByte = Buffer.alloc(0);//分配一个大小为 size 字节的新 Buffer。 如果 fill 为 undefined，则用零填充 Buffer。
     let modelLengthHeader = "";
@@ -142,7 +140,7 @@ function getPacket(scene,models) {
         }
     }
 
-    //pack the models
+    //pack the models//设置文件包文件包
     byteNeedToSend = Buffer.alloc(Header_Length + modelDataByte.length);//生成缓冲区
     //pack header
     modelLengthHeaderByte = Buffer.from(modelLengthHeader)
