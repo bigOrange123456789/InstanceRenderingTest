@@ -64,14 +64,9 @@
 </script>
 <script src="../src/config.js"></script>
 <script src="../src/main_V10.js"></script>
-<script src="../src/roam.js"></script>
+<script src="../src/roam.js" type="module"></script>
 <button id="button0">进入漫游</button>
 <script type="module">
-	import {PreviewManager} from '../src/PreviewManager.js';
-
-	var myPreviewManager = new PreviewManager(camera, mydata);
-	//myPreviewManager.createCameraButton('./1.png', './2.png');
-
 	//获取可视列表
 	import {ResourceList}from '../src/ResourceLoader.js';
 
@@ -101,35 +96,23 @@
 			}
 		}
 		myCallback_get0(1000);
-
 		window.getTime=function () {//距离下次发送的时间
 			var time_delay=window.time1*window.n/window.fileNumber0;
 			window.n++;
 			return time_delay;
 		}
-
 		var time1=500,fileNumber=50;
 		window.time1=time1;
 		setInterval(function (){//加载资源
 			window.time=0;//上次加载资源到现在过来多长时间
 			myCallback_get0(fileNumber);
 		},time1)
-
 		var time2=10,dTime=time1/fileNumber,ratio=time2/time1;
 		setInterval(function () {//分散计算
 			window.time+=dTime;
 			resourceList.update(ratio);
 		},time2)
-		
 	});
-
-
-
-
-
-
-	//myResourceLoader.object
-
 </script>
 </body>
 </html>

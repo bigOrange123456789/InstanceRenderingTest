@@ -48,10 +48,6 @@ class PreviewManager{
                 }
             }
         },10)
-
-        /*
-        http://youku3d.com/smart3d/client/index/index_cgm_server.html
-        * */
     }
     #cameraImg1;
     #cameraImg2;

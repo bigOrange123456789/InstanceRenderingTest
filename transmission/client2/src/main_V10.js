@@ -53,15 +53,7 @@ function init() {
     camera = new THREE.PerspectiveCamera(
         70, window.innerWidth / window.innerHeight, 0.3, 1000
     );
-
-    // camera.position.set(13, 12, 101);//newModel
-    // camera.position.set(-18, 77, -58);//hyModel
-    //camera.position.set(-112, 59, 140);//cgm
-    // camera.position.set(61, 36, 98);//szt
-    // camera.position.set(10, 34, -25);//demo1
-    // camera.position.set(49, 45, 45);//demo3
-    // camera.position.set(0, 0, 30);
-    //camera_pre.position=camera.position.clone();
+    window.camera=camera;
 
     // renderer
     container = document.getElementById("container");
