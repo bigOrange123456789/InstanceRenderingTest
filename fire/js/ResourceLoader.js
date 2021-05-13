@@ -149,6 +149,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     mapsIndex;
     camera;
     frustum;//存储相机的视锥体
+    update_index;//记录物体状态更新到了第几个
     list;//按照优先级排序
     testObj;//测试对象//=new THREE.Object3D();
 
@@ -174,6 +175,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         scope.list=[];//这里应当初始化
         scope.camera=input.camera;
         scope.frustum=new THREE.Frustum();
+        scope.update_index=0;
         var resourceInfo=input.resourceInfo;
         if(input.test)scope.testObj=new THREE.Object3D();
         else scope.testObj=null;
@@ -210,75 +212,12 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         }
         console.log(scope)
     }
-    /*
-    getOneModelFileName=function(opt){
-        var scope=this;
-        return scope.getModelFileName(opt);
-    }
-    getModelFileName=function(opt){
-        opt=opt||{};
-        var n=opt.n===undefined?1:opt.n;
-        var finishLoad=opt.finishLoad===undefined?true:opt.finishLoad;
-
-        var scope=this;
-        var list=getModelList();
-        if(list.length===0)return null;
-
-        if(n===1){
-            var model_max= {interest:-1};//记录兴趣度最大的资源
-
-            //arr.splice
-            for(var i=0;i<list.length;i++){
-                var model=scope.getModelByName(list[i]);
-                if(model.interest>model_max.interest){
-                    model_max=model;
-                }
-            }
-            //ResourceList.remove(list,model_max);//
-            if(finishLoad)model_max.finishLoad=true;
-            //scope.modelsPop(model_max)
-            return model_max.fileName;
-        }else{
-            var models_max=[];
-            if(n>list.length)n=list.length;
-            for(i=0;i<n;i++){
-                models_max.push({interest:-1});//记录兴趣度最大的资源
-            }
-            for(i=0;i<list.length;i++)
-                insert(
-                    models_max,
-                    scope.getModelByName(list[i])
-                )
-            function insert(arr,element) {
-                for(var k=arr.length-1;k>=0;k--)
-                    if(arr[k].interest>=element.interest)break;
-                if(k<arr.length-1)
-                    models_max.splice(k+1,1,element);
-            }
-            var result=[];
-            for(i=0;i<models_max.length;i++){
-                ResourceList.remove(list,models_max[i]);//if(finishLoad)models_max[i].finishLoad=true;
-                result.push(models_max[i].fileName);
-            }
-            return result;
-        }
-
-        function getModelList(){//返回在视锥内且未被加载的资源列表
-            scope.#update();//计算每个模型的inView
-            var list=[];
-            for(var i=0;i<scope.models.length;i++){
-                if(scope.models[i].inView&&!scope.models[i].finishLoad)
-                    list.push(scope.models[i].fileName);
-            }
-            return list;
-        }
-    }
-    */
     getModelFileInf=function(opt){
         opt=opt||{};
         var n=opt.n===undefined?1:opt.n;
+        if(typeof(opt.update)==="undefined")opt.update=true;
         var scope=this;
-        scope.#update();
+        if(opt.update)scope.update();
 
         var result0=[];
         for(var k=0;k<scope.models.length;k++){
@@ -309,7 +248,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             //对应模型已被加载
             // 且对应模型现在视锥内
             // 且贴图本身未被加载的贴图资源列表
-            scope.#update();//计算每个模型的inView
+            scope.update();//计算每个模型的inView
             var list=[];
             for(let i=0;i<scope.maps.length;i++){
                 var model=scope.getModelByName(scope.maps[i].modelName);
@@ -324,11 +263,16 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         }
     }
 
-    #update=function(){//判断哪些资源在视锥内
+    update=function(ratio){//判断哪些资源在视锥内
+        if(typeof (ratio)==="undefined")ratio=1;
         var scope=this;
+        var number=Math.floor(scope.models.length*ratio);
+        if(number<1)number=1;
         scope.#updateFrustum();
-        for(var i=0;i<scope.models.length;i++){
-            scope.#culling(i);
+        for(var i=0;i<number;i++){
+            if(scope.update_index>=scope.models.length)
+                scope.update_index=0;
+            scope.#culling(scope.update_index++);
         }
     }
     #updateFrustum=function () {

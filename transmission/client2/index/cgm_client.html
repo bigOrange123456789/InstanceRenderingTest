@@ -78,17 +78,12 @@
 	var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
 	loader.load('../resourceInfo.json', function(str){//dataTexture
 		var resourceInfo=JSON.parse(str);
-		//console.log(resourceInfo)
 		var resourceList=new ResourceList(
 				{resourceInfo:resourceInfo,camera:camera,test:false}
 		);
-
-		myCallback_pop=function (name0){//加载成功了一个后立即加载另一个
-		}
-		myCallback_get=function (){//加载成功了一个后立即加载另一个
-		}
+		resourceList.update(1);
 		var myCallback_get0=function (n){//加载成功了一个后立即加载另一个
-			var names=resourceList.getModelFileInf({n:n});
+			var names=resourceList.getModelFileInf({n:n,update:false});
 			if(names){
 				var visibleList0=getVisibleList(names);
 				requestModelPackage(visibleList0, 0);
@@ -104,15 +99,17 @@
 			}
 		}
 		myCallback_get0(1000);
-		setInterval(function (){
+
+		setInterval(function (){//加载资源
 			window.time=0;
 			window.n=0;
 			myCallback_get0(500);
 		},5000)
 
 
-		setInterval(function () {
+		setInterval(function () {//分散计算
 			window.time+=10;
+			resourceList.update(1/500);
 		},10)
 		//var names=resourceList.getModelFileName({n:10});
 		//var visibleList0=getVisibleList(names);
