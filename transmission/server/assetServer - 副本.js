@@ -107,14 +107,16 @@ myServer.listen(9091, '0.0.0.0', function () {
 function ProcessData(scene, list, response) {//文件数据的读取似乎不是异步进行的
     var packet;
     if(list==="first"){
-        console.log("first!")
+        console.log(list)
         packet=cgmFirstPacket;
-        console.log(packet)
     }else{
         let models = list.split('/');//用字符将文件名称分开
-        models=models.splice(0,models.length-1)
-        packet=getPacket(scene,models)
+        models=models.splice(0,models.length-1);
         console.log("资源列表长度："+models.length);
+        packet=getPacket(
+            scene,models
+        );
+
     }
     response.write(packet);
     response.end();

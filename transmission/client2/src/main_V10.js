@@ -1,4 +1,3 @@
-var myCallbackFunction;
 var myCallback_pop,myCallback_get;
 
 let all_material={}
@@ -6,14 +5,13 @@ let all_material={}
 if(typeof(sceneName)==="undefined")sceneName = "cgm";
 let userID = Math.random().toString().substring(2, 12) + Date.now().toString().substring(1, 6);
 let scene, camera, renderer, controls, sceneRoot;
-//let camera_pre;
 let container, light, lightObj;
 let ws, interval;
 
 const webService = "Lcrs";
 const mWebClientExchangeCode = 4000;
 const sliceLength = 1000, synFreq = 500;
-const NUM_PACKAGE = 30;
+const NUM_PACKAGE = 100;
 let websocketReady = false;
 let packageIndex = 1;
 let ModelHasBeenLoaded = [];
@@ -92,8 +90,8 @@ function init() {
     scene.add(new THREE.AxesHelper(5));//用于简单模拟3个坐标轴的对象.
     window.addEventListener('resize', synWindowSize, false);
     myVisListStorage = new VisListStorage();
-    if(typeof(useClientCompute)==="undefined")//不在浏览器计算可视列表
-        initWebsocketNetwork();
+
+
     if(haveP2P)initWebRTC();//p2p获取资源列表
     if(haveP2P)rtConnection.openOrJoin(sceneName);
 
@@ -161,46 +159,11 @@ function initWebRTC() {//p2p获取资源列表
 }
 
 
-function initWebsocketNetwork() {//unit获取资源列表
-    ws = new WebSocket("ws://" + host + ":" + port + "/" + webService);
-    ws.onopen = function (event) {
-        console.log("connect successfully");
-        websocketReady = true;
-        syncClientDataToServer();
-        interval = setInterval(synViewport, synFreq);
-    };
-    ws.onmessage = function (msg) {
-        var headerReader = new FileReader();
-        headerReader.onload = function (e) {
-            //get the buffer
-            let arr = new Uint8Array(e.target.result);
-            let visibleList = ab2str(arr);
-            //res[0]:veiwpoint res[1]:visibleList
-            let res = visibleList.split(']');
-            requestModelPackage(res[1], 2);
-            myVisListStorage.afterReceivingModelListFromServer(res[0], res[1]);
-        };
-        headerReader.readAsArrayBuffer(msg.data);
-    };
-    ws.onclose = function (msg) {
-        websocketReady = false;
-        clearInterval(interval);
-        console.log(msg);
-        console.log("close,try reconnect");
-    };
-    ws.onerror = function (msg) {
-        websocketReady = false;
-        clearInterval(interval);
-        console.log("Websocket connection error!" + msg);
-        ws = new WebSocket("ws://" + host + ":" + port + "/" + webService);
-    };
-}
 
 
 function animate() {
     requestAnimationFrame(animate);
     document.getElementById("triNum").innerText = renderer.info.render.triangles;
-    //$("#triNum")[0].innerText = renderer.info.render.triangles;
     renderer.render(scene, camera);
     updateLight();
 }
@@ -219,7 +182,7 @@ function updateLight() {//让光线随着相机移动
 }
 
 
-function requestModelPackage(visibleList, type) {//获取模型资源
+function requestModelPackage(visibleList, type) {//检测可视列表中哪些已经在场景中了，只加载不再场景中的//获取模型资源
     let packSize = 0;
     let postData = "";
     let tempModelArr = visibleList.split('/');
@@ -240,7 +203,6 @@ function requestModelPackage(visibleList, type) {//获取模型资源
 
 //通过http请求获取模型数据包
 function requestModelPackageByHttp(visibleList, type) {
-    //console.log(visibleList)
     var oReq = new XMLHttpRequest();
     oReq.open("POST", `http://${assetHost}:${assetPort}`, true);
     oReq.responseType = "arraybuffer";
@@ -469,65 +431,6 @@ function syncClientDataToServer() {//发送视点信息
 }
 
 //相机移动是获取资源列表
-function synViewport() {
-    var camera_pre={
-        x:camera.position.x,
-        y:camera.position.y,
-        z:camera.position.z,
-        rx:camera.rotation.x,
-        ry:camera.rotation.y,
-        rz:camera.rotation.z
-    };
-    function isSimilar(myCamera,old){
-        if(
-            old.x==camera.position.x&&
-            old.y==camera.position.y&&
-            old.z==camera.position.z&&
-            old.rx==camera.rotation.x&&
-            old.ry==camera.rotation.y&&
-            old.rz==camera.rotation.z
-        ){
-            return true;
-        }else{
-            old.x==camera.position.x;
-            old.y==camera.position.y;
-            old.z==camera.position.z;
-            old.rx==camera.rotation.x;
-            old.ry==camera.rotation.y;
-            old.rz==camera.rotation.z;
-            return false;
-        }
-    }
-
-    if(typeof(useClientCompute)==="undefined"){
-        setInterval(function (){
-            if(!isSimilar(camera,camera_pre)){
-                syncClientDataToServer();
-            }
-        },1000)
-
-    }else{
-        setInterval(function (){
-            if(!isSimilar(camera,camera_pre))
-                if(myCallback_get)myCallback_get();//syncClientDataToServer();
-        },3000)
-
-    }
-
-    /*if (camera.position.clone().sub(controls.position0).length() > distanceForSimilarViewpoint ||
-        controls.target.clone().sub(controls.target0).length() > distanceForSimilarViewpoint) {
-        syncClientDataToServer();
-        controls.saveState();
-    }*/
-}
-
-function synViewport0() {
-    if (camera.position.clone().sub(controls.position0).length() > distanceForSimilarViewpoint ||
-        controls.target.clone().sub(controls.target0).length() > distanceForSimilarViewpoint) {
-        syncClientDataToServer();
-        controls.saveState();
-    }
-}
 
 function synWindowSize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -675,10 +578,7 @@ function selectTextureByType(type, repeatTimes = 1) {
 }
 
 
-/**
- * function arraybuffer to string
- * @param arraybuffer
- **/
+
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Uint8Array(buf));
 }
@@ -754,12 +654,6 @@ VisListStorage.prototype.receivePeerCache = function (str) {
     this.parserAndMerge(json);
 };
 
-//save the viewpoint in which server has not returned the visible list
-// VisListStorage.prototype.beforeSynViewpoint = function (list) {
-//     // this.tempViewpointList.push(list);
-// };
-
-//receive the visible list from server, push the result and viewpoint together
 VisListStorage.prototype.afterReceivingModelListFromServer = function (viewpointStr, visList) {
     if (viewpointStr && visList) {
         let viewpointArr = viewpointStr.split('/');
@@ -914,7 +808,7 @@ ListStorage.prototype = {//外界只需要调用4个函数就可以实现所有�
     },
     saveP2PData: function (event) {
         var str = event.data;
-        if (str != "init_test") {//orange:刚建立连接时对方会发送一个用于连接测试的字符串，内容是"init_test"
+        if (str !== "init_test") {//orange:刚建立连接时对方会发送一个用于连接测试的字符串，内容是"init_test"
             var dataArr = str.split('/');
 
             //orange:第一段数据是视点信息

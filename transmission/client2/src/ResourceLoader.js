@@ -12,8 +12,8 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
         scope.url=opt.url;
         scope.camera=opt.camera;
 
-        scope.time1=500;
-        scope.fileNumber=50;
+        scope.time1=300;
+        scope.fileNumber=30;
         scope.time2=10;
         scope.dTime=scope.time1/scope.fileNumber;
         scope.ratio=scope.time2/scope.time1;
@@ -28,6 +28,7 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
         }
         window.time1=scope.time1;
 
+        //requestModelPackageByHttp("first", 0);
         scope.jsonLoader.load('../json/cgmFirstList.json', function(data){//dataTexture
             var arr=JSON.parse(data);
             scope.firstList=arr;
@@ -36,6 +37,7 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
                 str+=(arr[i]+"/");
             window.fileNumber0=arr.length;
             requestModelPackage(str, 0);
+
         });
         scope.jsonLoader.load(scope.url, function(str){//dataTexture
             var resourceInfo=JSON.parse(str);
@@ -55,7 +57,9 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
                 window.n=0;//第几个文件
                 if(names){
                     var visibleList0=getVisibleList(names);
-                    requestModelPackage(visibleList0, 0);
+                    if(visibleList0==="")return;//当前没有需要加载的数据
+                    //requestModelPackage(visibleList0, 0);
+                    requestModelPackageByHttp(visibleList0, 0);
                 }
                 function getVisibleList(names){
                     var visibleList="";
@@ -334,7 +338,6 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             }
             if(result0.length===n)break;
         }
-        console.log(result0)
         return result0;
     }
     getOneMapFileName=function(){
