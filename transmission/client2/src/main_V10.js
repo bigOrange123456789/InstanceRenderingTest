@@ -326,14 +326,12 @@ function reuseDataParser(data, isLastModel) {
             // mesh.material.side = THREE.DoubleSide;
             setTimeout(function () {
                 sceneRoot.add(mesh);
-                window.n++;
-            },window.n*window.time)
+            },window.getTime())
             ModelHasBeenLoaded.push(mesh.name);
         } else {
             setTimeout(function () {
                 makeInstanced(geo, JSON.parse(matrixObj), name, type);
-                window.n++;
-            },window.n*window.time)
+            },window.getTime())
         }
 
         //初始加载时间

@@ -84,6 +84,8 @@
 		resourceList.update(1);
 		var myCallback_get0=function (n){//加载成功了一个后立即加载另一个
 			var names=resourceList.getModelFileInf({n:n,update:false});
+			window.fileNumber0=names.length;
+			window.n=0;//第几个文件
 			if(names){
 				var visibleList0=getVisibleList(names);
 				requestModelPackage(visibleList0, 0);
@@ -100,21 +102,25 @@
 		}
 		myCallback_get0(1000);
 
+		window.getTime=function () {//距离下次发送的时间
+			var time_delay=window.time1*window.n/window.fileNumber0;
+			window.n++;
+			return time_delay;
+		}
+
+		var time1=500,fileNumber=50;
+		window.time1=time1;
 		setInterval(function (){//加载资源
-			window.time=0;
-			window.n=0;
-			myCallback_get0(500);
-		},5000)
+			window.time=0;//上次加载资源到现在过来多长时间
+			myCallback_get0(fileNumber);
+		},time1)
 
-
+		var time2=10,dTime=time1/fileNumber,ratio=time2/time1;
 		setInterval(function () {//分散计算
-			window.time+=10;
-			resourceList.update(1/500);
-		},10)
-		//var names=resourceList.getModelFileName({n:10});
-		//var visibleList0=getVisibleList(names);
-		//requestModelPackage(visibleList0, 0)
-		//scope.#loadGeometry();
+			window.time+=dTime;
+			resourceList.update(ratio);
+		},time2)
+		
 	});
 
 
