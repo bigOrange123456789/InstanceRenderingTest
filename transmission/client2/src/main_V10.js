@@ -40,7 +40,7 @@ let rtConnectionReady = false;
 let rtConnection, rtcInterval;
 const rtcShareFreq = 3000;
 let cubeView;
-
+window.package=[]
 
 init();
 animate();
@@ -139,24 +139,40 @@ function sendTestResult() {
     console.log(testData);
 }
 
+//p2p
 function initWebRTC() {//p2p获取资源列表
     rtConnection = new RTCMultiConnection();
-    rtConnection.socketURL = 'http://'+p2pHost+':'+p2pPort+'/';//'https://rtcmulticonnection.herokuapp.com:443/';//
+    //rtConnection.socketURL = 'http://'+p2pHost+':'+p2pPort+'/';//'https://rtcmulticonnection.herokuapp.com:443/';//
+    rtConnection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';//
     rtConnection.enableFileSharing = true; // by default, it is "false".
     rtConnection.session = {
         data: true
     };
     rtConnection.onmessage = function (event) {
-        myVisListStorage.receivePeerCache(event.data);
+        /*myVisListStorage.receivePeerCache(event.data);
         console.log("receive the peer data\n");
+        */
+        //new Uint8Array(ary);
+        var package000=new Uint8Array(event.data)
+        console.log("收到P2P数据:",package000)
+        reuseDataParser(package000, 0);
     };
 
-    rtConnection.onopen = function () {
+    rtConnection.onopen = function () {//接收
         console.log("Open the connection");
         rtConnectionReady = true;
         rtcInterval = setInterval(() => {
-            rtConnection.send(myVisListStorage.getMyCache());
-        }, rtcShareFreq);
+            if(window.package.length>1){
+                var package00=window.package[
+                    Math.floor(Math.random()*window.package.length)
+                    ];
+                var send000=Array.from(package00)
+                console.log("发送P2P数据",send000)
+                rtConnection.send(send000);
+            }
+            //rtConnection.send(myVisListStorage.getMyCache());
+        }, 50);//rtcShareFreq);
+
     };
 
     rtConnection.onerror = function () {
@@ -171,16 +187,12 @@ function initWebRTC() {//p2p获取资源列表
     };
 }
 
-
-
-
 function animate() {
     requestAnimationFrame(animate);
     document.getElementById("triNum").innerText = renderer.info.render.triangles;
     renderer.render(scene, camera);
     updateLight();
 }
-
 
 function updateLight() {//让光线随着相机移动
     light.position.set(camera.position.x, camera.position.y, camera.position.z);
@@ -193,7 +205,6 @@ function updateLight() {//让光线随着相机移动
     );
     light.target = lightObj;
 }
-
 
 function requestModelPackage(visibleList, type) {//检测可视列表中哪些已经在场景中了，只加载不再场景中的//获取模型资源
     let packSize = 0;
@@ -263,9 +274,9 @@ function requestModelPackageByHttp(visibleList, type) {
 
 //数据解析
 function reuseDataParser(data, isLastModel) {
+    window.package.push(data)
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
-
         //if(window.hasLoad)window.hasLoad(name)//myCallback_pop,myCallback_get
         if (ModelHasBeenLoaded.indexOf(name) !== -1)
             return;
@@ -304,7 +315,7 @@ function reuseDataParser(data, isLastModel) {
                 //源文件，
                 //Reusability
                 var reusability=window.myResourceLoader.addInstancedObj(name);
-                console.log(name+"reusability："+reusability)
+                //console.log(name+"reusability："+reusability)
                 if(reusability===1)//第一次需要创建
                     makeInstanced(geo, JSON.parse(matrixObj), name, type);
             },window.getTime())
