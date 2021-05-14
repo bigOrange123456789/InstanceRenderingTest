@@ -256,7 +256,7 @@ function requestModelPackageByHttp(visibleList, type) {
         } else {
             synTotalTimes++;
             synFromServerTimes++;
-        }/**/
+        }
     };
     oReq.send(JSON.stringify({ 'type': 'requestdata', 'scene': sceneName, 'data': visibleList }));
 }
@@ -266,8 +266,8 @@ function reuseDataParser(data, isLastModel) {
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
 
-        if(myCallback_pop)myCallback_pop(name)//myCallback_pop,myCallback_get
-        if (ModelHasBeenLoaded.indexOf(name) != -1)
+        //if(window.hasLoad)window.hasLoad(name)//myCallback_pop,myCallback_get
+        if (ModelHasBeenLoaded.indexOf(name) !== -1)
             return;
         //console.log(gltf.scenes[0].uuid)
         // console.log(`scene add new model: ${name}`);
@@ -301,7 +301,12 @@ function reuseDataParser(data, isLastModel) {
             ModelHasBeenLoaded.push(mesh.name);
         } else {
             setTimeout(function () {
-                makeInstanced(geo, JSON.parse(matrixObj), name, type);
+                //源文件，
+                //Reusability
+                var reusability=window.myResourceLoader.addInstancedObj(name);
+                console.log(name+"reusability："+reusability)
+                if(reusability===1)//第一次需要创建
+                    makeInstanced(geo, JSON.parse(matrixObj), name, type);
             },window.getTime())
         }
 

@@ -1,4 +1,123 @@
-export {ResourceLoader,ResourceList};
+//实例化渲染对象是否重复添加了？
+export {ResourceLoader,ResourceLoader_Multiple};
+class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
+    url;
+    camera;
+    firstList;
+    time1;fileNumber;
+    time2;dTime;ratio;
+
+    jsonLoader;//json加载工具
+    constructor(opt){
+        var scope=this;
+        scope.url=opt.url;
+        scope.camera=opt.camera;
+
+        scope.time1=30;
+        scope.fileNumber=3;
+
+
+        scope.time2=10;
+        scope.dTime=scope.time1/scope.fileNumber;
+        scope.ratio=scope.time2/scope.time1;
+        scope.jsonLoader=new THREE.XHRLoader(THREE.DefaultLoadingManager);
+    }
+    start(){
+        var scope=this;
+        window.getTime=function () {//距离下次发送的时间
+            var time_delay=window.time1*window.n/window.fileNumber0;
+            window.n++;
+            return time_delay;
+        }
+        window.time1=scope.time1;
+
+        //requestModelPackageByHttp("first", 0);
+        scope.jsonLoader.load('../json/cgmFirstList.json', function(data){//dataTexture
+            var arr=JSON.parse(data);
+            scope.firstList=arr;
+            window.fileNumber0=arr.length;
+
+            var str="";
+            for(var i=0;i<arr.length;i++)
+                str+=(arr[i]+"/");
+            requestModelPackage(str, 0);
+        });
+        scope.jsonLoader.load(scope.url, function(str){//dataTexture
+            var resourceInfo=JSON.parse(str);
+            var resourceList=new ResourceList(
+                {resourceInfo:resourceInfo,camera:scope.camera,test:false,firstList:scope.firstList}
+            );
+
+            //初始问题
+            /*
+                        for(var jj=0;jj<scope.firstList.length;jj++){
+                            ResourceList.remove(
+                                resourceList.models,
+                                scope.firstList[jj]+".glb"
+                            )
+                        }
+                        */
+            resourceList.update(1);
+
+            var myCallback_get0=function (n){//加载成功了一个后立即加载另一个
+                var names=resourceList.getModelFileInf({n:n,update:false});
+                window.fileNumber0=names.length;
+                window.n=0;//第几个文件
+                console.log(names)
+                if(names){
+                    var visibleList0=getVisibleList(names);
+                    if(visibleList0==="")return;//当前没有需要加载的数据
+                    //requestModelPackage(visibleList0, 0);
+                    requestModelPackageByHttp(visibleList0, 0);
+                }
+                function getVisibleList(names){
+                    var visibleList="";
+                    for(var i=0;i<names.length;i++){
+                        var name=names[i].fileName;
+                        name=name.substr(0,name.length-4);
+                        visibleList=visibleList+name+"/";
+                    }
+                    return visibleList;
+                }
+            }
+
+            setInterval(function (){//加载资源
+                //window.time=0;//上次加载资源到现在过来多长时间
+                myCallback_get0(scope.fileNumber);
+            },scope.time1)
+            setInterval(function () {//分散计算
+                //window.time+=scope.dTime;
+                resourceList.update(scope.ratio);
+            },scope.time2)
+        });
+    }
+    computeFirstList(){
+        var scope=this;
+        scope.jsonLoader.load(scope.url, function(str){//dataTexture
+            var resourceInfo=JSON.parse(str);
+            var resourceList=new ResourceList(
+                {resourceInfo:resourceInfo,camera:scope.camera,test:false}
+            );
+            resourceList.update(1);
+            var list=resourceList.getModelFileInf({n:1000,update:false});
+
+            for(var i=0;i<list.length;i++){
+                var name=list[i].fileName;
+                list[i]=name.substr(0,name.length-4)
+            }
+            console.log(list);
+            download(list,"firstList.json")
+            function download(json,name) {
+                let link = document.createElement('a');
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.href = URL.createObjectURL(new Blob([JSON.stringify(json)], { type: 'text/plain' }));
+                link.download =name;
+                link.click();
+            }
+        });
+    }
+}
 class ResourceLoader{//逐个加载
     url;//资源路径
     camera;
@@ -144,32 +263,75 @@ class ResourceLoader{//逐个加载
     }
 }
 class ResourceList{//这个对象主要负责资源列表的生成和管理
-    maps;//所有贴图的说明信息
+
     models;//所有模型几何的说明信息
-    mapsIndex;
+    //{fileName,interest,spaceVolume,boundingSphere:{x,y,z,r},MapName}
+
+    maps;//所有贴图的说明信息
+    //mapsIndex;
     camera;
     frustum;//存储相机的视锥体
     update_index;//记录物体状态更新到了第几个
     list;//按照优先级排序
     testObj;//测试对象//=new THREE.Object3D();
 
+    //notTransmitted;
+    needTransmitted_start;//索引的最小值：取绝于已经请求了哪些资源
+    needTransmitted_end;//索引的最大值：取绝于视锥的变换
+
     //每接收一次数据进行一次计算
-    static remove(arr,element){//从数组中移除元素
+    /*static remove(arr,element){//从数组中移除元素
         for(var i=0;i<arr.length;i++)
             if(typeof(element)==="string"){
                 if(arr[i].fileName===element)arr.splice(i,1);
             }else{
                 if(arr[i]===element)arr.splice(i,1);
             }
-    }
-    modelsPop(element){
-        if(element instanceof Array){
-            for(var i=0;i<element.length;i++)
-                this.modelsPop(element[i])
-        }else{
-            ResourceList.remove(this.models,element)
+    }*/
+
+    #initModels(resourceInfo,firstList){
+        if(typeof (firstList)==="undefined")firstList=[];
+        var scope=this;
+        var flag_init={
+            inVisionCone:false,//不在视锥体中
+            requested:false,//还没有请求这个资源
+            Obtained:false,//还没有获取这个资源
+            inScene:false//不在场景中
         }
+        scope.models=resourceInfo.models;
+        //fileName;interest;boundingSphere{x,y,z,r};MapName;spaceVolume;
+
+        for(var i=0;i<scope.models.length;i++){
+            scope.models[i].finishLoad=false;
+            scope.models[i].inView=false;
+
+            scope.models[i].flag=JSON.parse(JSON.stringify(flag_init));
+
+        }
+
+        /*for(var jj=0;jj<firstList.length;jj++){
+            ResourceList.remove(
+                scope.models,
+                firstList[jj]+".glb"
+            )
+        }*/
+
+        var j=0;
+        for(i=0;i<scope.models.length;i++){
+            if(scope.models[i].fileName===(firstList[j]+".glb")){
+                scope.models[i].inView=true;
+                scope.models[i].finishLoad=true;
+                j++;
+            }
+        }
+        /*for(i=0;i<scope.models.length;i++){
+            if(scope.models.fileName===(firstList[j]+".glb")){
+                console.log("!!!!!!!!!!!!!!!!")
+            }
+        }*/
+
     }
+
     constructor (input) {
         var scope=this;
         scope.list=[];//这里应当初始化
@@ -177,6 +339,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         scope.frustum=new THREE.Frustum();
         scope.update_index=0;
         var resourceInfo=input.resourceInfo;
+        //console.log(resourceInfo)
         if(input.test)scope.testObj=new THREE.Object3D();
         else scope.testObj=null;
 
@@ -185,13 +348,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         for(var i=0;i<scope.maps.length;i++){
             scope.maps[i].finishLoad=false;
         }
-        scope.models=resourceInfo.models;
-        //fileName;interest;boundingSphere{x,y,z,r};MapName;spaceVolume;
-        for(i=0;i<scope.models.length;i++){
-            scope.models[i].finishLoad=false;
-            scope.models[i].inView=false;
-        }
-        scope.mapsIndex=resourceInfo.mapsIndex;
+        scope.#initModels(resourceInfo,input.firstList)
 
         if(scope.testObj){//开始测试
             testObjMesh();
@@ -223,12 +380,13 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         for(var k=0;k<scope.models.length;k++){
             if(scope.models[k].inView&&!scope.models[k].finishLoad){
                 result0.push(scope.models[k]);
-                if(scope.maps.length===0) ResourceList.remove(scope.models,scope.models[k--]);
-                else scope.models[k].finishLoad=true;//有贴图的场景不能删除模型信息
+
+                scope.models[k].finishLoad=true;
+                //if(scope.maps.length===0) ResourceList.remove(scope.models,scope.models[k--]);
+                //else scope.models[k].finishLoad=true;//有贴图的场景不能删除模型信息
             }
             if(result0.length===n)break;
         }
-        console.log(result0)
         return result0;
     }
     getOneMapFileName=function(){

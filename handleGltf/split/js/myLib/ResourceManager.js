@@ -55,7 +55,7 @@ ResourceManager.prototype={
         var result={};
         result.maps=this.maps;
         result.models=this.models;
-        result.mapsIndex=this.mapsIndex;
+        //result.mapsIndex=this.mapsIndex;//mapsIndex在前端似乎没有用处
         return result;
     },
     getMapByName:function (name) {
