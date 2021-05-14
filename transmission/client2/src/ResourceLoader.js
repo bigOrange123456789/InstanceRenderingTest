@@ -276,11 +276,9 @@ class ResourceLoader{//逐个加载
 }
 class ResourceList{//这个对象主要负责资源列表的生成和管理
 
-    models;//所有模型几何的说明信息
-    //{fileName,interest,spaceVolume,boundingSphere:{x,y,z,r},MapName}
+    models;//所有模型几何的说明信息//{fileName,interest,spaceVolume,boundingSphere:{x,y,z,r},MapName}
 
-    maps;//所有贴图的说明信息
-    //mapsIndex;
+    maps;//所有贴图的说明信息//mapsIndex;
     camera;
     camera_pre;//用于视点预测
 
@@ -443,7 +441,8 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         var scope=this;
         var number=Math.floor(scope.models.length*ratio);
         if(number<1)number=1;
-        scope.#updateFrustum(100);
+        scope.#updateFrustum(0);
+        //scope.#updateFrustum(5);
 
         for(var i=0;i<number;i++){
             if(scope.update_index>=scope.models.length)
@@ -462,14 +461,37 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             );
         }else{//对相机的位置进行预测
             if(scope.camera_pre===null) scope.camera_pre=scope.camera.clone();
-            var camera_next=scope.camera.clone();
+            var camera_next=scope.camera.clone();//临时对象
+            camera_next.position.set(0,0,0)
+            camera_next.rotation.set(0,0,0)
             forecast(scope.camera_pre,scope.camera,camera_next,time)
+            myTestUI();
+
             scope.frustum.setFromProjectionMatrix(
                 new THREE.Matrix4().multiplyMatrices(
                     camera_next.projectionMatrix,
                     camera_next.matrixWorldInverse
                 )
             );
+
+            function myTestUI(){
+                document.getElementById("pos").innerHTML=
+                    scope.camera.position.x.toFixed(3)+","
+                    +scope.camera.position.y.toFixed(3)+","
+                    +scope.camera.position.z.toFixed(3);
+                document.getElementById("rot").innerHTML=
+                    scope.camera.rotation.x.toFixed(3)+","
+                    +scope.camera.rotation.y.toFixed(3)+","
+                    +scope.camera.rotation.z.toFixed(3);
+                document.getElementById("pos_next").innerHTML=
+                    camera_next.position.x.toFixed(3)+","
+                    +camera_next.position.y.toFixed(3)+","
+                    +camera_next.position.z.toFixed(3);
+                document.getElementById("rot_next").innerHTML=
+                    camera_next.rotation.x.toFixed(3)+","
+                    +camera_next.rotation.y.toFixed(3)+","
+                    +camera_next.rotation.z.toFixed(3);
+            }
             function forecast(c1,c2,c3,ratio) {
                 if(typeof (ratio)==="undefined")ratio=1;
                 ratio++;
