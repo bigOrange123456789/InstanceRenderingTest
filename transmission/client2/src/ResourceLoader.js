@@ -305,8 +305,8 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         if(typeof (firstList)==="undefined")firstList=[];
         var scope=this;
         var flag_init={
-            inVisionCone:false,//不在视锥体中
-            requested:false,//还没有请求这个资源
+            //inVisionCone:false,//不在视锥体中
+            //requested:false,//还没有请求这个资源
             Obtained:false,//还没有获取这个资源
             inScene:false//不在场景中
         }
