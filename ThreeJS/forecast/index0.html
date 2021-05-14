@@ -46,16 +46,16 @@
 	obj2.rotation.set(0,0,0)
 
 	var r1=1,r2=1,r3=1,r4=1,r5=1,r6=1;
-
+	var pre_qua=null;
+	var pre_pos=null;
 	setInterval(function () {
 		obj1.rotation.x+=(0.002*r1);
 		obj1.rotation.y+=(0.002*r2);
-		//obj1.rotation.z+=(0.002*r3);
+		obj1.rotation.z+=(0.002*r3);
 		obj1.position.x+=(0.01*r4);
 		obj1.position.y+=(0.01*r5);
-		//obj1.position.z+=(0.01*r6);
+		obj1.position.z+=(0.01*r6);
 	},10)
-	/*
 	setInterval(function () {
 		var r=Math.round(Math.random()*1000);
 		if(r===1)r1*=-1;
@@ -65,50 +65,42 @@
 		else if(r===5)r5*=-1;
 		else if(r===6)r6*=-1;
 	},19)
-	*/
-
-
-
-	var myPre=null;
 	setInterval(function () {
-		if(myPre===null)myPre=obj1.clone();
-		forecast(myPre,obj1,obj2,1);
-		myPre=obj1.clone();
+		obj2.rotation.set(0,0,0)
+		obj2.applyQuaternion(forecast(obj1.quaternion))
+		var pos0=forecast2(obj1.position);
+		obj2.position.set(pos0.x,pos0.y,pos0.z)
+		//obj2.quaternion=obj1.quaternion;
+
 	},2000)
-	function forecast(c1,c2,c3,ratio) {
-		if(typeof (ratio)==="undefined")ratio=1;
-		ratio++;
-
-		var q3=forecast1(
-				c1.quaternion,
-				c2.quaternion
-		);
-		c3.rotation.set(0,0,0)
-		c3.applyQuaternion(q3)
-
-		var p3=forecast2(
-				c1.position,
-				c2.position
-		);
-		c3.position.set(p3.x,p3.y,p3.z)
-		function forecast1(pre_qua,qua){
-			if(pre_qua===null){
-				pre_qua=new THREE.Quaternion(qua.x,qua.y,qua.z,qua.w);
-			}
-			var next_qua=new THREE.Quaternion();
-			THREE.Quaternion.slerp( pre_qua, qua,next_qua,ratio);
-			return next_qua;
+	function forecast(qua){
+		if(pre_qua===null){
+			pre_qua=new THREE.Quaternion(qua.x,qua.y,qua.z,qua.w);
 		}
-		function forecast2(pre_pos,pos){
-			if(pre_pos===null){
-				pre_pos={x:pos.x,y:pos.y,z:pos.z}
-			}
-			return {
-				x:ratio*(pos.x-pre_pos.x)+pre_pos.x,
-				y:ratio*(pos.y-pre_pos.y)+pre_pos.y,
-				z:ratio*(pos.z-pre_pos.z)+pre_pos.z
-			}//next_pos
+
+		var next_qua=new THREE.Quaternion();
+		THREE.Quaternion.slerp( pre_qua, qua,next_qua, 2);
+
+		pre_qua.x=qua.x;
+		pre_qua.y=qua.y;
+		pre_qua.z=qua.z;
+		pre_qua.w=qua.w;
+
+
+		return next_qua;
+	}
+	function forecast2(pos){
+		if(pre_pos===null){
+			pre_pos={x:pos.x,y:pos.y,z:pos.z}
 		}
+
+		var next_pos={
+			x:2*pos.x-pre_pos.x,
+			y:2*pos.y-pre_pos.y,
+			z:2*pos.z-pre_pos.z
+		}
+		pre_pos={x:pos.x,y:pos.y,z:pos.z}
+		return next_pos;
 	}
 
 </script>

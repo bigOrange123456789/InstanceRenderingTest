@@ -282,6 +282,8 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     maps;//所有贴图的说明信息
     //mapsIndex;
     camera;
+    camera_pre;//用于视点预测
+
     frustum;//存储相机的视锥体
     update_index;//记录物体状态更新到了第几个
     list;//按照优先级排序
@@ -349,6 +351,8 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         var scope=this;
         scope.list=[];//这里应当初始化
         scope.camera=input.camera;
+        scope.camera_pre=null;//input.camera.clone();
+
         scope.frustum=new THREE.Frustum();
         scope.update_index=0;
         var resourceInfo=input.resourceInfo;
@@ -439,21 +443,69 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         var scope=this;
         var number=Math.floor(scope.models.length*ratio);
         if(number<1)number=1;
-        scope.#updateFrustum();
+        scope.#updateFrustum(100);
+
         for(var i=0;i<number;i++){
             if(scope.update_index>=scope.models.length)
                 scope.update_index=0;
             scope.#culling(scope.update_index++);
         }
     }
-    #updateFrustum=function () {
+    #updateFrustum=function (time) {//time用来描述预测的时间
         var scope=this;
-        scope.frustum.setFromProjectionMatrix(
-            new THREE.Matrix4().multiplyMatrices(
-                scope.camera.projectionMatrix,
-                scope.camera.matrixWorldInverse
-            )
-        );
+        if(typeof(time)==="undefined"||time===0){//不对相机的位置进行预测
+            scope.frustum.setFromProjectionMatrix(
+                new THREE.Matrix4().multiplyMatrices(
+                    scope.camera.projectionMatrix,
+                    scope.camera.matrixWorldInverse
+                )
+            );
+        }else{//对相机的位置进行预测
+            if(scope.camera_pre===null) scope.camera_pre=scope.camera.clone();
+            var camera_next=scope.camera.clone();
+            forecast(scope.camera_pre,scope.camera,camera_next,time)
+            scope.frustum.setFromProjectionMatrix(
+                new THREE.Matrix4().multiplyMatrices(
+                    camera_next.projectionMatrix,
+                    camera_next.matrixWorldInverse
+                )
+            );
+            function forecast(c1,c2,c3,ratio) {
+                if(typeof (ratio)==="undefined")ratio=1;
+                ratio++;
+
+                var q3=forecast1(
+                    c1.quaternion,
+                    c2.quaternion
+                );
+                c3.rotation.set(0,0,0)
+                c3.applyQuaternion(q3)
+
+                var p3=forecast2(
+                    c1.position,
+                    c2.position
+                );
+                c3.position.set(p3.x,p3.y,p3.z)
+                function forecast1(pre_qua,qua){
+                    if(pre_qua===null){
+                        pre_qua=new THREE.Quaternion(qua.x,qua.y,qua.z,qua.w);
+                    }
+                    var next_qua=new THREE.Quaternion();
+                    THREE.Quaternion.slerp( pre_qua, qua,next_qua,ratio);
+                    return next_qua;
+                }
+                function forecast2(pre_pos,pos){
+                    if(pre_pos===null){
+                        pre_pos={x:pos.x,y:pos.y,z:pos.z}
+                    }
+                    return {
+                        x:ratio*(pos.x-pre_pos.x)+pre_pos.x,
+                        y:ratio*(pos.y-pre_pos.y)+pre_pos.y,
+                        z:ratio*(pos.z-pre_pos.z)+pre_pos.z
+                    }//next_pos
+                }
+            }
+        }
     }
     #culling=function(i){
         var scope=this;

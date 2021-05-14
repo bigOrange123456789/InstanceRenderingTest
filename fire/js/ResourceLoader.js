@@ -1,11 +1,15 @@
 //实例化渲染对象是否重复添加了？
 export {ResourceLoader,ResourceLoader_Multiple};
 class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
+    myResourceList;
+
     url;
     camera;
     firstList;
     time1;fileNumber;
     time2;dTime;ratio;
+
+    partInstancedObjList;//部分实例化渲染对象的列表
 
     jsonLoader;//json加载工具
     constructor(opt){
@@ -16,11 +20,24 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
         scope.time1=30;
         scope.fileNumber=3;
 
+        scope.partInstancedObjList=[];
 
         scope.time2=10;
         scope.dTime=scope.time1/scope.fileNumber;
         scope.ratio=scope.time2/scope.time1;
         scope.jsonLoader=new THREE.XHRLoader(THREE.DefaultLoadingManager);
+    }
+    addInstancedObj(name){
+        var scope=this;
+        if(scope.myResourceList){
+            var model=scope.myResourceList.getModelByName(name+".glb");
+            model.reusability++;
+            model.finishLoad=true;//已经被加载了
+            return model.reusability;
+        }else{
+            scope.partInstancedObjList.push(name);
+            return 1;
+        }
     }
     start(){
         var scope=this;
@@ -47,23 +64,18 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
             var resourceList=new ResourceList(
                 {resourceInfo:resourceInfo,camera:scope.camera,test:false,firstList:scope.firstList}
             );
-
-            //初始问题
-            /*
-                        for(var jj=0;jj<scope.firstList.length;jj++){
-                            ResourceList.remove(
-                                resourceList.models,
-                                scope.firstList[jj]+".glb"
-                            )
-                        }
-                        */
-            resourceList.update(1);
+            /*for(var k=0;k<scope.partInstancedObjList.length;k++){
+                scope.addInstancedObj(
+                    scope.partInstancedObjList[k]
+                )
+            }*/
+            scope.myResourceList=resourceList;
 
             var myCallback_get0=function (n){//加载成功了一个后立即加载另一个
                 var names=resourceList.getModelFileInf({n:n,update:false});
                 window.fileNumber0=names.length;
                 window.n=0;//第几个文件
-                console.log(names)
+                //console.log(names)
                 if(names){
                     var visibleList0=getVisibleList(names);
                     if(visibleList0==="")return;//当前没有需要加载的数据
@@ -171,7 +183,7 @@ class ResourceLoader{//逐个加载
                         load();
                         clearInterval(myInterval);
                     }
-                },100);
+                },10);
             }else if(!scope.useDraco){
                 scope.loader.load(scope.url+fileName, (gltf) => {
                     if(mapName!=="")
@@ -270,6 +282,8 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     maps;//所有贴图的说明信息
     //mapsIndex;
     camera;
+    camera_pre;//用于视点预测
+
     frustum;//存储相机的视锥体
     update_index;//记录物体状态更新到了第几个
     list;//按照优先级排序
@@ -293,8 +307,8 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         if(typeof (firstList)==="undefined")firstList=[];
         var scope=this;
         var flag_init={
-            inVisionCone:false,//不在视锥体中
-            requested:false,//还没有请求这个资源
+            //inVisionCone:false,//不在视锥体中
+            //requested:false,//还没有请求这个资源
             Obtained:false,//还没有获取这个资源
             inScene:false//不在场景中
         }
@@ -302,6 +316,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         //fileName;interest;boundingSphere{x,y,z,r};MapName;spaceVolume;
 
         for(var i=0;i<scope.models.length;i++){
+            scope.models[i].reusability=0;//并非完全重用度
             scope.models[i].finishLoad=false;
             scope.models[i].inView=false;
 
@@ -336,6 +351,8 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         var scope=this;
         scope.list=[];//这里应当初始化
         scope.camera=input.camera;
+        scope.camera_pre=null;//input.camera.clone();
+
         scope.frustum=new THREE.Frustum();
         scope.update_index=0;
         var resourceInfo=input.resourceInfo;
@@ -426,21 +443,69 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         var scope=this;
         var number=Math.floor(scope.models.length*ratio);
         if(number<1)number=1;
-        scope.#updateFrustum();
+        scope.#updateFrustum(0);
+
         for(var i=0;i<number;i++){
             if(scope.update_index>=scope.models.length)
                 scope.update_index=0;
             scope.#culling(scope.update_index++);
         }
     }
-    #updateFrustum=function () {
+    #updateFrustum=function (time) {//time用来描述预测的时间
         var scope=this;
-        scope.frustum.setFromProjectionMatrix(
-            new THREE.Matrix4().multiplyMatrices(
-                scope.camera.projectionMatrix,
-                scope.camera.matrixWorldInverse
-            )
-        );
+        if(typeof(time)==="undefined"||time===0){//不对相机的位置进行预测
+            scope.frustum.setFromProjectionMatrix(
+                new THREE.Matrix4().multiplyMatrices(
+                    scope.camera.projectionMatrix,
+                    scope.camera.matrixWorldInverse
+                )
+            );
+        }else{//对相机的位置进行预测
+            if(scope.camera_pre===null) scope.camera_pre=scope.camera.clone();
+            var camera_next=scope.camera.clone();
+            forecast(scope.camera_pre,scope.camera,camera_next,time)
+            scope.frustum.setFromProjectionMatrix(
+                new THREE.Matrix4().multiplyMatrices(
+                    camera_next.projectionMatrix,
+                    camera_next.matrixWorldInverse
+                )
+            );
+            function forecast(c1,c2,c3,ratio) {
+                if(typeof (ratio)==="undefined")ratio=1;
+                ratio++;
+
+                var q3=forecast1(
+                    c1.quaternion,
+                    c2.quaternion
+                );
+                c3.rotation.set(0,0,0)
+                c3.applyQuaternion(q3)
+
+                var p3=forecast2(
+                    c1.position,
+                    c2.position
+                );
+                c3.position.set(p3.x,p3.y,p3.z)
+                function forecast1(pre_qua,qua){
+                    if(pre_qua===null){
+                        pre_qua=new THREE.Quaternion(qua.x,qua.y,qua.z,qua.w);
+                    }
+                    var next_qua=new THREE.Quaternion();
+                    THREE.Quaternion.slerp( pre_qua, qua,next_qua,ratio);
+                    return next_qua;
+                }
+                function forecast2(pre_pos,pos){
+                    if(pre_pos===null){
+                        pre_pos={x:pos.x,y:pos.y,z:pos.z}
+                    }
+                    return {
+                        x:ratio*(pos.x-pre_pos.x)+pre_pos.x,
+                        y:ratio*(pos.y-pre_pos.y)+pre_pos.y,
+                        z:ratio*(pos.z-pre_pos.z)+pre_pos.z
+                    }//next_pos
+                }
+            }
+        }
     }
     #culling=function(i){
         var scope=this;
