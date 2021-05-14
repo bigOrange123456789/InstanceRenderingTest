@@ -79,6 +79,19 @@ function init() {
     scene.add(light);
 
     sceneRoot = new THREE.Object3D();
+
+    window.root=sceneRoot;
+    /*
+        window.root=sceneRoot;
+        window.arr=[];
+        setInterval(function () {
+            if(window.root.children.length>10){
+                window.arr.push(window.root.children[0])
+                window.root.remove(window.root.children[0])
+            }
+        },10)
+        */
+
     sceneRoot.name = "sceneRoot";
     sceneRoot.applyMatrix(new THREE.Matrix4().set(
         -1, 0, 0, 0,
@@ -212,14 +225,14 @@ function requestModelPackageByHttp(visibleList, type) {
         let data = new Uint8Array(oReq.response);
         var headLength= parseInt(ab2str(data.slice(0, 10)));
 
-        console.log(headLength)
+        //console.log(headLength)
         // glb file length info
         let glbLengthData = ab2str(data.slice(10,10+ headLength-1));//数据包头部
         //glb file
         let glbData = data.slice(10+ headLength);//数据包内容
 
         let glbLengthArr = glbLengthData.split('/');//将头部进行划分
-        console.log(glbLengthArr)
+        //console.log(glbLengthArr)
         let totalLength = 0;
 
         for (let i = 0; i < glbLengthArr.length - 1; i++) {//通过头部缺点模型个数

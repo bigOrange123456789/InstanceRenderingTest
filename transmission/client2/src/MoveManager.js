@@ -12,7 +12,7 @@ class MoveManager{
         scope.avatar=avatar;
         scope.roamPath=roamPath;
         scope.myPreviewflag=1;//确定目标节点
-        scope.stopFlag=true;
+        scope.stopFlag=false;
         scope.isLoop=false;//如果不进行循环漫游的话，第一行的初始状态就没用了
 
         scope.myMakeOneRoamStep=new MakeOneRoamStep();
@@ -27,7 +27,11 @@ class MoveManager{
                     scope.myPreviewflag++;
                     if(scope.myPreviewflag=== scope.roamPath.length)
                         if(scope.isLoop)scope.myPreviewflag = 0;
-                        else scope.stopFlag=true;
+                        else {
+                            scope.stopFlag=true;
+                            console.log(window.root.children)
+                            alert(window.root.children.length)
+                        }
                 }
             } //else scope.myMakeOneRoamStep.firstTime=true;
             requestAnimationFrame(autoRoam0);

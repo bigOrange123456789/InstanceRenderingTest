@@ -12,8 +12,10 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
         scope.url=opt.url;
         scope.camera=opt.camera;
 
-        scope.time1=300;
-        scope.fileNumber=30;
+        scope.time1=30;
+        scope.fileNumber=3;
+
+
         scope.time2=10;
         scope.dTime=scope.time1/scope.fileNumber;
         scope.ratio=scope.time2/scope.time1;
