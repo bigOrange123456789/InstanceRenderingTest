@@ -442,6 +442,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         var number=Math.floor(scope.models.length*ratio);
         if(number<1)number=1;
         scope.#updateFrustum(0);
+
         //scope.#updateFrustum(5);
 
         for(var i=0;i<number;i++){
@@ -449,6 +450,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 scope.update_index=0;
             scope.#culling(scope.update_index++);
         }
+
     }
     #updateFrustum=function (time) {//time用来描述预测的时间
         var scope=this;
@@ -529,7 +531,51 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             }
         }
     }
+    #getFrustum=function () {
+        var scope=this;
+        const planes = scope.frustum.planes;
+        var plane0=planes[0];
+        var plane1=planes[1];
+        var plane2=planes[2];
+        var plane3=planes[3];
+        var plane4=planes[4];
+        var plane5=planes[5];
+        return [
+            [plane0.x,plane0.y,plane0.z,plane0.constant],
+            [plane1.x,plane1.y,plane1.z,plane1.constant],
+            [plane2.x,plane2.y,plane2.z,plane2.constant],
+            [plane3.x,plane3.y,plane3.z,plane3.constant],
+            [plane4.x,plane4.y,plane4.z,plane4.constant],
+            [plane5.x,plane5.y,plane5.z,plane5.constant],
+        ];
+    }
     #culling=function(i){
+        var scope=this;
+        scope.models[i].inView=intersectsSphere(
+            scope.#getFrustum(),
+            scope.models[i].boundingSphere.x,
+            scope.models[i].boundingSphere.y,
+            scope.models[i].boundingSphere.z,
+            scope.models[i].boundingSphere.r
+        )
+        function intersectsSphere(planes,x,y,z,r) {
+            for ( let i = 0; i < 6; i ++ ) {
+                const distance = distanceToPoint(
+                    planes[ i ], [x,y,z] );//平面到点的距离
+                function distanceToPoint(plane,point) {
+                    return plane[0]* point[0] +
+                        plane[1]* point[1] +
+                        plane[2]* point[2] +
+                        plane[3];
+                }
+                if ( distance < -1*r ) {//内正外负
+                    return false;//不相交
+                }
+            }
+            return true;
+        }
+    }
+    #culling0=function(i){
         var scope=this;
         scope.models[i].inView=intersectsSphere(
             scope.models[i].boundingSphere.x,

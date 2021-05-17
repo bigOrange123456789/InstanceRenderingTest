@@ -97,7 +97,7 @@ var View = {
                     (rowId + 1) / numRows ===1&&typeof (myFirstFlag)!=="undefined"
                 )loadMap0("grid1.json")
                 function loadMap0(url) {
-                    var xMin=0,yMin=0;
+                    //var xMin=0,yMin=0;
                     var request = new XMLHttpRequest();
                     request.open("get", url);/*设置请求方法与路径*/
                     request.send(null);/*不发送数据到服务器*/
@@ -114,7 +114,11 @@ var View = {
                                 for(j=0;j<2;j++)
                                     if(arr[i][j]!==null)if(arr[i][j]<min[j])min[j]=arr[i][j];
                             }
-                            console.log("min:",min,"max:",max)
+                            console.log("min:",min,"max:",max,"len",
+                                [
+                                    max[0]-min[0]+1,
+                                    max[1]-min[1]+1
+                                ])
                             for(var i=0;i<arr.length;i++)
                                 if(arr[i][0]!==null&&arr[i][1]!==null){
                                     arr[i][0]-=xMin;

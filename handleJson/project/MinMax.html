@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING--softwareTest</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+
+	<body>
+		<script>
+			var url = "fire2.json"
+			var request = new XMLHttpRequest();
+			request.open("get", url);
+			request.send(null);
+			request.onload = function () {
+				if (request.status === 200) {
+					var json = JSON.parse(request.responseText);
+					console.log(json);
+					var arr=json.data;
+					var max=arr[0][0];
+					var min=arr[0][0];
+					for(var i=0;i<arr.length;i++){
+						if(arr[i][0]<min)min=arr[i][0]
+						if(arr[i][0]>max)max=arr[i][0]
+					}
+					console.log(min,max)
+				}
+			}
+
+		</script>
+	</body>
+</html>

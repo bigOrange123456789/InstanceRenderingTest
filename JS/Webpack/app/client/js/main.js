@@ -2,6 +2,11 @@
 $(document).ready(function() {
     var xMin=0;//-39;//
     var yMin=0;//112;//
+    if(typeof(myTestFlag001)!=="undefined"){//myTestFlag001
+        xMin=-39;//
+        yMin=112;//
+    }
+
     Panel.init();
     Controller.init();
 
@@ -20,6 +25,8 @@ $(document).ready(function() {
         'HSY 400 论文对比 S Dir-map反方向.json',
         'HSY 400 论文对比 分块 B Dir－map.json',
         'grid1.json',
+        'fire1.json',
+        'fire0.json',
     ];
     //if(typeof(myFirstFlag)!=="undefined")loadMap0("grid1.json")
     for(var i=0;i<names.length;i++){
@@ -27,7 +34,7 @@ $(document).ready(function() {
         document.getElementById("map"+i).fileName=names[i];
         document.getElementById("map"+i).onclick=function(){loadMap0(this.fileName);};
     }
-    document.getElementById("download").onclick=function(){
+    document.getElementById("download").onclick=function(){//下载地图
         //console.log(Controller.grid);
         var arr=[];
         var board=[];
@@ -68,7 +75,7 @@ $(document).ready(function() {
         link.download ="path.json";
         link.click();
     }
-    function loadMap0(url) {
+    function loadMap0(url) {//加载地图
         var request = new XMLHttpRequest();
         request.open("get", url);/*设置请求方法与路径*/
         request.send(null);/*不发送数据到服务器*/

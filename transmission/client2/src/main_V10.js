@@ -247,8 +247,8 @@ function requestModelPackageByHttp(visibleList, type) {
         let totalLength = 0;
 
         for (let i = 0; i < glbLengthArr.length - 1; i++) {//通过头部缺点模型个数
-            if (!glbLengthArr[i])//文件大小
-                continue;
+            if (!glbLengthArr[i])continue;//文件大小
+
             let buffer = glbData.slice(totalLength, totalLength + 1.0 * glbLengthArr[i]);//将内容进行划分
             reuseDataParser(buffer, i === glbLengthArr.length - 2);
             totalLength += 1.0 * glbLengthArr[i];

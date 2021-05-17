@@ -94,6 +94,9 @@ var gridHeight;
 if(typeof(myFirstFlag)==="undefined"){
     gridWidth=prompt("请输入横向方格数：",401);
     gridHeight=prompt("请输入纵向方格数：",221);
+}else if(typeof(myTestFlag001)!=="undefined"){//myTestFlag001
+    gridWidth=305//401;
+    gridHeight=425//221;
 }else{
     gridWidth=20;
     gridHeight=20;
