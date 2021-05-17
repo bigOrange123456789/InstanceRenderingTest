@@ -1,18 +1,36 @@
 <script src="./gpu-browser.js"></script>
 <script>
-    function add0(x,y){
-        return x+y;
+    function g0(p0,p1,p2,p3,p4,p5,x,y,z,r) {
+        var g = new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,x,y,z,r) {
+            return intersectsSphere(p0,p1,p2,p3,p4,p5,x,y,z,r);
+            function intersectsSphere(p0,p1,p2,p3,p4,p5,x,y,z,r) {
+                function distanceToPoint(plane,point) {
+                    return plane[0]* point[0] + plane[1]* point[1] + plane[2]* point[2] + plane[3];
+                }
+
+                if ( distanceToPoint(p0, [x,y,z] ) < -1*r ) return 0;//不相交
+                if ( distanceToPoint(p1, [x,y,z] ) < -1*r ) return 0;//不相交
+                if ( distanceToPoint(p2, [x,y,z] ) < -1*r ) return 0;//不相交
+                if ( distanceToPoint(p3, [x,y,z] ) < -1*r ) return 0;//不相交
+                if ( distanceToPoint(p4, [x,y,z] ) < -1*r ) return 0;//不相交
+                if ( distanceToPoint(p5, [x,y,z] ) < -1*r ) return 0;//不相交
+
+                return 1;
+            }
+        }).setOutput([512, 512])
+        return g(
+            p0,p1,p2,p3,p4,p5,x,y,z,r
+        )[0][0]
     }
-  const multiplyMatrix = new GPU().createKernel(function(a, b) {
-      return t(a, b);
-      function t(a0, b0) {
-          if(a0+b0>0)return 1;
-          else return 0;
-      }
-    //return a+b;
-  }).setOutput([512, 512])
 
-  const out = multiplyMatrix(1.5, 2)
+    console.log(g0(
+        [1,1,1,1],
+        [1,1,1,1],
+        [1,1,1,1],
+        [1,1,1,1],
+        [1,1,1,1],
+        [1,1,1,1],
+        1,2,3,4
+    ))
 
-  console.log(out)
 </script>
