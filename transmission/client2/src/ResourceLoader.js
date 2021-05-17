@@ -6,8 +6,7 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
     url;
     camera;
     firstList;
-    time1;fileNumber;
-    time2;dTime;ratio;
+    time;fileNumber;dTime;
 
     partInstancedObjList;//部分实例化渲染对象的列表
 
@@ -17,14 +16,12 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
         scope.url=opt.url;
         scope.camera=opt.camera;
 
-        scope.time1=30;
+        scope.time=30;
         scope.fileNumber=3;
 
         scope.partInstancedObjList=[];
 
-        scope.time2=30;
-        scope.dTime=scope.time1/scope.fileNumber;
-        scope.ratio=scope.time2/scope.time1;
+        scope.dTime=scope.time/scope.fileNumber;
         scope.jsonLoader=new THREE.XHRLoader(THREE.DefaultLoadingManager);
     }
     addInstancedObj(name){
@@ -46,9 +43,8 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
             window.n++;
             return time_delay;
         }
-        window.time1=scope.time1;
+        window.time1=scope.time;
 
-        //requestModelPackageByHttp("first", 0);
         scope.jsonLoader.load('../json/cgmFirstList.json', function(data){//dataTexture
             var arr=JSON.parse(data);
             scope.firstList=arr;
@@ -64,14 +60,10 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
             var resourceList=new ResourceList(
                 {resourceInfo:resourceInfo,camera:scope.camera,test:false,firstList:scope.firstList}
             );
-            /*for(var k=0;k<scope.partInstancedObjList.length;k++){
-                scope.addInstancedObj(
-                    scope.partInstancedObjList[k]
-                )
-            }*/
+
             scope.myResourceList=resourceList;
 
-            var myCallback_get0=function (n){//加载成功了一个后立即加载另一个
+            var myCallback_get0=function (n){
                 var names=resourceList.getModelFileInf({n:n,update:false});
                 window.fileNumber0=names.length;
                 window.n=0;//第几个文件
@@ -94,14 +86,9 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
             }
 
             setInterval(function (){//加载资源
-                //window.time=0;//上次加载资源到现在过来多长时间
-                myCallback_get0(scope.fileNumber);
-            },scope.time1)
-            setInterval(function () {//分散计算
-                //window.time+=scope.dTime;
-                resourceList.update(scope.ratio);
-                console.log("update")
-            },scope.time2)
+                resourceList.update();//更新视点
+                myCallback_get0(scope.fileNumber);//向服务器请求资源
+            },scope.time)
         });
     }
     computeFirstList(){
@@ -118,7 +105,6 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
                 var name=list[i].fileName;
                 list[i]=name.substr(0,name.length-4)
             }
-            console.log(list);
             download(list,"firstList.json")
             function download(json,name) {
                 let link = document.createElement('a');
