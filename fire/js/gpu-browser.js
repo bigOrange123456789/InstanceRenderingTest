@@ -336,12 +336,12 @@
   }
 
   var
-      BIND_NONE = 0,
-      BIND_VAR = 1,
-      BIND_LEXICAL = 2,
-      BIND_FUNCTION = 3,
-      BIND_SIMPLE_CATCH = 4,
-      BIND_OUTSIDE = 5;
+      BIND_NONE = 0, 
+      BIND_VAR = 1, 
+      BIND_LEXICAL = 2, 
+      BIND_FUNCTION = 3, 
+      BIND_SIMPLE_CATCH = 4, 
+      BIND_OUTSIDE = 5; 
 
   var Parser = function Parser(options, input, startPos) {
     this.options = options = getOptions(options);
@@ -601,10 +601,10 @@
     skipWhiteSpace.lastIndex = this.pos;
     var skip = skipWhiteSpace.exec(this.input);
     var next = this.pos + skip[0].length, nextCh = this.input.charCodeAt(next);
-    if (nextCh === 91) { return true }
+    if (nextCh === 91) { return true } 
     if (context) { return false }
 
-    if (nextCh === 123) { return true }
+    if (nextCh === 123) { return true } 
     if (isIdentifierStart(nextCh, true)) {
       var pos = next + 1;
       while (isIdentifierChar(this.input.charCodeAt(pos), true)) { ++pos; }
@@ -666,7 +666,7 @@
         skipWhiteSpace.lastIndex = this.pos;
         var skip = skipWhiteSpace.exec(this.input);
         var next = this.pos + skip[0].length, nextCh = this.input.charCodeAt(next);
-        if (nextCh === 40)
+        if (nextCh === 40) 
           { return this.parseExpressionStatement(node, this.parseExpression()) }
       }
 
@@ -836,7 +836,7 @@
     }
     this.exitScope();
     if (cur) { this.finishNode(cur, "SwitchCase"); }
-    this.next();
+    this.next(); 
     this.labels.pop();
     return this.finishNode(node, "SwitchStatement")
   };
@@ -1187,7 +1187,7 @@
       this.semicolon();
       return this.finishNode(node, "ExportAllDeclaration")
     }
-    if (this.eat(types._default)) {
+    if (this.eat(types._default)) { 
       this.checkExport(exports, "default", this.lastTokStart);
       var isAsync;
       if (this.type === types._function || (isAsync = this.isAsyncFunction())) {
@@ -1212,7 +1212,7 @@
         { this.checkExport(exports, node.declaration.id.name, node.declaration.id.start); }
       node.specifiers = [];
       node.source = null;
-    } else {
+    } else { 
       node.declaration = null;
       node.specifiers = this.parseExportSpecifiers(exports);
       if (this.eatContextual("from")) {
@@ -1693,7 +1693,7 @@
         refDestructuringErrors.parenthesizedAssign = refDestructuringErrors.trailingComma = refDestructuringErrors.doubleProto = -1;
       }
       if (refDestructuringErrors.shorthandAssign >= node.left.start)
-        { refDestructuringErrors.shorthandAssign = -1; }
+        { refDestructuringErrors.shorthandAssign = -1; } 
       this.checkLVal(left);
       this.next();
       node.right = this.parseMaybeAssign(noIn);
@@ -1962,7 +1962,7 @@
 
   pp$3.parseExprImport = function() {
     var node = this.startNode();
-    this.next();
+    this.next(); 
     switch (this.type) {
     case types.parenL:
       return this.parseDynamicImport(node)
@@ -1972,7 +1972,7 @@
   };
 
   pp$3.parseDynamicImport = function(node) {
-    this.next();
+    this.next(); 
 
     node.source = this.parseMaybeAssign();
 
@@ -3144,7 +3144,7 @@
       ch === 0x2E  ||
       ch === 0x3F  ||
       ch >= 0x5B  && ch <= 0x5E  ||
-      ch >= 0x7B  && ch <= 0x7D
+      ch >= 0x7B  && ch <= 0x7D 
     )
   }
 
@@ -3167,7 +3167,7 @@
       ch !== 0x3F  &&
       ch !== 0x5B  &&
       ch !== 0x5E  &&
-      ch !== 0x7C
+      ch !== 0x7C 
     ) {
       state.advance();
       return true
@@ -3228,7 +3228,7 @@
     return false
   };
   function isRegExpIdentifierStart(ch) {
-    return isIdentifierStart(ch, true) || ch === 0x24  || ch === 0x5F
+    return isIdentifierStart(ch, true) || ch === 0x24  || ch === 0x5F 
   }
 
   pp$8.regexp_eatRegExpIdentifierPart = function(state) {
@@ -3248,7 +3248,7 @@
     return false
   };
   function isRegExpIdentifierPart(ch) {
-    return isIdentifierChar(ch, true) || ch === 0x24  || ch === 0x5F  || ch === 0x200C  || ch === 0x200D
+    return isIdentifierChar(ch, true) || ch === 0x24  || ch === 0x5F  || ch === 0x200C  || ch === 0x200D 
   }
 
   pp$8.regexp_eatAtomEscape = function(state) {
@@ -3329,27 +3329,27 @@
   pp$8.regexp_eatControlEscape = function(state) {
     var ch = state.current();
     if (ch === 0x74 ) {
-      state.lastIntValue = 0x09;
+      state.lastIntValue = 0x09; 
       state.advance();
       return true
     }
     if (ch === 0x6E ) {
-      state.lastIntValue = 0x0A;
+      state.lastIntValue = 0x0A; 
       state.advance();
       return true
     }
     if (ch === 0x76 ) {
-      state.lastIntValue = 0x0B;
+      state.lastIntValue = 0x0B; 
       state.advance();
       return true
     }
     if (ch === 0x66 ) {
-      state.lastIntValue = 0x0C;
+      state.lastIntValue = 0x0C; 
       state.advance();
       return true
     }
     if (ch === 0x72 ) {
-      state.lastIntValue = 0x0D;
+      state.lastIntValue = 0x0D; 
       state.advance();
       return true
     }
@@ -3419,7 +3419,7 @@
         return true
       }
       if (state.eat(0x2F )) {
-        state.lastIntValue = 0x2F;
+        state.lastIntValue = 0x2F; 
         return true
       }
       return false
@@ -3483,7 +3483,7 @@
       ch === 0x73  ||
       ch === 0x53  ||
       ch === 0x77  ||
-      ch === 0x57
+      ch === 0x57 
     )
   }
 
@@ -3528,7 +3528,7 @@
     return state.lastStringValue !== ""
   };
   function isUnicodePropertyNameCharacter(ch) {
-    return isControlLetter(ch) || ch === 0x5F
+    return isControlLetter(ch) || ch === 0x5F 
   }
 
   pp$8.regexp_eatUnicodePropertyValue = function(state) {
@@ -3606,12 +3606,12 @@
     var start = state.pos;
 
     if (state.eat(0x62 )) {
-      state.lastIntValue = 0x08;
+      state.lastIntValue = 0x08; 
       return true
     }
 
     if (state.switchU && state.eat(0x2D )) {
-      state.lastIntValue = 0x2D;
+      state.lastIntValue = 0x2D; 
       return true
     }
 
@@ -3663,7 +3663,7 @@
     return state.pos !== start
   };
   function isDecimalDigit(ch) {
-    return ch >= 0x30  && ch <= 0x39
+    return ch >= 0x30  && ch <= 0x39 
   }
 
   pp$8.regexp_eatHexDigits = function(state) {
@@ -3690,7 +3690,7 @@
     if (ch >= 0x61  && ch <= 0x66 ) {
       return 10 + (ch - 0x61 )
     }
-    return ch - 0x30
+    return ch - 0x30 
   }
 
   pp$8.regexp_eatLegacyOctalEscapeSequence = function(state) {
@@ -3714,7 +3714,7 @@
   pp$8.regexp_eatOctalDigit = function(state) {
     var ch = state.current();
     if (isOctalDigit(ch)) {
-      state.lastIntValue = ch - 0x30;
+      state.lastIntValue = ch - 0x30; 
       state.advance();
       return true
     }
@@ -3722,7 +3722,7 @@
     return false
   };
   function isOctalDigit(ch) {
-    return ch >= 0x30  && ch <= 0x37
+    return ch >= 0x30  && ch <= 0x37 
   }
 
   pp$8.regexp_eatFixedHexDigits = function(state, length) {
@@ -3856,7 +3856,7 @@
     loop: while (this.pos < this.input.length) {
       var ch = this.input.charCodeAt(this.pos);
       switch (ch) {
-      case 32: case 160:
+      case 32: case 160: 
         ++this.pos;
         break
       case 13:
@@ -3870,9 +3870,9 @@
           this.lineStart = this.pos;
         }
         break
-      case 47:
+      case 47: 
         switch (this.input.charCodeAt(this.pos + 1)) {
-        case 42:
+        case 42: 
           this.skipBlockComment();
           break
         case 47:
@@ -3908,7 +3908,7 @@
     var next = this.input.charCodeAt(this.pos + 1);
     if (next >= 48 && next <= 57) { return this.readNumber(true) }
     var next2 = this.input.charCodeAt(this.pos + 2);
-    if (this.options.ecmaVersion >= 6 && next === 46 && next2 === 46) {
+    if (this.options.ecmaVersion >= 6 && next === 46 && next2 === 46) { 
       this.pos += 3;
       return this.finishToken(types.ellipsis)
     } else {
@@ -3917,14 +3917,14 @@
     }
   };
 
-  pp$9.readToken_slash = function() {
+  pp$9.readToken_slash = function() { 
     var next = this.input.charCodeAt(this.pos + 1);
     if (this.exprAllowed) { ++this.pos; return this.readRegexp() }
     if (next === 61) { return this.finishOp(types.assign, 2) }
     return this.finishOp(types.slash, 1)
   };
 
-  pp$9.readToken_mult_modulo_exp = function(code) {
+  pp$9.readToken_mult_modulo_exp = function(code) { 
     var next = this.input.charCodeAt(this.pos + 1);
     var size = 1;
     var tokentype = code === 42 ? types.star : types.modulo;
@@ -3939,20 +3939,20 @@
     return this.finishOp(tokentype, size)
   };
 
-  pp$9.readToken_pipe_amp = function(code) {
+  pp$9.readToken_pipe_amp = function(code) { 
     var next = this.input.charCodeAt(this.pos + 1);
     if (next === code) { return this.finishOp(code === 124 ? types.logicalOR : types.logicalAND, 2) }
     if (next === 61) { return this.finishOp(types.assign, 2) }
     return this.finishOp(code === 124 ? types.bitwiseOR : types.bitwiseAND, 1)
   };
 
-  pp$9.readToken_caret = function() {
+  pp$9.readToken_caret = function() { 
     var next = this.input.charCodeAt(this.pos + 1);
     if (next === 61) { return this.finishOp(types.assign, 2) }
     return this.finishOp(types.bitwiseXOR, 1)
   };
 
-  pp$9.readToken_plus_min = function(code) {
+  pp$9.readToken_plus_min = function(code) { 
     var next = this.input.charCodeAt(this.pos + 1);
     if (next === code) {
       if (next === 45 && !this.inModule && this.input.charCodeAt(this.pos + 2) === 62 &&
@@ -3967,7 +3967,7 @@
     return this.finishOp(types.plusMin, 1)
   };
 
-  pp$9.readToken_lt_gt = function(code) {
+  pp$9.readToken_lt_gt = function(code) { 
     var next = this.input.charCodeAt(this.pos + 1);
     var size = 1;
     if (next === code) {
@@ -3985,10 +3985,10 @@
     return this.finishOp(types.relational, size)
   };
 
-  pp$9.readToken_eq_excl = function(code) {
+  pp$9.readToken_eq_excl = function(code) { 
     var next = this.input.charCodeAt(this.pos + 1);
     if (next === 61) { return this.finishOp(types.equality, this.input.charCodeAt(this.pos + 2) === 61 ? 3 : 2) }
-    if (code === 61 && next === 62 && this.options.ecmaVersion >= 6) {
+    if (code === 61 && next === 62 && this.options.ecmaVersion >= 6) { 
       this.pos += 2;
       return this.finishToken(types.arrow)
     }
@@ -3997,7 +3997,7 @@
 
   pp$9.getTokenFromCode = function(code) {
     switch (code) {
-    case 46:
+    case 46: 
       return this.readToken_dot()
 
     case 40: ++this.pos; return this.finishToken(types.parenL)
@@ -4011,48 +4011,48 @@
     case 58: ++this.pos; return this.finishToken(types.colon)
     case 63: ++this.pos; return this.finishToken(types.question)
 
-    case 96:
+    case 96: 
       if (this.options.ecmaVersion < 6) { break }
       ++this.pos;
       return this.finishToken(types.backQuote)
 
-    case 48:
+    case 48: 
       var next = this.input.charCodeAt(this.pos + 1);
-      if (next === 120 || next === 88) { return this.readRadixNumber(16) }
+      if (next === 120 || next === 88) { return this.readRadixNumber(16) } 
       if (this.options.ecmaVersion >= 6) {
-        if (next === 111 || next === 79) { return this.readRadixNumber(8) }
-        if (next === 98 || next === 66) { return this.readRadixNumber(2) }
+        if (next === 111 || next === 79) { return this.readRadixNumber(8) } 
+        if (next === 98 || next === 66) { return this.readRadixNumber(2) } 
       }
 
-    case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56: case 57:
+    case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56: case 57: 
       return this.readNumber(false)
 
-    case 34: case 39:
+    case 34: case 39: 
       return this.readString(code)
 
 
-    case 47:
+    case 47: 
       return this.readToken_slash()
 
-    case 37: case 42:
+    case 37: case 42: 
       return this.readToken_mult_modulo_exp(code)
 
-    case 124: case 38:
+    case 124: case 38: 
       return this.readToken_pipe_amp(code)
 
-    case 94:
+    case 94: 
       return this.readToken_caret()
 
-    case 43: case 45:
+    case 43: case 45: 
       return this.readToken_plus_min(code)
 
-    case 60: case 62:
+    case 60: case 62: 
       return this.readToken_lt_gt(code)
 
-    case 61: case 33:
+    case 61: case 33: 
       return this.readToken_eq_excl(code)
 
-    case 126:
+    case 126: 
       return this.finishOp(types.prefix, 1)
     }
 
@@ -4104,9 +4104,9 @@
     var start = this.pos, total = 0;
     for (var i = 0, e = len == null ? Infinity : len; i < e; ++i) {
       var code = this.input.charCodeAt(this.pos), val = (void 0);
-      if (code >= 97) { val = code - 97 + 10; }
-      else if (code >= 65) { val = code - 65 + 10; }
-      else if (code >= 48 && code <= 57) { val = code - 48; }
+      if (code >= 97) { val = code - 97 + 10; } 
+      else if (code >= 65) { val = code - 65 + 10; } 
+      else if (code >= 48 && code <= 57) { val = code - 48; } 
       else { val = Infinity; }
       if (val >= radix) { break }
       ++this.pos;
@@ -4119,7 +4119,7 @@
 
   pp$9.readRadixNumber = function(radix) {
     var start = this.pos;
-    this.pos += 2;
+    this.pos += 2; 
     var val = this.readInt(radix);
     if (val == null) { this.raise(this.start + 2, "Expected number in radix " + radix); }
     if (this.options.ecmaVersion >= 11 && this.input.charCodeAt(this.pos) === 110) {
@@ -4144,14 +4144,14 @@
       return this.finishToken(types.num, val$1)
     }
     if (octal && /[89]/.test(this.input.slice(start, this.pos))) { octal = false; }
-    if (next === 46 && !octal) {
+    if (next === 46 && !octal) { 
       ++this.pos;
       this.readInt(10);
       next = this.input.charCodeAt(this.pos);
     }
-    if ((next === 69 || next === 101) && !octal) {
+    if ((next === 69 || next === 101) && !octal) { 
       next = this.input.charCodeAt(++this.pos);
-      if (next === 43 || next === 45) { ++this.pos; }
+      if (next === 43 || next === 45) { ++this.pos; } 
       if (this.readInt(10) === null) { this.raise(start, "Invalid number"); }
     }
     if (isIdentifierStart(this.fullCharCodeAtPos())) { this.raise(this.pos, "Identifier directly after number"); }
@@ -4165,7 +4165,7 @@
   pp$9.readCodePoint = function() {
     var ch = this.input.charCodeAt(this.pos), code;
 
-    if (ch === 123) {
+    if (ch === 123) { 
       if (this.options.ecmaVersion < 6) { this.unexpected(); }
       var codePos = ++this.pos;
       code = this.readHexChar(this.input.indexOf("}", this.pos) - this.pos);
@@ -4189,7 +4189,7 @@
       if (this.pos >= this.input.length) { this.raise(this.start, "Unterminated string constant"); }
       var ch = this.input.charCodeAt(this.pos);
       if (ch === quote) { break }
-      if (ch === 92) {
+      if (ch === 92) { 
         out += this.input.slice(chunkStart, this.pos);
         out += this.readEscapedChar(false);
         chunkStart = this.pos;
@@ -4233,7 +4233,7 @@
     for (;;) {
       if (this.pos >= this.input.length) { this.raise(this.start, "Unterminated template"); }
       var ch = this.input.charCodeAt(this.pos);
-      if (ch === 96 || ch === 36 && this.input.charCodeAt(this.pos + 1) === 123) {
+      if (ch === 96 || ch === 36 && this.input.charCodeAt(this.pos + 1) === 123) { 
         if (this.pos === this.start && (this.type === types.template || this.type === types.invalidTemplate)) {
           if (ch === 36) {
             this.pos += 2;
@@ -4246,7 +4246,7 @@
         out += this.input.slice(chunkStart, this.pos);
         return this.finishToken(types.template, out)
       }
-      if (ch === 92) {
+      if (ch === 92) { 
         out += this.input.slice(chunkStart, this.pos);
         out += this.readEscapedChar(true);
         chunkStart = this.pos;
@@ -4299,16 +4299,16 @@
     var ch = this.input.charCodeAt(++this.pos);
     ++this.pos;
     switch (ch) {
-    case 110: return "\n"
-    case 114: return "\r"
-    case 120: return String.fromCharCode(this.readHexChar(2))
-    case 117: return codePointToString$1(this.readCodePoint())
-    case 116: return "\t"
-    case 98: return "\b"
-    case 118: return "\u000b"
-    case 102: return "\f"
-    case 13: if (this.input.charCodeAt(this.pos) === 10) { ++this.pos; }
-    case 10:
+    case 110: return "\n" 
+    case 114: return "\r" 
+    case 120: return String.fromCharCode(this.readHexChar(2)) 
+    case 117: return codePointToString$1(this.readCodePoint()) 
+    case 116: return "\t" 
+    case 98: return "\b" 
+    case 118: return "\u000b" 
+    case 102: return "\f" 
+    case 13: if (this.input.charCodeAt(this.pos) === 10) { ++this.pos; } 
+    case 10: 
       if (this.options.locations) { this.lineStart = this.pos; ++this.curLine; }
       return ""
     case 56:
@@ -4367,11 +4367,11 @@
       var ch = this.fullCharCodeAtPos();
       if (isIdentifierChar(ch, astral)) {
         this.pos += ch <= 0xffff ? 1 : 2;
-      } else if (ch === 92) {
+      } else if (ch === 92) { 
         this.containsEsc = true;
         word += this.input.slice(chunkStart, this.pos);
         var escStart = this.pos;
-        if (this.input.charCodeAt(++this.pos) !== 117)
+        if (this.input.charCodeAt(++this.pos) !== 117) 
           { this.invalidStringToken(this.pos, "Expecting Unicode escape sequence \\uXXXX"); }
         ++this.pos;
         var esc = this.readCodePoint();
@@ -4497,13 +4497,13 @@ function glWiretap(gl, options = {}) {
       case 'getContextVariableName': return getContextVariableName;
     }
     if (typeof gl[property] === 'function') {
-      return function() {
+      return function() { 
         switch (property) {
           case 'getError':
             if (throwGetError) {
               recording.push(`${indent}if (${contextName}.getError() !== ${contextName}.NONE) throw new Error('error');`);
             } else {
-              recording.push(`${indent}${contextName}.getError();`);
+              recording.push(`${indent}${contextName}.getError();`); 
             }
             return gl.getError();
           case 'getExtension': {
@@ -5064,7 +5064,7 @@ function gpuMock(fn, settings = {}) {
 }
 
 function flipPixels(pixels, width, height) {
-  const halfHeight = height / 2 | 0;
+  const halfHeight = height / 2 | 0; 
   const bytesPerRow = width * 4;
   const temp = new Uint8ClampedArray(width * 4);
   const result = pixels.slice(0);
@@ -5327,7 +5327,7 @@ class CPUFunctionNode extends FunctionNode {
 
   astBlockStatement(bNode, retArr) {
     if (this.isState('loop-body')) {
-      this.pushState('block-body');
+      this.pushState('block-body'); 
       for (let i = 0; i < bNode.body.length; i++) {
         this.astGeneric(bNode.body[i], retArr);
       }
@@ -6166,10 +6166,10 @@ class CPUKernel extends Kernel {
       const row = imageArray[y] = new Array(width);
       for (let x = 0; x < width; x++) {
         const pixel = new Float32Array(4);
-        pixel[0] = pixelsData[index++] / 255;
-        pixel[1] = pixelsData[index++] / 255;
-        pixel[2] = pixelsData[index++] / 255;
-        pixel[3] = pixelsData[index++] / 255;
+        pixel[0] = pixelsData[index++] / 255; 
+        pixel[1] = pixelsData[index++] / 255; 
+        pixel[2] = pixelsData[index++] / 255; 
+        pixel[3] = pixelsData[index++] / 255; 
         row[x] = pixel;
       }
     }
@@ -6709,7 +6709,7 @@ class FunctionBuilder {
       const functionIndex = retList.indexOf(functionName);
       if (functionIndex === -1) {
         retList.push(functionName);
-        functionNode.toString();
+        functionNode.toString(); 
         for (let i = 0; i < functionNode.calledFunctions.length; ++i) {
           this.traceFunctionCalls(functionNode.calledFunctions[i], retList);
         }
@@ -10420,7 +10420,7 @@ class HeadlessGLKernel extends WebGLKernel {
     testCanvas = null;
     testExtensions = null;
     if (typeof getContext !== 'function') return;
-    try {
+    try { 
       testContext = getContext(2, 2, {
         preserveDrawingBuffer: true
       });
@@ -10722,7 +10722,7 @@ class Kernel {
       switch (p) {
         case 'output':
           if (!Array.isArray(settings.output)) {
-            this.setOutput(settings.output);
+            this.setOutput(settings.output); 
             continue;
           }
           break;
@@ -11195,7 +11195,497 @@ module.exports = {
   Kernel
 };
 },{"../input":110,"../utils":114}],37:[function(require,module,exports){
-const fragmentShader = '';
+const fragmentShader = `__HEADER__;
+__FLOAT_TACTIC_DECLARATION__;
+__INT_TACTIC_DECLARATION__;
+__SAMPLER_2D_TACTIC_DECLARATION__;
+
+const int LOOP_MAX = __LOOP_MAX__;
+
+__PLUGINS__;
+__CONSTANTS__;
+
+varying vec2 vTexCoord;
+
+float acosh(float x) {
+  return log(x + sqrt(x * x - 1.0));
+}
+
+float sinh(float x) {
+  return (pow(${Math.E}, x) - pow(${Math.E}, -x)) / 2.0;
+}
+
+float asinh(float x) {
+  return log(x + sqrt(x * x + 1.0));
+}
+
+float atan2(float v1, float v2) {
+  if (v1 == 0.0 || v2 == 0.0) return 0.0;
+  return atan(v1 / v2);
+}
+
+float atanh(float x) {
+  x = (x + 1.0) / (x - 1.0);
+  if (x < 0.0) {
+    return 0.5 * log(-x);
+  }
+  return 0.5 * log(x);
+}
+
+float cbrt(float x) {
+  if (x >= 0.0) {
+    return pow(x, 1.0 / 3.0);
+  } else {
+    return -pow(x, 1.0 / 3.0);
+  }
+}
+
+float cosh(float x) {
+  return (pow(${Math.E}, x) + pow(${Math.E}, -x)) / 2.0; 
+}
+
+float expm1(float x) {
+  return pow(${Math.E}, x) - 1.0; 
+}
+
+float fround(highp float x) {
+  return x;
+}
+
+float imul(float v1, float v2) {
+  return float(int(v1) * int(v2));
+}
+
+float log10(float x) {
+  return log2(x) * (1.0 / log2(10.0));
+}
+
+float log1p(float x) {
+  return log(1.0 + x);
+}
+
+float _pow(float v1, float v2) {
+  if (v2 == 0.0) return 1.0;
+  return pow(v1, v2);
+}
+
+float tanh(float x) {
+  float e = exp(2.0 * x);
+  return (e - 1.0) / (e + 1.0);
+}
+
+float trunc(float x) {
+  if (x >= 0.0) {
+    return floor(x); 
+  } else {
+    return ceil(x);
+  }
+}
+
+vec4 _round(vec4 x) {
+  return floor(x + 0.5);
+}
+
+float _round(float x) {
+  return floor(x + 0.5);
+}
+
+const int BIT_COUNT = 32;
+int modi(int x, int y) {
+  return x - y * (x / y);
+}
+
+int bitwiseOr(int a, int b) {
+  int result = 0;
+  int n = 1;
+  
+  for (int i = 0; i < BIT_COUNT; i++) {
+    if ((modi(a, 2) == 1) || (modi(b, 2) == 1)) {
+      result += n;
+    }
+    a = a / 2;
+    b = b / 2;
+    n = n * 2;
+    if(!(a > 0 || b > 0)) {
+      break;
+    }
+  }
+  return result;
+}
+int bitwiseXOR(int a, int b) {
+  int result = 0;
+  int n = 1;
+  
+  for (int i = 0; i < BIT_COUNT; i++) {
+    if ((modi(a, 2) == 1) != (modi(b, 2) == 1)) {
+      result += n;
+    }
+    a = a / 2;
+    b = b / 2;
+    n = n * 2;
+    if(!(a > 0 || b > 0)) {
+      break;
+    }
+  }
+  return result;
+}
+int bitwiseAnd(int a, int b) {
+  int result = 0;
+  int n = 1;
+  for (int i = 0; i < BIT_COUNT; i++) {
+    if ((modi(a, 2) == 1) && (modi(b, 2) == 1)) {
+      result += n;
+    }
+    a = a / 2;
+    b = b / 2;
+    n = n * 2;
+    if(!(a > 0 && b > 0)) {
+      break;
+    }
+  }
+  return result;
+}
+int bitwiseNot(int a) {
+  int result = 0;
+  int n = 1;
+  
+  for (int i = 0; i < BIT_COUNT; i++) {
+    if (modi(a, 2) == 0) {
+      result += n;    
+    }
+    a = a / 2;
+    n = n * 2;
+  }
+  return result;
+}
+int bitwiseZeroFillLeftShift(int n, int shift) {
+  int maxBytes = BIT_COUNT;
+  for (int i = 0; i < BIT_COUNT; i++) {
+    if (maxBytes >= n) {
+      break;
+    }
+    maxBytes *= 2;
+  }
+  for (int i = 0; i < BIT_COUNT; i++) {
+    if (i >= shift) {
+      break;
+    }
+    n *= 2;
+  }
+
+  int result = 0;
+  int byteVal = 1;
+  for (int i = 0; i < BIT_COUNT; i++) {
+    if (i >= maxBytes) break;
+    if (modi(n, 2) > 0) { result += byteVal; }
+    n = int(n / 2);
+    byteVal *= 2;
+  }
+  return result;
+}
+
+int bitwiseSignedRightShift(int num, int shifts) {
+  return int(floor(float(num) / pow(2.0, float(shifts))));
+}
+
+int bitwiseZeroFillRightShift(int n, int shift) {
+  int maxBytes = BIT_COUNT;
+  for (int i = 0; i < BIT_COUNT; i++) {
+    if (maxBytes >= n) {
+      break;
+    }
+    maxBytes *= 2;
+  }
+  for (int i = 0; i < BIT_COUNT; i++) {
+    if (i >= shift) {
+      break;
+    }
+    n /= 2;
+  }
+  int result = 0;
+  int byteVal = 1;
+  for (int i = 0; i < BIT_COUNT; i++) {
+    if (i >= maxBytes) break;
+    if (modi(n, 2) > 0) { result += byteVal; }
+    n = int(n / 2);
+    byteVal *= 2;
+  }
+  return result;
+}
+
+vec2 integerMod(vec2 x, float y) {
+  vec2 res = floor(mod(x, y));
+  return res * step(1.0 - floor(y), -res);
+}
+
+vec3 integerMod(vec3 x, float y) {
+  vec3 res = floor(mod(x, y));
+  return res * step(1.0 - floor(y), -res);
+}
+
+vec4 integerMod(vec4 x, vec4 y) {
+  vec4 res = floor(mod(x, y));
+  return res * step(1.0 - floor(y), -res);
+}
+
+float integerMod(float x, float y) {
+  float res = floor(mod(x, y));
+  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);
+}
+
+int integerMod(int x, int y) {
+  return x - (y * int(x / y));
+}
+
+__DIVIDE_WITH_INTEGER_CHECK__;
+
+// Here be dragons!
+// DO NOT OPTIMIZE THIS CODE
+// YOU WILL BREAK SOMETHING ON SOMEBODY\'S MACHINE
+// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME
+const vec2 MAGIC_VEC = vec2(1.0, -256.0);
+const vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);
+const vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536
+float decode32(vec4 texel) {
+  __DECODE32_ENDIANNESS__;
+  texel *= 255.0;
+  vec2 gte128;
+  gte128.x = texel.b >= 128.0 ? 1.0 : 0.0;
+  gte128.y = texel.a >= 128.0 ? 1.0 : 0.0;
+  float exponent = 2.0 * texel.a - 127.0 + dot(gte128, MAGIC_VEC);
+  float res = exp2(_round(exponent));
+  texel.b = texel.b - 128.0 * gte128.x;
+  res = dot(texel, SCALE_FACTOR) * exp2(_round(exponent-23.0)) + res;
+  res *= gte128.y * -2.0 + 1.0;
+  return res;
+}
+
+float decode16(vec4 texel, int index) {
+  int channel = integerMod(index, 2);
+  if (channel == 0) return texel.r * 255.0 + texel.g * 65280.0;
+  if (channel == 1) return texel.b * 255.0 + texel.a * 65280.0;
+  return 0.0;
+}
+
+float decode8(vec4 texel, int index) {
+  int channel = integerMod(index, 4);
+  if (channel == 0) return texel.r * 255.0;
+  if (channel == 1) return texel.g * 255.0;
+  if (channel == 2) return texel.b * 255.0;
+  if (channel == 3) return texel.a * 255.0;
+  return 0.0;
+}
+
+vec4 legacyEncode32(float f) {
+  float F = abs(f);
+  float sign = f < 0.0 ? 1.0 : 0.0;
+  float exponent = floor(log2(F));
+  float mantissa = (exp2(-exponent) * F);
+  // exponent += floor(log2(mantissa));
+  vec4 texel = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;
+  texel.rg = integerMod(texel.rg, 256.0);
+  texel.b = integerMod(texel.b, 128.0);
+  texel.a = exponent*0.5 + 63.5;
+  texel.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;
+  texel = floor(texel);
+  texel *= 0.003921569; // 1/255
+  __ENCODE32_ENDIANNESS__;
+  return texel;
+}
+
+// https://github.com/gpujs/gpu.js/wiki/Encoder-details
+vec4 encode32(float value) {
+  if (value == 0.0) return vec4(0, 0, 0, 0);
+
+  float exponent;
+  float mantissa;
+  vec4  result;
+  float sgn;
+
+  sgn = step(0.0, -value);
+  value = abs(value);
+
+  exponent = floor(log2(value));
+
+  mantissa = value*pow(2.0, -exponent)-1.0;
+  exponent = exponent+127.0;
+  result   = vec4(0,0,0,0);
+
+  result.a = floor(exponent/2.0);
+  exponent = exponent - result.a*2.0;
+  result.a = result.a + 128.0*sgn;
+
+  result.b = floor(mantissa * 128.0);
+  mantissa = mantissa - result.b / 128.0;
+  result.b = result.b + exponent*128.0;
+
+  result.g = floor(mantissa*32768.0);
+  mantissa = mantissa - result.g/32768.0;
+
+  result.r = floor(mantissa*8388608.0);
+  return result/255.0;
+}
+// Dragons end here
+
+int index;
+ivec3 threadId;
+
+ivec3 indexTo3D(int idx, ivec3 texDim) {
+  int z = int(idx / (texDim.x * texDim.y));
+  idx -= z * int(texDim.x * texDim.y);
+  int y = int(idx / texDim.x);
+  int x = int(integerMod(idx, texDim.x));
+  return ivec3(x, y, z);
+}
+
+float get32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  int index = x + texDim.x * (y + texDim.y * z);
+  int w = texSize.x;
+  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;
+  vec4 texel = texture2D(tex, st / vec2(texSize));
+  return decode32(texel);
+}
+
+float get16(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  int index = x + texDim.x * (y + texDim.y * z);
+  int w = texSize.x * 2;
+  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;
+  vec4 texel = texture2D(tex, st / vec2(texSize.x * 2, texSize.y));
+  return decode16(texel, index);
+}
+
+float get8(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  int index = x + texDim.x * (y + texDim.y * z);
+  int w = texSize.x * 4;
+  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;
+  vec4 texel = texture2D(tex, st / vec2(texSize.x * 4, texSize.y));
+  return decode8(texel, index);
+}
+
+float getMemoryOptimized32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  int index = x + texDim.x * (y + texDim.y * z);
+  int channel = integerMod(index, 4);
+  index = index / 4;
+  int w = texSize.x;
+  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;
+  vec4 texel = texture2D(tex, st / vec2(texSize));
+  if (channel == 0) return texel.r;
+  if (channel == 1) return texel.g;
+  if (channel == 2) return texel.b;
+  if (channel == 3) return texel.a;
+  return 0.0;
+}
+
+vec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  int index = x + texDim.x * (y + texDim.y * z);
+  int w = texSize.x;
+  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;
+  return texture2D(tex, st / vec2(texSize));
+}
+
+float getFloatFromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);
+  return result[0];
+}
+
+vec2 getVec2FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);
+  return vec2(result[0], result[1]);
+}
+
+vec2 getMemoryOptimizedVec2(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  int index = x + (texDim.x * (y + (texDim.y * z)));
+  int channel = integerMod(index, 2);
+  index = index / 2;
+  int w = texSize.x;
+  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;
+  vec4 texel = texture2D(tex, st / vec2(texSize));
+  if (channel == 0) return vec2(texel.r, texel.g);
+  if (channel == 1) return vec2(texel.b, texel.a);
+  return vec2(0.0, 0.0);
+}
+
+vec3 getVec3FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);
+  return vec3(result[0], result[1], result[2]);
+}
+
+vec3 getMemoryOptimizedVec3(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  int fieldIndex = 3 * (x + texDim.x * (y + texDim.y * z));
+  int vectorIndex = fieldIndex / 4;
+  int vectorOffset = fieldIndex - vectorIndex * 4;
+  int readY = vectorIndex / texSize.x;
+  int readX = vectorIndex - readY * texSize.x;
+  vec4 tex1 = texture2D(tex, (vec2(readX, readY) + 0.5) / vec2(texSize));
+  
+  if (vectorOffset == 0) {
+    return tex1.xyz;
+  } else if (vectorOffset == 1) {
+    return tex1.yzw;
+  } else {
+    readX++;
+    if (readX >= texSize.x) {
+      readX = 0;
+      readY++;
+    }
+    vec4 tex2 = texture2D(tex, vec2(readX, readY) / vec2(texSize));
+    if (vectorOffset == 2) {
+      return vec3(tex1.z, tex1.w, tex2.x);
+    } else {
+      return vec3(tex1.w, tex2.x, tex2.y);
+    }
+  }
+}
+
+vec4 getVec4FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  return getImage2D(tex, texSize, texDim, z, y, x);
+}
+
+vec4 getMemoryOptimizedVec4(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  int index = x + texDim.x * (y + texDim.y * z);
+  int channel = integerMod(index, 2);
+  int w = texSize.x;
+  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;
+  vec4 texel = texture2D(tex, st / vec2(texSize));
+  return vec4(texel.r, texel.g, texel.b, texel.a);
+}
+
+vec4 actualColor;
+void color(float r, float g, float b, float a) {
+  actualColor = vec4(r,g,b,a);
+}
+
+void color(float r, float g, float b) {
+  color(r,g,b,1.0);
+}
+
+void color(sampler2D image) {
+  actualColor = texture2D(image, vTexCoord);
+}
+
+float modulo(float number, float divisor) {
+  if (number < 0.0) {
+    number = abs(number);
+    if (divisor < 0.0) {
+      divisor = abs(divisor);
+    }
+    return -mod(number, divisor);
+  }
+  if (divisor < 0.0) {
+    divisor = abs(divisor);
+  }
+  return mod(number, divisor);
+}
+
+__INJECTED_NATIVE__;
+__MAIN_CONSTANTS__;
+__MAIN_ARGUMENTS__;
+__KERNEL__;
+
+void main(void) {
+  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;
+  __MAIN_RESULT__;
+}`;
 
 module.exports = {
   fragmentShader
@@ -11890,7 +12380,7 @@ class WebGLFunctionNode extends FunctionNode {
 
   astBlockStatement(bNode, retArr) {
     if (this.isState('loop-body')) {
-      this.pushState('block-body');
+      this.pushState('block-body'); 
       for (let i = 0; i < bNode.body.length; i++) {
         this.astGeneric(bNode.body[i], retArr);
       }
@@ -14135,7 +14625,7 @@ class WebGLKernel extends GLKernel {
         }
       }
     } else if (typeof source === 'object') {
-      if (settings.pluginNames) {
+      if (settings.pluginNames) { 
         for (let i = 0; i < plugins.length; i++) {
           const plugin = plugins[i];
           const usePlugin = settings.pluginNames.some(pluginName => pluginName === plugin.name);
@@ -15804,6 +16294,68 @@ vec3 getVec3FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int
   return vec3(result[0], result[1], result[2]);
 }
 
+vec3 getMemoryOptimizedVec3(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  int fieldIndex = 3 * (x + texDim.x * (y + texDim.y * z));
+  int vectorIndex = fieldIndex / 4;
+  int vectorOffset = fieldIndex - vectorIndex * 4;
+  int readY = vectorIndex / texSize.x;
+  int readX = vectorIndex - readY * texSize.x;
+  vec4 tex1 = texture(tex, (vec2(readX, readY) + 0.5) / vec2(texSize));
+
+  if (vectorOffset == 0) {
+    return tex1.xyz;
+  } else if (vectorOffset == 1) {
+    return tex1.yzw;
+  } else {
+    readX++;
+    if (readX >= texSize.x) {
+      readX = 0;
+      readY++;
+    }
+    vec4 tex2 = texture(tex, vec2(readX, readY) / vec2(texSize));
+    if (vectorOffset == 2) {
+      return vec3(tex1.z, tex1.w, tex2.x);
+    } else {
+      return vec3(tex1.w, tex2.x, tex2.y);
+    }
+  }
+}
+
+vec4 getVec4FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  return getImage2D(tex, texSize, texDim, z, y, x);
+}
+
+vec4 getMemoryOptimizedVec4(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {
+  int index = x + texDim.x * (y + texDim.y * z);
+  int channel = integerMod(index, 2);
+  int w = texSize.x;
+  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;
+  vec4 texel = texture(tex, st / vec2(texSize));
+  return vec4(texel.r, texel.g, texel.b, texel.a);
+}
+
+vec4 actualColor;
+void color(float r, float g, float b, float a) {
+  actualColor = vec4(r,g,b,a);
+}
+
+void color(float r, float g, float b) {
+  color(r,g,b,1.0);
+}
+
+float modulo(float number, float divisor) {
+  if (number < 0.0) {
+    number = abs(number);
+    if (divisor < 0.0) {
+      divisor = abs(divisor);
+    }
+    return -mod(number, divisor);
+  }
+  if (divisor < 0.0) {
+    divisor = abs(divisor);
+  }
+  return mod(number, divisor);
+}
 
 __INJECTED_NATIVE__;
 __MAIN_CONSTANTS__;
@@ -16907,7 +17459,7 @@ class WebGL2Kernel extends WebGLKernel {
             }
             case 'Array(2)':
               return gl.RG32F;
-            case 'Array(3)':
+            case 'Array(3)': 
             case 'Array(4)':
               return gl.RGBA32F;
             default:
@@ -17275,7 +17827,7 @@ const lib = require('./index');
 const GPU = lib.GPU;
 for (const p in lib) {
   if (!lib.hasOwnProperty(p)) continue;
-  if (p === 'GPU') continue;
+  if (p === 'GPU') continue; 
   GPU[p] = lib[p];
 }
 
@@ -17701,7 +18253,7 @@ class GPU {
       setTimeout(() => {
         try {
           for (let i = 0; i < this.kernels.length; i++) {
-            this.kernels[i].destroy(true);
+            this.kernels[i].destroy(true); 
           }
           let firstKernel = this.kernels[0];
           if (firstKernel) {
@@ -18096,7 +18648,7 @@ const utils = {
   clone(obj) {
     if (obj === null || typeof obj !== 'object' || obj.hasOwnProperty('isActiveClone')) return obj;
 
-    const temp = obj.constructor();
+    const temp = obj.constructor(); 
 
     for (let key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -18312,7 +18864,7 @@ const utils = {
     }
   },
   flipPixels: (pixels, width, height) => {
-    const halfHeight = height / 2 | 0;
+    const halfHeight = height / 2 | 0; 
     const bytesPerRow = width * 4;
     const temp = new Uint8ClampedArray(width * 4);
     const result = pixels.slice(0);

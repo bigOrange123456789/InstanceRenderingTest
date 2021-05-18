@@ -47,12 +47,12 @@ GlbHandle.prototype={
         console.log(opt)
         console.log(needDownload)
         if(needDownload){
-            /*
+
             var scope=this;
             this.downloadMap(myMaterialHandle,function () {//下载贴图
                 scope.downloadModel(scope.resourceManager.meshs)//下载网格
             });//纹理和网格分开下载
-            */
+            /**/
         }
 
 

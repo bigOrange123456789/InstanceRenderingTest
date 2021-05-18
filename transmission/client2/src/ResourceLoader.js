@@ -90,13 +90,14 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
                 myCallback_get0(scope.fileNumber);//向服务器请求资源
             },scope.time)
         });
+
     }
     computeFirstList(){
         var scope=this;
         scope.jsonLoader.load(scope.url, function(str){//dataTexture
             var resourceInfo=JSON.parse(str);
             var resourceList=new ResourceList(
-                {resourceInfo:resourceInfo,camera:scope.camera,test:false}
+                {resourceInfo:resourceInfo,camera:scope.camera,test:false,useGPU:false}
             );
             resourceList.update(1);
             var list=resourceList.getModelFileInf({n:1000,update:false});
@@ -275,22 +276,15 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     testObj;//测试对象//=new THREE.Object3D();
 
     //notTransmitted;
-    needTransmitted_start;//索引的最小值：取绝于已经请求了哪些资源
-    needTransmitted_end;//索引的最大值：取绝于视锥的变换
 
-    //每接收一次数据进行一次计算
-    /*static remove(arr,element){//从数组中移除元素
-        for(var i=0;i<arr.length;i++)
-            if(typeof(element)==="string"){
-                if(arr[i].fileName===element)arr.splice(i,1);
-            }else{
-                if(arr[i]===element)arr.splice(i,1);
-            }
-    }*/
-    #init_gup_culling(){
-        //#gup_culling是利用GUP进行视锥遮挡计算的方法
-        this.gup_culling= new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,X,Y,Z,R) {
-            var k=this.thread.y*256+this.thread.x;
+
+    useGPU;
+    sizeGPU;
+    #init_GPU_culling(n){
+        this.sizeGPU=Math.ceil(Math.pow(n,0.5));
+        //#GPU_culling是利用GPU进行视锥遮挡计算的方法
+        this.GPU_culling= new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,X,Y,Z,R,sizeGPU) {
+            var k=this.thread.y*sizeGPU+this.thread.x;
             return intersectsSphere(p0,p1,p2,p3,p4,p5,X[k],Y[k],Z[k],R[k]);
             function intersectsSphere(p0,p1,p2,p3,p4,p5,x,y,z,r) {
                 function distanceToPoint(plane,point) {
@@ -306,7 +300,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
                 return 1;
             }
-        }).setOutput([512, 512])
+        }).setOutput([this.sizeGPU, this.sizeGPU])
     }
 
     #initModels(resourceInfo,firstList){
@@ -355,7 +349,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
     constructor (input) {
         var scope=this;
-        scope.#init_gup_culling();
+
         scope.list=[];//这里应当初始化
         scope.camera=input.camera;
         scope.camera_pre=null;//input.camera.clone();
@@ -363,7 +357,11 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         scope.frustum=new THREE.Frustum();
         scope.update_index=0;
         var resourceInfo=input.resourceInfo;
-        //console.log(resourceInfo)
+
+        scope.useGPU=typeof (input.useGPU)==="undefined"?true:input.useGPU;
+        if(scope.useGPU)scope.#init_GPU_culling(resourceInfo.models.length);
+
+        console.log(resourceInfo)
         if(input.test)scope.testObj=new THREE.Object3D();
         else scope.testObj=null;
 
@@ -391,7 +389,6 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 scope.testObj.add(mesh);
             }
         }
-        console.log(scope)
     }
     getModelFileInf=function(opt){
         opt=opt||{};
@@ -445,60 +442,53 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         }
     }
 
-    update=function(ratio){//判断哪些资源在视锥内
-        if(typeof (ratio)==="undefined")ratio=1;
+    update=function(){//判断哪些资源在视锥内
         var scope=this;
-        var number=Math.floor(scope.models.length*ratio);
-        if(number<1)number=1;
         scope.#updateFrustum(0);
 
-        //scope.#updateFrustum(5);
-
-
-        var X=[],Y=[],Z=[],R=[];
-        var k=0;
-        for(var i=0;i<256;i++)
-            for(var j=0;j<256;j++){
-                if(k<scope.models.length){
-                    X.push(scope.models[k].boundingSphere.x);
-                    Y.push(scope.models[k].boundingSphere.y);
-                    Z.push(scope.models[k].boundingSphere.z);
-                    R.push(scope.models[k].boundingSphere.r);
-                }else{
-                    X.push(0);
-                    Y.push(0);
-                    Z.push(0);
-                    R.push(0);
+        if(scope.useGPU){
+            var X=[],Y=[],Z=[],R=[];
+            var k=0;
+            for(var i=0;i<scope.sizeGPU;i++)
+                for(var j=0;j<scope.sizeGPU;j++){
+                    if(k<scope.models.length){
+                        X.push(scope.models[k].boundingSphere.x);
+                        Y.push(scope.models[k].boundingSphere.y);
+                        Z.push(scope.models[k].boundingSphere.z);
+                        R.push(scope.models[k].boundingSphere.r);
+                    }else{
+                        X.push(0);
+                        Y.push(0);
+                        Z.push(0);
+                        R.push(0);
+                    }
                 }
-            }
 
 
-        var frustum=scope.#getFrustum();
-        var out=scope.gup_culling(
-            frustum[0],
-            frustum[1],
-            frustum[2],
-            frustum[3],
-            frustum[4],
-            frustum[5],
-            X,Y,Z,R
-        )
+            var frustum=scope.#getFrustum();
+            var out=scope.GPU_culling(
+                frustum[0],
+                frustum[1],
+                frustum[2],
+                frustum[3],
+                frustum[4],
+                frustum[5],
+                X,Y,Z,R,
+                scope.sizeGPU
+            )
 
 
-        k=0;
-        for(i=0;i<256;i++)
-            for(j=0;j<256;j++){
-                if(k>=scope.models.length)return;
-                scope.models[k].inView=(out[i][j]===1)
-                k++
-            }
-        //console.log(out)
-        /*for(i=0;i<number;i++){
-            if(scope.update_index>=scope.models.length)
-                scope.update_index=0;
-            scope.#culling(scope.update_index++);
+            k=0;
+            for(i=0;i<scope.sizeGPU;i++)
+                for(j=0;j<scope.sizeGPU;j++){
+                    if(k>=scope.models.length)return;
+                    scope.models[k].inView=(out[i][j]===1)
+                    k++
+                }
+        }else{
+            for(i=0;i<scope.models.length;i++)
+                scope.#culling(i);
         }
-        */
 
     }
     #updateFrustum=function (time) {//time用来描述预测的时间
@@ -600,125 +590,6 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         ];
     }
     #culling=function(i){
-        var scope=this;
-        //const multiplyMatrix = new GPU().createKernel(}).setOutput([512, 512])
-        //const g = new GPU().createKernel().setOutput([512, 512])
-        function g0(p0,p1,p2,p3,p4,p5,x,y,z,r) {
-            var g = new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,x,y,z,r) {
-                return intersectsSphere(p0,p1,p2,p3,p4,p5,x,y,z,r);
-                function intersectsSphere(p0,p1,p2,p3,p4,p5,x,y,z,r) {
-                    function distanceToPoint(plane,point) {
-                        return plane[0]* point[0] + plane[1]* point[1] + plane[2]* point[2] + plane[3];
-                    }
-
-                    if ( distanceToPoint(p0, [x,y,z] ) < -1*r ) return 0;//不相交
-                    if ( distanceToPoint(p1, [x,y,z] ) < -1*r ) return 0;//不相交
-                    if ( distanceToPoint(p2, [x,y,z] ) < -1*r ) return 0;//不相交
-                    if ( distanceToPoint(p3, [x,y,z] ) < -1*r ) return 0;//不相交
-                    if ( distanceToPoint(p4, [x,y,z] ) < -1*r ) return 0;//不相交
-                    if ( distanceToPoint(p5, [x,y,z] ) < -1*r ) return 0;//不相交
-
-                    return 1;
-                }
-            }).setOutput([512, 512])
-            return g(
-                p0,p1,p2,p3,p4,p5,x,y,z,r
-            )[0][0]
-        }
-        function intersectsSphere(planes,x,y,z,r) {
-            for ( let i = 0; i < 6; i ++ ) {
-                const distance = distanceToPoint(planes[ i ], [x,y,z] );//平面到点的距离
-                function distanceToPoint(plane,point) {
-                    return plane[0]* point[0] + plane[1]* point[1] + plane[2]* point[2] + plane[3];
-                }
-                if ( distance < -1*r ) {//内正外负
-                    return 0;//不相交
-                }
-            }
-            return 1;
-        }
-        //return intersectsSphere(planes,x,y,z,r)
-
-
-        var frustum=scope.#getFrustum();
-        var out=g0(
-            frustum[0],
-            frustum[1],
-            frustum[2],
-            frustum[3],
-            frustum[4],
-            frustum[5],
-            scope.models[i].boundingSphere.x,
-            scope.models[i].boundingSphere.y,
-            scope.models[i].boundingSphere.z,
-            scope.models[i].boundingSphere.r
-        )
-        //console.log(out)
-        return scope.models[i].inView=(out===1)
-        //return scope.models[i].inView=(out[0][0]===1)
-    }
-    #culling2=function(i){
-        var scope=this;
-        const multiplyMatrix = new GPU().createKernel(function(planes,x,y,z,r) {
-            function intersectsSphere(planes,x,y,z,r) {
-                for ( let i = 0; i < 6; i ++ ) {
-                    const distance = distanceToPoint(
-                        planes[ i ], [x,y,z] );//平面到点的距离
-                    function distanceToPoint(plane,point) {
-                        return plane[0]* point[0] +
-                            plane[1]* point[1] +
-                            plane[2]* point[2] +
-                            plane[3];
-                    }
-                    if ( distance < -1*r ) {//内正外负
-                        return 0;//不相交
-                    }
-                }
-                return 1;
-            }
-            return intersectsSphere(planes,x,y,z,r)
-        }).setOutput([512, 512])
-        var out=multiplyMatrix(
-            scope.#getFrustum(),
-            scope.models[i].boundingSphere.x,
-            scope.models[i].boundingSphere.y,
-            scope.models[i].boundingSphere.z,
-            scope.models[i].boundingSphere.r
-        )
-        console.log(out)
-        return false;//scope.models[i].inView=(out[0][0]===1)
-    }
-    #culling1=function(i){
-        var scope=this;
-        const multiplyMatrix = function(planes,x,y,z,r) {
-            function intersectsSphere(x,y,z,r) {
-                for ( let i = 0; i < 6; i ++ ) {
-                    const distance = distanceToPoint(
-                        planes[ i ], [x,y,z] );//平面到点的距离
-                    function distanceToPoint(plane,point) {
-                        return plane[0]* point[0] +
-                            plane[1]* point[1] +
-                            plane[2]* point[2] +
-                            plane[3];
-                    }
-                    if ( distance < -1*r ) {//内正外负
-                        return 0;//不相交
-                    }
-                }
-                return 1;
-            }
-            return intersectsSphere(x,y,z,r)
-        }
-        var out=multiplyMatrix(
-            scope.#getFrustum(),
-            scope.models[i].boundingSphere.x,
-            scope.models[i].boundingSphere.y,
-            scope.models[i].boundingSphere.z,
-            scope.models[i].boundingSphere.r
-        )
-        scope.models[i].inView=(out===1)
-    }
-    #culling0=function(i){
         var scope=this;
         scope.models[i].inView=intersectsSphere(
             scope.models[i].boundingSphere.x,

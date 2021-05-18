@@ -27,6 +27,7 @@ GlbSplit.prototype={
         }
     },
     getArray:function(glb,resourceManager){
+        console.log(glb)
         this.resourceManager=resourceManager;
 
 

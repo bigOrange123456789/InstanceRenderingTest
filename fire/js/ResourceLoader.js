@@ -6,8 +6,7 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
     url;
     camera;
     firstList;
-    time1;fileNumber;
-    time2;dTime;ratio;
+    time;fileNumber;dTime;
 
     partInstancedObjList;//部分实例化渲染对象的列表
 
@@ -17,14 +16,12 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
         scope.url=opt.url;
         scope.camera=opt.camera;
 
-        scope.time1=30;
+        scope.time=30;
         scope.fileNumber=3;
 
         scope.partInstancedObjList=[];
 
-        scope.time2=10;
-        scope.dTime=scope.time1/scope.fileNumber;
-        scope.ratio=scope.time2/scope.time1;
+        scope.dTime=scope.time/scope.fileNumber;
         scope.jsonLoader=new THREE.XHRLoader(THREE.DefaultLoadingManager);
     }
     addInstancedObj(name){
@@ -46,9 +43,8 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
             window.n++;
             return time_delay;
         }
-        window.time1=scope.time1;
+        window.time1=scope.time;
 
-        //requestModelPackageByHttp("first", 0);
         scope.jsonLoader.load('../json/cgmFirstList.json', function(data){//dataTexture
             var arr=JSON.parse(data);
             scope.firstList=arr;
@@ -64,14 +60,10 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
             var resourceList=new ResourceList(
                 {resourceInfo:resourceInfo,camera:scope.camera,test:false,firstList:scope.firstList}
             );
-            /*for(var k=0;k<scope.partInstancedObjList.length;k++){
-                scope.addInstancedObj(
-                    scope.partInstancedObjList[k]
-                )
-            }*/
+
             scope.myResourceList=resourceList;
 
-            var myCallback_get0=function (n){//加载成功了一个后立即加载另一个
+            var myCallback_get0=function (n){
                 var names=resourceList.getModelFileInf({n:n,update:false});
                 window.fileNumber0=names.length;
                 window.n=0;//第几个文件
@@ -94,13 +86,9 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
             }
 
             setInterval(function (){//加载资源
-                //window.time=0;//上次加载资源到现在过来多长时间
-                myCallback_get0(scope.fileNumber);
-            },scope.time1)
-            setInterval(function () {//分散计算
-                //window.time+=scope.dTime;
-                resourceList.update(scope.ratio);
-            },scope.time2)
+                resourceList.update();//更新视点
+                myCallback_get0(scope.fileNumber);//向服务器请求资源
+            },scope.time)
         });
     }
     computeFirstList(){
@@ -108,7 +96,7 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
         scope.jsonLoader.load(scope.url, function(str){//dataTexture
             var resourceInfo=JSON.parse(str);
             var resourceList=new ResourceList(
-                {resourceInfo:resourceInfo,camera:scope.camera,test:false}
+                {resourceInfo:resourceInfo,camera:scope.camera,test:false,useGPU:false}
             );
             resourceList.update(1);
             var list=resourceList.getModelFileInf({n:1000,update:false});
@@ -117,7 +105,6 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
                 var name=list[i].fileName;
                 list[i]=name.substr(0,name.length-4)
             }
-            console.log(list);
             download(list,"firstList.json")
             function download(json,name) {
                 let link = document.createElement('a');
@@ -183,7 +170,7 @@ class ResourceLoader{//逐个加载
                         load();
                         clearInterval(myInterval);
                     }
-                },10);
+                },100);
             }else if(!scope.useDraco){
                 scope.loader.load(scope.url+fileName, (gltf) => {
                     if(mapName!=="")
@@ -276,11 +263,9 @@ class ResourceLoader{//逐个加载
 }
 class ResourceList{//这个对象主要负责资源列表的生成和管理
 
-    models;//所有模型几何的说明信息
-    //{fileName,interest,spaceVolume,boundingSphere:{x,y,z,r},MapName}
+    models;//所有模型几何的说明信息//{fileName,interest,spaceVolume,boundingSphere:{x,y,z,r},MapName}
 
-    maps;//所有贴图的说明信息
-    //mapsIndex;
+    maps;//所有贴图的说明信息//mapsIndex;
     camera;
     camera_pre;//用于视点预测
 
@@ -290,18 +275,32 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     testObj;//测试对象//=new THREE.Object3D();
 
     //notTransmitted;
-    needTransmitted_start;//索引的最小值：取绝于已经请求了哪些资源
-    needTransmitted_end;//索引的最大值：取绝于视锥的变换
 
-    //每接收一次数据进行一次计算
-    /*static remove(arr,element){//从数组中移除元素
-        for(var i=0;i<arr.length;i++)
-            if(typeof(element)==="string"){
-                if(arr[i].fileName===element)arr.splice(i,1);
-            }else{
-                if(arr[i]===element)arr.splice(i,1);
+
+    useGPU;
+    sizeGPU;
+    #init_GPU_culling(n){
+        this.sizeGPU=Math.ceil(Math.pow(n,0.5));
+        //#GPU_culling是利用GPU进行视锥遮挡计算的方法
+        this.GPU_culling= new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,X,Y,Z,R,sizeGPU) {
+            var k=this.thread.y*sizeGPU+this.thread.x;
+            return intersectsSphere(p0,p1,p2,p3,p4,p5,X[k],Y[k],Z[k],R[k]);
+            function intersectsSphere(p0,p1,p2,p3,p4,p5,x,y,z,r) {
+                function distanceToPoint(plane,point) {
+                    return plane[0]* point[0] + plane[1]* point[1] + plane[2]* point[2] + plane[3];
+                }
+
+                if ( distanceToPoint(p0, [x,y,z] ) < -1*r ) return 0;//不相交
+                if ( distanceToPoint(p1, [x,y,z] ) < -1*r ) return 0;//不相交
+                if ( distanceToPoint(p2, [x,y,z] ) < -1*r ) return 0;//不相交
+                if ( distanceToPoint(p3, [x,y,z] ) < -1*r ) return 0;//不相交
+                if ( distanceToPoint(p4, [x,y,z] ) < -1*r ) return 0;//不相交
+                if ( distanceToPoint(p5, [x,y,z] ) < -1*r ) return 0;//不相交
+
+                return 1;
             }
-    }*/
+        }).setOutput([this.sizeGPU, this.sizeGPU])
+    }
 
     #initModels(resourceInfo,firstList){
         if(typeof (firstList)==="undefined")firstList=[];
@@ -349,6 +348,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
     constructor (input) {
         var scope=this;
+
         scope.list=[];//这里应当初始化
         scope.camera=input.camera;
         scope.camera_pre=null;//input.camera.clone();
@@ -356,7 +356,11 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         scope.frustum=new THREE.Frustum();
         scope.update_index=0;
         var resourceInfo=input.resourceInfo;
-        //console.log(resourceInfo)
+
+        scope.useGPU=typeof (input.useGPU)==="undefined"?true:input.useGPU;
+        if(scope.useGPU)scope.#init_GPU_culling(resourceInfo.models.length);
+
+        console.log(resourceInfo)
         if(input.test)scope.testObj=new THREE.Object3D();
         else scope.testObj=null;
 
@@ -384,7 +388,6 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 scope.testObj.add(mesh);
             }
         }
-        console.log(scope)
     }
     getModelFileInf=function(opt){
         opt=opt||{};
@@ -438,18 +441,54 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         }
     }
 
-    update=function(ratio){//判断哪些资源在视锥内
-        if(typeof (ratio)==="undefined")ratio=1;
+    update=function(){//判断哪些资源在视锥内
         var scope=this;
-        var number=Math.floor(scope.models.length*ratio);
-        if(number<1)number=1;
         scope.#updateFrustum(0);
 
-        for(var i=0;i<number;i++){
-            if(scope.update_index>=scope.models.length)
-                scope.update_index=0;
-            scope.#culling(scope.update_index++);
+        if(scope.useGPU){
+            var X=[],Y=[],Z=[],R=[];
+            var k=0;
+            for(var i=0;i<scope.sizeGPU;i++)
+                for(var j=0;j<scope.sizeGPU;j++){
+                    if(k<scope.models.length){
+                        X.push(scope.models[k].boundingSphere.x);
+                        Y.push(scope.models[k].boundingSphere.y);
+                        Z.push(scope.models[k].boundingSphere.z);
+                        R.push(scope.models[k].boundingSphere.r);
+                    }else{
+                        X.push(0);
+                        Y.push(0);
+                        Z.push(0);
+                        R.push(0);
+                    }
+                }
+
+
+            var frustum=scope.#getFrustum();
+            var out=scope.GPU_culling(
+                frustum[0],
+                frustum[1],
+                frustum[2],
+                frustum[3],
+                frustum[4],
+                frustum[5],
+                X,Y,Z,R,
+                scope.sizeGPU
+            )
+
+
+            k=0;
+            for(i=0;i<scope.sizeGPU;i++)
+                for(j=0;j<scope.sizeGPU;j++){
+                    if(k>=scope.models.length)return;
+                    scope.models[k].inView=(out[i][j]===1)
+                    k++
+                }
+        }else{
+            for(i=0;i<scope.models.length;i++)
+                scope.#culling(i);
         }
+
     }
     #updateFrustum=function (time) {//time用来描述预测的时间
         var scope=this;
@@ -462,14 +501,37 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             );
         }else{//对相机的位置进行预测
             if(scope.camera_pre===null) scope.camera_pre=scope.camera.clone();
-            var camera_next=scope.camera.clone();
+            var camera_next=scope.camera.clone();//临时对象
+            camera_next.position.set(0,0,0)
+            camera_next.rotation.set(0,0,0)
             forecast(scope.camera_pre,scope.camera,camera_next,time)
+            myTestUI();
+
             scope.frustum.setFromProjectionMatrix(
                 new THREE.Matrix4().multiplyMatrices(
                     camera_next.projectionMatrix,
                     camera_next.matrixWorldInverse
                 )
             );
+
+            function myTestUI(){
+                document.getElementById("pos").innerHTML=
+                    scope.camera.position.x.toFixed(3)+","
+                    +scope.camera.position.y.toFixed(3)+","
+                    +scope.camera.position.z.toFixed(3);
+                document.getElementById("rot").innerHTML=
+                    scope.camera.rotation.x.toFixed(3)+","
+                    +scope.camera.rotation.y.toFixed(3)+","
+                    +scope.camera.rotation.z.toFixed(3);
+                document.getElementById("pos_next").innerHTML=
+                    camera_next.position.x.toFixed(3)+","
+                    +camera_next.position.y.toFixed(3)+","
+                    +camera_next.position.z.toFixed(3);
+                document.getElementById("rot_next").innerHTML=
+                    camera_next.rotation.x.toFixed(3)+","
+                    +camera_next.rotation.y.toFixed(3)+","
+                    +camera_next.rotation.z.toFixed(3);
+            }
             function forecast(c1,c2,c3,ratio) {
                 if(typeof (ratio)==="undefined")ratio=1;
                 ratio++;
@@ -507,6 +569,25 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             }
         }
     }
+    #getFrustum=function () {
+        var scope=this;
+        const planes = scope.frustum.planes;
+        var plane0=planes[0];
+        var plane1=planes[1];
+        var plane2=planes[2];
+        var plane3=planes[3];
+        var plane4=planes[4];
+        var plane5=planes[5];
+
+        return [
+            [plane0.normal.x,plane0.normal.y,plane0.normal.z,plane0.constant],
+            [plane1.normal.x,plane1.normal.y,plane1.normal.z,plane1.constant],
+            [plane2.normal.x,plane2.normal.y,plane2.normal.z,plane2.constant],
+            [plane3.normal.x,plane3.normal.y,plane3.normal.z,plane3.constant],
+            [plane4.normal.x,plane4.normal.y,plane4.normal.z,plane4.constant],
+            [plane5.normal.x,plane5.normal.y,plane5.normal.z,plane5.constant],
+        ];
+    }
     #culling=function(i){
         var scope=this;
         scope.models[i].inView=intersectsSphere(
@@ -529,6 +610,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             return true;//相交
         }
     }
+
 
     getMapByName=function (name) {
         var scope=this;

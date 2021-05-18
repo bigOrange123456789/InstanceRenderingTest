@@ -25,7 +25,8 @@
             "test"//"ConferenceRoom"//"mymen"//"ExhibitionHall"//
         );
     new THREE.GLTFLoader().load('./'+name+'.glb', (glb) => {
-        new GlbHandle().process(name,glb);
+        console.log(glb)
+        new GlbHandle().process({name:name,glb:glb});
     });
 </script>
 

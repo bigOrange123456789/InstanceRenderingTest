@@ -1,3 +1,16 @@
+//开始计算帧数
+var frameNumber=0;
+computeFrameNumber();
+function computeFrameNumber(){
+    frameNumber++;
+    requestAnimationFrame(computeFrameNumber);
+}
+setInterval(function () {
+    document.getElementById("frameNumber").innerText=frameNumber;
+    frameNumber=0;
+},1000)
+//完成计算帧数
+
 var myCallback_pop,myCallback_get;
 
 let all_material={}
@@ -142,6 +155,8 @@ function sendTestResult() {
 //p2p
 function initWebRTC() {//p2p获取资源列表
     rtConnection = new RTCMultiConnection();
+    //"http://localhost:9001/
+    //rtConnection.socketURL = 'https://localhost:9001/';//
     //rtConnection.socketURL = 'http://'+p2pHost+':'+p2pPort+'/';//'https://rtcmulticonnection.herokuapp.com:443/';//
     rtConnection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';//
     rtConnection.enableFileSharing = true; // by default, it is "false".
