@@ -1,23 +1,10 @@
-//开始计算帧数
-var frameNumber=0;
-computeFrameNumber();
-function computeFrameNumber(){
-    frameNumber++;
-    requestAnimationFrame(computeFrameNumber);
-}
-setInterval(function () {
-    document.getElementById("frameNumber").innerText=frameNumber;
-    frameNumber=0;
-},1000)
-//完成计算帧数
-
 var myCallback_pop,myCallback_get;
 
 let all_material={}
 
 if(typeof(sceneName)==="undefined")sceneName = "cgm";
 let userID = Math.random().toString().substring(2, 12) + Date.now().toString().substring(1, 6);
-let scene, camera, renderer, controls, sceneRoot;
+
 let container, light, lightObj;
 let ws, interval;
 
@@ -31,7 +18,7 @@ let ModelHasBeenLoaded = [];
 let sceneScale = 0.001;
 if(sceneName==="szt")sceneScale=1;
 const distanceForSimilarViewpoint = 10, angleForSimilarViewpoint = 15 * Math.PI / 180;
-let myVisListStorage;
+
 //计算响应延迟
 let startTime, endTime;
 //计算初始加载时间
@@ -43,7 +30,7 @@ let synTotalTimes = 0, synFromServerTimes = 0, synFromPeerTimes = 0;
 let synTotalDelay = 0, tempDelay;
 
 let radianceWidth = Math.floor(window.innerWidth / 2), radianceHeight = Math.floor(window.innerHeight / 2);
-let cameraForward = new THREE.Vector3();
+
 let gltfLoader = new THREE.GLTFLoader();
 THREE.DRACOLoader.setDecoderPath('../lib/draco/');
 THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
@@ -54,42 +41,22 @@ let rtConnection, rtcInterval;
 const rtcShareFreq = 3000;
 let cubeView;
 window.package=[]
-
+var sceneRoot;
 init();
-animate();
 
 function init() {
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
-    camera = new THREE.PerspectiveCamera(
-        70, window.innerWidth / window.innerHeight, 0.3, 1000
-    );
-    window.camera=camera;
+    var myMain=new Main();
+    myMain.start({ambient:false})
 
-    // renderer
-    container = document.getElementById("container");
-    renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        alpha: true
-    });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
+    var scene = myMain.scene;//new THREE.Scene();
+    var camera = myMain.camera;//new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.3, 1000);
+    window.camera=camera;
+    //var renderer = myMain.renderer;//new THREE.WebGLRenderer({antialias: true, alpha: true});
+
+    //container.appendChild(renderer.domElement);
 
     // controls
     new PlayerControl(camera);
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-
-    light = new THREE.SpotLight(0xffffff);
-    light.position.set(camera.position.x, camera.position.y, camera.position.z);
-    light.distance = 400;
-    light.intensity = 0.5;
-    lightObj = new THREE.Object3D();
-    lightObj.position.set(0, 0, 5);
-    scene.add(lightObj);
-    light.target = lightObj;
-    scene.add(light);
 
     sceneRoot = new THREE.Object3D();
 
@@ -114,9 +81,6 @@ function init() {
     ));
     scene.add(sceneRoot);
     scene.add(new THREE.AxesHelper(5));//用于简单模拟3个坐标轴的对象.
-    window.addEventListener('resize', synWindowSize, false);
-    myVisListStorage = new VisListStorage();
-
 
     if(haveP2P)initWebRTC();//p2p获取资源列表
     if(haveP2P)rtConnection.openOrJoin(sceneName);
@@ -164,9 +128,6 @@ function initWebRTC() {//p2p获取资源列表
         data: true
     };
     rtConnection.onmessage = function (event) {
-        /*myVisListStorage.receivePeerCache(event.data);
-        console.log("receive the peer data\n");
-        */
         //new Uint8Array(ary);
         var package000=new Uint8Array(event.data)
         console.log("收到P2P数据:",package000)
@@ -185,7 +146,6 @@ function initWebRTC() {//p2p获取资源列表
                 console.log("发送P2P数据",send000)
                 rtConnection.send(send000);
             }
-            //rtConnection.send(myVisListStorage.getMyCache());
         }, 50);//rtcShareFreq);
 
     };
@@ -202,24 +162,8 @@ function initWebRTC() {//p2p获取资源列表
     };
 }
 
-function animate() {
-    requestAnimationFrame(animate);
-    document.getElementById("triNum").innerText = renderer.info.render.triangles;
-    renderer.render(scene, camera);
-    updateLight();
-}
 
-function updateLight() {//让光线随着相机移动
-    light.position.set(camera.position.x, camera.position.y, camera.position.z);
-    let ps = new THREE.Vector3();
-    camera.getWorldDirection(ps);
-    lightObj.position.set(
-        camera.position.x + ps.x * 10,
-        camera.position.y + ps.y * 10,
-        camera.position.z + ps.z * 10
-    );
-    light.target = lightObj;
-}
+
 
 function requestModelPackage(visibleList, type) {//检测可视列表中哪些已经在场景中了，只加载不再场景中的//获取模型资源
     let packSize = 0;
@@ -434,60 +378,6 @@ function makeInstanced(geo, mtxObj, oriName, type) {
     ModelHasBeenLoaded.push(mesh.name);
 }
 
-
-function packHeader() {
-    return radianceWidth * mWebClientExchangeCode + radianceHeight;
-}
-
-function syncClientDataToServer() {//发送视点信息
-    if (!websocketReady)
-        return;
-
-    startTime = performance.now();
-
-    var msg = new Float32Array(new ArrayBuffer(52));
-
-    // Pack the size of radiance map at first
-    msg[0] = packHeader();
-
-    // Synchronize the position and rotation of camera
-    msg[1] = -camera.position.x;
-    msg[2] = camera.position.y;
-    msg[3] = camera.position.z;
-
-    camera.getWorldDirection(cameraForward);
-    msg[4] = -cameraForward.x;//-camera.rotation.x * 57.29578;
-    msg[5] = cameraForward.y;//camera.rotation.y * 57.29578;
-    msg[6] = cameraForward.z;//camera.rotation.z * 57.29578;
-
-    // Synchronize the position and rotation of main light
-    msg[7] = 10.0; // reserveParam0
-    msg[8] = 10.0; // reserveParam1
-    msg[9] = 10.0; // reserveParam2
-
-    let viewpoint = [msg[1], msg[2], msg[3], msg[4], msg[5], msg[6]];
-    let visList = myVisListStorage.getVisList(viewpoint);
-    if (visList != null) {
-        requestModelPackage(visList, 1);
-        //console.log("viewpoint is in cache");
-    }
-    else {
-        // myVisListStorage.beforeSynViewpoint(viewpoint);
-        ws.send(msg);
-        //console.log("no available cache for this viewpoint:" + msg.toString());
-    }
-}
-
-//相机移动是获取资源列表
-
-function synWindowSize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    radianceWidth = Math.floor(window.innerWidth / 2);
-    radianceHeight = Math.floor(window.innerHeight / 2);
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
 function selectMaterialByType(type, name) {
     let color = new THREE.Color(0xaaaaaa);
     switch (type) {
@@ -554,7 +444,6 @@ function selectMaterialByType(type, name) {
     }
     return color;
 }
-
 
 function selectTextureByType(type, repeatTimes = 1) {
     let texture;
@@ -625,8 +514,6 @@ function selectTextureByType(type, repeatTimes = 1) {
     return texture;
 }
 
-
-
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Uint8Array(buf));
 }
@@ -653,7 +540,6 @@ function assignUVs(geometry, scale = 1.0) {
     geometry.uvsNeedUpdate = true;
 }
 
-
 function assignBufferUVs(bufferGeometry, scale = 1.0) {
     let geometry = new THREE.Geometry();
     geometry.fromBufferGeometry(bufferGeometry);
@@ -676,214 +562,4 @@ function assignBufferUVs(bufferGeometry, scale = 1.0) {
     let uvArray = new Float32Array(uvs);
     bufferGeometry.addAttribute('uv', new THREE.BufferAttribute(uvArray, 2));
     bufferGeometry.uvsNeedUpdate = true;
-}
-
-
-function VisListStorage() {
-    // this.tempViewpointList = [];
-    //visibleList from server
-    this.myCache = {
-        "cameraList": [],//成员为数组
-        "modelList": []//成员为字符串
-    };
-    //visibleList from peer
-    this.peerCache = {
-        "cameraList": [],//成员为数组
-        "modelList": []//成员为字符串
-    };
-}
-
-VisListStorage.prototype.getMyCache = function () {
-    return JSON.stringify(this.myCache);
-};
-
-VisListStorage.prototype.receivePeerCache = function (str) {
-    let json = JSON.parse(str);
-    this.parserAndMerge(json);
-};
-
-VisListStorage.prototype.afterReceivingModelListFromServer = function (viewpointStr, visList) {
-    if (viewpointStr && visList) {
-        let viewpointArr = viewpointStr.split('/');
-        this.myCache.cameraList.push(viewpointArr.map(v => v * 1.0));
-        this.myCache.modelList.push(visList);
-    }
-};
-
-//parse the data from peer and merge them with the peerCache
-VisListStorage.prototype.parserAndMerge = function (json) {
-    if (this.peerCache.cameraList.length == 0) {
-        this.peerCache.cameraList = json.cameraList.slice();
-        this.peerCache.modelList = json.modelList.slice();
-        return;
-    }
-    for (let i = 0; i < json.cameraList.length; i++) {
-        for (let j = 0; j < this.peerCache.cameraList.length; j++) {
-            if (this.isSimilarViewpoint(json.cameraList[i], this.peerCache.cameraList[j]))
-                break;
-            if (j == this.peerCache.cameraList.length - 1) {
-                this.peerCache.cameraList.push(json.cameraList[i]);
-                this.peerCache.modelList.push(json.modelList[i]);
-            }
-        }
-    }
-};
-
-//determine if the two viewpoints can use the same visible list
-VisListStorage.prototype.isSimilarViewpoint = function (arr1, arr2) {
-    if (Math.sqrt(Math.pow(arr1[0] - arr2[0], 2) + Math.pow(arr1[1] - arr2[1], 2) + Math.pow(arr1[2] - arr2[2], 2)) < distanceForSimilarViewpoint)
-        if (arr1[3] * arr2[3] + arr1[4] * arr2[4] + arr1[5] * arr2[5] > Math.cos(angleForSimilarViewpoint))
-            return true;
-    return false;
-};
-
-//get the visible list by the viewpoint, need to search myCache and peerCache
-VisListStorage.prototype.getVisList = function (viewpoint) {
-    for (let i = 0; i < this.myCache.cameraList.length; i++) {
-        if (this.isSimilarViewpoint(viewpoint, this.myCache.cameraList[i]))
-            return this.myCache.modelList[i];
-    }
-    for (let j = 0; j < this.peerCache.cameraList.length; j++) {
-        if (this.isSimilarViewpoint(viewpoint, this.peerCache.cameraList[j]))
-            return this.peerCache.modelList[j];
-    }
-    return null;
-};
-
-
-
-///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
-//orange：设置资源列表对象
-function ListStorage() {
-    this.cameraStatus = [];//orange：成员为字符串//每个字符串分为7段
-    this.list = [];//orange：成员为字符串数组//每个成员由多个字符串构成
-
-    this.cameraStatusCache1 = [];//orange：1号缓存区存放服务器发送的数据，
-    this.listCache1 = [];//orange：1号缓存区存放服务器发送的数据，2号缓存区存放其他客户端发送的数据
-    this.preCameraStatus = null;//orange：对应cameraStatusCache1[0]中的数据，存放前一个发送给服务器视点信息，用于判断现在的视点是否和上一个视点重复
-    this.p2PData = "";//临时存储需要向其他用户通过P2P发送的信息
-
-    this.cameraStatusCache2 = [];//orange：2号缓存区存放其他客户端发送的数据。取出缓存区中某个数据后，可以使用splice(0,1)删除这个数据
-    this.listCache2 = [];
-}
-
-ListStorage.prototype = {//外界只需要调用4个函数就可以实现所有工作：getList、saveServerData_send、saveServerData_accept、saveP2PData
-    getList: function (str, b, c, d, e, f, g) {//通过视点信息来获取对应的资源列表调用方法为：getList(),getList(str),getList(a,b,c,d,e,f,g)
-        if (str === undefined)
-            return [this.cameraStatus, this.list];//getList()//如果没有输入参数，返回整个资源列表//用于测试时，查看对象的内容
-        else if (b !== undefined)
-            str = str + b + c + d + e + f + g;//getList(a,b,c,d,e,f,g)
-        for (var i = 0; i < this.cameraStatus.length; i++)
-            if (this.cameraStatus[i] === str)
-                return this.list[i];
-        return [];
-    },
-
-    //cache1
-    //以下函数用于保存向服务器发送的数据
-    cameraStatusPushCache1: function (a, b, c, d, e, f, g) {//将视点信息存入cache1//视点信息是一个字符串
-        if (this.isPreCameraStatus(a, b, c, d, e, f, g))
-            return;//如果和上一个视点信息相同就不进行入栈
-        this.preCameraStatus = [a, b, c, d, e, f, g];
-        this.cameraStatusCache1.push(a + "," + b + "," + c + "," + d + "," + e + "," + f + "," + g);
-    },
-    isPreCameraStatus: function (a, b, c, d, e, f, g) {
-        return this.preCameraStatus//preCameraStatus不能为空，为空说明这是第一个
-            && a === this.preCameraStatus[0]
-            && b === this.preCameraStatus[1]
-            && c === this.preCameraStatus[2]
-            && d === this.preCameraStatus[3]
-            && e === this.preCameraStatus[4]
-            && f === this.preCameraStatus[5]
-            && g === this.preCameraStatus[6];
-    },
-    saveServerData_send: function (a, b, c, d, e, f, g) {
-        this.cameraStatusPushCache1(a, b, c, d, e, f, g);
-    },
-    //以下函数用于处理服务器发来的数据
-    listPushCache1: function (str) {//向cache1存储资源名称数据
-        this.listCache1.push(str);//str是资源名称
-    },
-    submitCache1: function () {//将cache1中的资源列表数据提交到list和cameraStatus中，并将这些数据拼接成字符串用于接下来发送给其他用户//完成了当前的资源列表,开始设置下一个资源列表
-        if (this.getList(this.cameraStatusCache1[0]).length !== 0) {//如果这个视点在资料列表中已经存在了，就不需要再次将缓存中的信息加入列表了
-            this.listCache1 = [];//清空这个缓存区
-            this.cameraStatusCache1.splice(0, 1);//删除这个视点信息
-        } else {//如果这个视点在资料列表中不存在
-            this.list.push(this.listCache1);
-            this.listCache1 = [];
-            this.cameraStatus.push(this.cameraStatusCache1[0]);
-            this.cameraStatusCache1.splice(0, 1);//将这个缓冲区看做一个队列
-
-            //以下将这些数据拼接成字符串，用于接下来通过P2P发送给其他用户
-            var index = this.list.length - 1;
-            var mySendP2PData = "";
-            mySendP2PData = mySendP2PData + this.cameraStatus[index] + "/";//cameraStatus
-            for (var i = 0; i < this.list[index].length; i++)
-                mySendP2PData = mySendP2PData + this.list[index][i] + "/";
-            this.p2PData = mySendP2PData;
-        }
-    },
-    getP2PData: function () {//获取上一次submitCache1的处理结果
-        return this.p2PData;
-    },
-    saveServerData_accept: function (BLGName, isLastGLB, p2pConnection) {
-        this.listPushCache1(BLGName);//将文件名称存放到列表缓存区中
-        if (isLastGLB) {//isLastGLB为true表示当前视点的数据流结束
-            this.submitCache1();//orange:将cache中的数据存放到真正的资源列表中
-            p2pConnection.send(this.getP2PData());//如果this.listCache2没有内容，即为[]这里会报错
-        }
-    },
-
-    //cache2
-    //以下函数用于处理其他用户通过P2P发来的数据
-    cameraStatusPushCache2: function (a) {//将视点信息存入cache2//视点信息是一个字符串
-        this.cameraStatusCache2.push(a);
-    },
-    listPushCache2: function (str) {//向当前资源列表存储数据
-        this.listCache2.push(str);
-    },
-    submitCache2: function () {//将cache2中的资源列表数据提交到list和cameraStatus中//下一个资源列表
-        if (this.getList(this.cameraStatusCache2[0]).length !== 0) {//如果这个视点在资料列表中存在
-            this.listCache2 = [];
-            this.cameraStatusCache2.splice(0, 1);//将这个缓冲区看做一个队列
-        } else {//如果这个视点在资料列表中不存在
-            this.list.push(this.listCache2);
-            this.listCache2 = [];
-            this.cameraStatus.push(this.cameraStatusCache2[0]);
-            this.cameraStatusCache2.splice(0, 1);//将这个缓冲区看做一个队列
-        }
-    },
-    saveP2PData: function (event) {
-        var str = event.data;
-        if (str !== "init_test") {//orange:刚建立连接时对方会发送一个用于连接测试的字符串，内容是"init_test"
-            var dataArr = str.split('/');
-
-            //orange:第一段数据是视点信息
-            this.cameraStatusPushCache2(dataArr[0]);//将视点信息，存入2号缓存区（1号缓存区存放服务器发送的数据，2号缓存区存放其他客户端发送的数据）
-            //orange:其余各段为资源名称
-            for (var k = 1; k < dataArr.length - 1; k++)//orange:最后一段信息为空
-                this.listPushCache2(dataArr[k]);
-            this.submitCache2();
-        }
-    },
-}
-
-//orange：设置封装管理资源列表对象的对象
-function ListStorageManage() {//对ListStorage对象进行了封装，屏蔽了内部私有参数和方法
-    var listStorage = new ListStorage();
-
-    this.getList = function (str, b, c, d, e, f, g) {
-        //alert(str);
-        return listStorage.getList(str, b, c, d, e, f, g);
-    }
-    this.saveServerData_send = function (a, b, c, d, e, f, g) {
-        listStorage.saveServerData_send(a, b, c, d, e, f, g);
-    }
-    this.saveServerData_accept = function (BLGName, isLastGLB, p2pConnection) {
-        listStorage.saveServerData_accept(BLGName, isLastGLB, p2pConnection);
-    }
-    this.saveP2PData = function (a, b, c, d, e, f, g) {
-        listStorage.saveP2PData(a, b, c, d, e, f, g);
-    }
 }

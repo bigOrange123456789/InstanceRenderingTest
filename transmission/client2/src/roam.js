@@ -17,3 +17,12 @@ var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
 loader.load("../json/"+sceneName+"Roam.json", function (data) {
     new PreviewManager(camera, JSON.parse(data));
 });
+
+import {ResourceLoader_Multiple}from './ResourceLoader.js';
+var myResourceLoader=new ResourceLoader_Multiple({//获取可视列表
+    url:'../json/'+sceneName+'Info.json',
+    camera:window.camera
+});
+myResourceLoader.start();
+//window.hasLoad=myResourceLoader.hasLoad;
+window.myResourceLoader=myResourceLoader;

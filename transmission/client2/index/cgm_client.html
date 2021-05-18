@@ -91,19 +91,11 @@
 	let useClientCompute=true;//使用浏览器计算资源列表
 	window.time=0;
 </script>
+<script src="../src/Main.js"></script>
 <script src="../src/config.js"></script>
-<script src="../src/main_V10.js"></script>
+<script src="../src/main_V10.js" ></script>
 <script src="../src/roam.js" type="module"></script>
 <button id="button0">进入漫游</button>
-<script type="module">
-	import {ResourceLoader_Multiple}from '../src/ResourceLoader.js';
-	var myResourceLoader=new ResourceLoader_Multiple({//获取可视列表
-		url:'../json/'+sceneName+'Info.json',
-		camera:camera
-	});
-	myResourceLoader.start();
-	//window.hasLoad=myResourceLoader.hasLoad;
-	window.myResourceLoader=myResourceLoader;
-</script>
+
 </body>
 </html>

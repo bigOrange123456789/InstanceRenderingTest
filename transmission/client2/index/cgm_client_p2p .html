@@ -62,6 +62,7 @@
 <!-- <script src="https://cdn.webrtc-experiment.com/FileBufferReader.js"></script> -->
 <script src="../lib/webrtc/FileBufferReader.js"></script>
 <script src="../lib/RTCMultiConnection.js"></script>
+<script src="../src/Main.js"></script>
 <script>
 	let sceneName = "cgm";//"demo1";//
 	let haveP2P=true;
@@ -70,17 +71,8 @@
 </script>
 <script src="../src/config.js"></script>
 <script src="../src/main_V10.js"></script>
-<script src="../src/roam.js" type="module"></script>
+<script src="../src/roam.js" type="module" type="module"></script>
 <button id="button0">进入漫游</button>
-<script type="module">
-	import {ResourceLoader_Multiple}from '../src/ResourceLoader.js';
-	var myResourceLoader=new ResourceLoader_Multiple({//获取可视列表
-		url:'../json/'+sceneName+'Info.json',
-		camera:camera
-	});
-	myResourceLoader.start();
-	//window.hasLoad=myResourceLoader.hasLoad;
-	window.myResourceLoader=myResourceLoader;
-</script>
+
 </body>
 </html>
