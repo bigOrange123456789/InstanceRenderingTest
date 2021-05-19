@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="UTF-8">
+	<title>页面1</title>
+</head>
+
+<body >
+
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
+<script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+
+<script src="https://cdn.webrtc-experiment.com/FileBufferReader.js"></script>
+
+<script src="./lib/RTCMultiConnection.js"></script>
+
+<script>
+	var sceneName="test"
+	initWebRTC()
+	function initWebRTC() {//p2p获取资源列表
+		let rtcInterval;
+		var rtConnection = new RTCMultiConnection();
+		rtConnection.link=false;
+		window.rtConnection=rtConnection;
+		rtConnection.socketURL = "http://localhost:9001/"//'https://rtcmulticonnection.herokuapp.com:443/';//
+		rtConnection.enableFileSharing = true; // by default, it is "false".
+		rtConnection.session = {
+			data: true
+		};
+
+		rtConnection.onopen = function () {
+			rtConnection.link=true;
+			console.log("Open the connection");
+			const rtcShareFreq = 1000;
+			rtcInterval = setInterval(() => {
+				rtConnection.send("test1")
+			}, rtcShareFreq);
+		};
+
+		rtConnection.onmessage = function (event) {
+			console.log("收到:",event.data)
+		};
+
+		rtConnection.onerror = function () {
+			rtConnection.link=false;
+			console.log("error, disconnect to other peers");
+			clearInterval(rtcInterval);
+		};
+
+		rtConnection.onclose = function () {
+			rtConnection.link=false;
+			console.log("Close the connection");
+			clearInterval(rtcInterval);
+		};
+		rtConnection.openOrJoin(sceneName);
+	}
+</script>
+
+</body>
+</html>

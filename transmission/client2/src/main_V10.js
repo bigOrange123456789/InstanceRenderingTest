@@ -124,7 +124,7 @@ function initWebRTC() {//p2p获取资源列表
     //"http://localhost:9001/
     //rtConnection.socketURL = 'https://localhost:9001/';//
     //rtConnection.socketURL = 'http://'+p2pHost+':'+p2pPort+'/';//'https://rtcmulticonnection.herokuapp.com:443/';//
-    rtConnection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';//
+    rtConnection.socketURL = "http://"+ipconfig+":9001/"//'https://rtcmulticonnection.herokuapp.com:443/';//
     rtConnection.enableFileSharing = true; // by default, it is "false".
     rtConnection.session = {
         data: true

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="UTF-8">
+	<title>Residential building Scene</title>
+</head>
+
+<body >
+
+<!-- <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> -->
+<script src="./lib/webrtc/adapter-latest.js"></script>
+<!-- <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script> -->
+<script src="./lib/webrtc/socket.io.js"></script>
+<!-- <script src="https://cdn.webrtc-experiment.com/FileBufferReader.js"></script> -->
+<script src="./lib/webrtc/FileBufferReader.js"></script>
+<script src="./lib/RTCMultiConnection.js"></script>
+
+<script>
+	var sceneName="test"
+	initWebRTC()
+	function initWebRTC() {//p2p获取资源列表
+		var rtConnection = new RTCMultiConnection();
+		rtConnection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';//
+		rtConnection.enableFileSharing = true;// 准许发送文件 // by default, it is "false".
+		rtConnection.session = {
+			data: true   // webrtc data channels
+		};
+		rtConnection.onopen = function () {
+			rtcInterval = setInterval(() => {
+				rtConnection.send("test0");
+			}, 1000);
+		};
+		rtConnection.onmessage = function (event) {
+			console.log("收到P2P数据:",event.data)
+		};
+
+		rtConnection.onerror = function () {};
+		rtConnection.onclose = function () {};
+		rtConnection.openOrJoin(sceneName);
+	}
+</script>
+
+</body>
+</html>
