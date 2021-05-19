@@ -116,10 +116,9 @@ function sendTestResult() {
 
 //p2p
 function initWebRTC() {//p2p获取资源列表
-    let rtConnectionReady = false;
     let rtcInterval;
-    const rtcShareFreq = 50;
     var rtConnection = new RTCMultiConnection();
+    window.rtConnection=rtConnection;
     //"http://localhost:9001/
     //rtConnection.socketURL = 'https://localhost:9001/';//
     //rtConnection.socketURL = 'http://'+p2pHost+':'+p2pPort+'/';//'https://rtcmulticonnection.herokuapp.com:443/';//
@@ -128,26 +127,44 @@ function initWebRTC() {//p2p获取资源列表
     rtConnection.session = {
         data: true
     };
-    rtConnection.onmessage = function (event) {
-        //new Uint8Array(ary);
-        var package000=new Uint8Array(event.data)
-        console.log("收到P2P数据:",package000)
-        reuseDataParser(package000, 0);
-    };
 
-    rtConnection.onopen = function () {//接收
+    rtConnection.onopen = function () {
         console.log("Open the connection");
-        rtConnectionReady = true;
+        const rtcShareFreq = 50;
         rtcInterval = setInterval(() => {
             if(window.package.length>1){
                 var package00=window.package[
                     Math.floor(Math.random()*window.package.length)
                     ];
-                var send000=Array.from(package00)
-                console.log("发送P2P数据",send000)
-                rtConnection.send(send000);
+                window.mySend(package00)
             }
         }, rtcShareFreq);
+    };
+    window.mySend=function(needSendPackage){//发送
+        var send000=Array.from(needSendPackage)
+        send000.push("data")//表示这是数据
+        console.log("发送P2P数据",needSendPackage)
+        rtConnection.send(send000);
+    }
+    rtConnection.onmessage = function (event) {
+        var flag=event.data.splice(event.data.length-1,1)
+        console.log(flag)
+        if(flag==="data"){//收到的是数据
+            var package000=new Uint8Array(event.data)
+            console.log("收到P2P数据:",package000)
+            reuseDataParser(package000, 0);
+        } else{//收到的是资源列表
+            console.log("收到资源列表：",event.data)
+            if(window.myResourceLoader&&window.myResourceLoader){
+                var name=event.data[
+                    Math.floor(Math.random()*event.data.length)
+                    ]
+                console.log("name",name)
+                var model=window.myResourceLoader.getModel(name);
+                if(model&&model.pack) window.mySend(model.pack);
+            }
+
+        }
 
     };
 
@@ -158,7 +175,6 @@ function initWebRTC() {//p2p获取资源列表
 
     rtConnection.onclose = function () {
         console.log("Close the connection");
-        rtConnectionReady = false;
         clearInterval(rtcInterval);
     };
     rtConnection.openOrJoin(sceneName);
@@ -185,6 +201,8 @@ function requestModelPackage(visibleList, type) {//检测可视列表中哪些�
 
 //通过http请求获取模型数据包
 function requestModelPackageByHttp(visibleList, type) {
+    window.rtConnection.send(visibleList.split('/'))
+
     var oReq = new XMLHttpRequest();
     oReq.open("POST", `http://${assetHost}:${assetPort}`, true);
     oReq.responseType = "arraybuffer";

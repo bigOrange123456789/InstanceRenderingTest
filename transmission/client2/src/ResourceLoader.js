@@ -29,15 +29,13 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
         if(scope.myResourceList){
             var model=scope.myResourceList.getModelByName(name+".glb");
             model.pack=pack;
-            //model.reusability++;
-            //model.finishLoad=true;//已经被加载了
-            //return model.reusability;
         }else{
             if(typeof (window.pack)==="undefined")window.pack=[]
             window.pack.push([name,pack])
-            //scope.partInstancedObjList.push(name);
-            //return 1;
         }
+    }
+    getModel(name){
+        return this.myResourceList.getModelByName(name+".glb");
     }
     start(){
         var scope=this;
