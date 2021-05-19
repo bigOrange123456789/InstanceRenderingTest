@@ -162,12 +162,11 @@ function initWebRTC() {//p2p获取资源列表
         } else{//收到的是资源列表
             console.log(flag,"收到资源列表：",event.data)
             if(window.myResourceLoader&&window.myResourceLoader){
-                var name=event.data[
-                    Math.floor(Math.random()*event.data.length)
-                    ]
-                //for(var m=0;m<)
-                var model=window.myResourceLoader.getModel(name);
-                if(model&&model.pack) window.mySend(model.pack);
+                for(var m=0;m<event.data.length;m++){
+                    var name=event.data[m]
+                    var model=window.myResourceLoader.getModel(name);
+                    if(model&&model.pack) window.mySend(model.pack);
+                }
             }
         }
     };
