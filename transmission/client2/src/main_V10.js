@@ -11,7 +11,7 @@ let ws, interval;
 const webService = "Lcrs";
 const mWebClientExchangeCode = 4000;
 const sliceLength = 1000, synFreq = 500;
-const NUM_PACKAGE = 100;
+const NUM_PACKAGE = 500;
 let websocketReady = false;
 let packageIndex = 1;
 let ModelHasBeenLoaded = [];
@@ -130,7 +130,7 @@ function initWebRTC() {//p2p获取资源列表
 
     rtConnection.onopen = function () {
         console.log("Open the connection");
-        const rtcShareFreq = 50;
+        const rtcShareFreq = 1000;
         rtcInterval = setInterval(() => {
             if(window.package.length>1){
                 var package00=window.package[
@@ -142,24 +142,23 @@ function initWebRTC() {//p2p获取资源列表
     };
     window.mySend=function(needSendPackage){//发送
         var send000=Array.from(needSendPackage)
+        console.log("发送数据包",needSendPackage)
         send000.push("data")//表示这是数据
-        console.log("发送P2P数据",needSendPackage)
         rtConnection.send(send000);
     }
     rtConnection.onmessage = function (event) {
         var flag=event.data.splice(event.data.length-1,1)
-        console.log(flag)
-        if(flag==="data"){//收到的是数据
+        console.log(event.data[event.data.length-1])
+        if(flag[0]==="data"){//收到的是数据
             var package000=new Uint8Array(event.data)
-            console.log("收到P2P数据:",package000)
+            console.log(flag,"收到P2P数据:",package000)
             reuseDataParser(package000, 0);
         } else{//收到的是资源列表
-            console.log("收到资源列表：",event.data)
+            console.log(flag,"收到资源列表：",event.data)
             if(window.myResourceLoader&&window.myResourceLoader){
                 var name=event.data[
                     Math.floor(Math.random()*event.data.length)
                     ]
-                console.log("name",name)
                 var model=window.myResourceLoader.getModel(name);
                 if(model&&model.pack) window.mySend(model.pack);
             }
@@ -201,8 +200,9 @@ function requestModelPackage(visibleList, type) {//检测可视列表中哪些�
 
 //通过http请求获取模型数据包
 function requestModelPackageByHttp(visibleList, type) {
-    window.rtConnection.send(visibleList.split('/'))
+    window.rtConnection.send(visibleList.split('/'))//要处理好P2P还未被建立时怎么办
 
+    if(typeof(onlyP2P)!=="undefined")return;
     var oReq = new XMLHttpRequest();
     oReq.open("POST", `http://${assetHost}:${assetPort}`, true);
     oReq.responseType = "arraybuffer";
@@ -253,7 +253,8 @@ function requestModelPackageByHttp(visibleList, type) {
 
 //数据解析
 function reuseDataParser(data, isLastModel) {
-    window.package.push(data)
+    //window.package.push(data)
+
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
         if(typeof(window.myResourceLoader)==="undefined"){
