@@ -36,9 +36,7 @@ THREE.DRACOLoader.setDecoderPath('../lib/draco/');
 THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
 gltfLoader.setDRACOLoader(new THREE.DRACOLoader());
 
-let rtConnectionReady = false;
-let rtConnection, rtcInterval;
-const rtcShareFreq = 3000;
+
 let cubeView;
 window.package=[]
 var sceneRoot;
@@ -83,7 +81,7 @@ function init() {
     scene.add(new THREE.AxesHelper(5));//用于简单模拟3个坐标轴的对象.
 
     if(haveP2P)initWebRTC();//p2p获取资源列表
-    if(haveP2P)rtConnection.openOrJoin(sceneName);
+
 
     setTimeout(function (){
         alert("测试完成")
@@ -118,7 +116,10 @@ function sendTestResult() {
 
 //p2p
 function initWebRTC() {//p2p获取资源列表
-    rtConnection = new RTCMultiConnection();
+    let rtConnectionReady = false;
+    let rtcInterval;
+    const rtcShareFreq = 50;
+    var rtConnection = new RTCMultiConnection();
     //"http://localhost:9001/
     //rtConnection.socketURL = 'https://localhost:9001/';//
     //rtConnection.socketURL = 'http://'+p2pHost+':'+p2pPort+'/';//'https://rtcmulticonnection.herokuapp.com:443/';//
@@ -146,7 +147,7 @@ function initWebRTC() {//p2p获取资源列表
                 console.log("发送P2P数据",send000)
                 rtConnection.send(send000);
             }
-        }, 50);//rtcShareFreq);
+        }, rtcShareFreq);
 
     };
 
@@ -160,10 +161,8 @@ function initWebRTC() {//p2p获取资源列表
         rtConnectionReady = false;
         clearInterval(rtcInterval);
     };
+    rtConnection.openOrJoin(sceneName);
 }
-
-
-
 
 function requestModelPackage(visibleList, type) {//检测可视列表中哪些已经在场景中了，只加载不再场景中的//获取模型资源
     let packSize = 0;
@@ -198,6 +197,9 @@ function requestModelPackageByHttp(visibleList, type) {
         //console.log(headLength)
         // glb file length info
         let glbLengthData = ab2str(data.slice(10,10+ headLength-1));//数据包头部
+        function ab2str(buf) {
+            return String.fromCharCode.apply(null, new Uint8Array(buf));
+        }
         //glb file
         let glbData = data.slice(10+ headLength);//数据包内容
 
@@ -244,18 +246,133 @@ function reuseDataParser(data, isLastModel) {
         let geo = gltf.scene.children[0].geometry;
         // Add uvs
         assignBufferUVs(geo);
+        function assignBufferUVs(bufferGeometry, scale = 1.0) {
+            let geometry = new THREE.Geometry();
+            geometry.fromBufferGeometry(bufferGeometry);
+
+            let uvs = [];
+            geometry.computeFaceNormals();
+            geometry.faces.forEach(function (face) {
+                var components = ['x', 'y', 'z'].sort(function (a, b) {
+                    return Math.abs(face.normal[a]) > Math.abs(face.normal[b]);
+                });
+
+                var v1 = geometry.vertices[face.a];
+                var v2 = geometry.vertices[face.b];
+                var v3 = geometry.vertices[face.c];
+
+                uvs.push(v1[components[0]] * scale, v1[components[1]] * scale);
+                uvs.push(v2[components[0]] * scale, v2[components[1]] * scale);
+                uvs.push(v3[components[0]] * scale, v3[components[1]] * scale);
+            });
+            let uvArray = new Float32Array(uvs);
+            bufferGeometry.addAttribute('uv', new THREE.BufferAttribute(uvArray, 2));
+            bufferGeometry.uvsNeedUpdate = true;
+        }
+
         let matrixObj = gltf.parser.json.nodes[0].matrixArrs;
         let type = name.slice(name.indexOf('=') + 1);
-        if (matrixObj == undefined) {
+        var color = selectMaterialByType(type, name);
+
+        function selectMaterialByType(type) {
+            var list={
+                "IfcFooting":0xFFBFFF,
+                "IfcWallStandardCase":0xaeb1b3,
+                "IfcSlab":0x505050,
+                "IfcStair":0xa4a592,
+                "IfcDoor":0x6f6f6f,
+                "IfcWindow":0x9ea3ef,
+                "IfcBeam":0x949584,
+                "IfcCovering":0x777a6f,
+                "IfcFlowSegment":0x999999,
+                "IfcWall":0xbb9f7c,
+                "IfcRamp":0x4d5053,
+                "IfcRailing":0x4f4f4f,
+                "IfcFlowTerminal":0xe9f5f8,
+                "IfcBuildingElementProxy":0x6f6f6f,
+                "IfcColumn":0x8a8f80,
+                "IfcFlowController":0x2c2d2b,
+                "IfcFlowFitting":0x93a5aa,
+                "IfcPlate":0x2a4260,
+                "IfcMember":0x2f2f2f,
+            }
+            var color0=list[type]
+            if(!color0)color0=0x194354;
+            return new THREE.Color(color0);
+        }
+        function selectMaterialByType0(type) {
+            let color;// = new THREE.Color(0xaaaaaa);
+            switch (type) {
+                case "IfcFooting":
+                    color = new THREE.Color(0xFFBFFF);
+                    break;
+                case "IfcWallStandardCase"://ok
+                    color = new THREE.Color(0xaeb1b3);
+                    break;
+                case "IfcSlab"://ok
+                    color = new THREE.Color(0x505050);
+                    break;
+                case "IfcStair"://ok
+                    color = new THREE.Color(0xa4a592);
+                    break;
+                case "IfcDoor"://ok
+                    color = new THREE.Color(0x6f6f6f);
+                    break;
+                case "IfcWindow":
+                    color = new THREE.Color(0x9ea3ef);
+                    break;
+                case "IfcBeam"://ok
+                    color = new THREE.Color(0x949584);
+                    break;
+                case "IfcCovering":
+                    color = new THREE.Color(0x777a6f);
+                    break;
+                case "IfcFlowSegment"://ok
+                    color = new THREE.Color(0x999999);
+                    break;
+                case "IfcWall"://ok
+                    color = new THREE.Color(0xbb9f7c);
+                    break;
+                case "IfcRamp":
+                    color = new THREE.Color(0x4d5053);
+                    break;
+                case "IfcRailing"://ok
+                    color = new THREE.Color(0x4f4f4f);
+                    break;
+                case "IfcFlowTerminal"://ok
+                    color = new THREE.Color(0xe9f5f8);
+                    break;
+                case "IfcBuildingElementProxy"://ok
+                    color = new THREE.Color(0x6f6f6f);
+                    break;
+                case "IfcColumn"://ok
+                    color = new THREE.Color(0x8a8f80);
+                    break;
+                case "IfcFlowController"://ok
+                    color = new THREE.Color(0x2c2d2b);
+                    break;
+                case "IfcFlowFitting"://ok
+                    color = new THREE.Color(0x93a5aa);
+                    break;
+                case "IfcPlate"://ok外体窗户
+                    color = new THREE.Color(0x2a4260);
+                    break;
+                case "IfcMember"://ok外体窗户
+                    color = new THREE.Color(0x2f2f2f);
+                    break;
+                default:
+                    color = new THREE.Color(0x194354);
+                    break;
+            }
+            return color;
+        }
+
+        if (matrixObj === undefined) {//不是实例化渲染对象
             let mesh = gltf.scene.children[0];
             mesh.scale.set(sceneScale, sceneScale, sceneScale);
             mesh.name = name;
             mesh.geometry.computeVertexNormals();
-            //let color = selectMaterialByType(type, name);
-            // let texture = selectTextureByType(type,sceneScale);
-            //mesh.material = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide, shininess: 64});
             if(typeof(all_material[type])==="undefined"){
-                var color = selectMaterialByType(type, name);
                 mesh.material = new THREE.MeshPhongMaterial({
                     color: color, side: THREE.DoubleSide, shininess: 64
                 });
@@ -269,7 +386,7 @@ function reuseDataParser(data, isLastModel) {
                 sceneRoot.add(mesh);
             },window.getTime())
             ModelHasBeenLoaded.push(mesh.name);
-        } else {
+        } else {//是实例化渲染对象
             setTimeout(function () {
                 //源文件，
                 //Reusability
@@ -277,6 +394,85 @@ function reuseDataParser(data, isLastModel) {
                 //console.log(name+"reusability："+reusability)
                 if(reusability===1)//第一次需要创建
                     makeInstanced(geo, JSON.parse(matrixObj), name, type);
+                function makeInstanced(geo, mtxObj, oriName, type) {
+                    let mtxKeys = Object.keys(mtxObj);
+                    let instanceCount = mtxKeys.length + 1;
+
+                    // material
+                    //var vert = document.getElementById('vertInstanced').textContent;
+                    //var frag = document.getElementById('fragInstanced').textContent;
+                    var vert = loadShader("../shader/vertex.vert");
+                    var frag = loadShader("../shader/fragment.frag");
+                    function loadShader(name) {
+                        let xhr = new XMLHttpRequest(),
+                            okStatus = document.location.protocol === "file:" ? 0 : 200;
+                        xhr.open('GET', name, false);
+                        xhr.overrideMimeType("text/html;charset=utf-8");//默认为utf-8
+                        xhr.send(null);
+                        return xhr.status === okStatus ? xhr.responseText : null;
+                    }
+                    var material = new THREE.RawShaderMaterial({
+                        vertexShader: vert,
+                        fragmentShader: frag
+                    });
+                    // geometry
+                    var igeo = new THREE.InstancedBufferGeometry();
+                    geo.computeVertexNormals();
+                    var vertices = geo.attributes.position.clone();
+                    var normal=geo.attributes.normal.clone();
+                    igeo.addAttribute('position', vertices);
+                    igeo.addAttribute('normal', normal);
+                    igeo.setIndex(geo.index);
+                    var mcol0 = new THREE.InstancedBufferAttribute(
+                        new Float32Array(instanceCount * 3), 3
+                    );
+                    var mcol1 = new THREE.InstancedBufferAttribute(
+                        new Float32Array(instanceCount * 3), 3
+                    );
+                    var mcol2 = new THREE.InstancedBufferAttribute(
+                        new Float32Array(instanceCount * 3), 3
+                    );
+                    var mcol3 = new THREE.InstancedBufferAttribute(
+                        new Float32Array(instanceCount * 3), 3
+                    );
+
+                    //设置原始mesh的变换矩阵与名称
+                    mcol0.setXYZ(0, 1, 0, 0);
+                    mcol1.setXYZ(0, 0, 1, 0);
+                    mcol2.setXYZ(0, 0, 0, 1);
+                    mcol3.setXYZ(0, 0, 0, 0);
+                    let instancedMeshName = oriName;
+                    for (let i = 1, ul = instanceCount; i < ul; i++) {
+                        let currentName = mtxKeys[i - 1];
+                        let mtxElements = mtxObj[currentName];
+                        mcol0.setXYZ(i, mtxElements[0], mtxElements[1], mtxElements[2]);
+                        mcol1.setXYZ(i, mtxElements[4], mtxElements[5], mtxElements[6]);
+                        mcol2.setXYZ(i, mtxElements[8], mtxElements[9], mtxElements[10]);
+                        mcol3.setXYZ(i, mtxElements[12], mtxElements[13], mtxElements[14]);
+                        instancedMeshName += ('_' + currentName);
+                    }
+                    igeo.addAttribute('mcol0', mcol0);
+                    igeo.addAttribute('mcol1', mcol1);
+                    igeo.addAttribute('mcol2', mcol2);
+                    igeo.addAttribute('mcol3', mcol3);
+
+                    var colors = new THREE.InstancedBufferAttribute(
+                        new Float32Array(instanceCount * 3), 3
+                    );
+                    for (let i = 0, ul = colors.count; i < ul; i++) {
+                        colors.setXYZ(i, color.r, color.g, color.b);
+                    }
+                    igeo.addAttribute('color', colors);
+
+                    // mesh
+                    var mesh = new THREE.Mesh(igeo, material);
+                    mesh.scale.set(sceneScale, sceneScale, sceneScale);
+                    mesh.material.side = THREE.DoubleSide;
+                    mesh.frustumCulled = false;
+                    mesh.name = oriName;
+                    sceneRoot.add(mesh);
+                    ModelHasBeenLoaded.push(mesh.name);
+                }
             },window.getTime())
         }
 
@@ -287,279 +483,5 @@ function reuseDataParser(data, isLastModel) {
             //$("#sceneLoadTime")[0].innerText = initialTime.toFixed(2) + "秒";
             scenetLoadDone = true;
         }
-
-        //first model
-        // if(!firstComponent){
-        //     firstComponent = true;
-        //     $("#firstModelLoadTime")[0].innerText = ((performance.now() - startTime) / 1000).toFixed(2) + "秒";
-        // }
     });
-}
-
-function makeInstanced(geo, mtxObj, oriName, type) {
-    let mtxKeys = Object.keys(mtxObj);
-    let instanceCount = mtxKeys.length + 1;
-
-    // material
-    //var vert = document.getElementById('vertInstanced').textContent;
-    //var frag = document.getElementById('fragInstanced').textContent;
-    var vert = loadShader("../shader/vertex.vert");
-    var frag = loadShader("../shader/fragment.frag");
-    function loadShader(name) {
-        let xhr = new XMLHttpRequest(),
-            okStatus = document.location.protocol === "file:" ? 0 : 200;
-        xhr.open('GET', name, false);
-        xhr.overrideMimeType("text/html;charset=utf-8");//默认为utf-8
-        xhr.send(null);
-        return xhr.status === okStatus ? xhr.responseText : null;
-    }
-
-    let color = selectMaterialByType(type);
-    var material = new THREE.RawShaderMaterial({
-        vertexShader: vert,
-        fragmentShader: frag
-    });
-    // geometry
-    var igeo = new THREE.InstancedBufferGeometry();
-    geo.computeVertexNormals();
-    var vertices = geo.attributes.position.clone();
-    var normal=geo.attributes.normal.clone();
-    igeo.addAttribute('position', vertices);
-    igeo.addAttribute('normal', normal);
-    igeo.setIndex(geo.index);
-    var mcol0 = new THREE.InstancedBufferAttribute(
-        new Float32Array(instanceCount * 3), 3
-    );
-    var mcol1 = new THREE.InstancedBufferAttribute(
-        new Float32Array(instanceCount * 3), 3
-    );
-    var mcol2 = new THREE.InstancedBufferAttribute(
-        new Float32Array(instanceCount * 3), 3
-    );
-    var mcol3 = new THREE.InstancedBufferAttribute(
-        new Float32Array(instanceCount * 3), 3
-    );
-
-    //设置原始mesh的变换矩阵与名称
-    mcol0.setXYZ(0, 1, 0, 0);
-    mcol1.setXYZ(0, 0, 1, 0);
-    mcol2.setXYZ(0, 0, 0, 1);
-    mcol3.setXYZ(0, 0, 0, 0);
-    let instancedMeshName = oriName;
-    for (let i = 1, ul = instanceCount; i < ul; i++) {
-        let currentName = mtxKeys[i - 1];
-        let mtxElements = mtxObj[currentName];
-        mcol0.setXYZ(i, mtxElements[0], mtxElements[1], mtxElements[2]);
-        mcol1.setXYZ(i, mtxElements[4], mtxElements[5], mtxElements[6]);
-        mcol2.setXYZ(i, mtxElements[8], mtxElements[9], mtxElements[10]);
-        mcol3.setXYZ(i, mtxElements[12], mtxElements[13], mtxElements[14]);
-        instancedMeshName += ('_' + currentName);
-    }
-    igeo.addAttribute('mcol0', mcol0);
-    igeo.addAttribute('mcol1', mcol1);
-    igeo.addAttribute('mcol2', mcol2);
-    igeo.addAttribute('mcol3', mcol3);
-
-    var colors = new THREE.InstancedBufferAttribute(
-        new Float32Array(instanceCount * 3), 3
-    );
-    for (let i = 0, ul = colors.count; i < ul; i++) {
-        colors.setXYZ(i, color.r, color.g, color.b);
-    }
-    igeo.addAttribute('color', colors);
-
-    // mesh
-    var mesh = new THREE.Mesh(igeo, material);
-    mesh.scale.set(sceneScale, sceneScale, sceneScale);
-    mesh.material.side = THREE.DoubleSide;
-    mesh.frustumCulled = false;
-    mesh.name = oriName;
-    sceneRoot.add(mesh);
-    ModelHasBeenLoaded.push(mesh.name);
-}
-
-function selectMaterialByType(type, name) {
-    let color = new THREE.Color(0xaaaaaa);
-    switch (type) {
-        case "IfcFooting":
-            color = new THREE.Color(0xFFBFFF);
-            break;
-        case "IfcWallStandardCase"://ok
-            color = new THREE.Color(0xaeb1b3);
-            break;
-        case "IfcSlab"://ok
-            color = new THREE.Color(0x505050);
-            break;
-        case "IfcStair"://ok
-            color = new THREE.Color(0xa4a592);
-            break;
-        case "IfcDoor"://ok
-            color = new THREE.Color(0x6f6f6f);
-            break;
-        case "IfcWindow":
-            color = new THREE.Color(0x9ea3ef);
-            break;
-        case "IfcBeam"://ok
-            color = new THREE.Color(0x949584);
-            break;
-        case "IfcCovering":
-            color = new THREE.Color(0x777a6f);
-            break;
-        case "IfcFlowSegment"://ok
-            color = new THREE.Color(0x999999);
-            break;
-        case "IfcWall"://ok
-            color = new THREE.Color(0xbb9f7c);
-            break;
-        case "IfcRamp":
-            color = new THREE.Color(0x4d5053);
-            break;
-        case "IfcRailing"://ok
-            color = new THREE.Color(0x4f4f4f);
-            break;
-        case "IfcFlowTerminal"://ok
-            color = new THREE.Color(0xe9f5f8);
-            break;
-        case "IfcBuildingElementProxy"://ok
-            color = new THREE.Color(0x6f6f6f);
-            break;
-        case "IfcColumn"://ok
-            color = new THREE.Color(0x8a8f80);
-            break;
-        case "IfcFlowController"://ok
-            color = new THREE.Color(0x2c2d2b);
-            break;
-        case "IfcFlowFitting"://ok
-            color = new THREE.Color(0x93a5aa);
-            break;
-        case "IfcPlate"://ok外体窗户
-            color = new THREE.Color(0x2a4260);
-            break;
-        case "IfcMember"://ok外体窗户
-            color = new THREE.Color(0x2f2f2f);
-            break;
-        default:
-            color = new THREE.Color(0x194354);
-            break;
-    }
-    return color;
-}
-
-function selectTextureByType(type, repeatTimes = 1) {
-    let texture;
-    switch (type) {
-        case "IfcFooting":
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcWallStandardCase"://ok
-            texture = THREE.ImageUtils.loadTexture('img/wall.jpg');
-            break;
-        case "IfcSlab"://ok
-            texture = THREE.ImageUtils.loadTexture('img/slab.jpg');
-            break;
-        case "IfcStair"://ok
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcDoor"://ok
-            texture = THREE.ImageUtils.loadTexture('img/door.jpg');
-            break;
-        case "IfcWindow":
-            texture = THREE.ImageUtils.loadTexture('img/window.jpg');
-            break;
-        case "IfcBeam"://ok
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcCovering":
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcFlowSegment"://ok
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcWall"://ok
-            texture = THREE.ImageUtils.loadTexture('img/wall.jpg');
-            break;
-        case "IfcRamp":
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcRailing"://ok
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcFlowTerminal"://ok
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcBuildingElementProxy"://ok
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcColumn"://ok
-            texture = THREE.ImageUtils.loadTexture('img/column.jpg');
-            break;
-        case "IfcFlowController"://ok
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcFlowFitting"://ok
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        case "IfcPlate"://ok外体窗户
-            texture = THREE.ImageUtils.loadTexture('img/window.jpg');
-            break;
-        case "IfcMember"://ok外体窗户
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-        default:
-            texture = THREE.ImageUtils.loadTexture('img/default.jpg');
-            break;
-    }
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(repeatTimes, repeatTimes);
-    return texture;
-}
-
-function ab2str(buf) {
-    return String.fromCharCode.apply(null, new Uint8Array(buf));
-}
-
-function assignUVs(geometry, scale = 1.0) {
-    geometry.faceVertexUvs[0] = [];
-
-    geometry.computeFaceNormals();
-    geometry.faces.forEach(function (face) {
-        var components = ['x', 'y', 'z'].sort(function (a, b) {
-            return Math.abs(face.normal[a]) > Math.abs(face.normal[b]);
-        });
-
-        var v1 = geometry.vertices[face.a];
-        var v2 = geometry.vertices[face.b];
-        var v3 = geometry.vertices[face.c];
-
-        geometry.faceVertexUvs[0].push([
-            new THREE.Vector2(v1[components[0]], v1[components[1]]).multiplyScalar(scale),
-            new THREE.Vector2(v2[components[0]], v2[components[1]]).multiplyScalar(scale),
-            new THREE.Vector2(v3[components[0]], v3[components[1]]).multiplyScalar(scale)
-        ]);
-    });
-    geometry.uvsNeedUpdate = true;
-}
-
-function assignBufferUVs(bufferGeometry, scale = 1.0) {
-    let geometry = new THREE.Geometry();
-    geometry.fromBufferGeometry(bufferGeometry);
-
-    let uvs = [];
-    geometry.computeFaceNormals();
-    geometry.faces.forEach(function (face) {
-        var components = ['x', 'y', 'z'].sort(function (a, b) {
-            return Math.abs(face.normal[a]) > Math.abs(face.normal[b]);
-        });
-
-        var v1 = geometry.vertices[face.a];
-        var v2 = geometry.vertices[face.b];
-        var v3 = geometry.vertices[face.c];
-
-        uvs.push(v1[components[0]] * scale, v1[components[1]] * scale);
-        uvs.push(v2[components[0]] * scale, v2[components[1]] * scale);
-        uvs.push(v3[components[0]] * scale, v3[components[1]] * scale);
-    });
-    let uvArray = new Float32Array(uvs);
-    bufferGeometry.addAttribute('uv', new THREE.BufferAttribute(uvArray, 2));
-    bufferGeometry.uvsNeedUpdate = true;
 }

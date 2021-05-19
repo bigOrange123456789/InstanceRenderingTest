@@ -6,6 +6,7 @@ if(sceneName==="cgm")port= 8081;
 else if(sceneName==="szt")port= 8082;
 else if(sceneName==="demo3")port= 8083;
 else alert("请检查这个场景名："+sceneName)
+
 //资源服务器的端口是9091
 let assetHost = ipconfig, assetPort = 9091;
 //P2P服务器的端口是9092
