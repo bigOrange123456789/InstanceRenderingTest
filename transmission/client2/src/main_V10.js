@@ -39,6 +39,7 @@ gltfLoader.setDRACOLoader(new THREE.DRACOLoader());
 
 let cubeView;
 window.package=[]
+window.list=[]
 var sceneRoot;
 init();
 
@@ -118,6 +119,7 @@ function sendTestResult() {
 function initWebRTC() {//p2p获取资源列表
     let rtcInterval;
     var rtConnection = new RTCMultiConnection();
+    rtConnection.link=false;
     window.rtConnection=rtConnection;
     //"http://localhost:9001/
     //rtConnection.socketURL = 'https://localhost:9001/';//
@@ -129,6 +131,7 @@ function initWebRTC() {//p2p获取资源列表
     };
 
     rtConnection.onopen = function () {
+        rtConnection.link=true;
         console.log("Open the connection");
         const rtcShareFreq = 1000;
         rtcInterval = setInterval(() => {
@@ -139,6 +142,9 @@ function initWebRTC() {//p2p获取资源列表
                 window.mySend(package00)
             }
         }, rtcShareFreq);
+        for(var m=0;m<window.list.length;m++){
+            rtConnection.send(window.list[m])
+        }
     };
     window.mySend=function(needSendPackage){//发送
         var send000=Array.from(needSendPackage)
@@ -159,20 +165,21 @@ function initWebRTC() {//p2p获取资源列表
                 var name=event.data[
                     Math.floor(Math.random()*event.data.length)
                     ]
+                //for(var m=0;m<)
                 var model=window.myResourceLoader.getModel(name);
                 if(model&&model.pack) window.mySend(model.pack);
             }
-
         }
-
     };
 
     rtConnection.onerror = function () {
+        rtConnection.link=false;
         console.log("error, disconnect to other peers");
         clearInterval(rtcInterval);
     };
 
     rtConnection.onclose = function () {
+        rtConnection.link=false;
         console.log("Close the connection");
         clearInterval(rtcInterval);
     };
@@ -200,8 +207,11 @@ function requestModelPackage(visibleList, type) {//检测可视列表中哪些�
 
 //通过http请求获取模型数据包
 function requestModelPackageByHttp(visibleList, type) {
-    window.rtConnection.send(visibleList.split('/'))//要处理好P2P还未被建立时怎么办
-
+    if(window.rtConnection&&window.rtConnection.link)
+        window.rtConnection.send(visibleList.split('/'))//要处理好P2P还未被建立时怎么办
+    else{
+        window.list.push(visibleList.split('/'))
+    }
     if(typeof(onlyP2P)!=="undefined")return;
     var oReq = new XMLHttpRequest();
     oReq.open("POST", `http://${assetHost}:${assetPort}`, true);
