@@ -24,16 +24,19 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
         scope.dTime=scope.time/scope.fileNumber;
         scope.jsonLoader=new THREE.XHRLoader(THREE.DefaultLoadingManager);
     }
-    addInstancedObj(name){
+    addPack(name,pack){
         var scope=this;
         if(scope.myResourceList){
             var model=scope.myResourceList.getModelByName(name+".glb");
-            model.reusability++;
-            model.finishLoad=true;//已经被加载了
-            return model.reusability;
+            model.pack=pack;
+            //model.reusability++;
+            //model.finishLoad=true;//已经被加载了
+            //return model.reusability;
         }else{
-            scope.partInstancedObjList.push(name);
-            return 1;
+            if(typeof (window.pack)==="undefined")window.pack=[]
+            window.pack.push([name,pack])
+            //scope.partInstancedObjList.push(name);
+            //return 1;
         }
     }
     start(){
@@ -63,6 +66,11 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
 
             scope.myResourceList=resourceList;
 
+            if(typeof (window.pack)!=="undefined"){
+                for(var l=0;l<window.pack.length;l++){
+                    scope.addPack(window.pack[l][0],window.pack[l][1])
+                }
+            }
             var myCallback_get0=function (n){
                 var names=resourceList.getModelFileInf({n:n,update:false});
                 window.fileNumber0=names.length;

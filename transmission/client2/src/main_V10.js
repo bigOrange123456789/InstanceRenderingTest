@@ -238,6 +238,13 @@ function reuseDataParser(data, isLastModel) {
     window.package.push(data)
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
+        if(typeof(window.myResourceLoader)==="undefined"){
+            if(typeof (window.pack)==="undefined")window.pack=[]
+            window.pack.push([name,pack])
+        }else{
+            window.myResourceLoader.addPack(name,data)
+        }
+
         //if(window.hasLoad)window.hasLoad(name)//myCallback_pop,myCallback_get
         if (ModelHasBeenLoaded.indexOf(name) !== -1)
             return;
@@ -300,72 +307,6 @@ function reuseDataParser(data, isLastModel) {
             if(!color0)color0=0x194354;
             return new THREE.Color(color0);
         }
-        function selectMaterialByType0(type) {
-            let color;// = new THREE.Color(0xaaaaaa);
-            switch (type) {
-                case "IfcFooting":
-                    color = new THREE.Color(0xFFBFFF);
-                    break;
-                case "IfcWallStandardCase"://ok
-                    color = new THREE.Color(0xaeb1b3);
-                    break;
-                case "IfcSlab"://ok
-                    color = new THREE.Color(0x505050);
-                    break;
-                case "IfcStair"://ok
-                    color = new THREE.Color(0xa4a592);
-                    break;
-                case "IfcDoor"://ok
-                    color = new THREE.Color(0x6f6f6f);
-                    break;
-                case "IfcWindow":
-                    color = new THREE.Color(0x9ea3ef);
-                    break;
-                case "IfcBeam"://ok
-                    color = new THREE.Color(0x949584);
-                    break;
-                case "IfcCovering":
-                    color = new THREE.Color(0x777a6f);
-                    break;
-                case "IfcFlowSegment"://ok
-                    color = new THREE.Color(0x999999);
-                    break;
-                case "IfcWall"://ok
-                    color = new THREE.Color(0xbb9f7c);
-                    break;
-                case "IfcRamp":
-                    color = new THREE.Color(0x4d5053);
-                    break;
-                case "IfcRailing"://ok
-                    color = new THREE.Color(0x4f4f4f);
-                    break;
-                case "IfcFlowTerminal"://ok
-                    color = new THREE.Color(0xe9f5f8);
-                    break;
-                case "IfcBuildingElementProxy"://ok
-                    color = new THREE.Color(0x6f6f6f);
-                    break;
-                case "IfcColumn"://ok
-                    color = new THREE.Color(0x8a8f80);
-                    break;
-                case "IfcFlowController"://ok
-                    color = new THREE.Color(0x2c2d2b);
-                    break;
-                case "IfcFlowFitting"://ok
-                    color = new THREE.Color(0x93a5aa);
-                    break;
-                case "IfcPlate"://ok外体窗户
-                    color = new THREE.Color(0x2a4260);
-                    break;
-                case "IfcMember"://ok外体窗户
-                    color = new THREE.Color(0x2f2f2f);
-                    break;
-                default:
-                    color = new THREE.Color(0x194354);
-                    break;
-            }
-            return color;
-        }
 
         if (matrixObj === undefined) {//不是实例化渲染对象
             let mesh = gltf.scene.children[0];
@@ -388,12 +329,7 @@ function reuseDataParser(data, isLastModel) {
             ModelHasBeenLoaded.push(mesh.name);
         } else {//是实例化渲染对象
             setTimeout(function () {
-                //源文件，
-                //Reusability
-                var reusability=window.myResourceLoader.addInstancedObj(name);
-                //console.log(name+"reusability："+reusability)
-                if(reusability===1)//第一次需要创建
-                    makeInstanced(geo, JSON.parse(matrixObj), name, type);
+                makeInstanced(geo, JSON.parse(matrixObj), name, type);
                 function makeInstanced(geo, mtxObj, oriName, type) {
                     let mtxKeys = Object.keys(mtxObj);
                     let instanceCount = mtxKeys.length + 1;
