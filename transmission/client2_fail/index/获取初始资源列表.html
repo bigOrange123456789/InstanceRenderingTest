@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Residential building Scene</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+		}
+	</style>
+	<link rel="icon" href="data:;base64,=">
+</head>
+
+<body  oncontextmenu="return false">
+<div id="container">
+	<div style="position: absolute; left: 20px; top: 50px;padding:10px;width:200px;">
+		<div>
+			<label style="font-size: 20px;color:#555555">三角面片数:</label>
+			<label id="triNum" style="font-size: 15px;color:#555555">0</label>
+		</div>
+		<div>
+			<label style="font-size: 20px;color:#555555">初始加载时间:</label>
+			<label id="sceneLoadTime" style="font-size: 15px;color:#555555">0</label>
+		</div>
+	</div>
+	<div style="position: absolute; left: 20px; top: 130px;padding:10px;width:500px;">
+		<label style="font-size: 20px;color:#aa0000">1.请填写您的姓名</label>
+	</div>
+	<div style="position: absolute; left: 20px; top: 155px;padding:10px;width:500px;">
+		<label style="font-size: 20px;color:#aa0000">2.请点击屏幕左下角的图标（点击后会进入自动漫游）</label>
+	</div>
+	<div style="position: absolute; left: 20px; top: 180px;padding:10px;width:500px;">
+		<label style="font-size: 20px;color:#aa0000">3.漫游结束后您可以在场景中自由浏览，直到弹出测试完成的提示窗口</label>
+	</div>
+</div>
+
+<script src="../lib/jquery-3.1.1.min.js"></script>
+<script src="../lib/three.js"></script>
+<script src="../lib/stats.min.js"></script>
+<script src="../lib/OrbitControls.js"></script>
+<script src="../lib/TouchFPC.js"></script>
+<script src="../lib/GLTFLoader.js"></script>
+<script src="../lib/DRACOLoader.js"></script>
+<script src="../lib/FlyControls.js"></script>
+<script src="../lib/BufferGeometryUtils.js"></script>
+
+<script src="../src/PlayerControl.js"></script>
+
+<!-- <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> -->
+<script src="../lib/webrtc/adapter-latest.js"></script>
+<!-- <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script> -->
+<script src="../lib/webrtc/socket.io.js"></script>
+<!-- <script src="https://cdn.webrtc-experiment.com/FileBufferReader.js"></script> -->
+<script src="../lib/webrtc/FileBufferReader.js"></script>
+<script src="../lib/RTCMultiConnection.js"></script>
+<script>
+	let sceneName = "cgm";//"demo1";//
+	let haveP2P=false;
+	let useClientCompute=true;//使用浏览器计算资源列表
+	window.time=0;
+</script>
+<script src="../src/config.js"></script>
+<script src="../src/main_V10.js"></script>
+<script src="../src/index.js" type="module"></script>
+<button id="button0">进入漫游</button>
+<script type="module">
+	import {ResourceLoader_Multiple}from '../src/ResourceLoader.js';
+	var myResourceLoader=new ResourceLoader_Multiple({//获取可视列表
+		url:'../json/'+sceneName+'Info.json',
+		camera:camera
+	});
+	myResourceLoader.computeFirstList();
+</script>
+</body>
+</html>
