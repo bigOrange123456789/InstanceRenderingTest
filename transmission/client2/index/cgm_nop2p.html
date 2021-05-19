@@ -12,6 +12,29 @@
 		}
 	</style>
 	<link rel="icon" href="data:;base64,=">
+	<script>
+		window.record={log:[],warn:[],error:[]}
+		console.log_old = console.log;
+		console.log = function(str) {
+			console.log_old(str);
+			window.record.log.push(str);
+		}
+
+		console.warn_old = console.warn;
+		console.warn = function(str) {
+			console.warn_old(str);
+			window.record.warn.push(str);
+		}
+
+		console.error_old = console.error;
+		console.error = function(str) {
+			console.error_old(str);
+			window.record.error.push(str);
+		}
+		//error
+
+		console.log(window.record)
+	</script>
 </head>
 
 <body  oncontextmenu="return false">
@@ -62,17 +85,16 @@
 <!-- <script src="https://cdn.webrtc-experiment.com/FileBufferReader.js"></script> -->
 <script src="../lib/webrtc/FileBufferReader.js"></script>
 <script src="../lib/RTCMultiConnection.js"></script>
-<script src="../src/Main.js"></script>
 <script>
 	let sceneName = "cgm";//"demo1";//
-	let haveP2P=true;
+	let haveP2P=false;
 	let useClientCompute=true;//使用浏览器计算资源列表
-	let onlyP2P=true;
 	window.time=0;
 </script>
+<script src="../src/Main.js"></script>
 <script src="../src/config.js"></script>
-<script src="../src/main_V10.js"></script>
-<script src="../src/index.js" type="module" type="module"></script>
+<script src="../src/main_V10.js" ></script>
+<script src="../src/index.js" type="module"></script>
 <button id="button0">进入漫游</button>
 
 </body>
