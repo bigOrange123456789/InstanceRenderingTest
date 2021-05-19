@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+
+	<body>
+
+	<script src="js/lib/threeJS/three.js"></script>
+	<script src="js/lib/threeJS/OrbitControls.js"></script>
+	<script src="js/lib/threeJS/GLTFLoader.js"></script>
+
+	<script src="js/lib/PlayerControl.js"></script>
+	<script src="js/Main.js"></script>
+	<script src="js/lib/communication.js"></script>
+
+	<script  type="module">
+		var myMain = new Main();
+		myMain.start();
+
+		new PlayerControl(myMain.camera);//.cullingTest(myMain.scene)
+
+		/*
+		for(var i=0;i<5;i++)
+			for(var j=0;j<8;j++){
+				var material = new THREE.MeshNormalMaterial();
+				var geometry= new THREE.CubeGeometry(5,5,5);
+				var mesh= new THREE.Mesh(geometry, material);
+				mesh.position.set(10*i,10*j,0);
+				myMain.scene.add(mesh);
+			}
+		*/
+
+		communication("test");
+		async  function communication(data){//找到房间中所有用户的位置，并把他们渲染出来
+			var result=await asyncAxios.get("communication/",{data:data});
+			//console.log(result);
+
+			var buf=char2buf(str);
+
+			let gltfLoader = new THREE.GLTFLoader();
+			//THREE.DRACOLoader.setDecoderPath('./lib/draco/');
+			//THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
+			//gltfLoader.setDRACOLoader(new THREE.DRACOLoader());
+			gltfLoader.parse(buf, './', (gltf) => {
+				console.log(gltf);
+			});
+
+			function char2buf(str){
+				var out = new ArrayBuffer(str.length*2);
+				var u16a= new Uint16Array(out);
+				var strs = str.split("");
+				for(var i =0 ; i<strs.length;i++)
+					u16a[i]=strs[i].charCodeAt();
+				return out;
+			}
+
+			function buf2char(buf){
+				var out="";
+				var u16a = new Uint16Array(buf);
+				var single ;
+				for(var i=0 ; i < u16a.length;i++){
+					single = u16a[i].toString(16)
+					while(single.length<4) single = "0".concat(single);
+					out+="\\u"+single;
+				}
+				return eval("'"+out+ "'");
+			}
+			function string2buffer(str) {
+				let val = ""
+				for (let i = 0; i < str.length; i++) {
+					val += ',' + code2utf8(str.charCodeAt(i))
+				}
+				val += ',00';
+				//console.log(val);
+				// 将16进制转化为ArrayBuffer
+				return new Uint8Array(val.match(/[\da-f]{2}/gi).map(function (h) {
+					return parseInt(h, 16)
+				})).buffer
+			}
+			function code2utf8(uni) {
+				let uni2 = uni.toString(2)
+				if (uni < 128) {
+					return uni.toString(16);
+				} else if (uni < 2048) {
+					uni2 = ('00000000000000000' + uni2).slice(-11);
+					const s1 =  parseInt("110" + uni2.substring(0, 5), 2);
+					const s2 =  parseInt("10" + uni2.substring(5), 2);
+					return s1.toString(16) + ',' + s2.toString(16)
+				} else {
+					uni2 = ('00000000000000000' + uni2).slice(-16);
+					const s1 = parseInt('1110' + uni2.substring(0, 4),2 );
+					const s2 = parseInt('10' + uni2.substring(4, 10), 2 );
+					const s3 = parseInt('10' + uni2.substring(10), 2);
+					return s1.toString(16) + ',' + s2.toString(16) + ',' + s3.toString(16)
+				}
+			}
+
+		}
+
+	</script>
+	</body>
+</html>
