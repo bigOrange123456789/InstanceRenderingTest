@@ -259,7 +259,7 @@ function requestModelPackageByHttp(visibleList, type) {
 }
 
 //数据解析
-function reuseDataParser(data, isLastModel) {
+function reuseDataParser(data) {
     //window.package.push(data)
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;

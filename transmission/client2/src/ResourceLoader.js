@@ -299,9 +299,21 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     #init_GPU_culling(n){
         this.sizeGPU=Math.ceil(Math.pow(n,0.5));
         //#GPU_culling是利用GPU进行视锥遮挡计算的方法
-        this.GPU_culling= new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,X,Y,Z,R,sizeGPU) {
+        this.GPU_culling= new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,X,Y,Z,R,sizeGPU,camera_pos) {
+            //p0,p1,p2,p3,p4,p5 视锥体的6个平面 //每个平面包含四个参数信息
+            //X,Y,Z,R 包围球
+            //sizeGPU
+            //camera_pos
             var k=this.thread.y*sizeGPU+this.thread.x;
-            return intersectsSphere(p0,p1,p2,p3,p4,p5,X[k],Y[k],Z[k],R[k]);
+            var distance=Math.pow(
+                Math.pow(camera_pos[0]-X[k],2)+
+                Math.pow(camera_pos[1]-Y[k],2)+
+                Math.pow(camera_pos[2]-Z[k],2)
+                ,0.5)-R[k]/2;
+            return [
+                intersectsSphere(p0,p1,p2,p3,p4,p5,X[k],Y[k],Z[k],R[k]),
+                distance
+            ];
             function intersectsSphere(p0,p1,p2,p3,p4,p5,x,y,z,r) {
                 function distanceToPoint(plane,point) {
                     return plane[0]* point[0] + plane[1]* point[1] + plane[2]* point[2] + plane[3];
@@ -525,14 +537,10 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             var frustum=scope.#getFrustum();
             //console.log(frustum, X,Y,Z,R, scope.sizeGPU)
             var out=scope.GPU_culling(//似乎判断都与视锥相交
-                frustum[0],
-                frustum[1],
-                frustum[2],
-                frustum[3],
-                frustum[4],
-                frustum[5],
-                scope.X,scope.Y,scope.Z,scope.R,
-                scope.sizeGPU
+                frustum[0], frustum[1], frustum[2], frustum[3], frustum[4], frustum[5],//视锥体
+                scope.X,scope.Y,scope.Z,scope.R,//包围球
+                scope.sizeGPU,
+                [scope.camera.position.x,scope.camera.position.y,scope.camera.position.z]
             )
 
             var k=0;
@@ -543,7 +551,8 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                         scope.recall();
                         return;
                     }
-                    scope.models[k].inView=(out[i][j]===1);
+                    scope.models[k].inView=(out[i][j][0]===1);
+                    scope.models[k].distance=out[i][j][1];
                     k++;
                 }
 
