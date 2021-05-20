@@ -263,8 +263,7 @@ function reuseDataParser(data, isLastModel) {
 
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
-        if (ModelHasBeenLoaded.indexOf(name) !== -1)
-            return;
+        if (ModelHasBeenLoaded.indexOf(name) !== -1) return;
         else ModelHasBeenLoaded.push(name);
 
         if(typeof(window.myResourceLoader)==="undefined"){
@@ -281,7 +280,7 @@ function reuseDataParser(data, isLastModel) {
         let geo = gltf.scene.children[0].geometry;
         // Add uvs
         geo.computeVertexNormals();
-        
+
         let matrixObj = gltf.parser.json.nodes[0].matrixArrs;
         let type = name.slice(name.indexOf('=') + 1);
         var color = selectMaterialByType(type, name);
@@ -411,6 +410,14 @@ function reuseDataParser(data, isLastModel) {
         }
         setTimeout(function () {
             sceneRoot.add(mesh);
+
+            if(typeof(window.myResourceLoader)==="undefined"){
+                if(typeof (window.sceneMesh)==="undefined")window.sceneMesh=[]
+                window.sceneMesh.push([name,mesh])
+            }else{
+                window.myResourceLoader.addMesh(name,mesh)
+            }
+
         },window.getTime())
 
         //初始加载时间

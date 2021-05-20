@@ -34,6 +34,16 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
             window.pack.push([name,pack])
         }
     }
+    addMesh(name,mesh){
+        var scope=this;
+        if(scope.myResourceList){
+            var model=scope.myResourceList.getModelByName(name+".glb");
+            model.mesh=mesh;
+        }else{
+            if(typeof (window.sceneMesh)==="undefined")window.sceneMesh=[]
+            window.sceneMesh.push([name,mesh])
+        }
+    }
     getModel(name){
         return this.myResourceList.getModelByName(name+".glb");
     }
