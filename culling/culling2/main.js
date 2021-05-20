@@ -35,7 +35,7 @@ function init(){
   stats.dom.style.top = 2*h + 'px';
 
   occlusionCulling = new OcclusionCulling();//occlusion闭合
-  occlusionCulling.setResolution(w,h);
+  occlusionCulling.setResolution(w,h);//输入渲染器的canvas大小
 
   renderer = new THREE.WebGLRenderer();
   renderer.setPixelRatio( window.devicePixelRatio );
@@ -137,81 +137,77 @@ function cullObjects(){
        boxes[i].visible = demoBoxes[i].visible = !objectIsOccluded(demoBoxes[i]);
       if(boxes[i].visible) numVisible++;
   }
-}
+  function objectIsOccluded(object){//判断是否应该剔除
+    mvpMatrix.multiplyMatrices(viewProjectionMatrix, object.matrixWorld);
 
-function objectIsOccluded(object){//判断是否应该剔除
-  mvpMatrix.multiplyMatrices(viewProjectionMatrix, object.matrixWorld);
+    // Compute the bounding rectangle in screen space by using the bounding box.
+    //使用包围盒计算屏幕空间中的包围矩形。
+    var l = object.geometry.boundingBox.min;
+    var u = object.geometry.boundingBox.max;
+    tempCorners[0].copy(l);
+    tempCorners[1].set( u.x, l.y, l.z );
+    tempCorners[2].set( l.x, u.y, l.z );
+    tempCorners[3].set( u.x, u.y, l.z );
+    tempCorners[4].set( l.x, l.y, u.z );
+    tempCorners[5].set( u.x, l.y, u.z );
+    tempCorners[6].set( l.x, u.y, u.z );
+    tempCorners[7].copy(u);
+    for(var i=0; i<tempCorners.length; i++){//包围盒的8个边角
+      var v = tempCorners[i];
+      v.w = 1;
+      v.applyMatrix4( mvpMatrix );//乘以MVP矩阵得到在屏幕上的坐标
+      v.divideScalar(v.w);//除以w
+    }
+    //计算矩形区域
+    var ndcRectX0 = Math.min(tempCorners[0].x, tempCorners[1].x, tempCorners[2].x, tempCorners[3].x, tempCorners[4].x, tempCorners[5].x, tempCorners[6].x, tempCorners[7].x);
+    var ndcRectX1 = Math.max(tempCorners[0].x, tempCorners[1].x, tempCorners[2].x, tempCorners[3].x, tempCorners[4].x, tempCorners[5].x, tempCorners[6].x, tempCorners[7].x);
+    var ndcRectY0 = Math.min(tempCorners[0].y, tempCorners[1].y, tempCorners[2].y, tempCorners[3].y, tempCorners[4].y, tempCorners[5].y, tempCorners[6].y, tempCorners[7].y);
+    var ndcRectY1 = Math.max(tempCorners[0].y, tempCorners[1].y, tempCorners[2].y, tempCorners[3].y, tempCorners[4].y, tempCorners[5].y, tempCorners[6].y, tempCorners[7].y);
 
-  // Compute the bounding rectangle in screen space by using the bounding box.
-  //使用包围盒计算屏幕空间中的包围矩形。
-  var l = object.geometry.boundingBox.min;
-  var u = object.geometry.boundingBox.max;
-  tempCorners[0].copy(l);
-	tempCorners[1].set( u.x, l.y, l.z );
-	tempCorners[2].set( l.x, u.y, l.z );
-	tempCorners[3].set( u.x, u.y, l.z );
-	tempCorners[4].set( l.x, l.y, u.z );
-	tempCorners[5].set( u.x, l.y, u.z );
-	tempCorners[6].set( l.x, u.y, u.z );
-  tempCorners[7].copy(u);
-  for(var i=0; i<tempCorners.length; i++){
-    var v = tempCorners[i];
-    v.w = 1;
-    v.applyMatrix4( mvpMatrix );
-    v.divideScalar(v.w);
+    // Is the rect inside the unit box?  矩形在单位框内吗？
+    if(ndcRectX1 < -1 || ndcRectY1 < -1 || ndcRectX0 > 1 || ndcRectX0 > 1) return false;//认为这个构件不遮挡其它物体
+
+    // Find closest AABB depth value//以投影坐标中z的最小值为深度
+    var boundingRectDepth = Math.min(tempCorners[0].z, tempCorners[1].z, tempCorners[2].z, tempCorners[3].z, tempCorners[4].z, tempCorners[5].z, tempCorners[6].z, tempCorners[7].z);
+
+    return occlusionCulling.ndcRectIsOccluded(ndcRectX0,ndcRectX1,ndcRectY0,ndcRectY1,boundingRectDepth);
   }
-  var ndcRectX0 = Math.min(tempCorners[0].x, tempCorners[1].x, tempCorners[2].x, tempCorners[3].x, tempCorners[4].x, tempCorners[5].x, tempCorners[6].x, tempCorners[7].x);
-  var ndcRectX1 = Math.max(tempCorners[0].x, tempCorners[1].x, tempCorners[2].x, tempCorners[3].x, tempCorners[4].x, tempCorners[5].x, tempCorners[6].x, tempCorners[7].x);
-  var ndcRectY0 = Math.min(tempCorners[0].y, tempCorners[1].y, tempCorners[2].y, tempCorners[3].y, tempCorners[4].y, tempCorners[5].y, tempCorners[6].y, tempCorners[7].y);
-  var ndcRectY1 = Math.max(tempCorners[0].y, tempCorners[1].y, tempCorners[2].y, tempCorners[3].y, tempCorners[4].y, tempCorners[5].y, tempCorners[6].y, tempCorners[7].y);
-
-  // Is the rect inside the unit box?
-  if(ndcRectX1 < -1 || ndcRectY1 < -1 || ndcRectX0 > 1 || ndcRectX0 > 1) return false;
-
-  // Find closest AABB depth value
-  var boundingRectDepth = Math.min(tempCorners[0].z, tempCorners[1].z, tempCorners[2].z, tempCorners[3].z, tempCorners[4].z, tempCorners[5].z, tempCorners[6].z, tempCorners[7].z);
-
-  return occlusionCulling.ndcRectIsOccluded(ndcRectX0,ndcRectX1,ndcRectY0,ndcRectY1,boundingRectDepth);
 }
-
-function insertionSort(a, getSortValue){
-  for(var i=1,l=a.length; i<l; i++) {
-      var v = a[i];
-      for(var j=i - 1;j>=0;j--) {
-          if(getSortValue(a[j]) <= getSortValue(v)){
-              break;
-          }
-          a[j+1] = a[j];
-      }
-      a[j+1] = v;
-  }
-  return a;
-}
-
-function getSortValue(object){
-  return object.position.distanceTo(cameraObject.position) / object.geometry.boundingSphere.radius;
-}
-
-function updateZPyramid(){
+function updateZPyramid(){// Pyramid 金字塔
   viewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
 
   if(!sortedBoxes) sortedBoxes = boxes.slice(0);
   insertionSort(sortedBoxes, getSortValue).slice(0,parameters.maxRenderedOccluders).forEach((box) => {
     mvpMatrix.multiplyMatrices(viewProjectionMatrix, box.matrixWorld);
-
     var indices = box.geometry.index.array;
     var vertices = box.geometry.attributes.position.array;
     occlusionCulling.renderTriangles( indices, vertices, mvpMatrix.elements );
   });
+  function insertionSort(a, getSortValue){
+    for(var i=1,l=a.length; i<l; i++) {
+      var v = a[i];
+      for(var j=i - 1;j>=0;j--) {
+        if(getSortValue(a[j]) <= getSortValue(v)){
+          break;
+        }
+        a[j+1] = a[j];
+      }
+      a[j+1] = v;
+    }
+    return a;
+  }
+  function getSortValue(object){
+    return object.position.distanceTo(cameraObject.position) / object.geometry.boundingSphere.radius;
+  }
 }
 
 function render(time){
   controls.update();
 
-	renderer.render( scene, camera );
+  renderer.render( scene, camera );
 
   camera.position.copy( cameraObject.position );
-	demoRenderer.render( demoScene, demoCamera );
+  demoRenderer.render( demoScene, demoCamera );
 
   if(parameters.renderMipmaps){
     occlusionCulling.renderToImageDataArray(data.data);

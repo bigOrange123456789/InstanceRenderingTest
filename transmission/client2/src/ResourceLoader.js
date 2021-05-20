@@ -316,7 +316,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             var inView0=intersectsSphere(p0,p1,p2,p3,p4,p5,X[k],Y[k],Z[k],R[k])
             var shouldInScene=0;
             if(
-                distance<dis0_min||
+                //distance<dis0_min||
                 (inView0===1&&distance<dis0)
             )shouldInScene=1;
             return [
@@ -415,6 +415,12 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
     constructor (input) {
         var scope=this;
+
+        scope.occlusionCulling = new OcclusionCulling();//occlusion闭合
+        scope.occlusionCulling.setResolution(
+            window.renderer.domElement.width,
+            window.renderer.domElement.height
+        );//输入渲染器的canvas大小
 
         scope.protectedDistance_min=50;
         scope.protectedDistance_max=1000;
@@ -597,7 +603,17 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         var scope=this;
         if(window.renderer&&window.renderer.info.render.frame>100)//初始加载时帧数较低，此时不易进行资源剔除
         if(window.myMain&&window.myMain.frameNumber){
-            scope.protectedDistance+=((window.myMain.frameNumber-45)/10)
+            if(typeof (window.frameNumber)==="undefined"){
+                window.frameNumber=window.myMain.frameNumber
+            }else{
+                window.frameNumber=
+                    (0.6*window.frameNumber+0.4*window.myMain.frameNumber);
+            }
+            var d=window.myMain.frameNumber-45;
+            if(d>5)d=5;
+            if(d<-5)d=-5;
+            d=Math.pow(d,3)/100
+            scope.protectedDistance+=d;
             scope.protectedDistance=Math.min(
                 scope.protectedDistance,
                 scope.protectedDistance_max
@@ -623,19 +639,80 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 scope.protectedDistance_min
             )
 
-            var kk=0;
-            for(var i=0;i<scope.sizeGPU;i++)
-                for(var j=0;j<scope.sizeGPU;j++)
-                    if(kk<scope.models.length){
-                        scope.models[kk].inView=(out[i][j][0]===1);
-                        scope.models[kk].distance=out[i][j][1];
-                        if(scope.models[kk].mesh)
-                            scope.models[kk].mesh.visible=(out[i][j][2]===1);
-                        //if(out[i][j][2]===1) scope.#recall(kk)//添加到场景中
-                        //else scope.#eliminate(kk);//从场景中移除
-                        kk++;
-                    }
+            culling1();
+            function culling1() {
+                var kk=0;
+                for(var i=0;i<scope.sizeGPU;i++)
+                    for(var j=0;j<scope.sizeGPU;j++)
+                        if(kk<scope.models.length){
+                            scope.models[kk].inView=(out[i][j][0]===1);
+                            scope.models[kk].distance=out[i][j][1];
+                            if(scope.models[kk].mesh)
+                                scope.models[kk].mesh.visible=(out[i][j][2]===1);
+                            //if(out[i][j][2]===1) scope.#recall(kk)//添加到场景中
+                            //else scope.#eliminate(kk);//从场景中移除
+                            kk++;
+                        }
+            }
+            //culling2();
+            function culling2() {
+                var mvpMatrix = new THREE.Matrix4();
+                var viewProjectionMatrix = new THREE.Matrix4();
+                var tempCorners = Array.from(new Array(8), function(){ return new THREE.Vector4(); });
 
+                var occlusionCulling=scope.occlusionCulling;
+
+                //occlusionCulling = new OcclusionCulling();//occlusion闭合
+                //occlusionCulling.setResolution(w,h);//输入渲染器的canvas大小
+
+                scope.occlusionCulling.clear();
+                cullObjects();
+                function cullObjects(){
+                    //计算投影视图矩阵
+                    viewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
+
+                    for(var i=0; i<scope.models.length; i++){
+                        if(scope.models[i].visible
+                            &&scope.models[i].distance>100)
+                            scope.models[i].visible = !objectIsOccluded(scope.models[i]);
+                    }
+                    function objectIsOccluded(object){//判断是否应该剔除
+                        mvpMatrix.multiplyMatrices(viewProjectionMatrix, object.matrixWorld);
+
+                        // Compute the bounding rectangle in screen space by using the bounding box.
+                        //使用包围盒计算屏幕空间中的包围矩形。
+                        var l = object.geometry.boundingBox.min;
+                        var u = object.geometry.boundingBox.max;
+                        tempCorners[0].copy(l);
+                        tempCorners[1].set( u.x, l.y, l.z );
+                        tempCorners[2].set( l.x, u.y, l.z );
+                        tempCorners[3].set( u.x, u.y, l.z );
+                        tempCorners[4].set( l.x, l.y, u.z );
+                        tempCorners[5].set( u.x, l.y, u.z );
+                        tempCorners[6].set( l.x, u.y, u.z );
+                        tempCorners[7].copy(u);
+                        for(var i=0; i<tempCorners.length; i++){//包围盒的8个边角
+                            var v = tempCorners[i];
+                            v.w = 1;
+                            v.applyMatrix4( mvpMatrix );//乘以MVP矩阵得到在屏幕上的坐标
+                            v.divideScalar(v.w);//除以w
+                        }
+                        //计算矩形区域
+                        var ndcRectX0 = Math.min(tempCorners[0].x, tempCorners[1].x, tempCorners[2].x, tempCorners[3].x, tempCorners[4].x, tempCorners[5].x, tempCorners[6].x, tempCorners[7].x);
+                        var ndcRectX1 = Math.max(tempCorners[0].x, tempCorners[1].x, tempCorners[2].x, tempCorners[3].x, tempCorners[4].x, tempCorners[5].x, tempCorners[6].x, tempCorners[7].x);
+                        var ndcRectY0 = Math.min(tempCorners[0].y, tempCorners[1].y, tempCorners[2].y, tempCorners[3].y, tempCorners[4].y, tempCorners[5].y, tempCorners[6].y, tempCorners[7].y);
+                        var ndcRectY1 = Math.max(tempCorners[0].y, tempCorners[1].y, tempCorners[2].y, tempCorners[3].y, tempCorners[4].y, tempCorners[5].y, tempCorners[6].y, tempCorners[7].y);
+
+                        // Is the rect inside the unit box?  矩形在单位框内吗？
+                        if(ndcRectX1 < -1 || ndcRectY1 < -1 || ndcRectX0 > 1 || ndcRectX0 > 1) return false;//认为这个构件不遮挡其它物体
+
+                        // Find closest AABB depth value//以投影坐标中z的最小值为深度
+                        var boundingRectDepth = Math.min(tempCorners[0].z, tempCorners[1].z, tempCorners[2].z, tempCorners[3].z, tempCorners[4].z, tempCorners[5].z, tempCorners[6].z, tempCorners[7].z);
+
+                        return occlusionCulling.ndcRectIsOccluded(ndcRectX0,ndcRectX1,ndcRectY0,ndcRectY1,boundingRectDepth);
+                    }
+                }
+            }
         }else{
             for(i=0;i<scope.models.length;i++)
                 scope.#culling(i);

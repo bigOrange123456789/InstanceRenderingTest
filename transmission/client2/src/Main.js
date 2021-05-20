@@ -6,8 +6,13 @@ function Main(){
     this.render;
     this.effect;
     this.frameNumber;
+    this.d_time;
+    this.pre_time;
 
     this.start=function () {
+        this.d_time=16.6;//60帧
+        this.pre_time;
+
         this.scene=new THREE.Scene();
         this.camera=new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.3, 1000);
         window.scene=this.scene;
@@ -56,6 +61,7 @@ function Main(){
         this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize(window.innerWidth, window.innerHeight);
 
+        console.log(this.renderer)
         this.renderer.gammaInput = true;
         this.renderer.gammaOutput = true;
 
