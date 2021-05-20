@@ -295,7 +295,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
 
     useGPU;
-    sizeGPU;
+    sizeGPU;X;Y;Z;R;
     #init_GPU_culling(n){
         this.sizeGPU=Math.ceil(Math.pow(n,0.5));
         //#GPU_culling是利用GPU进行视锥遮挡计算的方法
@@ -317,6 +317,26 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 return 1;
             }
         }).setOutput([this.sizeGPU, this.sizeGPU])
+
+        var X=[],Y=[],Z=[],R=[];
+        var k=0;
+        for(var i=0;i<this.sizeGPU;i++)
+            for(var j=0;j<this.sizeGPU;j++){
+                if(k<this.models.length){
+                    X.push(this.models[k].boundingSphere.x);
+                    Y.push(this.models[k].boundingSphere.y);
+                    Z.push(this.models[k].boundingSphere.z);
+                    R.push(this.models[k].boundingSphere.r);
+                    k++;
+                }else{
+                    X.push(0);
+                    Y.push(0);
+                    Z.push(0);
+                    R.push(0);
+                }
+            }
+        this.X=X;this.Y=Y;this.Z=Z;this.R=R;
+        //console.log("X",X,"Y",Y,"Z",Z,"R",R)
     }
 
     #initModels(resourceInfo,firstList){
@@ -374,10 +394,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         scope.update_index=0;
         var resourceInfo=input.resourceInfo;
 
-        scope.useGPU=typeof (input.useGPU)==="undefined"?true:input.useGPU;
-        if(scope.useGPU)scope.#init_GPU_culling(resourceInfo.models.length);
-
-        console.log(resourceInfo)
+        //console.log(resourceInfo)
         if(input.test)scope.testObj=new THREE.Object3D();
         else scope.testObj=null;
 
@@ -387,6 +404,9 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             scope.maps[i].finishLoad=false;
         }
         scope.#initModels(resourceInfo,input.firstList)
+
+        scope.useGPU=typeof (input.useGPU)==="undefined"?true:input.useGPU;
+        if(scope.useGPU)scope.#init_GPU_culling(resourceInfo.models.length);
 
         if(scope.testObj){//开始测试
             testObjMesh();
@@ -461,51 +481,49 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     update=function(){//判断哪些资源在视锥内
         var scope=this;
         scope.#updateFrustum(0);
-
         if(scope.useGPU){
-            var X=[],Y=[],Z=[],R=[];
-            var k=0;
-            for(var i=0;i<scope.sizeGPU;i++)
-                for(var j=0;j<scope.sizeGPU;j++){
-                    if(k<scope.models.length){
-                        X.push(scope.models[k].boundingSphere.x);
-                        Y.push(scope.models[k].boundingSphere.y);
-                        Z.push(scope.models[k].boundingSphere.z);
-                        R.push(scope.models[k].boundingSphere.r);
-                    }else{
-                        X.push(0);
-                        Y.push(0);
-                        Z.push(0);
-                        R.push(0);
-                    }
-                }
-
-
             var frustum=scope.#getFrustum();
-            var out=scope.GPU_culling(
+            //console.log(frustum, X,Y,Z,R, scope.sizeGPU)
+            var out=scope.GPU_culling(//似乎判断都与视锥相交
                 frustum[0],
                 frustum[1],
                 frustum[2],
                 frustum[3],
                 frustum[4],
                 frustum[5],
-                X,Y,Z,R,
+                scope.X,scope.Y,scope.Z,scope.R,
                 scope.sizeGPU
             )
 
-
-            k=0;
-            for(i=0;i<scope.sizeGPU;i++)
-                for(j=0;j<scope.sizeGPU;j++){
-                    if(k>=scope.models.length)return;
-                    scope.models[k].inView=(out[i][j]===1)
-                    k++
+            var k=0;
+            for(var i=0;i<scope.sizeGPU;i++)
+                for(var j=0;j<scope.sizeGPU;j++){
+                    if(k>=scope.models.length){
+                        eliminate()
+                        return;
+                        function eliminate() {
+                            var m=150;
+                            for(var l=scope.models.length-1;l>=0;l--){
+                                if(scope.models[l].mesh&&!scope.models[l].inView){//放入到场景中且不在视锥内
+                                    //console.log("删除的网格为:"+scope.models[i].mesh.name)
+                                    scope.models[l].mesh.parent.remove(scope.models[l].mesh)
+                                    scope.models[l].finishLoad=false;
+                                    scope.models[l].mesh=null;
+                                    m--;
+                                    if(m===0)return;
+                                }
+                            }
+                        }
+                    }
+                    scope.models[k].inView=(out[i][j]===1);
+                    k++;
                 }
+
         }else{
             for(i=0;i<scope.models.length;i++)
                 scope.#culling(i);
-        }
 
+        }
     }
     #updateFrustum=function (time) {//time用来描述预测的时间
         var scope=this;
