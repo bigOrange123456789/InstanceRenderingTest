@@ -296,6 +296,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
     useGPU;
     sizeGPU;X;Y;Z;R;
+    protectedDistance;//受到保护的距离，小于这个距离的构件不被剔除
     #init_GPU_culling(n){
         this.sizeGPU=Math.ceil(Math.pow(n,0.5));
         //#GPU_culling是利用GPU进行视锥遮挡计算的方法
@@ -354,21 +355,27 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     #initModels(resourceInfo,firstList){
         if(typeof (firstList)==="undefined")firstList=[];
         var scope=this;
+        /*
         var flag_init={
             //inVisionCone:false,//不在视锥体中
             //requested:false,//还没有请求这个资源
             Obtained:false,//还没有获取这个资源
             inScene:false//不在场景中
         }
+        */
         scope.models=resourceInfo.models;
         //fileName;interest;boundingSphere{x,y,z,r};MapName;spaceVolume;
 
         for(var i=0;i<scope.models.length;i++){
-            scope.models[i].reusability=0;//并非完全重用度
+            //scope.models[i].reusability=0;//并非完全重用度
             scope.models[i].finishLoad=false;
             scope.models[i].inView=false;
 
-            scope.models[i].flag=JSON.parse(JSON.stringify(flag_init));
+            scope.models[i].mesh=null;//没有将网格添加到场景中
+            scope.models[i].pack=null;//没有收到数据包
+            scope.models[i].distance=0;//构件边缘到相机的距离
+
+            //scope.models[i].flag=JSON.parse(JSON.stringify(flag_init));
 
         }
 
@@ -398,6 +405,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     constructor (input) {
         var scope=this;
 
+        scope.protectedDistance=50;
         scope.list=[];//这里应当初始化
         scope.camera=input.camera;
         scope.camera_pre=null;//input.camera.clone();
@@ -490,7 +498,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         }
     }
 
-    eliminate() {//小于45帧就进行了淘汰
+    #eliminate() {//小于45帧就进行了淘汰
         var scope=this;
         var frameNumber;
         if(window.myMain)frameNumber=60;
@@ -501,7 +509,11 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
 
         for(var l=scope.models.length-1;l>=0;l--){
-            if(scope.models[l].mesh&&!scope.models[l].inView){//放入到场景中且不在视锥内
+            if(
+                scope.models[l].mesh//放入到场景中
+                &&!scope.models[l].inView//且不在视锥内
+                &&scope.models[l].distance>scope.protectedDistance
+            ){
                 //console.log("删除的网格为:"+scope.models[i].mesh.name)
                 scope.models[l].mesh.parent.remove(scope.models[l].mesh)
                 scope.models[l].finishLoad=false;
@@ -511,7 +523,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             }
         }
     }
-    recall(){
+    #recall(){
         var frameNumber;
         if(window.myMain)frameNumber=60;
         else frameNumber=window.myMain.frameNumber;
@@ -547,12 +559,19 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             for(var i=0;i<scope.sizeGPU;i++)
                 for(var j=0;j<scope.sizeGPU;j++){
                     if(k>=scope.models.length){
-                        scope.eliminate()
-                        scope.recall();
+                        scope.#eliminate()
+                        scope.#recall();
                         return;
                     }
                     scope.models[k].inView=(out[i][j][0]===1);
                     scope.models[k].distance=out[i][j][1];
+                    if(scope.models[k].distance<scope.protectedDistance
+                        &&!scope.models[k].mesh
+                        &&scope.models[k].pack
+                        &&window.reuseDataParser
+                    ){
+                        window.reuseDataParser(scope.models[k].pack, 1)
+                    }
                     k++;
                 }
 

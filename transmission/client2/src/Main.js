@@ -1,27 +1,21 @@
 function Main(){
-    //console.log(2);
     var scope=this;
     this.VR=false;
-    this.scene=new THREE.Scene();
-    window.scene=this.scene;
-
-    this.camera=
-        //new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 0.001, 100 );
-        //new THREE.PerspectiveCamera( 70,window.innerWidth /window.innerHeight, 0.1, 1000 );;
-        new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.3, 1000);
+    this.scene;
+    this.camera;
     this.render;
     this.effect;
     this.frameNumber;
-    //this.camera = new THREE.OrthographicCamera(window.innerWidth/ - 1,window.innerWidth,window.innerHeight,window.innerHeight/ - 1, 0, 100000 );
-    //this.divInfo = document.getElementById('pminfo');//用于呈现文字
+
     this.start=function () {
+        this.scene=new THREE.Scene();
+        this.camera=new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.3, 1000);
+        window.scene=this.scene;
+        window.camera=this.camera;
         this.initRenderer();
         this.initLight();
         this.animate();
         this.computeFrameNumber();
-        console.log(
-            this.renderer.info.render
-        )
     }
     this.initLight=function () {
         this.scene.background = new THREE.Color(0xffffff);
@@ -55,8 +49,7 @@ function Main(){
         );
         light.target = lightObj;
     }
-    this.initRenderer=function()
-    {
+    this.initRenderer=function() {
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true});
         this.renderer.autoClear = false;
         this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -99,8 +92,7 @@ function Main(){
             if(elem) elem.innerText = scope.frameNumber;
         },1000)
     }
-    this.animate=function()
-    {
+    this.animate=function() {
         if(scope.VR)scope.effect.render(scope.scene, scope.camera);
         else scope.renderer.render(scope.scene,scope.camera);
         scope.updateLight()
