@@ -479,15 +479,40 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     }
 
     eliminate() {//小于45帧就进行了淘汰
-        if(window.myMain||window.myMain.frameNumber>45)return;
         var scope=this;
-        var m=50;
+        var frameNumber;
+        if(window.myMain)frameNumber=60;
+        else frameNumber=window.myMain.frameNumber;
+
+        var m=5*(45-frameNumber);
+        if(frameNumber<0)return;//性能较好
+
+
         for(var l=scope.models.length-1;l>=0;l--){
             if(scope.models[l].mesh&&!scope.models[l].inView){//放入到场景中且不在视锥内
                 //console.log("删除的网格为:"+scope.models[i].mesh.name)
                 scope.models[l].mesh.parent.remove(scope.models[l].mesh)
                 scope.models[l].finishLoad=false;
                 scope.models[l].mesh=null;
+                m--;
+                if(m===0)return;
+            }
+        }
+    }
+    recall(){
+        var frameNumber;
+        if(window.myMain)frameNumber=60;
+        else frameNumber=window.myMain.frameNumber;
+        var m;
+
+        if(frameNumber<45)return;//性能较差//小于45帧不召回
+        else if(frameNumber<55)m=frameNumber-45;
+        else m=5*(frameNumber-45);
+
+        if(window.reuseDataParser)
+        for(var l=0;l<this.models.length;l++){
+            if(this.models[l].pack&&this.models[l].inView){//没有放入到场景中且在视锥内
+                window.reuseDataParser(this.models[l].pack, 1)
                 m--;
                 if(m===0)return;
             }
@@ -515,6 +540,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 for(var j=0;j<scope.sizeGPU;j++){
                     if(k>=scope.models.length){
                         scope.eliminate()
+                        scope.recall();
                         return;
                     }
                     scope.models[k].inView=(out[i][j]===1);

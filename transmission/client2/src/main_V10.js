@@ -430,3 +430,4 @@ function reuseDataParser(data, isLastModel) {
         }
     });
 }
+window.reuseDataParser=reuseDataParser;
