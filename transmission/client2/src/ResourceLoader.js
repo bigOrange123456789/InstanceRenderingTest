@@ -300,7 +300,9 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     #init_GPU_culling(n){
         this.sizeGPU=Math.ceil(Math.pow(n,0.5));
         //#GPU_culling是利用GPU进行视锥遮挡计算的方法
-        this.GPU_culling= new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,X,Y,Z,R,sizeGPU,camera_pos) {
+        this.GPU_culling= new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,X,Y,Z,R,sizeGPU,camera_pos,dis0,dis0_min) {
+            //最好直接判断出是否应该添加到场景中
+
             //p0,p1,p2,p3,p4,p5 视锥体的6个平面 //每个平面包含四个参数信息
             //X,Y,Z,R 包围球
             //sizeGPU
@@ -311,9 +313,16 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 Math.pow(camera_pos[1]-Y[k],2)+
                 Math.pow(camera_pos[2]-Z[k],2)
                 ,0.5)-R[k]/2;
+            var inView0=intersectsSphere(p0,p1,p2,p3,p4,p5,X[k],Y[k],Z[k],R[k])
+            var shouldInScene=0;
+            if(
+                distance<dis0_min||
+                (inView0===1&&distance<dis0)
+            )shouldInScene=1;
             return [
-                intersectsSphere(p0,p1,p2,p3,p4,p5,X[k],Y[k],Z[k],R[k]),
-                distance
+                inView0,
+                distance,
+                shouldInScene
             ];
             function intersectsSphere(p0,p1,p2,p3,p4,p5,x,y,z,r) {
                 function distanceToPoint(plane,point) {
@@ -375,6 +384,8 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             scope.models[i].pack=null;//没有收到数据包
             scope.models[i].distance=0;//构件边缘到相机的距离
 
+            //scope.models[i].protect=true;//被保护的模型，是否应该在场景中的依据
+
             //scope.models[i].flag=JSON.parse(JSON.stringify(flag_init));
 
         }
@@ -405,7 +416,10 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
     constructor (input) {
         var scope=this;
 
-        scope.protectedDistance=50;
+        scope.protectedDistance_min=50;
+        scope.protectedDistance_max=1000;
+        scope.protectedDistance=scope.protectedDistance_min;
+
         scope.list=[];//这里应当初始化
         scope.camera=input.camera;
         scope.camera_pre=null;//input.camera.clone();
@@ -498,7 +512,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         }
     }
 
-    #eliminate() {//小于45帧就进行了淘汰
+    /*#eliminate() {//小于45帧就进行了淘汰
         var scope=this;
         var frameNumber;
         if(window.myMain)frameNumber=60;
@@ -541,9 +555,61 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 if(m===0)return;
             }
         }
+    }*/
+
+    #eliminate(l) {
+        var scope=this;
+        if(
+            scope.models[l].mesh//放入到场景中
+        ){
+            //console.log("删除的网格为:"+scope.models[i].mesh.name)
+            //console.log(l,scope.models[l].mesh.parent)
+            scope.models[l].mesh.parent.remove(scope.models[l].mesh)
+            scope.models[l].finishLoad=false;
+            if(window.ModelHasBeenLoaded){
+                function remove(arr,value) {
+                    for(var kkk=0;kkk<arr.length;kkk++)
+                        if(arr[kkk]===value) arr.splice(kkk,1);
+                }
+                remove(
+                    window.ModelHasBeenLoaded,
+                    scope.models[l].mesh.name
+                )
+                //window.ModelHasBeenLoaded.remove(scope.models[l].mesh.name)
+                /*for(var kkk=0;kkk<window.ModelHasBeenLoaded.length;kkk++)
+                if(window.ModelHasBeenLoaded[kkk]===scope.models[l].mesh.name){
+                    window.ModelHasBeenLoaded.splice(kkk,1);
+                }*/
+            }
+
+            scope.models[l].mesh=null;
+
+        }
     }
+    #recall(l){
+        if(window.reuseDataParser)//场景已创建
+            if(this.models[l].pack){//资源已加载
+                window.reuseDataParser(this.models[l].pack, 1)
+            }
+    }
+
     update=function(){//判断哪些资源在视锥内
         var scope=this;
+        if(window.renderer&&window.renderer.info.render.frame>100)//初始加载时帧数较低，此时不易进行资源剔除
+        if(window.myMain&&window.myMain.frameNumber){
+            scope.protectedDistance+=((window.myMain.frameNumber-45)/10)
+            scope.protectedDistance=Math.min(
+                scope.protectedDistance,
+                scope.protectedDistance_max
+            )
+            scope.protectedDistance=Math.max(
+                scope.protectedDistance,
+                scope.protectedDistance_min
+            )
+            console.log(scope.protectedDistance)
+            //console.log(window.myMain.frameNumber,scope.protectedDistance)
+        }
+
         scope.#updateFrustum(0);
         if(scope.useGPU){
             var frustum=scope.#getFrustum();
@@ -552,28 +618,23 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 frustum[0], frustum[1], frustum[2], frustum[3], frustum[4], frustum[5],//视锥体
                 scope.X,scope.Y,scope.Z,scope.R,//包围球
                 scope.sizeGPU,
-                [scope.camera.position.x,scope.camera.position.y,scope.camera.position.z]
+                [scope.camera.position.x,scope.camera.position.y,scope.camera.position.z],
+                scope.protectedDistance,
+                scope.protectedDistance_min
             )
 
-            var k=0;
+            var kk=0;
             for(var i=0;i<scope.sizeGPU;i++)
-                for(var j=0;j<scope.sizeGPU;j++){
-                    if(k>=scope.models.length){
-                        scope.#eliminate()
-                        scope.#recall();
-                        return;
+                for(var j=0;j<scope.sizeGPU;j++)
+                    if(kk<scope.models.length){
+                        scope.models[kk].inView=(out[i][j][0]===1);
+                        scope.models[kk].distance=out[i][j][1];
+                        if(scope.models[kk].mesh)
+                            scope.models[kk].mesh.visible=(out[i][j][2]===1);
+                        //if(out[i][j][2]===1) scope.#recall(kk)//添加到场景中
+                        //else scope.#eliminate(kk);//从场景中移除
+                        kk++;
                     }
-                    scope.models[k].inView=(out[i][j][0]===1);
-                    scope.models[k].distance=out[i][j][1];
-                    if(scope.models[k].distance<scope.protectedDistance
-                        &&!scope.models[k].mesh
-                        &&scope.models[k].pack
-                        &&window.reuseDataParser
-                    ){
-                        window.reuseDataParser(scope.models[k].pack, 1)
-                    }
-                    k++;
-                }
 
         }else{
             for(i=0;i<scope.models.length;i++)

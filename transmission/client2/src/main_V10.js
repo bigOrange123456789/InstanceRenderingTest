@@ -15,6 +15,7 @@ const NUM_PACKAGE = 500;
 let websocketReady = false;
 let packageIndex = 1;
 let ModelHasBeenLoaded = [];
+window.ModelHasBeenLoaded=ModelHasBeenLoaded;
 let sceneScale = 0.001;
 if(sceneName==="szt")sceneScale=1;
 const distanceForSimilarViewpoint = 10, angleForSimilarViewpoint = 15 * Math.PI / 180;
@@ -279,6 +280,7 @@ function reuseDataParser2(data, isLastModel) {
     //window.package.push(data)
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
+
         if (ModelHasBeenLoaded.indexOf(name) !== -1) return;
         else ModelHasBeenLoaded.push(name);
 
@@ -415,10 +417,10 @@ function reuseDataParser2(data, isLastModel) {
                 mesh = new THREE.Mesh(igeo, material);
                 mesh.scale.set(sceneScale, sceneScale, sceneScale);
                 mesh.material.side = THREE.DoubleSide;
-                mesh.frustumCulled = false;
                 mesh.name = oriName;
             }
         }
+        mesh.frustumCulled = false;
         setTimeout(function () {
             sceneRoot.add(mesh);
 
