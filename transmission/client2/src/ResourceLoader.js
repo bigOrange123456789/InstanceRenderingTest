@@ -478,6 +478,21 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
         }
     }
 
+    eliminate() {//小于45帧就进行了淘汰
+        if(window.myMain||window.myMain.frameNumber>45)return;
+        var scope=this;
+        var m=50;
+        for(var l=scope.models.length-1;l>=0;l--){
+            if(scope.models[l].mesh&&!scope.models[l].inView){//放入到场景中且不在视锥内
+                //console.log("删除的网格为:"+scope.models[i].mesh.name)
+                scope.models[l].mesh.parent.remove(scope.models[l].mesh)
+                scope.models[l].finishLoad=false;
+                scope.models[l].mesh=null;
+                m--;
+                if(m===0)return;
+            }
+        }
+    }
     update=function(){//判断哪些资源在视锥内
         var scope=this;
         scope.#updateFrustum(0);
@@ -499,21 +514,8 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             for(var i=0;i<scope.sizeGPU;i++)
                 for(var j=0;j<scope.sizeGPU;j++){
                     if(k>=scope.models.length){
-                        eliminate()
+                        scope.eliminate()
                         return;
-                        function eliminate() {
-                            var m=150;
-                            for(var l=scope.models.length-1;l>=0;l--){
-                                if(scope.models[l].mesh&&!scope.models[l].inView){//放入到场景中且不在视锥内
-                                    //console.log("删除的网格为:"+scope.models[i].mesh.name)
-                                    scope.models[l].mesh.parent.remove(scope.models[l].mesh)
-                                    scope.models[l].finishLoad=false;
-                                    scope.models[l].mesh=null;
-                                    m--;
-                                    if(m===0)return;
-                                }
-                            }
-                        }
                     }
                     scope.models[k].inView=(out[i][j]===1);
                     k++;

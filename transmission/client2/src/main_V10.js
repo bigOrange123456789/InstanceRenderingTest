@@ -45,6 +45,7 @@ init();
 function init() {
     var myMain=new Main();
     myMain.start({ambient:false})
+    window.myMain=myMain;
 
     var scene = myMain.scene;//new THREE.Scene();
     var camera = myMain.camera;//new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.3, 1000);

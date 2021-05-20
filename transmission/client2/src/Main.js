@@ -11,6 +11,7 @@ function Main(){
         new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.3, 1000);
     this.render;
     this.effect;
+    this.frameNumber;
     //this.camera = new THREE.OrthographicCamera(window.innerWidth/ - 1,window.innerWidth,window.innerHeight,window.innerHeight/ - 1, 0, 100000 );
     //this.divInfo = document.getElementById('pminfo');//用于呈现文字
     this.start=function () {
@@ -92,11 +93,10 @@ function Main(){
     this.computeFrameNumber=function () {
         var frame_pre=scope.renderer.info.render.frame
         setInterval(function () {
+            scope.frameNumber=scope.renderer.info.render.frame-frame_pre;
+            frame_pre=scope.renderer.info.render.frame;
             var elem=document.getElementById("frameNumber");
-            if(elem) {
-                elem.innerText = scope.renderer.info.render.frame-frame_pre;
-                frame_pre=scope.renderer.info.render.frame;
-            }
+            if(elem) elem.innerText = scope.frameNumber;
         },1000)
     }
     this.animate=function()
