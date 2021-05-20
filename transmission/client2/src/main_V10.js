@@ -279,33 +279,9 @@ function reuseDataParser(data, isLastModel) {
         //console.log(gltf.scenes[0].uuid)
         // console.log(`scene add new model: ${name}`);
         let geo = gltf.scene.children[0].geometry;
-
         // Add uvs
-        //assignBufferUVs(geo);
-        function assignBufferUVs(bufferGeometry, scale = 1.0) {
-            let geometry = new THREE.Geometry();
-            geometry.fromBufferGeometry(bufferGeometry);
-
-            let uvs = [];
-            geometry.computeFaceNormals();
-            geometry.faces.forEach(function (face) {
-                var components = ['x', 'y', 'z'].sort(function (a, b) {
-                    return Math.abs(face.normal[a]) > Math.abs(face.normal[b]);
-                });
-
-                var v1 = geometry.vertices[face.a];
-                var v2 = geometry.vertices[face.b];
-                var v3 = geometry.vertices[face.c];
-
-                uvs.push(v1[components[0]] * scale, v1[components[1]] * scale);
-                uvs.push(v2[components[0]] * scale, v2[components[1]] * scale);
-                uvs.push(v3[components[0]] * scale, v3[components[1]] * scale);
-            });
-            let uvArray = new Float32Array(uvs);
-            bufferGeometry.addAttribute('uv', new THREE.BufferAttribute(uvArray, 2));
-            bufferGeometry.uvsNeedUpdate = true;
-        }
-
+        geo.computeVertexNormals();
+        
         let matrixObj = gltf.parser.json.nodes[0].matrixArrs;
         let type = name.slice(name.indexOf('=') + 1);
         var color = selectMaterialByType(type, name);
@@ -343,13 +319,16 @@ function reuseDataParser(data, isLastModel) {
             mesh.name = name;
             //mesh.geometry.computeVertexNormals();
             if(typeof(all_material[type])==="undefined"){
-                mesh.material = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide, shininess: 64});
+                mesh.material = new THREE.MeshPhongMaterial({
+                    color: color, side: THREE.DoubleSide, shininess: 64
+                });
                 all_material[type]=mesh.material;
             }else{
                 mesh.material=all_material[type];
             }
             // mesh.material.color = color;
             // mesh.material.side = THREE.DoubleSide;
+
         } else {//是实例化渲染对象
             makeInstanced(geo, JSON.parse(matrixObj), name, type);
             function makeInstanced(geo, mtxObj, oriName, type) {
@@ -357,6 +336,8 @@ function reuseDataParser(data, isLastModel) {
                 let instanceCount = mtxKeys.length + 1;
 
                 // material
+                //var vert = document.getElementById('vertInstanced').textContent;
+                //var frag = document.getElementById('fragInstanced').textContent;
                 var vert = loadShader("../shader/vertex.vert");
                 var frag = loadShader("../shader/fragment.frag");
                 function loadShader(name) {
@@ -430,7 +411,6 @@ function reuseDataParser(data, isLastModel) {
         }
         setTimeout(function () {
             sceneRoot.add(mesh);
-
         },window.getTime())
 
         //初始加载时间
