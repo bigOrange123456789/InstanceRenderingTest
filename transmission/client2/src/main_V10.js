@@ -36,7 +36,6 @@ THREE.DRACOLoader.setDecoderPath('../lib/draco/');
 THREE.DRACOLoader.setDecoderConfig({ type: 'js' });
 gltfLoader.setDRACOLoader(new THREE.DRACOLoader());
 
-
 let cubeView;
 window.package=[]
 window.list=[]
@@ -89,7 +88,6 @@ function init() {
         sendTestResult()
     },browsingtime)
 }
-
 
 function sendTestResult() {
     console.log("!!!!!!!!!!!send test data!!!!!!!!!!!");
@@ -208,9 +206,8 @@ function requestModelPackage(visibleList, type) {//检测可视列表中哪些�
 function requestModelPackageByHttp(visibleList, type) {
     if(window.rtConnection&&window.rtConnection.link)
         window.rtConnection.send(visibleList.split('/'))//要处理好P2P还未被建立时怎么办
-    else{
-        window.list.push(visibleList.split('/'))
-    }
+    else window.list.push(visibleList.split('/'))
+
     if(typeof(onlyP2P)!=="undefined")return;
     var oReq = new XMLHttpRequest();
     oReq.open("POST", `http://${assetHost}:${assetPort}`, true);
@@ -266,6 +263,10 @@ function reuseDataParser(data, isLastModel) {
 
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
+        if (ModelHasBeenLoaded.indexOf(name) !== -1)
+            return;
+        else ModelHasBeenLoaded.push(name);
+
         if(typeof(window.myResourceLoader)==="undefined"){
             if(typeof (window.pack)==="undefined")window.pack=[]
             window.pack.push([name,pack])
@@ -274,13 +275,13 @@ function reuseDataParser(data, isLastModel) {
         }
 
         //if(window.hasLoad)window.hasLoad(name)//myCallback_pop,myCallback_get
-        if (ModelHasBeenLoaded.indexOf(name) !== -1)
-            return;
+
         //console.log(gltf.scenes[0].uuid)
         // console.log(`scene add new model: ${name}`);
         let geo = gltf.scene.children[0].geometry;
+
         // Add uvs
-        assignBufferUVs(geo);
+        //assignBufferUVs(geo);
         function assignBufferUVs(bufferGeometry, scale = 1.0) {
             let geometry = new THREE.Geometry();
             geometry.fromBufferGeometry(bufferGeometry);
@@ -335,110 +336,102 @@ function reuseDataParser(data, isLastModel) {
             if(!color0)color0=0x194354;
             return new THREE.Color(color0);
         }
-
+        let mesh;
         if (matrixObj === undefined) {//不是实例化渲染对象
-            let mesh = gltf.scene.children[0];
+            mesh = gltf.scene.children[0];
             mesh.scale.set(sceneScale, sceneScale, sceneScale);
             mesh.name = name;
-            mesh.geometry.computeVertexNormals();
+            //mesh.geometry.computeVertexNormals();
             if(typeof(all_material[type])==="undefined"){
-                mesh.material = new THREE.MeshPhongMaterial({
-                    color: color, side: THREE.DoubleSide, shininess: 64
-                });
+                mesh.material = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide, shininess: 64});
                 all_material[type]=mesh.material;
             }else{
                 mesh.material=all_material[type];
             }
             // mesh.material.color = color;
             // mesh.material.side = THREE.DoubleSide;
-            setTimeout(function () {
-                sceneRoot.add(mesh);
-            },window.getTime())
-            ModelHasBeenLoaded.push(mesh.name);
         } else {//是实例化渲染对象
-            setTimeout(function () {
-                makeInstanced(geo, JSON.parse(matrixObj), name, type);
-                function makeInstanced(geo, mtxObj, oriName, type) {
-                    let mtxKeys = Object.keys(mtxObj);
-                    let instanceCount = mtxKeys.length + 1;
+            makeInstanced(geo, JSON.parse(matrixObj), name, type);
+            function makeInstanced(geo, mtxObj, oriName, type) {
+                let mtxKeys = Object.keys(mtxObj);
+                let instanceCount = mtxKeys.length + 1;
 
-                    // material
-                    //var vert = document.getElementById('vertInstanced').textContent;
-                    //var frag = document.getElementById('fragInstanced').textContent;
-                    var vert = loadShader("../shader/vertex.vert");
-                    var frag = loadShader("../shader/fragment.frag");
-                    function loadShader(name) {
-                        let xhr = new XMLHttpRequest(),
-                            okStatus = document.location.protocol === "file:" ? 0 : 200;
-                        xhr.open('GET', name, false);
-                        xhr.overrideMimeType("text/html;charset=utf-8");//默认为utf-8
-                        xhr.send(null);
-                        return xhr.status === okStatus ? xhr.responseText : null;
-                    }
-                    var material = new THREE.RawShaderMaterial({
-                        vertexShader: vert,
-                        fragmentShader: frag
-                    });
-                    // geometry
-                    var igeo = new THREE.InstancedBufferGeometry();
-                    geo.computeVertexNormals();
-                    var vertices = geo.attributes.position.clone();
-                    var normal=geo.attributes.normal.clone();
-                    igeo.addAttribute('position', vertices);
-                    igeo.addAttribute('normal', normal);
-                    igeo.setIndex(geo.index);
-                    var mcol0 = new THREE.InstancedBufferAttribute(
-                        new Float32Array(instanceCount * 3), 3
-                    );
-                    var mcol1 = new THREE.InstancedBufferAttribute(
-                        new Float32Array(instanceCount * 3), 3
-                    );
-                    var mcol2 = new THREE.InstancedBufferAttribute(
-                        new Float32Array(instanceCount * 3), 3
-                    );
-                    var mcol3 = new THREE.InstancedBufferAttribute(
-                        new Float32Array(instanceCount * 3), 3
-                    );
-
-                    //设置原始mesh的变换矩阵与名称
-                    mcol0.setXYZ(0, 1, 0, 0);
-                    mcol1.setXYZ(0, 0, 1, 0);
-                    mcol2.setXYZ(0, 0, 0, 1);
-                    mcol3.setXYZ(0, 0, 0, 0);
-                    let instancedMeshName = oriName;
-                    for (let i = 1, ul = instanceCount; i < ul; i++) {
-                        let currentName = mtxKeys[i - 1];
-                        let mtxElements = mtxObj[currentName];
-                        mcol0.setXYZ(i, mtxElements[0], mtxElements[1], mtxElements[2]);
-                        mcol1.setXYZ(i, mtxElements[4], mtxElements[5], mtxElements[6]);
-                        mcol2.setXYZ(i, mtxElements[8], mtxElements[9], mtxElements[10]);
-                        mcol3.setXYZ(i, mtxElements[12], mtxElements[13], mtxElements[14]);
-                        instancedMeshName += ('_' + currentName);
-                    }
-                    igeo.addAttribute('mcol0', mcol0);
-                    igeo.addAttribute('mcol1', mcol1);
-                    igeo.addAttribute('mcol2', mcol2);
-                    igeo.addAttribute('mcol3', mcol3);
-
-                    var colors = new THREE.InstancedBufferAttribute(
-                        new Float32Array(instanceCount * 3), 3
-                    );
-                    for (let i = 0, ul = colors.count; i < ul; i++) {
-                        colors.setXYZ(i, color.r, color.g, color.b);
-                    }
-                    igeo.addAttribute('color', colors);
-
-                    // mesh
-                    var mesh = new THREE.Mesh(igeo, material);
-                    mesh.scale.set(sceneScale, sceneScale, sceneScale);
-                    mesh.material.side = THREE.DoubleSide;
-                    mesh.frustumCulled = false;
-                    mesh.name = oriName;
-                    sceneRoot.add(mesh);
-                    ModelHasBeenLoaded.push(mesh.name);
+                // material
+                var vert = loadShader("../shader/vertex.vert");
+                var frag = loadShader("../shader/fragment.frag");
+                function loadShader(name) {
+                    let xhr = new XMLHttpRequest(),
+                        okStatus = document.location.protocol === "file:" ? 0 : 200;
+                    xhr.open('GET', name, false);
+                    xhr.overrideMimeType("text/html;charset=utf-8");//默认为utf-8
+                    xhr.send(null);
+                    return xhr.status === okStatus ? xhr.responseText : null;
                 }
-            },window.getTime())
+                var material = new THREE.RawShaderMaterial({
+                    vertexShader: vert,
+                    fragmentShader: frag
+                });
+                // geometry
+                var igeo = new THREE.InstancedBufferGeometry();
+                //geo.computeVertexNormals();
+                var vertices = geo.attributes.position.clone();
+                //var normal=geo.attributes.normal.clone();
+                igeo.addAttribute('position', vertices);
+                //igeo.addAttribute('normal', normal);
+                igeo.setIndex(geo.index);
+                var mcol0 = new THREE.InstancedBufferAttribute(
+                    new Float32Array(instanceCount * 3), 3
+                );
+                var mcol1 = new THREE.InstancedBufferAttribute(
+                    new Float32Array(instanceCount * 3), 3
+                );
+                var mcol2 = new THREE.InstancedBufferAttribute(
+                    new Float32Array(instanceCount * 3), 3
+                );
+                var mcol3 = new THREE.InstancedBufferAttribute(
+                    new Float32Array(instanceCount * 3), 3
+                );
+
+                //设置原始mesh的变换矩阵与名称
+                mcol0.setXYZ(0, 1, 0, 0);
+                mcol1.setXYZ(0, 0, 1, 0);
+                mcol2.setXYZ(0, 0, 0, 1);
+                mcol3.setXYZ(0, 0, 0, 0);
+                let instancedMeshName = oriName;
+                for (let i = 1, ul = instanceCount; i < ul; i++) {
+                    let currentName = mtxKeys[i - 1];
+                    let mtxElements = mtxObj[currentName];
+                    mcol0.setXYZ(i, mtxElements[0], mtxElements[1], mtxElements[2]);
+                    mcol1.setXYZ(i, mtxElements[4], mtxElements[5], mtxElements[6]);
+                    mcol2.setXYZ(i, mtxElements[8], mtxElements[9], mtxElements[10]);
+                    mcol3.setXYZ(i, mtxElements[12], mtxElements[13], mtxElements[14]);
+                    instancedMeshName += ('_' + currentName);
+                }
+                igeo.addAttribute('mcol0', mcol0);
+                igeo.addAttribute('mcol1', mcol1);
+                igeo.addAttribute('mcol2', mcol2);
+                igeo.addAttribute('mcol3', mcol3);
+
+                var colors = new THREE.InstancedBufferAttribute(
+                    new Float32Array(instanceCount * 3), 3
+                );
+                for (let i = 0, ul = colors.count; i < ul; i++) {
+                    colors.setXYZ(i, color.r, color.g, color.b);
+                }
+                igeo.addAttribute('color', colors);
+
+                // mesh
+                mesh = new THREE.Mesh(igeo, material);
+                mesh.scale.set(sceneScale, sceneScale, sceneScale);
+                mesh.material.side = THREE.DoubleSide;
+                mesh.frustumCulled = false;
+                mesh.name = oriName;
+            }
         }
+        setTimeout(function () {
+            sceneRoot.add(mesh);
+
+        },window.getTime())
 
         //初始加载时间
         if (!scenetLoadDone && isLastModel) {
