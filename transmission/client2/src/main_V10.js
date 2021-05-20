@@ -274,6 +274,18 @@ function reuseDataParser(data, isLastModel) {
             window.myResourceLoader.addPack(name,data)
         }
 
+    });
+}
+function reuseDataParser2(data, isLastModel) {
+    //window.package.push(data)
+
+    gltfLoader.parse(data.buffer, './', (gltf) => {
+        let name = gltf.parser.json.nodes[0].name;
+        if (ModelHasBeenLoaded.indexOf(name) !== -1) return;
+        else ModelHasBeenLoaded.push(name);
+
+
+
         //if(window.hasLoad)window.hasLoad(name)//myCallback_pop,myCallback_get
 
         //console.log(gltf.scenes[0].uuid)
@@ -430,4 +442,4 @@ function reuseDataParser(data, isLastModel) {
         }
     });
 }
-window.reuseDataParser=reuseDataParser;
+window.reuseDataParser=reuseDataParser2;
