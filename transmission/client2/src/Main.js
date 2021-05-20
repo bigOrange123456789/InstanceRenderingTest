@@ -112,4 +112,26 @@ function Main(){
 
         requestAnimationFrame(scope.animate);
     }
+    this.test=function () {//用于查看移动端输出
+        window.record={log:[],warn:[],error:[]}
+        console.log_old = console.log;
+        console.log = function(str) {
+            console.log_old(str);
+            window.record.log.push(str);
+        }
+
+        console.warn_old = console.warn;
+        console.warn = function(str) {
+            console.warn_old(str);
+            window.record.warn.push(str);
+        }
+
+        console.error_old = console.error;
+        console.error = function(str) {
+            console.error_old(str);
+            window.record.error.push(str);
+        }
+        //error
+        console.log(window.record)
+    }
 }

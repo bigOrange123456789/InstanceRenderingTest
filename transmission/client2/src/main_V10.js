@@ -261,7 +261,6 @@ function requestModelPackageByHttp(visibleList, type) {
 //数据解析
 function reuseDataParser(data, isLastModel) {
     //window.package.push(data)
-
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
         if (ModelHasBeenLoaded.indexOf(name) !== -1) return;
@@ -278,7 +277,6 @@ function reuseDataParser(data, isLastModel) {
 }
 function reuseDataParser2(data, isLastModel) {
     //window.package.push(data)
-
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
         if (ModelHasBeenLoaded.indexOf(name) !== -1) return;
