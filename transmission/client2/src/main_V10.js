@@ -159,12 +159,14 @@ function initWebRTC() {//p2p获取资源列表
             var package000=new Uint8Array(event.data)
             console.log(flag,"收到P2P数据:",package000)
             reuseDataParser(package000, 0);
+            reuseDataParser2(package000, 0);
         } else{//收到的是资源列表
             console.log(flag,"收到资源列表：",event.data)
             if(window.myResourceLoader&&window.myResourceLoader){
                 for(var m=0;m<event.data.length;m++){
                     var name=event.data[m]
                     var model=window.myResourceLoader.getModel(name);
+                    console.log(name,model,model.pack)
                     if(model&&model.pack) window.mySend(model.pack);
                 }
             }
@@ -238,6 +240,7 @@ function requestModelPackageByHttp(visibleList, type) {
 
             let buffer = glbData.slice(totalLength, totalLength + 1.0 * glbLengthArr[i]);//将内容进行划分
             reuseDataParser(buffer, i === glbLengthArr.length - 2);
+            reuseDataParser2(buffer, i === glbLengthArr.length - 2);
             totalLength += 1.0 * glbLengthArr[i];
         }
         if(myCallback_get)myCallback_get();//myCallback_pop,myCallback_get//收到一个数据包后再请求对方发一个数据包
@@ -260,12 +263,11 @@ function requestModelPackageByHttp(visibleList, type) {
 }
 
 //数据解析
-function reuseDataParser(data) {
+
+function reuseDataParser0(data) {
     //window.package.push(data)
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
-        if (ModelHasBeenLoaded.indexOf(name) !== -1) return;
-        else ModelHasBeenLoaded.push(name);
 
         if(typeof(window.myResourceLoader)==="undefined"){
             if(typeof (window.pack)==="undefined")window.pack=[]
@@ -274,8 +276,12 @@ function reuseDataParser(data) {
             window.myResourceLoader.addPack(name,data)
         }
 
+        if (ModelHasBeenLoaded.indexOf(name) === -1)
+            ModelHasBeenLoaded.push(name);
+
     });
 }
+
 function reuseDataParser2(data, isLastModel) {
     //window.package.push(data)
     gltfLoader.parse(data.buffer, './', (gltf) => {
@@ -443,3 +449,4 @@ function reuseDataParser2(data, isLastModel) {
     });
 }
 window.reuseDataParser=reuseDataParser2;
+/**/

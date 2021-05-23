@@ -415,7 +415,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
     constructor (input) {
         var scope=this;
-
+        console.log(scope)
         scope.occlusionCulling = new OcclusionCulling();//occlusion闭合
         scope.occlusionCulling.setResolution(
             window.renderer.domElement.width,
@@ -622,7 +622,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 scope.protectedDistance,
                 scope.protectedDistance_min
             )
-            console.log(scope.protectedDistance)
+            //console.log(scope.protectedDistance)
             //console.log(window.myMain.frameNumber,scope.protectedDistance)
         }
 
