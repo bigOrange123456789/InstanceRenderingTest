@@ -1,0 +1,9 @@
+https://www.npmjs.com/package/obj2gltf
+
+npm install -g obj2gltf
+
+
+obj->gltf
+obj->glb
+
+gltf<->glb

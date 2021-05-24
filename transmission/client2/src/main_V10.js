@@ -4,6 +4,7 @@ let all_material={}
 
 if(typeof(sceneName)==="undefined")sceneName = "cgm";
 let userID = Math.random().toString().substring(2, 12) + Date.now().toString().substring(1, 6);
+console.log("本主机的ID为："+userID)
 
 let container, light, lightObj;
 let ws, interval;
@@ -90,7 +91,6 @@ function init() {
         sendTestResult()
     },browsingtime)
 }
-
 function sendTestResult() {
     console.log("!!!!!!!!!!!send test data!!!!!!!!!!!");
     if(typeof(userName)==="undefined")userName="testUser";
@@ -116,7 +116,7 @@ function sendTestResult() {
 }
 
 //p2p
-function initWebRTC() {//p2p获取资源列表
+function initWebRTC() {
     let rtcInterval;
     var rtConnection = new RTCMultiConnection();
     rtConnection.link=false;
@@ -129,10 +129,10 @@ function initWebRTC() {//p2p获取资源列表
     rtConnection.session = {
         data: true
     };
-
     rtConnection.onopen = function () {
         rtConnection.link=true;
         console.log("Open the connection");
+        /*
         const rtcShareFreq = 1000;
         rtcInterval = setInterval(() => {
             if(window.package.length>1){
@@ -142,8 +142,9 @@ function initWebRTC() {//p2p获取资源列表
                 window.mySend(package00)
             }
         }, rtcShareFreq);
+        */
         for(var m=0;m<window.list.length;m++){
-            rtConnection.send(window.list[m])
+            //rtConnection.send(window.list[m])//发送资源列表
         }
     };
     window.mySend=function(needSendPackage){//发送
@@ -161,32 +162,30 @@ function initWebRTC() {//p2p获取资源列表
             reuseDataParser(package000, 0);
             reuseDataParser2(package000, 0);
         } else{//收到的是资源列表
-            console.log(flag,"收到资源列表：",event.data)
+            //服务器每次请求都既向服务器请求又向P2P请求
+            console.log("收到资源列表：",event.data)
             if(window.myResourceLoader&&window.myResourceLoader){
                 for(var m=0;m<event.data.length;m++){
                     var name=event.data[m]
                     var model=window.myResourceLoader.getModel(name);
-                    console.log(name,model,model.pack)
-                    if(model&&model.pack) window.mySend(model.pack);
+                    //console.log(model.pack)
+                    if(model&&model.pack) window.mySend(model.pack);//发送数据包
                 }
             }
         }
     };
-
     rtConnection.onerror = function () {
         rtConnection.link=false;
         console.log("error, disconnect to other peers");
-        clearInterval(rtcInterval);
+        //clearInterval(rtcInterval);
     };
-
     rtConnection.onclose = function () {
         rtConnection.link=false;
         console.log("Close the connection");
-        clearInterval(rtcInterval);
+        //clearInterval(rtcInterval);
     };
     rtConnection.openOrJoin(sceneName);
 }
-
 function requestModelPackage(visibleList, type) {//检测可视列表中哪些已经在场景中了，只加载不再场景中的//获取模型资源
     let packSize = 0;
     let postData = "";
@@ -263,7 +262,6 @@ function requestModelPackageByHttp(visibleList, type) {
 }
 
 //数据解析
-
 function reuseDataParser0(data) {
     //window.package.push(data)
     gltfLoader.parse(data.buffer, './', (gltf) => {
@@ -281,10 +279,22 @@ function reuseDataParser0(data) {
 
     });
 }
-
 function reuseDataParser2(data, isLastModel) {
     //window.package.push(data)
-    gltfLoader.parse(data.buffer, './', (gltf) => {
+    //data.buffer=new Buffer(data.buffer)
+    //console.log(data,data.buffer)
+    function copy(buffer){
+        if(!buffer)return buffer;
+        var bytes = new Uint8Array(buffer);
+        var output = new ArrayBuffer(buffer.byteLength);
+        var outputBytes = new Uint8Array(output);
+        for (var i = 0; i < bytes.length; i++)
+            outputBytes[i] = bytes[i];
+        return output;
+    }
+    //if(data&&data.buffer) console.log(data.buffer)
+
+    gltfLoader.parse(copy(data.buffer), './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
 
         if (ModelHasBeenLoaded.indexOf(name) !== -1) return;
