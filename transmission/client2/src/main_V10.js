@@ -144,7 +144,7 @@ function initWebRTC() {
         }, rtcShareFreq);
         */
         for(var m=0;m<window.list.length;m++){
-            //rtConnection.send(window.list[m])//发送资源列表
+            rtConnection.send(window.list[m])//发送资源列表
         }
     };
     window.mySend=function(needSendPackage){//发送
@@ -168,7 +168,7 @@ function initWebRTC() {
                 for(var m=0;m<event.data.length;m++){
                     var name=event.data[m]
                     var model=window.myResourceLoader.getModel(name);
-                    //console.log(model.pack)
+                    console.log(name,model,model.pack)
                     if(model&&model.pack) window.mySend(model.pack);//发送数据包
                 }
             }
@@ -262,46 +262,11 @@ function requestModelPackageByHttp(visibleList, type) {
 }
 
 //数据解析
-function reuseDataParser0(data) {
-    //window.package.push(data)
+function reuseDataParser2(data, isLastModel) {
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
-
-        if(typeof(window.myResourceLoader)==="undefined"){
-            if(typeof (window.pack)==="undefined")window.pack=[]
-            window.pack.push([name,pack])
-        }else{
-            window.myResourceLoader.addPack(name,data)
-        }
-
-        if (ModelHasBeenLoaded.indexOf(name) === -1)
-            ModelHasBeenLoaded.push(name);
-
-    });
-}
-function reuseDataParser2(data, isLastModel) {
-    //window.package.push(data)
-    //data.buffer=new Buffer(data.buffer)
-    //console.log(data,data.buffer)
-    function copy(buffer){
-        if(!buffer)return buffer;
-        var bytes = new Uint8Array(buffer);
-        var output = new ArrayBuffer(buffer.byteLength);
-        var outputBytes = new Uint8Array(output);
-        for (var i = 0; i < bytes.length; i++)
-            outputBytes[i] = bytes[i];
-        return output;
-    }
-    //if(data&&data.buffer) console.log(data.buffer)
-
-    gltfLoader.parse(copy(data.buffer), './', (gltf) => {
-        let name = gltf.parser.json.nodes[0].name;
-
         if (ModelHasBeenLoaded.indexOf(name) !== -1) return;
         else ModelHasBeenLoaded.push(name);
-
-
-
         //if(window.hasLoad)window.hasLoad(name)//myCallback_pop,myCallback_get
 
         //console.log(gltf.scenes[0].uuid)
@@ -438,13 +403,18 @@ function reuseDataParser2(data, isLastModel) {
         }
         mesh.frustumCulled = false;
         setTimeout(function () {
+            mesh.visible=false;
             sceneRoot.add(mesh);
 
             if(typeof(window.myResourceLoader)==="undefined"){
                 if(typeof (window.sceneMesh)==="undefined")window.sceneMesh=[]
                 window.sceneMesh.push([name,mesh])
+
+                if(typeof (window.pack)==="undefined")window.pack=[]
+                window.pack.push([name,pack])
             }else{
                 window.myResourceLoader.addMesh(name,mesh)
+                window.myResourceLoader.addPack(name,data)
             }
 
         },window.getTime())

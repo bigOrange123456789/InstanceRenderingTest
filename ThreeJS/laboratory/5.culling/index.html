@@ -68,14 +68,12 @@
 			function distanceToPoint(plane,point) {
 				return plane[0]* point[0] + plane[1]* point[1] + plane[2]* point[2] + plane[3];
 			}
-
 			if ( distanceToPoint(p0, [x,y,z] ) < -1*r ) return 0;//不相交
 			if ( distanceToPoint(p1, [x,y,z] ) < -1*r ) return 0;//不相交
 			if ( distanceToPoint(p2, [x,y,z] ) < -1*r ) return 0;//不相交
 			if ( distanceToPoint(p3, [x,y,z] ) < -1*r ) return 0;//不相交
 			if ( distanceToPoint(p4, [x,y,z] ) < -1*r ) return 0;//不相交
 			if ( distanceToPoint(p5, [x,y,z] ) < -1*r ) return 0;//不相交
-
 			return 1;
 		}
 	}).setOutput([sizeGPU, sizeGPU])
@@ -95,7 +93,6 @@
 		var plane3=planes[3];
 		var plane4=planes[4];
 		var plane5=planes[5];
-
 		return [
 			[plane0.normal.x,plane0.normal.y,plane0.normal.z,plane0.constant],
 			[plane1.normal.x,plane1.normal.y,plane1.normal.z,plane1.constant],
@@ -107,14 +104,12 @@
 	}
 
 	initXYZR(obj.children);
-
 	setInterval(function () {
 		var frustum=getFrustum(myMain.camera);
 		var out=GPU_culling(
 				frustum[0], frustum[1], frustum[2], frustum[3], frustum[4], frustum[5],//视锥体
 				X,Y,Z,R,
 				sizeGPU)
-
 		var kk=0,needCulling=0;
 		for(var i=0;i<sizeGPU;i++)
 			for(var j=0;j<sizeGPU;j++)
@@ -122,7 +117,6 @@
 					if(out[i][j]===0)needCulling++;
 					kk++;
 				}
-
 		document.getElementById("tag2").innerHTML=
 				"visible:"+(number-needCulling);
 	},1000)
