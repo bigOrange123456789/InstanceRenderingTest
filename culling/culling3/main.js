@@ -95,6 +95,7 @@ function setNumBoxes(num){
     var box = new THREE.Mesh(
         new THREE.BoxBufferGeometry(occluderScale*size,occluderScale*size,occluderScale*size),
         new THREE.MeshDepthMaterial());
+    console.log(box)
     box.position.set(Math.random()-0.5,0,Math.random()-0.5).multiplyScalar(5);
     box.position.z-=5;
     scene.add(box);
@@ -120,12 +121,10 @@ function setNumBoxes(num){
 }
 
 function animate(time){
-  stats.begin();
   occlusionCulling.clear();
   updateZPyramid();
   cullObjects();
   render(time);
-  stats.end();
   requestAnimationFrame(animate);
 }
 
@@ -137,7 +136,7 @@ function cullObjects(){
        boxes[i].visible = demoBoxes[i].visible = !objectIsOccluded(demoBoxes[i]);
       if(boxes[i].visible) numVisible++;
   }
-  console.log(numVisible)
+  //console.log(numVisible)
   function objectIsOccluded(object){//判断是否应该剔除
     mvpMatrix.multiplyMatrices(viewProjectionMatrix, object.matrixWorld);
 
@@ -180,6 +179,7 @@ function updateZPyramid(){// Pyramid 金字塔
   if(!sortedBoxes) sortedBoxes = boxes.slice(0);
   insertionSort(sortedBoxes, getSortValue).slice(0,parameters.maxRenderedOccluders).forEach((box) => {
     mvpMatrix.multiplyMatrices(viewProjectionMatrix, box.matrixWorld);
+    //if(Math.random()<0.01)console.log(box)
     var indices = box.geometry.index.array;
     var vertices = box.geometry.attributes.position.array;
     occlusionCulling.renderTriangles( indices, vertices, mvpMatrix.elements );

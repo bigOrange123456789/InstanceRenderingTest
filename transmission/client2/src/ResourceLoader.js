@@ -428,7 +428,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
 
         scope.list=[];//这里应当初始化
         scope.camera=input.camera;
-        scope.camera_pre=null;//input.camera.clone();
+        scope.camera_pre=scope.camera.clone();//input.camera.clone();
 
         scope.frustum=new THREE.Frustum();
         scope.update_index=0;
@@ -626,7 +626,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
             //console.log(window.myMain.frameNumber,scope.protectedDistance)
         }
 
-        scope.#updateFrustum(0);
+        scope.#updateFrustum(100);
         if(scope.useGPU){
             var frustum=scope.#getFrustum();
             //console.log(frustum, X,Y,Z,R, scope.sizeGPU)
@@ -654,7 +654,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                             kk++;
                         }
             }
-            //culling2();
+            culling2();
             function culling2() {
                 var mvpMatrix = new THREE.Matrix4();
                 var viewProjectionMatrix = new THREE.Matrix4();
@@ -729,12 +729,14 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 )
             );
         }else{//对相机的位置进行预测
-            if(scope.camera_pre===null) scope.camera_pre=scope.camera.clone();
+            //if(scope.camera_pre===null) scope.camera_pre=scope.camera.clone();
             var camera_next=scope.camera.clone();//临时对象
             camera_next.position.set(0,0,0)
             camera_next.rotation.set(0,0,0)
+
             forecast(scope.camera_pre,scope.camera,camera_next,time)
             myTestUI();
+            scope.camera_pre=scope.camera.clone();
 
             scope.frustum.setFromProjectionMatrix(
                 new THREE.Matrix4().multiplyMatrices(
