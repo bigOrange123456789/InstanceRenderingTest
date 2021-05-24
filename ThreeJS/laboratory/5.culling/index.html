@@ -10,7 +10,7 @@
 </head>
 
 <body>
-<h1 id="tag" style="position:absolute;top:10px;left:10px;"></h1>
+
 <h1 id="tag2" style="position:absolute;top:100px;left:10px;"></h1>
 <script src="js/three.js"></script>
 <script src="js/PlayerControl.js"></script>
@@ -30,27 +30,13 @@
 	var number=20;
 	for(var i=0;i<number;i++){
 		var mesh=new THREE.Mesh(geometry,material)
-		mesh.geometry.computeBoundingBox()
 		mesh.position.set(0,10*i,0)
 		mesh.frustumCulled=true;
 		obj.add(mesh)
 	}
 
-	var frame_index=0;
-	setInterval(function () {
-		document.getElementById("tag").innerHTML="FPS:"+frame_index;
-		frame_index=0;
-	},1000)
-	function f() {
-		frame_index++;
-		requestAnimationFrame(f)
-	}f();
-
-
-	var sizeGPU=16;
 	var X=[],Y=[],Z=[],R=[];
 	function initXYZR(models) {
-		//console.log(models)
 		var k=0;
 		for(var i=0;i<sizeGPU;i++)
 			for(var j=0;j<sizeGPU;j++){
@@ -68,11 +54,12 @@
 				}
 			}
 	}
+
+	var sizeGPU=16;
 	var GPU_culling= new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,X,Y,Z,R,sizeGPU) {
 		//最好直接判断出是否应该添加到场景中
 		//p0,p1,p2,p3,p4,p5 视锥体的6个平面 //每个平面包含四个参数信息
 		//X,Y,Z,R 包围球
-		//sizeGPU
 
 		var k=this.thread.y*sizeGPU+this.thread.x;
 		return intersectsSphere(p0,p1,p2,p3,p4,p5,X[k],Y[k],Z[k],R[k])
@@ -128,8 +115,6 @@
 				X,Y,Z,R,
 				sizeGPU)
 
-		//console.log(out)
-
 		var kk=0,needCulling=0;
 		for(var i=0;i<sizeGPU;i++)
 			for(var j=0;j<sizeGPU;j++)
@@ -139,7 +124,7 @@
 				}
 
 		document.getElementById("tag2").innerHTML=
-				"未被剔除的数量"+(number-needCulling);
+				"visible:"+(number-needCulling);
 	},1000)
 
 
