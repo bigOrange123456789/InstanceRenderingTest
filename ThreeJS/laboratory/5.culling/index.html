@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MEETING</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {overflow:hidden;}
+	</style>
+</head>
+
+<body>
+<h1 id="tag" style="position:absolute;top:10px;left:10px;"></h1>
+<h1 id="tag2" style="position:absolute;top:100px;left:10px;"></h1>
+<script src="js/three.js"></script>
+<script src="js/PlayerControl.js"></script>
+<script src="js/Main.js"></script>
+
+<script>
+	var myMain = new Main();
+	myMain.start();
+	new PlayerControl(myMain.camera);
+	var obj=new THREE.Object3D();
+	myMain.scene.add(obj);
+
+	var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+	var geometry= new THREE.BoxGeometry( 1, 1, 1 )
+
+	for(var i=0;i<15;i++){
+		var mesh=new THREE.Mesh(geometry,material)
+		mesh.geometry.computeBoundingBox()
+		mesh.position.set(0,10*i,0)
+		console.log(mesh)
+		mesh.frustumCulled=true;
+		obj.add(mesh)
+	}
+
+
+	var frame_index=0;
+	setInterval(function () {
+		document.getElementById("tag").innerHTML=frame_index;
+		frame_index=0;
+
+		var sum=0;
+		for(var k=0;k<obj.children.length;k++){
+			if(obj.children[k].visible)sum++;
+		}
+		document.getElementById("tag2").innerHTML=sum;
+	},1000)
+	function f() {
+		frame_index++;
+		requestAnimationFrame(f)
+	}f();
+</script>
+</body>
+</html>

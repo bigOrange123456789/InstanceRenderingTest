@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MEETING</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {overflow:hidden;}
+	</style>
+</head>
+
+<body>
+
+<script src="js/three.js"></script>
+<script src="js/PlayerControl.js"></script>
+<script src="js/Main.js"></script>
+<script src="js/GLTFLoader.js"></script>
+<script>
+	var myMain = new Main();
+	myMain.start();
+	new PlayerControl(myMain.camera);
+
+	const loader = new THREE.GLTFLoader();
+	loader.load("test.gltf", function ( gltf ) {
+		myMain.scene.add(gltf.scene)
+	});
+	loader.load("man.gltf", function ( gltf ) {
+		myMain.scene.add(gltf.scene)
+		playAnimation(gltf)
+		function playAnimation(G){//播放动画
+			var meshMixer2 = new THREE.AnimationMixer(G.scene);
+			meshMixer2.clipAction(G.animations[12]).play();
+			setInterval(function () {
+				meshMixer2.update(0.1);//更新动作
+			},100);
+		}
+	});
+
+</script>
+
+</body>
+</html>

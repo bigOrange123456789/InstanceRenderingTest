@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MEETING</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {overflow:hidden;}
+	</style>
+</head>
+
+<body>
+<h1 id="tag" style="position:absolute;top:10px;left:10px;"></h1>
+<h1 id="tag2" style="position:absolute;top:100px;left:10px;"></h1>
+<script src="js/three.js"></script>
+<script src="js/PlayerControl.js"></script>
+<script src="js/Main.js"></script>
+<script src="js/gpu-browser.js"></script>
+
+<script>
+	var myMain = new Main();
+	myMain.start();
+	new PlayerControl(myMain.camera);
+	var obj=new THREE.Object3D();
+	myMain.scene.add(obj);
+
+	var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+	var geometry= new THREE.BoxGeometry( 1, 1, 1 )
+
+	for(var i=0;i<20;i++){
+		var mesh=new THREE.Mesh(geometry,material)
+		mesh.geometry.computeBoundingBox()
+		mesh.position.set(0,10*i,0)
+		mesh.frustumCulled=true;
+		obj.add(mesh)
+	}
+
+
+	var frame_index=0;
+	setInterval(function () {
+		document.getElementById("tag").innerHTML=frame_index;
+		frame_index=0;
+
+		var sum=0;
+		for(var k=0;k<obj.children.length;k++){
+			if(obj.children[k].visible)sum++;
+		}
+		document.getElementById("tag2").innerHTML=sum;
+	},1000)
+	function f() {
+		frame_index++;
+		requestAnimationFrame(f)
+	}f();
+
+
+	var sizeGPU=16;
+	var X=[],Y=[],Z=[],R=[];
+	function initXYZR(models) {
+		console.log(models)
+		var k=0;
+		for(var i=0;i<sizeGPU;i++)
+			for(var j=0;j<sizeGPU;j++){
+				if(k<models.length){
+
+					//models[k].geometry.computeBoundingSphere()
+					console.log(models[k])
+					console.log(models[k].geometry.boundingSphere)
+					models[k].geometry.boundingSphere.applyMatrix4(
+							models[k].matrix
+					)
+					console.log(models[k].geometry)
+					console.log(models[k].geometry.boundingSphere)
+					console.log(models[k].geometry.boundingSphere.center)
+					X.push(models[k].geometry.boundingSphere.center.x);
+					Y.push(models[k].geometry.boundingSphere.center.y);
+					Z.push(models[k].geometry.boundingSphere.center.z);
+					R.push(models[k].geometry.boundingSphere.radius);
+					k++;
+				}else{
+					X.push(0);
+					Y.push(0);
+					Z.push(0);
+					R.push(0);
+				}
+			}
+	}
+	setTimeout(function () {
+		initXYZR(obj.children);
+		var GPU_culling= new GPU().createKernel(function (p0,p1,p2,p3,p4,p5,X,Y,Z,R,sizeGPU) {
+			//最好直接判断出是否应该添加到场景中
+			//p0,p1,p2,p3,p4,p5 视锥体的6个平面 //每个平面包含四个参数信息
+			//X,Y,Z,R 包围球
+			//sizeGPU
+
+			var k=this.thread.y*sizeGPU+this.thread.x;
+			return intersectsSphere(p0,p1,p2,p3,p4,p5,X[k],Y[k],Z[k],R[k])
+
+			function intersectsSphere(p0,p1,p2,p3,p4,p5,x,y,z,r) {
+				function distanceToPoint(plane,point) {
+					return plane[0]* point[0] + plane[1]* point[1] + plane[2]* point[2] + plane[3];
+				}
+
+				if ( distanceToPoint(p0, [x,y,z] ) < -1*r ) return 0;//不相交
+				if ( distanceToPoint(p1, [x,y,z] ) < -1*r ) return 0;//不相交
+				if ( distanceToPoint(p2, [x,y,z] ) < -1*r ) return 0;//不相交
+				if ( distanceToPoint(p3, [x,y,z] ) < -1*r ) return 0;//不相交
+				if ( distanceToPoint(p4, [x,y,z] ) < -1*r ) return 0;//不相交
+				if ( distanceToPoint(p5, [x,y,z] ) < -1*r ) return 0;//不相交
+
+				return 1;
+			}
+		}).setOutput([sizeGPU, sizeGPU])
+
+		function getFrustum(camera) {
+			var frustum=new THREE.Frustum();
+			frustum.setFromProjectionMatrix(
+					new THREE.Matrix4().multiplyMatrices(
+							camera.projectionMatrix,
+							camera.matrixWorldInverse
+					)
+			);
+			const planes = frustum.planes;
+			var plane0=planes[0];
+			var plane1=planes[1];
+			var plane2=planes[2];
+			var plane3=planes[3];
+			var plane4=planes[4];
+			var plane5=planes[5];
+
+			return [
+				[plane0.normal.x,plane0.normal.y,plane0.normal.z,plane0.constant],
+				[plane1.normal.x,plane1.normal.y,plane1.normal.z,plane1.constant],
+				[plane2.normal.x,plane2.normal.y,plane2.normal.z,plane2.constant],
+				[plane3.normal.x,plane3.normal.y,plane3.normal.z,plane3.constant],
+				[plane4.normal.x,plane4.normal.y,plane4.normal.z,plane4.constant],
+				[plane5.normal.x,plane5.normal.y,plane5.normal.z,plane5.constant],
+			];
+		}
+
+		var frustum=getFrustum(myMain.camera);
+		var out=GPU_culling(
+				frustum[0], frustum[1], frustum[2], frustum[3], frustum[4], frustum[5],//视锥体
+				X,Y,Z,R,
+				sizeGPU)
+		console.log(out)
+
+		var kk=0,needCulling=0;
+		for(var i=0;i<sizeGPU;i++)
+			for(var j=0;j<sizeGPU;j++)
+				if(kk<obj.children.length){
+					if(out[i][j]===0)needCulling++;
+					kk++;
+				}
+		console.log(needCulling)
+	},1000)
+
+
+
+
+</script>
+</body>
+</html>
