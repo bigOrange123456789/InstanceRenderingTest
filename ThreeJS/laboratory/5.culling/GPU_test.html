@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MEETING</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {overflow:hidden;}
+	</style>
+</head>
+
+<body>
+
+<script src="js/gpu-browser.js"></script>
+
+<script>
+	var X=[],Y=[];
+	for(var i=0;i<16;i++){
+		X.push(i)
+		Y.push(-1)
+	}
+
+	var GPU_culling= new GPU().createKernel(function (X,Y) {
+		var k=this.thread.x;
+		return X[k]+Y[k];
+	}).setOutput([16, 16])
+	var out=GPU_culling(X,Y);
+	console.log(out)
+
+</script>
+</body>
+</html>
