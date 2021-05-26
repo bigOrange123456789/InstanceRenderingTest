@@ -1,0 +1,98 @@
+jwtSecret: abcdefgh
+server:
+  port: 8088
+  servlet:
+    # 不要在最后加/
+    context-path: /bookmark/api
+spring:
+  jackson:
+    default-property-inclusion: non_null
+  servlet:
+    # 表单配置
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 10MB
+  profiles:
+    active: dev
+  application:
+    name: bookmark
+  flyway:
+    baseline-on-migrate: true
+  cache:
+    type: redis
+  redis:
+    database: 0
+    host: localhost
+    password:
+    timeout: 20000ms
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: 500ms
+        max-idle: 20
+        min-idle: 2
+  datasource:
+    name: mysql
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      url: jdbc:mysql://localhost:3306/bookmark?useUnicode=true&characterEncoding=utf-8&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+      username: root
+      password: 123456
+      # 其他连接池参数使用默认值
+  mail:
+    host:
+    username:
+    password:
+    port: 465
+    properties:
+      mail:
+        smtp:
+          auth: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+          starttls:
+            enable: true
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # classpath后面加*，值里面的*才起作用
+  mapper-locations: classpath*:mapper/*.xml
+debug: false
+
+es:
+  #是否启动es
+  status: false
+  host: localhost
+  port: 9200
+  scheme: http
+pinyin:
+  base-url: http://localhost:8012
+  token: 123456
+
+# 默认文件上传基路径
+fileSavePath: ./
+
+# 服务部署地址
+serviceAddress: http://localhost
+
+# 第三方登陆相关
+OAuth:
+  github:
+    # 客户端id
+    clientId:
+    # 客户端密钥
+    secret:
+
+# 网络代理（有配置就用代理，未配置不使用代理)
+proxy:
+  ip:
+  port:
+
+# url icon服务提供地址
+urlIconAddress: http://localhost:11001
+
+# 管理员用户id(因为目前尚未设计分角色权限系统，须指定管理员用户id)
+manageUserId: -1
+

@@ -1,0 +1,1 @@
+INSERT INTO `bookmark`.`url` VALUES (8,'GET', '/baseInfo/verifyEmail', 0);

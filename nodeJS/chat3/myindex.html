@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      div { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      div input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      div button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    </style>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+      <div>
+      <input id="m" autocomplete="off" value="" /><button onclick="messages()">发送</button>
+      </div>
+  </body>
+
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+  <script>
+
+      var socket = io("192.168.10.57:5000");
+      var name = prompt("用户名字：");
+      var sendBtn = document.getElementById("m");
+      document.title = name;
+      function messages(){
+        var msg = "加入群聊的用户：" + sendBtn.value;
+        socket.emit('chatMessage', msg);
+        sendBtn.value = '';
+        return false;
+      }
+
+      socket.on('chatMessage', function(msg){
+        addUseInfo(msg);
+      });
+      //展示后台的信息到客户端
+      function addUseInfo(msg){
+        var parentElement = document.getElementById('messages');
+        var liElement = document.createElement("li");
+        liElement.innerHTML = msg;
+        parentElement.appendChild(liElement);
+      }
+    
+  </script>
+</html>
+
+

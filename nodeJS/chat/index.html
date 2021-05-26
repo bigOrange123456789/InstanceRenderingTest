@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>http_demo</title>
+  <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <h1>
+    WelCome to CSDN of clearlove
+  </h1>
+  <p>
+    If you like my article, you can follow my blog
+  </p>
+  <p>公屏聊天</p>
+  <div id="infos">
+  </div>
+  <input style="margin-top: 5vh;
+  width: 100px;
+  height: 40px;
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  color: #000000;
+  padding-left: 10px" type="text" id="nick" value="" placeholder="昵称" />
+  <input type="text" id="send_info" value="" placeholder="请输入您想说的话" />
+  <button type="button" id="btn">发送</button>
+</body>
+<script>
+  //创建一个io对象
+  var socket = io();
+  //用户点击发送的时候直接将昵称和信息内容发送过去，如果没有昵称，显示匿名，判断是不是有值
+  document.getElementById("btn").onclick = function () {
+    if(document.getElementById("send_info").value){
+      socket.emit("link_to_server", document.getElementById("send_info").value, document.getElementById("nick").value ? document.getElementById("nick").value : '匿名')
+    }else{
+      alert(`发送内容不可以为空`)
+    }
+  }
+  // 收到的信息展示出来，新建一个元素，append到div中
+  socket.on('link_to_client', function (msg) {
+    var h6 = document.createElement('h6');
+    h6.innerText = `${msg}`;
+    document.getElementById('infos').append(h6)
+  })
+</script>
+<style>
+  body {
+    background: #307ac6;
+    text-align: center;
+    color: aliceblue;
+    margin: 0% 10%
+  }
+  p {
+    font-size: 2rem
+  }
+  input {
+    margin-top: 5vh;
+    width: 200px;
+    height: 40px;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    color: #000000;
+    padding-left: 10px;
+  }
+  button {
+    border: none;
+    background: #ffffff;
+    border-radius: 4px;
+    width: 90px;
+    height: 42px;
+    color: #000000;
+  }
+  #infos {
+    margin-left: 25vw;
+    width: 400px;
+    height: 500px;
+    overflow: scroll;
+    border: none;
+    background: #ffffff;
+    color: #000000;
+  }
+</style>
+</html>

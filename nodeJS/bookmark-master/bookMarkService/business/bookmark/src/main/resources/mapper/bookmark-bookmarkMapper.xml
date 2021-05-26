@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fanxb.bookmark.business.bookmark.dao.BookmarkDao">
+
+
+    <insert id="insertOne" useGeneratedKeys="true" keyColumn="bookmarkId" keyProperty="bookmarkId">
+        insert into bookmark(userId,path,type,name,searchKey,url,icon,sort,addTime,createTime)
+        value
+        ( #{userId},#{path},#{type},#{name},#{searchKey},#{url},#{icon},
+        #{sort},#{addTime},#{createTime})
+    </insert>
+
+    <select id="selectIdByUserIdAndNameAndPath" resultType="java.lang.Integer">
+        select bookmarkId
+        from bookmark
+        where userId = #{userId} and path = #{path} and name = #{name};
+    </select>
+
+    <select id="selectMaxSort" resultType="java.lang.Integer">
+        select max(sort)
+        from bookmark
+        where userId = #{userId} and path = #{path}
+    </select>
+
+    <select id="getListByUserId" resultType="com.fanxb.bookmark.common.entity.Bookmark">
+        select
+        bookmarkId,
+        path,
+        type,
+        name,
+        searchKey,
+        url,
+        icon,
+        sort
+        from bookmark
+        where userId = #{userId}
+        order by path, sort
+    </select>
+
+    <select id="getListByUserIdAndPath" resultType="com.fanxb.bookmark.common.entity.Bookmark">
+        select
+        bookmarkId,
+        path,
+        type,
+        name,
+        url,
+        icon,
+        sort
+        from bookmark
+        where userId = #{userId} and path = #{path}
+        order by sort
+    </select>
+
+    <delete id="deleteUserFolder">
+        DELETE
+        FROM
+        bookmark
+        WHERE
+        userId = #{userId}
+        and (path = #{path} or path like concat(#{path},".%"))
+    </delete>
+
+    <select id="getChildrenBookmarkId" resultType="integer">
+        select bookmarkId
+        from bookmark
+        where
+        userId = #{userId}
+        and (path =#{path} or path like concat(#{path},".%") );
+    </select>
+
+    <delete id="deleteUserBookmark">
+        delete from bookmark where userId = #{userId} and bookmarkId in
+        <foreach collection="bookmarkIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <update id="editBookmark" parameterType="com.fanxb.bookmark.common.entity.Bookmark">
+        update bookmark
+        set name = #{name}, url = #{url},searchKey = #{searchKey},icon=#{icon}
+        where bookmarkId = #{bookmarkId} and userId = #{userId}
+    </update>
+
+    <update id="sortPlus">
+        update bookmark
+        set sort = sort + 1
+        where userId = #{userId} and path = #{path} and sort &gt;= #{sort}
+    </update>
+
+    <update id="updateChildrenPath">
+        update bookmark
+        set path = replace(path, #{oldPath}, #{newPath})
+        where userId = #{userId} and path like concat(#{oldPath}, "%")
+    </update>
+
+    <update id="updatePathAndSort">
+        update bookmark
+        set path = #{path}, sort = #{sort}
+        where userId = #{userId} and bookmarkId = #{bookmarkId}
+    </update>
+
+    <select id="selectBookmarkEsByUserIdAndType" resultType="com.fanxb.bookmark.business.bookmark.entity.BookmarkEs">
+        select
+        userId,
+        bookmarkId,
+        name,
+        url
+        from bookmark
+        where userId = #{userId} and type = #{type}
+        order by bookmarkId
+        limit ${start}, ${size}
+    </select>
+
+    <update id="updateSearchKeyBatch">
+        UPDATE `bookmark` a JOIN
+            (
+            <foreach collection="list" item="item" separator="union">
+                select #{item.bookmarkId} as bookmarkId,#{item.searchKey} as searchKey
+            </foreach>
+            ) b USING(bookmarkId)
+        SET a.searchKey=b.searchKey;
+    </update>
+
+
+</mapper>
