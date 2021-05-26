@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MEETING</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {overflow:hidden;}
+	</style>
+</head>
+
+<body>
+
+<script src="js/lib/threeJS/three.js"></script>
+<script src="js/lib/threeJS/GLTFLoader.js"></script>
+<script src="js/lib/threeJS/OBJLoader.js"></script>
+<script src="js/lib/threeJS/FBXLoader.js"></script>
+
+<script src="js/lib/threeJS/GLTFExporter.js"></script>
+<script src="js/lib/threeJS/inflate.min.js"></script>
+
+<script src="js/playerControl/PlayerControl.js"></script>
+<script src="js/Main.js"></script>
+
+<script  type="module">
+	//生成场景相机渲染器
+	var myMain = new Main();
+	myMain.start();
+
+	//第一人称控制
+	new PlayerControl(myMain.camera);
+
+	var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+	myMain.scene.add( directionalLight );
+	var light = new THREE.PointLight( 0xffffff, 1, 1000 );
+	light.position.set( 50, 50, 50 );
+	myMain.scene.add( light );
+
+	var geometry = new THREE.CubeGeometry(1000,5,5);//new THREE.SphereGeometry(3, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+	var material = new THREE.MeshNormalMaterial();
+	var mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(10,0,0)
+
+
+	//加载房间
+	var url="../../../_DATA_/fbx/"
+	var names=[
+		"1.fbx",
+		"083A.fbx",
+		/*"083B.fbx",
+		"085B.fbx",
+		"522.fbx",
+		"523.fbx",
+		"551.fbx",
+		"602E.fbx",
+		"603A.fbx",
+		"604A.fbx",
+		"604B.fbx",
+		"604E.fbx",
+		"604G.fbx",
+		"604H.fbx",
+		"635.fbx",
+		"711-001.fbx",
+		"711-002.fbx",
+		"711-003.fbx",
+		"711-006.fbx",
+		"711-007.fbx",
+		"720.fbx",
+		"731.fbx",
+		"732.fbx",
+		"733.fbx",
+		"734.fbx",
+		"735.fbx",
+		"751.fbx",
+		"761.fbx",
+		"780.fbx",
+		"811.fbx",
+		"815.fbx",
+		"911.fbx",
+		"933.fbx",
+		"934.fbx"*/
+	]
+
+	myMain.scene.scale.set(0.1,0.1,0.1)
+	var loader=new THREE.FBXLoader();
+	var ijk=0;
+	function f(){
+		if(ijk>=names.length){
+			console.log(ijk,names.length,ijk<names.length,"!!!!!!!!!!!!!!!!")
+			console.log(myMain.scene)
+			/*var material = new THREE.MeshNormalMaterial();
+			myMain.scene.traverse(function (node) {
+				if(typeof (node.material)!=="undefined"){
+					//scene.add(node);
+					node.material=material
+				}
+			})
+			*/
+			return;
+		}
+		console.log(ijk+"/"+names.length)
+		loader.load(url+names[ijk], function (file) {
+			console.log(file)
+			myMain.scene.add(file);
+			ijk++;
+			f();
+		});
+
+
+	}f();
+
+	window.scene=myMain.scene;
+	window.load=function () {
+		var scene=new THREE.Scene();
+		window.scene.traverse(function (node) {
+			if(typeof (node.material)!=="undefined"){
+				scene.add(node);
+			}
+		})
+		const exporter = new THREE.GLTFExporter();
+		exporter.parse(scene, function ( gltf ) {
+			downloadJSON( gltf );
+			function downloadJSON(gltf) {
+				var str=JSON.stringify(gltf);
+				var name="test.gltf";
+
+				var myBlob=new Blob([str], { type: 'text/plain' })
+				let link = document.createElement('a');
+				link.href = URL.createObjectURL(myBlob);
+				link.download = name;
+				link.click();
+			}
+		} );
+	}
+</script>
+</body>
+</html>
