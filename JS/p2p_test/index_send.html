@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="UTF-8">
+	<title>page_send</title>
+</head>
+
+<body >
+
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
+<script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+
+<script src="https://cdn.webrtc-experiment.com/FileBufferReader.js"></script>
+
+<script src="./RTCMultiConnection.js"></script>
+<script>
+	var number=1;
+	function send(rtConnection) {
+		var n=1000*number;
+		console.log("发送数据的长度为:"+n)
+		var arr=[];
+		for(var i=0;i<n;i++)arr.push(0)
+		number++;
+		rtConnection.send(arr)
+	}
+	var rtConnection=initWebRTC();
+	function initWebRTC() {
+		var rtConnection = new RTCMultiConnection();
+		rtConnection.socketURL =  'https://rtcmulticonnection.herokuapp.com:443/';//"http://localhost:9001/"
+		rtConnection.enableFileSharing = true; // 准许发送文件
+		rtConnection.session = {
+			data: true
+		};
+		rtConnection.onopen = function () {
+			send(rtConnection)
+		};
+		rtConnection.onmessage = function (event) {
+			send(rtConnection)
+		};
+		rtConnection.openOrJoin("room002");
+		return rtConnection;
+	}
+
+
+
+
+</script>
+
+</body>
+</html>

@@ -86,10 +86,7 @@ function init() {
     if(haveP2P)initWebRTC();//p2p获取资源列表
 
 
-    setTimeout(function (){
-        alert("测试完成")
-        sendTestResult()
-    },browsingtime)
+    //setTimeout(function (){sendTestResult()},browsingtime)
 }
 function sendTestResult() {
     console.log("!!!!!!!!!!!send test data!!!!!!!!!!!");
@@ -269,8 +266,7 @@ function reuseDataParser2(data, isLastModel) {
         else ModelHasBeenLoaded.push(name);
         //if(window.hasLoad)window.hasLoad(name)//myCallback_pop,myCallback_get
 
-        //console.log(gltf.scenes[0].uuid)
-        // console.log(`scene add new model: ${name}`);
+        //console.log(gltf.scenes[0].uuid)// console.log(`scene add new model: ${name}`);
         let geo = gltf.scene.children[0].geometry;
         // Add uvs
         geo.computeVertexNormals();
@@ -417,16 +413,16 @@ function reuseDataParser2(data, isLastModel) {
                 window.myResourceLoader.addPack(name,data)
             }
 
+            if (!scenetLoadDone) {//初始加载时间 && isLastModel
+                initialTime = (performance.now() - sceneStartTime) / 1000;
+                document.getElementById("sceneLoadTime").innerText = initialTime.toFixed(2) + "秒";//$("#sceneLoadTime")[0].innerText = initialTime.toFixed(2) + "秒";
+                scenetLoadDone = true;
+            }
+
         },window.getTime())
 
-        //初始加载时间
-        if (!scenetLoadDone && isLastModel) {
-            initialTime = (performance.now() - sceneStartTime) / 1000;
-            document.getElementById("sceneLoadTime").innerText = initialTime.toFixed(2) + "秒";
-            //$("#sceneLoadTime")[0].innerText = initialTime.toFixed(2) + "秒";
-            scenetLoadDone = true;
-        }
+
+
     });
 }
 window.reuseDataParser=reuseDataParser2;
-/**/
