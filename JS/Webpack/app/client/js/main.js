@@ -25,8 +25,8 @@ $(document).ready(function() {
         'HSY 400 论文对比 S Dir-map反方向.json',
         'HSY 400 论文对比 分块 B Dir－map.json',
         'grid1.json',
-        'fire1.json',
-        'fire0.json',
+        //'fire1.json',
+        //'fire0.json',
     ];
     //if(typeof(myFirstFlag)!=="undefined")loadMap0("grid1.json")
     for(var i=0;i<names.length;i++){

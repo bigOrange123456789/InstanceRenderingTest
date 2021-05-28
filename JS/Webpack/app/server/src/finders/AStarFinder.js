@@ -455,7 +455,7 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
             if (!neighbor.opened || ng < neighbor.g) {
                 neighbor.g = ng;//实际代价
                 neighbor.h = neighbor.h || weight * heuristic(abs(x - endX), abs(y - endY));//如果已经计算过就不用再计算了//启发式函数的输入是dx,dy
-                if(boards.length>0){
+                if(boards.length>0){//场景中有标志牌
                     //neighbor.l = neighbor.l ||getL(node.x,node.y,x,y);
                     //neighbor.f = (neighbor.g + neighbor.h)*(neighbor.l+0.01);//f=g+h//g是实际代价 h是估计代价
 
@@ -467,7 +467,8 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
                     //neighbor.f = neighbor.g + neighbor.h+neighbor.l;//f=g+h//g是实际代价 h是估计代价
 
 
-                    var LD=get_L_D(node.x,node.y,x,y);
+                    //123456789
+                    var LD=get_L_D(node.x,node.y,x,y);//[角度差，到标志牌的距离]
                     neighbor.l=LD[0]*40;
 
 
@@ -484,7 +485,7 @@ AStarFinder.prototype.findPath = function(startX, startY, endX, endY, grid) {
 
 
 
-                }else{
+                }else{//场景中没有标志牌
                     neighbor.f = neighbor.g + neighbor.h;
                 }
                 neighbor.parent = node;//设置父节点

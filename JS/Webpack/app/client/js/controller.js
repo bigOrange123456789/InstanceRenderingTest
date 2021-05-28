@@ -445,6 +445,7 @@ $.extend(Controller, {
             gridX = coord[0],
             gridY = coord[1],
             grid  = this.grid;
+        console.log(event.button)
         if(event.button===0){
             if (this.can('dragStart') && this.isStartPos(gridX, gridY)) {
                 this.dragStart();
@@ -461,7 +462,8 @@ $.extend(Controller, {
             if (this.can('eraseWall') && !grid.isWalkableAt(gridX, gridY)) {
                 this.eraseWall(gridX, gridY);
             }
-        }else if(event.button===1){
+        }else if(event.button===1){//按下滑轮
+            console.log("!!!!!!!!")
             this.setBoardAt(gridX, gridY);
         }else{
             View.setAttributeAt(gridX, gridY, 'test');

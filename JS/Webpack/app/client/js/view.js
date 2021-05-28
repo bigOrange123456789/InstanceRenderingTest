@@ -95,7 +95,8 @@ var View = {
                 );
                 if(
                     (rowId + 1) / numRows ===1&&typeof (myFirstFlag)!=="undefined"
-                )loadMap0("grid1.json")
+                )
+                    //loadMap0("grid1.json")
                 function loadMap0(url) {
                     //var xMin=0,yMin=0;
                     var request = new XMLHttpRequest();
@@ -189,6 +190,7 @@ var View = {
     setAttributeAt: function(gridX, gridY, attr, value) {
         var color, nodeStyle = this.nodeStyle;
 
+        console.log("attr:"+attr)
         switch (attr) {
             case 'test':
                 if(typeof (Controller.preGrid)==="undefined")console.log(Controller.grid.nodes[gridY][gridX]);
