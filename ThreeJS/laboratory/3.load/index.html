@@ -21,7 +21,8 @@
 	new PlayerControl(myMain.camera);
 
 	const loader = new THREE.GLTFLoader();
-	loader.load("test.gltf", function ( gltf ) {
+	loader.load("test3.gltf", function ( gltf ) {
+		console.log(gltf)
 		myMain.scene.add(gltf.scene)
 	});
 	loader.load("man.gltf", function ( gltf ) {

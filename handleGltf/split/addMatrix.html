@@ -59,10 +59,18 @@
     function addMatrix(urls_index) {
         var name=names[urls_index]
         new THREE.GLTFLoader().load(path+name, (glb) => {
-            glb.scene.name=inf[name].matrixs;
+            var scene=new THREE.Scene();
+            scene.name=inf[name].matrixs;
+
+            scene.add(glb.scene.children[0].clone())
+            //console.log(glb.scene.children[0])
+            //glb.scene.name=inf[name].matrixs;
+            //console.log(glb.scene.name)
+            //glb.scene.children[0].name=inf[name].matrixs;
+            //console.log(glb.scene.children[0].name)
             if(urls_index+1<names.length){
                 const exporter = new THREE.GLTFExporter();
-                exporter.parse(glb.scene, function ( gltf ) {
+                exporter.parse(scene, function ( gltf ) {
                     downloadJSON( gltf );
                     function downloadJSON(gltf) {
                         var myBlob=new Blob([JSON.stringify(gltf)], { type: 'text/plain' })
