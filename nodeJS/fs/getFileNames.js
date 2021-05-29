@@ -1,4 +1,4 @@
-f3();
+//f3();
 function f1() {
     var fs = require('fs');
     var files = fs.readdirSync('./test');
@@ -32,6 +32,21 @@ function f5() {
     });
     fs.writeFile('name.json' , JSON.stringify(result , null, "\t") , function(){});
 }
+function rename() {
+    var fs = require('fs');
+    var result=[]
+    var path=process.argv[2]
+    fs.readdirSync(path).forEach(function (s) {
+        result.push(s)
+    });
+    for(var i=0;i<result.length;i++){
+        fs.rename(path+"/"+result[i],path+"/"+i+".glb",function (err) {
+                if (err) throw err;
+                console.log('Successful modification,');
+            })
+    }
+}
+rename();
 /**
  *
  *
