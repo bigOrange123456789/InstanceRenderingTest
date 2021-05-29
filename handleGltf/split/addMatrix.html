@@ -23,8 +23,13 @@
             "Please enter file name:",
             "result.json"
         );
-
+    var path=
+        prompt(
+            "Please enter path:",
+            "../../../_DATA_/model/"
+        );
     var inf;
+    var names;
     new THREE.XHRLoader(THREE.DefaultLoadingManager).load(name, function (data) {
         inf=JSON.parse(data);
         //简化matrix
@@ -46,7 +51,36 @@
             inf[s].matrixs=JSON.stringify(inf[s].matrixs)
         }
         console.log(inf)
+        new THREE.XHRLoader(THREE.DefaultLoadingManager).load("names2.json", function (data) {
+            names=JSON.parse(data);
+            addMatrix(0);
+        })
     });
+    function addMatrix(urls_index) {
+        var name=names[urls_index]
+        new THREE.GLTFLoader().load(path+name, (glb) => {
+            glb.scene.name=inf[name].matrixs;
+            if(urls_index+1<names.length){
+                const exporter = new THREE.GLTFExporter();
+                exporter.parse(glb.scene, function ( gltf ) {
+                    downloadJSON( gltf );
+                    function downloadJSON(gltf) {
+                        var myBlob=new Blob([JSON.stringify(gltf)], { type: 'text/plain' })
+                        let link = document.createElement('a');
+                        link.href = URL.createObjectURL(myBlob);
+                        link.download = name;
+                        link.click();
+                        setTimeout(function () {
+                            addMatrix(urls_index+1);
+                        },1000)
+                    }
+                } );
+
+            }else{
+                alert("finish!")
+            }
+        });
+    }
 
 
 
