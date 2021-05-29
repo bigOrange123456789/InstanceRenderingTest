@@ -24,6 +24,17 @@
 	loader.load("test3.gltf", function ( gltf ) {
 		console.log(gltf)
 		myMain.scene.add(gltf.scene)
+		var name=gltf.scene.name;
+		for(i=0;i<name.length;i++){
+			name=name.replace('(', '[');
+			name=name.replace(')', ']');
+			name=name.replace('?', '.');
+		}
+		name=JSON.parse(name);
+		console.log(name)
+		//[(
+		//])
+		//.?
 	});
 	loader.load("man.gltf", function ( gltf ) {
 		myMain.scene.add(gltf.scene)

@@ -33,8 +33,22 @@
 	obj.add(mesh1)
 	obj.add(mesh2)
 
+	var name=JSON.stringify([
+		[1,0.01,100.002],
+		[5,9.01,100.002]
+	])
+	for(i=0;i<name.length;i++){
+		name=name.replace('[', '(');
+		name=name.replace(']', ')');
+		name=name.replace('.', '?');
+	}
+
+
 	var scene=new THREE.Scene();
-	scene.name="test2"
+	scene.name=name;
+	//[(
+	//])
+	//.?
 	scene.add(obj)
 	const exporter = new THREE.GLTFExporter();
 	// Parse the input and generate the glTF output
