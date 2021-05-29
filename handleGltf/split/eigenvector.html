@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>静态模型处理</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/threeLib/GLTFExporter.js"></script>
+
+<script src="js/myLib/Download.js"></script>
+<script src="js/GlbHandle.js"></script>
+<script src="js/myLib/DuplicateRemoval.js"></script>
+<script src="js/myLib/MaterialHandle.js"></script>
+<script src="js/myLib/GlbSplit.js"></script>
+<script src="js/myLib/InDe.js"></script>
+<script src="js/myLib/ResourceManager.js"></script>
+
+<script>
+
+    var urls=[
+        "./cube.glb",
+        "./sphere1.glb"
+    ]
+    var results=[];
+    function f(urls_index) {
+        console.log(urls[urls_index])
+        new THREE.GLTFLoader().load(urls[urls_index], (glb) => {
+            var scene=new THREE.Scene();
+            for(i=glb.scene.children.length-1;i>=0;i--)
+                scene.add(glb.scene.children[i]);
+            var result=new GlbHandle().eigenvector({scene:scene},10);
+            results.push(result)
+            if(urls_index+1<urls.length){
+                f(urls_index+1);
+            }else{
+                console.log(results)
+                console.log(
+                    new GlbHandle().variance(
+                        results[0].vector,results[1].vector
+                    )
+                )
+            }
+        });
+    }f(0)
+
+
+</script>
+
+</body>
