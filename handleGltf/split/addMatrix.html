@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>静态模型处理</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/threeLib/GLTFExporter.js"></script>
+
+<script src="js/myLib/Download.js"></script>
+<script src="js/GlbHandle.js"></script>
+<script src="js/myLib/DuplicateRemoval.js"></script>
+<script src="js/myLib/MaterialHandle.js"></script>
+<script src="js/myLib/GlbSplit.js"></script>
+<script src="js/myLib/InDe.js"></script>
+<script src="js/myLib/ResourceManager.js"></script>
+
+<script>
+    var name=
+        prompt(
+            "Please enter file name:",
+            "result.json"
+        );
+
+    var inf;
+    new THREE.XHRLoader(THREE.DefaultLoadingManager).load(name, function (data) {
+        inf=JSON.parse(data);
+        //简化matrix
+        for (var s in inf) {
+            var m=inf[s].matrix;
+            for(var i=0;i<m.length;i++)
+                inf[s].matrix[i]=parseFloat(m[i].toFixed(4));
+        }
+        //处理matrixs
+        for (var s in inf) {
+            inf[s].matrixs=[]
+        }
+        for (var s in inf) {
+            var originModel=inf[s].url;
+            if(originModel!==s)
+                inf[originModel].matrixs.push(inf[s].matrix)
+        }
+        for (var s in inf) {
+            inf[s].matrixs=JSON.stringify(inf[s].matrixs)
+        }
+        console.log(inf)
+    });
+
+
+
+
+</script>
+
+</body>
