@@ -18,21 +18,18 @@
 <script src="js/myLib/ResourceManager.js"></script>
 
 <script>
-
-    var path="../../../_DATA_/model/"
-    var names=[
-        "sphere.glb",
-        "mesh2.glb",
-        "cube.glb",
-        "mesh3.glb",
-        "sphere1.glb",
-        "mesh0.glb",
-        "mesh1.glb",
-        "sphere0.glb",
-        "mesh.glb"
-    ]
+    var path=
+        prompt(
+            "Please enter path:",
+            "../../../_DATA_/model/"
+        );
+    var names;
     var eigenvectors=[];
-    computeEigenvector(0);
+    var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
+    loader.load("names.json", function (data) {
+        names=JSON.parse(data);
+        computeEigenvector(0);
+    });
     function computeEigenvector(urls_index) {
         new THREE.GLTFLoader().load(path+names[urls_index], (glb) => {
             var scene=new THREE.Scene();
@@ -47,7 +44,6 @@
             }
         });
     }
-
     function checkingDuplicate(){
         var result={}
         for(i=0;i<names.length;i++){
@@ -66,11 +62,17 @@
                 }
             }
         }
-        console.log(
-            result
-        )
+        console.log(result)
+        download(result,"result.json")
     }
-
+    function download(data,name){
+        link = document.createElement('a');
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'text/plain' }));
+        link.download =name;
+        link.click();
+    }
 </script>
 
 </body>
