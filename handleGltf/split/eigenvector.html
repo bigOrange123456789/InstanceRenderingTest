@@ -19,32 +19,57 @@
 
 <script>
 
-    var urls=[
-        "./cube.glb",
-        "./sphere1.glb"
+    var path="../../../_DATA_/model/"
+    var names=[
+        "sphere.glb",
+        "mesh2.glb",
+        "cube.glb",
+        "mesh3.glb",
+        "sphere1.glb",
+        "mesh0.glb",
+        "mesh1.glb",
+        "sphere0.glb",
+        "mesh.glb"
     ]
-    var results=[];
-    function f(urls_index) {
-        console.log(urls[urls_index])
-        new THREE.GLTFLoader().load(urls[urls_index], (glb) => {
+    var eigenvectors=[];
+    computeEigenvector(0);
+    function computeEigenvector(urls_index) {
+        new THREE.GLTFLoader().load(path+names[urls_index], (glb) => {
             var scene=new THREE.Scene();
             for(i=glb.scene.children.length-1;i>=0;i--)
                 scene.add(glb.scene.children[i]);
-            var result=new GlbHandle().eigenvector({scene:scene},10);
-            results.push(result)
-            if(urls_index+1<urls.length){
-                f(urls_index+1);
+            var eigenvector=new GlbHandle().eigenvector({scene:scene},10);
+            eigenvectors.push(eigenvector)
+            if(urls_index+1<names.length){
+                computeEigenvector(urls_index+1);
             }else{
-                console.log(results)
-                console.log(
-                    new GlbHandle().variance(
-                        results[0].vector,results[1].vector
-                    )
-                )
+                checkingDuplicate();
             }
         });
-    }f(0)
+    }
 
+    function checkingDuplicate(){
+        var result={}
+        for(i=0;i<names.length;i++){
+            result[names[i]]={
+                url:names[i],
+                matrix:eigenvectors[i].matrix.elements
+            }
+        }
+        for(var lll=0;lll<names.length;lll++){
+            for(var mmm=0;mmm<lll;mmm++){
+                var variance=new GlbHandle().variance(eigenvectors[lll].vector,eigenvectors[mmm].vector)
+                console.log(variance)
+                if(variance<0.01){
+                    result[names[lll]].url=names[mmm];
+                    break;
+                }
+            }
+        }
+        console.log(
+            result
+        )
+    }
 
 </script>
 
