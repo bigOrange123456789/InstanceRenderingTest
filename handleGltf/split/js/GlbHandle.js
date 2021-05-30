@@ -290,13 +290,14 @@ GlbHandle.prototype={
             console.log("文件中包含多个mesh对象，您应当先进行拆分")
         }
         var matrix;
+        var boundingBox;
         for(var k=0;k<this.resourceManager.meshs.length;k++){
             var node=this.resourceManager.meshs[k];
             node.applyMatrix(new THREE.Matrix4().identity ());//更新node.matrix
             matrix=node.matrix;
             var geometry=node.geometry;
             geometry.computeBoundingBox();
-            var boundingBox=geometry.boundingBox;
+            boundingBox=geometry.boundingBox;
             var position=geometry.attributes.position;
             var arr=position.array;
 
@@ -416,7 +417,8 @@ GlbHandle.prototype={
         return {
                 voxel:voxel,
                 vector:vector,
-                matrix:matrix
+                matrix:matrix,
+                boundingBox:boundingBox
             };
 
     },
