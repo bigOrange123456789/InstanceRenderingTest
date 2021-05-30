@@ -23,14 +23,14 @@
             "Please enter path:",
             "../../../_DATA_/model/"
         );
-    var names;
+    var names=[
+        "nj6.gltf",
+        "nj7.gltf"
+    ];
     var eigenvectors=[];
-    var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
-    loader.load("names.json", function (data) {
-        names=JSON.parse(data);
-        computeEigenvector(0);
-    });
+    computeEigenvector(0);
     function computeEigenvector(urls_index) {
+        console.log(urls_index,path+names[urls_index])
         new THREE.GLTFLoader().load(path+names[urls_index], (glb) => {
             var scene=new THREE.Scene();
             for(i=glb.scene.children.length-1;i>=0;i--)
@@ -40,38 +40,18 @@
             if(urls_index+1<names.length){
                 computeEigenvector(urls_index+1);
             }else{
-                checkingDuplicate();
+                console.log(
+                    eigenvectors[0].vector,
+                    eigenvectors[1].vector
+                )
+                var variance=new GlbHandle().variance(
+                    eigenvectors[0].vector,
+                    eigenvectors[1].vector
+                )
+                console.log("差异度为：",variance)
+                alert("finish!")
             }
         });
-    }
-    function checkingDuplicate(){
-        var result={}
-        for(i=0;i<names.length;i++){
-            result[names[i]]={
-                url:names[i],
-                matrix:eigenvectors[i].matrix.elements
-            }
-        }
-        for(var lll=0;lll<names.length;lll++){
-            for(var mmm=0;mmm<lll;mmm++){
-                var variance=new GlbHandle().variance(eigenvectors[lll].vector,eigenvectors[mmm].vector)
-                console.log(variance)
-                if(variance<0.005){
-                    result[names[lll]].url=names[mmm];
-                    break;
-                }
-            }
-        }
-        console.log(result)
-        download(result,"result.json")
-    }
-    function download(data,name){
-        link = document.createElement('a');
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'text/plain' }));
-        link.download =name;
-        link.click();
     }
 </script>
 
