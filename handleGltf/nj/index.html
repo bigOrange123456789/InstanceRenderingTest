@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MEETING</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {overflow:hidden;}
+	</style>
+</head>
+
+<body>
+<h1 id="tag" style="position:absolute;top:10px;left:10px;"></h1>
+<script src="js/three.js"></script>
+<script src="js/GLTFLoader.js"></script>
+<script src="js/PlayerControl.js"></script>
+<script src="js/Main.js"></script>
+
+<script>
+	var myMain = new Main();
+	myMain.start();
+	new PlayerControl(myMain.camera);
+
+	var colors_16=[
+		0xefbfff,
+		0x9eb1b3,
+		0x405050,
+		0x94a592,
+		0x5f6f6f,
+		0x8ea3ef,
+		0x849584,
+		0x677a6f,
+		0x899999,
+		0xab9f7c
+	];
+	var materials=[];
+	for(var i=0;i<10;i++){
+		materials.push(new THREE.MeshPhongMaterial({color:colors_16[i]}))
+	}
+
+	var vert = "#define SHADER_NAME vertInstanced\n" +
+			"precision highp float;\n" +
+			"uniform mat4 modelViewMatrix;\n" +
+			"uniform mat4 projectionMatrix;\n" +
+			"attribute vec3 position;\n" +
+			"//attribute vec3 normal;\n" +
+			"attribute vec3 mcol0;\n" +
+			"attribute vec3 mcol1;\n" +
+			"attribute vec3 mcol2;\n" +
+			"attribute vec3 mcol3;\n" +
+			"attribute vec3 color;\n" +
+			"varying vec3 vPosition;\n" +
+			"varying vec3 vColor;\n" +
+			"//varying vec3 vNormal;\n" +
+			"void main()\t{\n" +
+			"    mat4 matrix = mat4(\n" +
+			"    vec4( mcol0, 0 ),\n" +
+			"    vec4( mcol1, 0 ),\n" +
+			"    vec4( mcol2, 0 ),\n" +
+			"    vec4( mcol3, 1 )\n" +
+			"    );\n" +
+			"    vec3 positionEye = ( modelViewMatrix * matrix * vec4( position, 1.0 ) ).xyz;\n" +
+			"    vColor = color;\n" +
+			"    //vNormal=normal;\n" +
+			"    vPosition = positionEye;\n" +
+			"    gl_Position = projectionMatrix * vec4( positionEye, 1.0 );\n" +
+			"}\n";
+	var frag = "#define SHADER_NAME fragInstanced\n" +
+			"precision highp float;\n" +
+			"varying vec3 vColor;\n" +
+			"//varying vec3 vNormal;\n" +
+			"void main()\t{\n" +
+			"    //float diffuse1 = dot( vNormal, vec3( 0.0, 1.0, 1.0 ) );\n" +
+			"    //float diffuse2 = dot( vNormal, vec3( 0.0, -1.0, -1.0 ) );\n" +
+			"    gl_FragColor = vec4( vColor, 1.0 );\n" +
+			"    //gl_FragColor = vec4( (abs(diffuse1)+abs(diffuse2)) * vColor, 1.0 );\n" +
+			"}";
+
+	var init_load_number=4;
+	var load_index=init_load_number;
+	const loader = new THREE.GLTFLoader();
+	initLoad(0)
+	function initLoad(i) {
+		load(i)
+		setTimeout(function () {
+			if(i<init_load_number)initLoad(i+1)
+		},100)
+	}
+
+	function load(index) {
+		if(index>=421){return}
+		loader.load("../../../4.InstancedMesh/model/"+index+".gltf", function ( gltf ) {
+			var mesh=gltf.scene.children[0];
+
+			var str=gltf.scene.name;
+			gltf.scene.name=null;
+			for(i=0;i<str.length;i++){
+				if(str.charAt(i)==='(')
+					str=replaceChat(str,i,'[')
+				else if(str.charAt(i)===')')
+					str=replaceChat(str,i,']')
+				else if(str.charAt(i)==='?')
+					str=replaceChat(str,i,'.')
+			}
+			function replaceChat(source,pos,newChar){
+				if(pos<0||pos>=source.length||source.length===0){
+					return "invalid parameters...";
+				}
+				var iBeginPos= 0, iEndPos=source.length;
+				var sFrontPart=source.substr(iBeginPos,pos);
+				var sTailPart=source.substr(pos+1,source.length);
+				return sFrontPart+newChar+sTailPart;
+			}
+			var matrixs=JSON.parse(str);
+			if(matrixs.length>0){
+				var geo=mesh.geometry;
+				//mesh.applyMatrix4(new THREE.Matrix4().identity ());
+				var m0=new THREE.Matrix4().compose(
+						mesh.position,
+						mesh.quaternion,
+						mesh.scale
+				)
+				mesh= new THREE.InstancedMesh( mesh.geometry, mesh.material, matrixs.length+1);
+				mesh.setMatrixAt(matrixs.length,m0);
+
+				let instanceCount =matrixs.length + 1;
+
+				var material = new THREE.RawShaderMaterial({
+					vertexShader: vert,
+					fragmentShader: frag
+				});
+				var igeo = new THREE.InstancedBufferGeometry();
+				var vertices = geo.attributes.position.clone();
+				igeo.addAttribute('position', vertices);
+				igeo.setIndex(geo.index);
+				var mcol0 = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+				var mcol1 = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+				var mcol2 = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+				var mcol3 = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+
+				//设置原始mesh的变换矩阵与名称
+				mcol0.setXYZ(0, m0.elements[0], m0.elements[1], m0.elements[2]);//mo
+				mcol1.setXYZ(0, m0.elements[4], m0.elements[5], m0.elements[6]);
+				mcol2.setXYZ(0, m0.elements[8], m0.elements[9], m0.elements[10]);
+				mcol3.setXYZ(0, m0.elements[12], m0.elements[13], m0.elements[14]);
+				for (i = 0; i < matrixs.length; i++) {
+					let mtxElements = matrixs[i];
+					mcol0.setXYZ(i, mtxElements[0], mtxElements[1], mtxElements[2]);
+					mcol1.setXYZ(i, mtxElements[4], mtxElements[5], mtxElements[6]);
+					mcol2.setXYZ(i, mtxElements[8], mtxElements[9], mtxElements[10]);
+					mcol3.setXYZ(i, mtxElements[12], mtxElements[13], mtxElements[14]);
+				}
+				igeo.addAttribute('mcol0', mcol0);
+				igeo.addAttribute('mcol1', mcol1);
+				igeo.addAttribute('mcol2', mcol2);
+				igeo.addAttribute('mcol3', mcol3);
+
+				var colors = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+				var color=new THREE.Color(colors_16[Math.floor(Math.random()*10)]);
+				for (let i = 0, ul = colors.count; i < ul; i++) {colors.setXYZ(i, color.r, color.g, color.b);}
+				igeo.addAttribute('color', colors);
+
+				mesh = new THREE.Mesh(igeo, material);
+				mesh.frustumCulled = false;
+			}else{
+				mesh.material=materials[Math.floor(Math.random()*10)]
+				mesh.frustumCulled=true;
+			}
+			myMain.scene.add(mesh)
+			if(load_index+1<11){
+				setTimeout(function () {
+					load_index++;
+					load(load_index)
+				},(matrixs.length+1)*10)
+			}else{
+				console.log("finish!")
+			}
+		});
+	}
+</script>
+</body>
+</html>
