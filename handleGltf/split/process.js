@@ -14,17 +14,23 @@ function getInf(){
 }
 function deleteFiles() {
     var path="../../../_DATA_/model_sim/"
-    var haveList=[]
-    fs.readdirSync(path).forEach(function (s) {
-        haveList.push(s)
-    });
+    var haveList= {}
+    fs.readdirSync(path).forEach(function (s) {haveList[s]=true;});
     console.log(haveList)
+    var record0=0,record=0;
     for(var i=0;i<names.length;i++){
-        console.log(names[i],inf[names[i]].url)
         if(names[i]!==inf[names[i]].url){
-            if(haveList[names[i]])
+            record0++;
+
+            if(haveList[names[i]]){
                 fs.unlinkSync(path  + names[i]);
+                record++;
+            }else{
+                console.log(names[i],inf[names[i]].url)
+            }/**/
         }
     }
+    console.log("删除个数："+record0)
+    console.log("删除个数："+record)
     console.log("finish!")
 }

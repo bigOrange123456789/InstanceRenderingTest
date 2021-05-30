@@ -279,7 +279,7 @@ GlbHandle.prototype={
         );
         console.log(allMax,allMin);
     },
-    eigenvector1:function (glb,number) {
+    eigenvector:function (glb,number) {
         //var myObstacle=[];
         this.resourceManager.name=name;
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
@@ -337,7 +337,7 @@ GlbHandle.prototype={
                     }
                 }
             }
-            console.log(voxel)
+            //console.log(voxel)
             var index=geometry.index;
             arr=index.array;
             for(i=0;i<index.count/3;i++){
@@ -413,7 +413,7 @@ GlbHandle.prototype={
 
         glb.voxel=voxel;
         glb.eigenvector=vector;
-        console.log(glb)
+        //console.log(glb)
         return {
                 voxel:voxel,
                 vector:vector,
@@ -422,7 +422,7 @@ GlbHandle.prototype={
             };
 
     },
-    eigenvector:function (glb,number) {
+    eigenvector2:function (glb,number) {
         //var myObstacle=[];
         this.resourceManager.name=name;
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
