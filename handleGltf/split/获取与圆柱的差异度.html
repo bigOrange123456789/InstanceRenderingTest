@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>静态模型处理</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/myLib/DifferenceAnalyzer.js"></script>
+
+<script>
+    var path=
+        prompt(
+            "Please enter path:",
+            "../../../_DATA_/"
+        );
+
+    var diff=new DifferenceAnalyzer();
+    process(path+"test.gltf");
+    function process(url) {
+        new THREE.GLTFLoader().load(url,function (group) {
+            group.scene.traverse(function (node) {
+                if(node instanceof THREE.Mesh){
+                    console.log(
+                        node.name+"与圆柱的差异度为：",
+                        diff.variance(node,"cylinder")
+                    );
+
+                }
+            })
+        })
+    }
+</script>
+
+</body>

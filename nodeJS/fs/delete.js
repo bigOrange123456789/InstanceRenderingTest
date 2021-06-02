@@ -13,10 +13,19 @@
 //输出的数据：处理基网格、分解PM信息、复制骨骼（提供索引）
 var fs = require('fs');
 
-var path="1";
+fs.readFile('result.json', 'utf8' , function (err , data) {
+    var json=JSON.parse(data)
+    console.log("去重的文件个数为："+Object.keys(json).length)
+    for (var i in json) {
+        var url="dat/" +i+".dat";
+        process(url)
+    }
+});
 
-var files  = fs.readdirSync(path);
-for(var i=0;i<files.length;i++)
-    fs.unlinkSync(path + "/" + files[i]);
-
-fs.rmdirSync(path);
+function process(url) {
+    if(fs.existsSync(url)){
+        fs.unlinkSync(url);
+    } else{
+        console.log("文件不存在："+url)
+    }
+}

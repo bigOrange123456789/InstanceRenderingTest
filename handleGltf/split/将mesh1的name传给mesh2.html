@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>静态模型处理</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/threeLib/GLTFExporter.js"></script>
+
+<script src="js/myLib/Download.js"></script>
+<script src="js/GlbHandle.js"></script>
+<script src="js/myLib/DuplicateRemoval.js"></script>
+<script src="js/myLib/MaterialHandle.js"></script>
+<script src="js/myLib/GlbSplit.js"></script>
+<script src="js/myLib/InDe.js"></script>
+<script src="js/myLib/ResourceManager.js"></script>
+
+<script>
+    var path1=
+        prompt(
+            "Please enter path:",
+            "../../../_DATA_/model_name/"
+        );
+    var path2=
+        prompt(
+            "Please enter path:",
+            "../../../_DATA_/model_mesh/"
+        );
+    var inf;
+    var names=[];
+    for(var i=0;i<6;i++)names.push(i+".gltf")
+    addMatrix(0);
+    function addMatrix(urls_index) {
+        var name=names[urls_index]
+        new THREE.GLTFLoader().load(path1+name, (glb1) => {
+            new THREE.GLTFLoader().load(path2+name, (glb2) => {
+                var scene=new THREE.Scene();
+                scene.name=glb1.scene.name;
+                scene.add(glb2.scene.children[0].clone())
+
+                if(urls_index+1<names.length){
+                    const exporter = new THREE.GLTFExporter();
+                    exporter.parse(scene, function ( gltf ) {
+                        downloadJSON( gltf );
+                        function downloadJSON(gltf) {
+                            var myBlob=new Blob([JSON.stringify(gltf)], { type: 'text/plain' })
+                            let link = document.createElement('a');
+                            link.href = URL.createObjectURL(myBlob);
+                            link.download = name;
+                            link.click();
+                            setTimeout(function () {
+                                addMatrix(urls_index+1);
+                            },1000)
+                        }
+                    } );
+
+                }else{
+                    alert("finish!")
+                }
+            });
+        });
+
+    }
+
+
+
+
+</script>
+
+</body>

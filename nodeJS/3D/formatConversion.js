@@ -6,6 +6,7 @@ const gltfPipeline = require('gltf-pipeline');
 const fsExtra = require('fs-extra');
 const glbToGltf = gltfPipeline.glbToGltf;
 //draco
+
 const processGltf = gltfPipeline.processGltf;
 function Format() {
     this.obj2gltf=function(name) {
