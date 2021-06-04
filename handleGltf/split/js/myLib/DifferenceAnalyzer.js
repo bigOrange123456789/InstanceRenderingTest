@@ -2,7 +2,7 @@ function DifferenceAnalyzer() {
 }
 DifferenceAnalyzer.prototype={
     cylinder:[0, 0, 0, 0.01087, 0.11, 0.32, 0.3587, 0.16, 0.038, 0.0018],
-
+    cube:[0, 0, 0, 0, 0.0553, 0.22746, 0.387, 0.2664, 0.0615, 0.00205],
     voxel:function(mesh,number){
         console.log("voxel")
         if(typeof (number)==="undefined")number=10;
@@ -140,6 +140,12 @@ DifferenceAnalyzer.prototype={
         var scope=this;
         var v=scope.variance(mesh,scope.cylinder);
         console.log(v);
-        return v<0.035;
+        return v<0.065;
+    },
+    isCube:function (mesh) {
+        var scope=this;
+        var v=scope.variance(mesh,scope.cube);
+        console.log(v);
+        return v<0.065;
     },
 }

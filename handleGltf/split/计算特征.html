@@ -25,7 +25,7 @@
             "../../../_DATA_/"
         );
     var names=[
-        "cylinder.glb"
+        "cube.glb"
     ];
     var diff=new DifferenceAnalyzer();
     for(var i=0;i<names.length;i++){
@@ -33,7 +33,7 @@
         new THREE.GLTFLoader().load(url,function (group) {
             group.scene.traverse(function (node) {
                 if(node instanceof THREE.Mesh){
-                    console.log(diff.isCylinder(node))
+                    console.log(diff.eigenvector(node))
                 }
             })
         })

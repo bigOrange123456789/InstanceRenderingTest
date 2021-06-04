@@ -17,15 +17,23 @@
 	<script src="js/Main.js"></script>
 
 	<script  type="module">
+
+
+		var mesh2=new THREE.Mesh();
+		//mesh2.rotation.set(Math.PI/2,0,0)
+		mesh2.rotation.set(Math.PI/2,-1*Math.PI,0)
+		mesh2.applyMatrix4(new THREE.Matrix4().identity ());
+		console.log("mesh2.matrix",mesh2.matrix)
+
+
+
+		/*
 		var mesh1=new THREE.Mesh();
 		mesh1.rotation.set(0,0,1);
-		var mesh2=new THREE.Mesh();
-		mesh2.rotation.set(0,0,-2)
-		mesh2.applyMatrix(new THREE.Matrix4().identity ());
 		mesh1.applyMatrix(mesh2.matrix);
 		console.log(mesh1.matrix)
 		console.log(mesh1.rotation.z)
-
+		*/
 
 		function test1() {
 			var mesh=new THREE.Mesh();

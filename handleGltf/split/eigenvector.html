@@ -10,6 +10,7 @@
 <script src="js/threeLib/GLTFExporter.js"></script>
 
 <script src="js/myLib/Download.js"></script>
+<script src="js/myLib/DifferenceAnalyzer.js"></script>
 <script src="js/GlbHandle.js"></script>
 <script src="js/myLib/DuplicateRemoval.js"></script>
 <script src="js/myLib/MaterialHandle.js"></script>
@@ -21,7 +22,7 @@
     var path=
         prompt(
             "Please enter path:",
-            "../../../_DATA_/model/"
+            "../../../_DATA_/gltf/"
         );
     var names;
     var eigenvectors=[];
@@ -32,10 +33,11 @@
     });
     function computeEigenvector(urls_index) {
         new THREE.GLTFLoader().load(path+names[urls_index], (glb) => {
-            var scene=new THREE.Scene();
-            for(i=glb.scene.children.length-1;i>=0;i--)
-                scene.add(glb.scene.children[i]);
-            var eigenvector=new GlbHandle().eigenvector({scene:scene},10);
+            var mesh=null;
+            glb.scene.traverse(function (node) {
+                if(node instanceof THREE.Mesh)mesh=node;
+            })
+            var eigenvector=new DifferenceAnalyzer().eigenvector(mesh);
             eigenvectors.push(eigenvector)
             if(urls_index+1<names.length){
                 console.log("特征向量计算进度:"+urls_index+"/"+names.length)
@@ -51,37 +53,52 @@
         for (i = 0; i < names.length; i++) {
             result[names[i]] = {
                 url: names[i],
-                matrix: eigenvectors[i].matrix.elements
+                //matrix: eigenvectors[i].matrix.elements,
+                reuse:0
             }
         }
         for (var lll = 0; lll < names.length; lll++) {
             console.log("重用性计算进度:" + lll + "/" + names.length)
             for (var mmm = 0; mmm < lll; mmm++) {
-                var b1 = eigenvectors[lll].boundingBox;
-                var b2 = eigenvectors[mmm].boundingBox;
-                var variance = new GlbHandle().variance(eigenvectors[lll].vector, eigenvectors[mmm].vector)
+                //var b1 = eigenvectors[lll].boundingBox;
+                //var b2 = eigenvectors[mmm].boundingBox;
+                var variance = new DifferenceAnalyzer().variance(eigenvectors[lll], eigenvectors[mmm])
                 //console.log(variance)
-                /*if (variance < 0.01 &&
-                    Math.abs(b1.min.x - b2.min.x) < 5 &&
-                    Math.abs(b1.min.y - b2.min.y) < 5 &&
-                    Math.abs(b1.min.z - b2.min.z) < 5 &&
-                    Math.abs(b1.max.x - b2.max.x) < 5 &&
-                    Math.abs(b1.max.y - b2.max.y) < 5 &&
-                    Math.abs(b1.max.z - b2.max.z) < 5) {
+                if (variance < 0.065 ) {
                         result[names[lll]].url = names[mmm];
+                        result[names[mmm]].reuse++;
                         break;
-                }*/
-                if (variance < 0.01 &&
+                }
+                /*if (variance < 0.01 &&
                     Math.abs(b1.max.x-b1.min.x, b2.max.x - b2.min.x) < 5 &&
                     Math.abs(b1.max.y-b1.min.y, b2.max.y - b2.min.y) < 5 &&
                     Math.abs(b1.max.z-b1.min.z, b2.max.z - b2.min.z) < 5) {
                     result[names[lll]].url = names[mmm];
                     break;
-                }
+                }*/
             }
         }
         console.log(result)
-        download(result, "result.json")
+        var max=[];
+        var max_name=[];
+        for(var k=0;k<10;k++){
+            max.push(0)
+            max_name.push("")
+        }
+
+        for(i in result){
+            for(k=0;k<max.length;k++){
+                if(result[i].reuse>max[k]){
+                    max_name[k]=result[i].url;
+                    max[k]=result[i].reuse;
+                    break;
+                }
+            }
+        }
+        console.log(max)
+        console.log(max_name)
+        alert(max_name)
+        //download(result, "result.json")
     }
     function download(data,name){
         link = document.createElement('a');
