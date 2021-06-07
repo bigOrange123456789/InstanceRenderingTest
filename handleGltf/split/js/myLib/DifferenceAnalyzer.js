@@ -1,8 +1,11 @@
 function DifferenceAnalyzer() {
 }
 DifferenceAnalyzer.prototype={
-    cylinder:[0, 0, 0, 0.01087, 0.11, 0.32, 0.3587, 0.16, 0.038, 0.0018],
-    cube:[0, 0, 0, 0, 0.0553, 0.22746, 0.387, 0.2664, 0.0615, 0.00205],
+    e:{
+        cylinder:[0, 0, 0, 0.01087, 0.11, 0.32, 0.3587, 0.16, 0.038, 0.0018],
+        cube:[0, 0, 0, 0, 0.0553, 0.22746, 0.387, 0.2664, 0.0615, 0.00205],
+        type1:[0.00329, 0.042763, 0.069, 0.1447, 0.16776, 0.25, 0.227, 0.0888, 0.006579, 0],
+    },
     voxel:function(mesh,number){
         console.log("voxel")
         if(typeof (number)==="undefined")number=10;
@@ -120,13 +123,15 @@ DifferenceAnalyzer.prototype={
         var scope=this;
         if(eigenvector1 instanceof THREE.Mesh)
             eigenvector1=scope.eigenvector(eigenvector1,10);
-        if(eigenvector2==="cylinder"){
-            eigenvector2=scope.cylinder;
+
+        if(scope.e[eigenvector2]){
+            eigenvector2=scope.e[eigenvector2];
         }else if(eigenvector2 instanceof THREE.Mesh)
             eigenvector2=scope.eigenvector(eigenvector2,10);
+
         if(eigenvector1.length!==eigenvector2.length)console.log("error!")
 
-        console.log("variance")
+        //console.log("variance")
         var variance=0;
         for(var i=0;i<eigenvector1.length;i++){
             variance+=Math.pow(
@@ -147,5 +152,11 @@ DifferenceAnalyzer.prototype={
         var v=scope.variance(mesh,scope.cube);
         console.log(v);
         return v<0.065;
+    },
+    is:function (mesh,type) {
+        var scope=this;
+        var v=scope.variance(mesh,type);
+        console.log(v);
+        return v<0.03;
     },
 }

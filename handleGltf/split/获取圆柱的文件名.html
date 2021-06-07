@@ -34,7 +34,7 @@
         new THREE.GLTFLoader().load(path+fileName,function (group) {
             group.scene.traverse(function (node) {
                 if(node instanceof THREE.Mesh){
-                    if(diff.isCube(node)){
+                    if(diff.is(node,"type1")){
                         list[fileName]=node.geometry.boundingBox;
                         console.log(fileName)
                     }

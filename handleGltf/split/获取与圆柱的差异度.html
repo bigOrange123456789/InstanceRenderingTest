@@ -24,7 +24,9 @@
                 if(node instanceof THREE.Mesh){
                     console.log(
                         node.name+"与圆柱的差异度为：",
-                        diff.variance(node,"cylinder")
+                        diff.variance(node,"type1"),
+                        node.name+"特征向量为：",
+                        diff.eigenvector(node)
                     );
 
                 }

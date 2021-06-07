@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>WebSocket</title>
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{
+            width: 96%;
+            margin-left: 2%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="btn-group box" role="group" aria-label="...">
+    <button type="button" class="btn btn-default">Oppo</button>
+    <button type="button" class="btn btn-default">Vivo</button>
+    <button type="button" class="btn btn-default">Apple</button>
+</div>
+<div class="page-header">
+    <h5 class="info">服务器返回信息列表:</br></br></h5>
+</div>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+    if (window.WebSocket) {
+        var ws = new WebSocket('ws://127.0.0.1:8001');
+
+        ws.onopen = function () {
+            console.log('连接服务器成功!');
+            ws.send('startting...');
+        }
+        ws.onclose = function () {
+            console.log('服务器关闭');
+        }
+        ws.onerror = function () {
+            console.log("连接出错");
+        }
+
+        ws.onmessage = function (e) {
+            document.querySelector(".box").onclick = function (e) {
+                ws.send('当前点击框的内容为:<font style="color:red;" >' + e.target.innerHTML+'</font>');
+            }
+            $('.info').append(e.data + '</br></br>');
+        }
+    }
+</script>
+</body>
+</html>
