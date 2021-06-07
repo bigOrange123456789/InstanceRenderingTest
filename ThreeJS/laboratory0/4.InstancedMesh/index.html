@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MEETING</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {overflow:hidden;}
+	</style>
+</head>
+
+<body>
+<h1 id="tag" style="position:absolute;top:10px;left:10px;"></h1>
+<script src="js/three.js"></script>
+<script src="js/PlayerControl.js"></script>
+<script src="js/Main.js"></script>
+
+<script>
+	var myMain = new Main();
+	myMain.start();
+	new PlayerControl(myMain.camera);
+	var obj=new THREE.Object3D();
+	myMain.scene.add(obj);
+
+	var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+	var geometry= new THREE.BoxGeometry( 1, 1, 1 )
+
+	var n=100000;
+	const mesh0 = new THREE.InstancedMesh( geometry, material, n );
+
+	var tool=new THREE.Mesh();
+	for ( let i = 0; i < n; i ++ ) {
+		var m = new THREE.Matrix4();
+
+		m.set(  1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 2*i,
+				0, 0, 0, 1 );
+		mesh0.setMatrixAt( i, m );
+	}
+
+	scene.add( mesh0 );
+
+
+	var frame_index=0;
+	setInterval(function () {
+		document.getElementById("tag").innerHTML=frame_index;
+		frame_index=0;
+	},1000)
+	function f() {
+		frame_index++;
+		requestAnimationFrame(f)
+	}f();
+</script>
+</body>
+</html>

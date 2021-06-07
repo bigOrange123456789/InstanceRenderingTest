@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MEETING</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {overflow:hidden;}
+	</style>
+</head>
+
+<body>
+
+<script src="js/three.js"></script>
+<script src="js/PlayerControl.js"></script>
+<script src="js/Main.js"></script>
+
+<script>
+	var myMain = new Main();
+	myMain.start();
+	new PlayerControl(myMain.camera);
+	var obj=new THREE.Object3D();
+	myMain.scene.add(obj);
+
+	var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+	var geometry1= new THREE.BoxGeometry( 1, 1, 1 )
+	var geometry2=new THREE.ConeGeometry( 1, 1, 32 );
+
+	var mesh1= new THREE.Mesh(geometry1, material);
+	var mesh2= new THREE.Mesh(geometry2, material);
+	mesh1.position.set(0,-5,0)
+
+	obj.add(mesh1)
+	obj.add(mesh2)
+</script>
+</body>
+</html>

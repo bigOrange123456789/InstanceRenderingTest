@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MEETING</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {overflow:hidden;}
+	</style>
+</head>
+
+<body>
+
+<script src="js/lib/threeJS/three.js"></script>
+<script src="js/lib/threeJS/GLTFLoader.js"></script>
+<script src="js/playerControl/PlayerControl.js"></script>
+
+<script src="js/Main.js"></script>
+
+<script  type="module">
+	var myMain = new Main();
+	myMain.start();
+	new PlayerControl(myMain.camera);
+	var obj1=new THREE.Object3D();
+	var obj2=new THREE.Object3D();
+	myMain.scene.add(obj1);
+	myMain.scene.add(obj2);
+
+	var material = new THREE.MeshNormalMaterial();
+	var material2=new THREE.MeshPhongMaterial({color:0x0000dd});
+	var geometry= new THREE.CubeGeometry(1,1,1);
+	var geometry0= new THREE.SphereGeometry(1,60,16);//球形//(半径、密封、环)
+
+	var mesh1= new THREE.Mesh(geometry, material);
+	mesh1.scale.set(0.5,10,0.5)
+	mesh1.position.set(0,5,0)
+
+	var mesh2= new THREE.Mesh(geometry, material2);
+	mesh2.scale.set(0.5,10,0.5)
+	mesh2.position.set(0,5,0)
+
+	obj1.add(new THREE.Mesh(geometry0, material))
+	obj1.add(mesh1)
+	obj2.add(new THREE.Mesh(geometry0, material2))
+	obj2.add(mesh2)
+	obj2.rotation.set(0,0,0)
+
+	var r1=1,r2=1,r3=1,r4=1,r5=1,r6=1;
+
+	setInterval(function () {
+		obj1.rotation.x+=(0.002*r1);
+		obj1.rotation.y+=(0.002*r2);
+		obj1.position.x+=(0.01*r4);
+		obj1.position.y+=(0.01*r5);
+	},10)
+
+
+
+	var myPre=null;
+	setInterval(function () {
+		if(myPre===null)myPre=obj1.clone();
+		forecast(myPre,obj1,obj2,1);
+		myPre=obj1.clone();
+	},2000)
+
+	function forecast(c1,c2,c3,ratio) {
+		if(typeof (ratio)==="undefined")ratio=1;
+		ratio++;
+
+		var q3=forecast1(
+				c1.quaternion,
+				c2.quaternion
+		);
+		c3.rotation.set(0,0,0)
+		c3.applyQuaternion(q3)
+
+		var p3=forecast2(
+				c1.position,
+				c2.position
+		);
+		c3.position.set(p3.x,p3.y,p3.z)
+		function forecast1(pre_qua,qua){
+			if(pre_qua===null){
+				pre_qua=new THREE.Quaternion(qua.x,qua.y,qua.z,qua.w);
+			}
+			var next_qua=new THREE.Quaternion();
+			THREE.Quaternion.slerp( pre_qua, qua,next_qua,ratio);
+			return next_qua;
+		}
+		function forecast2(pre_pos,pos){
+			if(pre_pos===null){
+				pre_pos={x:pos.x,y:pos.y,z:pos.z}
+			}
+			return {
+				x:ratio*(pos.x-pre_pos.x)+pre_pos.x,
+				y:ratio*(pos.y-pre_pos.y)+pre_pos.y,
+				z:ratio*(pos.z-pre_pos.z)+pre_pos.z
+			}//next_pos
+		}
+	}
+
+</script>
+</body>
+</html>
