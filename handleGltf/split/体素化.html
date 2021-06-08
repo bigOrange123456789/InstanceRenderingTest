@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>静态模型处理</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/myLib/DifferenceAnalyzer.js"></script>
+
+<script>
+    var path=
+        prompt(
+            "Please enter path:",
+            "../../../_DATA_/cube2.glb"
+        );
+
+    new THREE.GLTFLoader().load(path,function (group) {
+        group.scene.traverse(function (node) {
+            if(node instanceof THREE.Mesh){
+                f(node);
+            }
+        })
+    })
+    function f(mesh) {
+        mesh.applyMatrix4(new THREE.Matrix4().identity ())
+        var e=mesh.matrix.elements
+        var position=mesh.geometry.attributes.position;
+        for(i=0;i<position.count;i++){
+            var x=position.array[3*i];
+            var y=position.array[3*i+1];
+            var z=position.array[3*i+2];
+            position.array[3*i]  =x*e[0]+y*e[4]+z*e[8] +e[12];
+            position.array[3*i+1]=x*e[1]+y*e[5]+z*e[9] +e[13];
+            position.array[3*i+2]=x*e[2]+y*e[6]+z*e[10]+e[14];
+        }
+        var diff=new DifferenceAnalyzer();
+        var voxel=diff.voxel(mesh);
+        var arr=[]
+        for(var i=0;i<10;i++)
+            for(var j=0;j<10;j++)
+                for(var k=0;k<10;k++)
+                    if(voxel[i][j][k]===1)
+                        arr.push([i,j,k])
+        console.log("体素化结果为：",arr)
+
+        mesh.geometry.boundingBox.applyMatrix4(mesh.matrix)
+        console.log()
+        var max=mesh.geometry.boundingBox.max;
+        var min=mesh.geometry.boundingBox.min;
+        var mx=(max.x+min.x)/2;
+        var my=(max.y+min.y)/2;
+        var mz=(max.z+min.z)/2;
+        //download({arr:arr,center:[mx,my,mz]},"mesh.json")
+    }
+    function download(data,name) {
+        var str=JSON.stringify(data);
+        var myBlob=new Blob([str], { type: 'text/plain' })
+        let link = document.createElement('a');
+        link.href = URL.createObjectURL(myBlob);
+        link.download = name;
+        link.click();
+    }
+
+</script>
+
+</body>
