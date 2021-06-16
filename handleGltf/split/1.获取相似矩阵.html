@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>静态模型处理</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/myLib/DifferenceAnalyzer.js"></script>
+
+<script>
+    var path=
+        prompt(
+            "Please enter path:",
+            "../../../_DATA_/gltf/"
+        );
+    var vector=[];
+    var result;
+
+    var names;
+    var diff=new DifferenceAnalyzer();
+    new THREE.XHRLoader(THREE.DefaultLoadingManager).load("names.json", function (data) {
+        names=JSON.parse(data);
+        console.log(names)
+        process(0);
+    });
+    function process(urls_index) {
+        //if(urls_index>=2000){
+        if(urls_index>=names.length){
+            //download();
+            process2()
+            return;
+        }
+        console.log(urls_index+"/"+names.length)
+        var fileName=names[urls_index];
+        new THREE.GLTFLoader().load(path+fileName,function (group) {
+            group.scene.traverse(function (node) {
+                if(node instanceof THREE.Mesh){
+                    vector.push(diff.eigenvector(node))
+                }
+            })
+            process(urls_index+1)
+        })
+    }
+    function process2() {
+        result="["
+        for(var i=0;i<vector.length;i++){
+            var arr=[];
+            for(var j=0;j<vector.length;j++){
+                var variance=diff.variance(vector[i],vector[j])
+                arr.push(parseFloat(variance.toFixed(3)))
+            }
+            if(i!==0)result+=","
+            result+=JSON.stringify(arr);
+            console.log(i+"/"+vector.length);
+            if(i%1000===0)download(i%1000);
+        }
+        result+="]"
+        download(1+Math.floor(vector.length/1000));
+    }
+    function download(name) {
+        //var str=JSON.stringify(mat);
+        console.log(result)
+        var myBlob=new Blob([result], { type: 'text/plain' })
+        let link = document.createElement('a');
+        link.href = URL.createObjectURL(myBlob);
+        link.download = "result"+name+".json";
+        link.click();
+        //console.log("去重的文件个数为："+Object.keys(list).length)/**/
+        result="";
+    }
+</script>
+
+</body>

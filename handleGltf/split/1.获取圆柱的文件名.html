@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>静态模型处理</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/myLib/DifferenceAnalyzer.js"></script>
+
+<script>
+    var path=
+        prompt(
+            "Please enter path:",
+            "../../../_DATA_/gltf/"
+        );
+    var list= {};
+
+    var names;
+    var diff=new DifferenceAnalyzer();
+    new THREE.XHRLoader(THREE.DefaultLoadingManager).load("names.json", function (data) {
+        names=JSON.parse(data);
+        console.log(names)
+        process(0);
+    });
+    function process(urls_index) {
+        //if(urls_index>=2000){
+        if(urls_index>=names.length){
+            download();return;
+        }
+        console.log(urls_index+"/"+names.length)
+        var fileName=names[urls_index];
+        new THREE.GLTFLoader().load(path+fileName,function (group) {
+            group.scene.traverse(function (node) {
+                if(node instanceof THREE.Mesh){
+                    if(diff.is(node,"type1")){
+                        list[fileName]=node.geometry.boundingBox;
+                        console.log(fileName)
+                    }
+                }
+            })
+            process(urls_index+1)
+        })
+    }
+    function download() {
+        var str=JSON.stringify(list);
+        var myBlob=new Blob([str], { type: 'text/plain' })
+        let link = document.createElement('a');
+        link.href = URL.createObjectURL(myBlob);
+        link.download = "result.json";
+        link.click();
+        console.log("去重的文件个数为："+Object.keys(list).length)
+    }
+</script>
+
+</body>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>静态模型处理</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/threeLib/GLTFExporter.js"></script>
+
+<script src="js/myLib/Download.js"></script>
+<script src="js/GlbHandle.js"></script>
+<script src="js/myLib/DuplicateRemoval.js"></script>
+<script src="js/myLib/MaterialHandle.js"></script>
+<script src="js/myLib/GlbSplit.js"></script>
+<script src="js/myLib/InDe.js"></script>
+<script src="js/myLib/ResourceManager.js"></script>
+<script src="js/myLib/DifferenceAnalyzer.js"></script>
+
+<script>
+    var path=
+        prompt(
+            "Please enter path:",
+            "../../../_DATA_/"
+        );
+    var names=[
+        "m1.glb",
+        "m2.glb"
+    ];
+    var diff=new DifferenceAnalyzer();
+    new THREE.GLTFLoader().load(path+names[0],function (group) {
+        group.scene.traverse(function (node) {
+            if(node instanceof THREE.Mesh){
+                var mesh1=node;
+                new THREE.GLTFLoader().load(path+names[1],function (group) {
+                    group.scene.traverse(function (node) {
+                        if(node instanceof THREE.Mesh){
+                            f(mesh1,node);
+                        }
+                    })
+                })
+            }
+        })
+    })
+    function f(m1,m2) {
+        var e1=diff.eigenvector(m1);
+        var e2=diff.eigenvector(m2);
+        var v=diff.variance(e1,e2)
+        console.log(names[0]+"的特征向量为：",e1)
+        console.log(names[1]+"的特征向量为：",e2)
+        console.log("差异度为：",v)
+    }
+
+</script>
+
+</body>

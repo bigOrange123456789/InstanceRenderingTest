@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>静态模型处理</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/threeLib/GLTFExporter.js"></script>
+
+<script src="js/myLib/Download.js"></script>
+<script src="js/GlbHandle.js"></script>
+<script src="js/myLib/DuplicateRemoval.js"></script>
+<script src="js/myLib/MaterialHandle.js"></script>
+<script src="js/myLib/GlbSplit.js"></script>
+<script src="js/myLib/InDe.js"></script>
+<script src="js/myLib/ResourceManager.js"></script>
+
+<script>
+    var name=
+        prompt(
+            "Please enter file name:",
+            "result.json"
+        );
+    var path=
+        prompt(
+            "Please enter path:",
+            "../../../_DATA_/model/"
+        );
+    var inf;
+    var names;
+    new THREE.XHRLoader(THREE.DefaultLoadingManager).load(name, function (data) {
+        inf=JSON.parse(data);
+        //简化matrix
+        for (var s in inf) {
+            var m=inf[s].matrix;
+            for(var i=0;i<m.length;i++)
+                inf[s].matrix[i]=parseFloat(m[i].toFixed(4));
+        }
+        //处理matrixs
+        for (var s in inf) {
+            inf[s].matrixs=[]
+        }
+        for (var s in inf) {
+            var originModel=inf[s].url;
+            if(originModel!==s)
+                inf[originModel].matrixs.push(inf[s].matrix)
+        }
+        for (var s in inf) {
+            var str=JSON.stringify(inf[s].matrixs)
+            for(i=0;i<str.length;i++){
+                if(str.charAt(i)==='[')
+                    str=replaceChat(str,i,'(')
+                else if(str.charAt(i)===']')
+                    str=replaceChat(str,i,')')
+                else if(str.charAt(i)==='.')
+                    str=replaceChat(str,i,'?')
+                //str=str.replace('[', '(');
+                //str=str.replace(']', ')');
+                //str=str.replace('.', '?');
+            }
+            function replaceChat(source,pos,newChar){
+                if(pos<0||pos>=source.length||source.length===0){
+                    return "invalid parameters...";
+                }
+                var iBeginPos= 0, iEndPos=source.length;
+                var sFrontPart=source.substr(iBeginPos,pos);
+                var sTailPart=source.substr(pos+1,source.length);
+                var sRet=sFrontPart+newChar+sTailPart;
+                return sRet;
+            }
+            inf[s].matrixs=str;
+            //console.log(str)
+        }
+        console.log(inf)
+        new THREE.XHRLoader(THREE.DefaultLoadingManager).load("names2.json", function (data) {
+            names=JSON.parse(data);
+            1.(0);
+        })
+    });
+    function addMatrix(urls_index) {
+        var name=names[urls_index]
+        new THREE.GLTFLoader().load(path+name, (glb) => {
+            var scene=new THREE.Scene();
+            scene.name=inf[name].matrixs;
+
+            scene.add(glb.scene.children[0].clone())
+            //console.log(glb.scene.children[0])
+            //glb.scene.name=inf[name].matrixs;
+            //console.log(glb.scene.name)
+            //glb.scene.children[0].name=inf[name].matrixs;
+            //console.log(glb.scene.children[0].name)
+            if(urls_index+1<names.length){
+                const exporter = new THREE.GLTFExporter();
+                exporter.parse(scene, function ( gltf ) {
+                    downloadJSON( gltf );
+                    function downloadJSON(gltf) {
+                        var myBlob=new Blob([JSON.stringify(gltf)], { type: 'text/plain' })
+                        let link = document.createElement('a');
+                        link.href = URL.createObjectURL(myBlob);
+                        link.download = name;
+                        link.click();
+                        setTimeout(function () {
+                            1.(urls_index+1);
+                        },1000)
+                    }
+                } );
+
+            }else{
+                alert("finish!")
+            }
+        });
+    }
+
+
+
+
+</script>
+
+</body>
