@@ -22,50 +22,15 @@
 	new PlayerControl(myMain.camera);
 
 	const loader = new THREE.GLTFLoader();
-	loader.load("type1.gltf", function ( gltf ) {
+	loader.load("2.glb", function ( gltf ) {
 		console.log(gltf)
 
-		gltf.scene.scale.set(0.001,0.001,0.001)
 		gltf.scene.traverse(function (node) {
 			if(node instanceof THREE.Mesh){
 				myMain.scene.add(node)
-				node.scale.set(0.01,0.01,0.01);
-				//node.applyMatrix4(new THREE.Matrix4().identity ());
-				node.applyMatrix(new THREE.Matrix4().set(
-						0.24865443   ,-0.45392752  , 0.85564056,0,
-						 -0.28785791 ,0.80884023   , 0.51275267,0,
-				        -0.92482906  ,-0.37380113  ,0.07045508,0,
-						0             ,        0 ,      0 , 1
-				));
 
-                                /**/
 
-				node.geometry.boundingBox.applyMatrix4(
-						node.matrix
-				)
 				var box=node.geometry.boundingBox;
-				node.position.set(
-						-(box.max.x+box.min.x)/2,
-						-(box.max.y+box.min.y)/2,
-						-(box.max.z+box.min.z)/2
-				)
-				node.geometry.boundingBox.applyMatrix4(
-						node.matrix
-				)
-				box=node.geometry.boundingBox;
-
-				console.log(
-						1/(box.max.x-box.min.x),
-						1/(box.max.y-box.min.y),
-						1/(box.max.z-box.min.z)
-				)
-				/*
-				node.applyMatrix(new THREE.Matrix4().set(
-						0.8,0,0,0,
-						0,1,0,0,
-						0,0,1,0,
-						0,0,0,1
-				));*/
 
 				/*node.applyMatrix(new THREE.Matrix4().set(
 						1/(box.max.x-box.min.x),0,0,0,
@@ -74,9 +39,16 @@
 						0,0,0,1
 				));
 				*/
+				node.scale.set(
+						1/(box.max.x-box.min.x),
+						1/(box.max.y-box.min.y),
+						1/(box.max.z-box.min.z)
+				)
+				console.log(box)
 				console.log(node)
 
 
+				d()
 				function d() {
 					var scene=new THREE.Scene();
 					scene.name=name;

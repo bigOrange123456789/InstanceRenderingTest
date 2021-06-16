@@ -13,7 +13,7 @@
     var path=
         prompt(
             "Please enter path:",
-            "../../../_DATA_/cube2.glb"
+            "../../../_DATA_/type1.gltf"
         );
 
     new THREE.GLTFLoader().load(path,function (group) {
@@ -52,7 +52,7 @@
         var mx=(max.x+min.x)/2;
         var my=(max.y+min.y)/2;
         var mz=(max.z+min.z)/2;
-        //download({arr:arr,center:[mx,my,mz]},"mesh.json")
+        download({arr:arr,center:[mx,my,mz]},"mesh.json")
     }
     function download(data,name) {
         var str=JSON.stringify(data);
