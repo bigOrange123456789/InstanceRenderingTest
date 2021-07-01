@@ -6,16 +6,12 @@ import { PropertyMixer } from './PropertyMixer.js';
 import { AnimationClip } from './AnimationClip.js';
 import { NormalAnimationBlendMode } from '../constants.js';
 
-function AnimationMixer( root ) {
-
+function AnimationMixer( root ) {//root是场景，用于提供几何信息和骨骼信息
 	this._root = root;
 	this._initMemoryManager();
 	this._accuIndex = 0;
-
 	this.time = 0;
-
 	this.timeScale = 1.0;
-
 }
 
 AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
@@ -91,6 +87,7 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 
 	},
 
+	//使用play()方法后调用下面这个函数
 	_activateAction: function ( action ) {
 
 		if ( ! this._isActiveAction( action ) ) {
@@ -128,9 +125,7 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 			}
 
 			this._lendAction( action );
-
 		}
-
 	},
 
 	_deactivateAction: function ( action ) {
@@ -160,9 +155,7 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 	},
 
 	// Memory manager
-
-	_initMemoryManager: function () {
-
+	_initMemoryManager: function () {//初始化了一些成员变量
 		this._actions = []; // 'nActiveActions' followed by inactive ones
 		this._nActiveActions = 0;
 
@@ -512,11 +505,16 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 	// return an action for a clip optionally using a custom root target
 	// object (this method allocates a lot of dynamic memory in case a
 	// previously unknown clip/root combination is specified)
+	//可以选择使用自定义根目标返回剪辑的操作
+	//对象(这种方法在发生错误时会分配大量的动态内存
+	//指定了以前未知的剪辑/根组合）
 	clipAction: function ( clip, optionalRoot, blendMode ) {
+		//常见的调用方法 clipAction(glb.animations[0])
 
-		const root = optionalRoot || this._root,
+		const root = optionalRoot || this._root,//root是场景
 			rootUuid = root.uuid;
 
+		//clipObject是否为字符串
 		let clipObject = typeof clip === 'string' ? AnimationClip.findByName( root, clip ) : clip;
 
 		const clipUuid = clipObject !== null ? clipObject.uuid : clip;
@@ -524,22 +522,16 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 		const actionsForClip = this._actionsByClip[ clipUuid ];
 		let prototypeAction = null;
 
-		if ( blendMode === undefined ) {
-
+		if ( blendMode === undefined ) {//blend融合
 			if ( clipObject !== null ) {
-
-				blendMode = clipObject.blendMode;
-
+				blendMode = clipObject.blendMode;//clip夹子//动画夹
+				//blendMode是混合模式的编号
 			} else {
-
-				blendMode = NormalAnimationBlendMode;
-
+				blendMode = NormalAnimationBlendMode;//似乎是内置自定义对象
 			}
-
 		}
 
-		if ( actionsForClip !== undefined ) {
-
+		if ( actionsForClip !== undefined ) {//如果目前有正在播放的动画
 			const existingAction = actionsForClip.actionByRoot[ rootUuid ];
 
 			if ( existingAction !== undefined && existingAction.blendMode === blendMode ) {
@@ -613,41 +605,39 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 	},
 
 	// advance the time and update apply the animation
-	update: function ( deltaTime ) {
-
+	// 提前时间并更新应用动画
+	update: function ( deltaTime ,myTrackIndex) {
 		deltaTime *= this.timeScale;
-
 		const actions = this._actions,
 			nActions = this._nActiveActions,
-
 			time = this.time += deltaTime,
 			timeDirection = Math.sign( deltaTime ),
-
-			accuIndex = this._accuIndex ^= 1;
+			accuIndex = this._accuIndex ^= 1;//0变1 1变0
+		// a=b^=k  表示a和b均变为b对应数据二进制的异或
 
 		// run active actions
-
 		for ( let i = 0; i !== nActions; ++ i ) {
-
 			const action = actions[ i ];
-
 			action._update( time, deltaTime, timeDirection, accuIndex );
-
 		}
 
 		// update scene graph
-
 		const bindings = this._bindings,
 			nBindings = this._nActiveBindings;
-
-		for ( let i = 0; i !== nBindings; ++ i ) {
-
-			bindings[ i ].apply( accuIndex );
-
+		if(typeof (myTrackIndex)==="undefined"){
+			//nBindings是动画轨迹track的个数
+			for ( let i = 0; i !== nBindings; ++ i ) {
+				bindings[ i ].apply( accuIndex );
+				//accuIndex似乎是0和1的交替
+			}
+		}else{
+			for(var k=0;k< myTrackIndex.length;k++){
+				var index=myTrackIndex[k];
+				bindings[index].apply( accuIndex );
+			}
 		}
 
 		return this;
-
 	},
 
 	// Allows you to seek to a specific time in an animation.
@@ -714,6 +704,7 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 	},
 
 	// free all resources specific to a particular root target object
+	// 释放特定于根目标对象的所有资源
 	uncacheRoot: function ( root ) {
 
 		const rootUuid = root.uuid,
@@ -750,7 +741,7 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 
 	},
 
-	// remove a targeted clip from the cache
+	// remove a targeted clip from the cache从缓存中删除目标剪辑
 	uncacheAction: function ( clip, optionalRoot ) {
 
 		const action = this.existingAction( clip, optionalRoot );

@@ -4,7 +4,8 @@ import { WrapAroundEnding, ZeroCurvatureEnding, ZeroSlopeEnding, LoopPingPong, L
 class AnimationAction {
 
 	constructor( mixer, clip, localRoot, blendMode ) {
-
+		//mixer是动画混合器
+		//clip是动画夹
 		this._mixer = mixer;
 		this._clip = clip;
 		this._localRoot = localRoot || null;
@@ -72,11 +73,8 @@ class AnimationAction {
 	// State & Scheduling
 
 	play() {
-
 		this._mixer._activateAction( this );
-
 		return this;
-
 	}
 
 	stop() {

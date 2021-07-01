@@ -53,15 +53,74 @@
     }
 
 
+
     var loader= new THREE.GLTFLoader();
-    loader.load("male_run.glb", (glb) => {
-        var mixer = new AnimationMixer(glb.scene);
-        mixer.clipAction(glb.animations[0]).play();
-        setInterval(function () {
-            mixer.update(0.01);
-        },10)
+    loader.load("idle.glb", (glb) => {
+        print(glb)
+        var animations0=glb.animations[0];
+        play(glb)
+
+        //将模型添加到场景中
         scene.add(glb.scene);
+        loader.load("male_run.glb", (glb) => {
+            print(glb)
+            glb.animations.push(animations0)
+            play(glb)
+
+            //将模型添加到场景中
+            //scene.add(glb.scene);
+
+        });
     });
+    function play(glb){
+
+        var mixer2 = new AnimationMixer(glb.scene);
+        mixer2.clipAction(glb.animations[0]).play();
+        setInterval(function () {
+            mixer2.update(0.01);
+        },10)
+
+    }
+    function merge(){
+        //设置动画头部动画
+        var arr1=[9,10,11,12];
+        var mixer = new AnimationMixer(glb.scene);
+        mixer.clipAction(glb.animations[1]).play();
+        setInterval(function () {
+            mixer.update(0.01,arr1);
+        },10)
+        /**/
+
+        //设置动画头部动画
+        var arr2=[];
+        var arr0=arr1;
+        for(var i1=0;i1<glb.animations[0].tracks.length;i1++){
+            for(var i2=0;i2<arr0.length;i2++){
+                if(arr0[i2]===i1)break;
+            }
+            if(i2===arr0.length){
+                arr2.push(i1)
+            }
+        }
+        console.log(arr2)
+
+        var mixer2 = new AnimationMixer(glb.scene);
+        mixer2.clipAction(glb.animations[0]).play();
+        setInterval(function () {
+            mixer2.update(0.01,arr2);
+        },10)
+
+    }
+    function print(glb){//数据信息
+        console.log("name:",glb.scene.name)
+        console.log("animation:",glb.animations)
+        glb.scene.traverse(function (mesh) {
+            if(mesh instanceof THREE.Mesh){
+                var skeleton=mesh.skeleton;
+                console.log("skeleton:",skeleton);
+            }
+        })
+    }
 </script>
 
 </body>
