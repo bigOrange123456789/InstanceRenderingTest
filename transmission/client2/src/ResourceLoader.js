@@ -127,7 +127,7 @@ class ResourceLoader_Multiple{//多个文件打包加载，需要建立后台
                 let link = document.createElement('a');
                 link.style.display = 'none';
                 document.body.appendChild(link);
-                link.href = URL.createObjectURL(new Blob([JSON.stringify(json)], { type: 'text/plain' }));
+                link.href = URL.createObjectURL(new Blob([JSON.stringify(json, null, '\t')], { type: 'text/plain' }));
                 link.download =name;
                 link.click();
             }
@@ -714,7 +714,7 @@ class ResourceList{//这个对象主要负责资源列表的生成和管理
                 }
             }
         }else{
-            for(i=0;i<scope.models.length;i++)
+            for(var i=0;i<scope.models.length;i++)
                 scope.#culling(i);
 
         }

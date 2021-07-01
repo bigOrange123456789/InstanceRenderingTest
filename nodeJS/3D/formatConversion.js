@@ -6,9 +6,20 @@ const gltfPipeline = require('gltf-pipeline');
 const fsExtra = require('fs-extra');
 const glbToGltf = gltfPipeline.glbToGltf;
 //draco
+var cmd=require('node-cmd');
 
 const processGltf = gltfPipeline.processGltf;
 function Format() {
+    this.path_FBX2glTF="./"
+    this.fbx2glb=function (name) {
+        cmd.run('FBX2glTF.exe -i '+name+'.fbx -o '+name+'.glb ');
+        cmd.get(
+            'run run_exe',
+            function(data){
+                console.log("finish!");//console.log('the current dir contains these files :\n\n',data)
+            }
+        );
+    }
     this.obj2gltf=function(name) {
         obj2gltf(name+'.obj')
             .then(function(gltf) {

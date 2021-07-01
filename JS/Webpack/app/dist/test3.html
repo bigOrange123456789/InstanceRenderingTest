@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="./main.js"></script>
+    <title></title>
+</head>
+<body>
+<script type="module">
+    var grid = new PF.Grid(10,10);
+    grid.setWalkableAt(2,2,false);
+    var finder = new PF.AStarFinder({
+        allowDiagonal: true,//允许对角线
+        dontCrossCorners: false,//不要拐弯?
+        heuristic: PF.Heuristic["manhattan"],//启发式["曼哈顿"]
+        weight: 1
+    });
+    var path = finder.findPath(
+        1,1,
+        4,4,
+        grid);
+    console.log(path)
+</script>
+</body>
+</html>
+

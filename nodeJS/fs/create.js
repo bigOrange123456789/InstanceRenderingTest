@@ -4,7 +4,7 @@
 
 ///process.argv存储输入的命令
 ///node server.js ***
-///path1/node.exe
+///path1/node.run_exe
 ///path2/server.js
 ///***输入的第三个参数
 

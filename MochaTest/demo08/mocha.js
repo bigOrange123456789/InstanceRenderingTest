@@ -10957,7 +10957,7 @@ inspect.colors = {
   'yellow' : [33, 39]
 };
 
-// Don't use 'blue' not visible on cmd.exe
+// Don't use 'blue' not visible on cmd.run_exe
 inspect.styles = {
   'special': 'cyan',
   'number': 'yellow',
@@ -12030,7 +12030,7 @@ var exec = require('child_process').exec
 function which(name) {
   var paths = process.env.PATH.split(':');
   var loc;
-  
+
   for (var i = 0, len = paths.length; i < len; ++i) {
     loc = path.join(paths[i], name);
     if (exists(loc)) return loc;

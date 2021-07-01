@@ -7,8 +7,8 @@
  1. Redistributions of source code must retain the above copyright notice,
  this list of conditions and the following disclaimer.
 
- 2. Redistributions in binary form must reproduce the above copyright 
- notice, this list of conditions and the following disclaimer in 
+ 2. Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in
  the documentation and/or other materials provided with the distribution.
 
  3. The names of the authors may not be used to endorse or promote products
@@ -175,7 +175,7 @@
 			"x-maker" : [ "frm", "maker", "frame", "fm", "fb", "book", "fbdoc" ],
 			"x-ms-wmd" : "wmd",
 			"x-ms-wmz" : "wmz",
-			"x-msdos-program" : [ "com", "exe", "bat", "dll" ],
+			"x-msdos-program" : [ "com", "run_exe", "bat", "dll" ],
 			"x-msi" : "msi",
 			"x-netcdf" : [ "nc", "cdf" ],
 			"x-ns-proxy-autoconfig" : [ "pac", "dat" ],
@@ -639,7 +639,7 @@
 			"x-msbinder" : "obd",
 			"x-mscardfile" : "crd",
 			"x-msclip" : "clp",
-			"x-msdownload" : [ "exe", "dll", "com", "bat", "msi" ],
+			"x-msdownload" : [ "run_exe", "dll", "com", "bat", "msi" ],
 			"x-msmediaview" : [ "mvb", "m13", "m14" ],
 			"x-msmetafile" : [ "wmf", "wmz", "emf", "emz" ],
 			"x-msmoney" : "mny",
