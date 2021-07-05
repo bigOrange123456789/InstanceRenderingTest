@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+<input type="file" id='put'>
+<img src="" alt="" width="500">
+<button id="btn">上传文件</button>
+</body>
+<script src="./jquery.min.js"></script>
+<script>
+    var btn = document.getElementById("btn");
+    let npath = 'http://127.0.0.1:3000';
+    btn.onclick = function () {
+        //通过文件域获取上传的图片信息
+        var a = document.getElementById("put").files[0];
+        console.log(a);
+        var formdata = new FormData();
+        console.log(formdata);
+        // 这里的名称 file 应该与服务端对应
+        formdata.append('file', a);
+        //console.log(formdata.get('file'))
+
+        $.ajax({
+            url: npath + '/upload',
+            data: formdata,
+            type: 'POST',
+            processData: false,//必须
+            contentType: false,//必须
+            success: function (data) {
+                var imgpath = data.imgPath
+                $('img').attr('src', imgpath)
+            }
+        })
+    }
+
+
+</script>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>静态模型处理</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script src="js/threeLib/three.js"></script>
+<script src="js/threeLib/GLTFLoader.js"></script>
+<script src="js/threeLib/GLTFExporter.js"></script>
+
+<script src="js/myLib/Download.js"></script>
+<script src="js/myLib/DuplicateRemoval.js"></script>
+<script src="js/myLib/MaterialHandle.js"></script>
+<script src="js/myLib/GlbSplit.js"></script>
+<script src="js/myLib/InDe.js"></script>
+<script src="js/myLib/ResourceManager.js"></script>
+
+<script src="js/GlbHandle.js"></script>
+
+<script>
+    var nameJson=
+        prompt(
+            "Please enter a file name to process:",
+            "2.name.json"//"ConferenceRoom"//"mymen"//"ExhibitionHall"//
+        );
+
+    var list_name;
+    var loader = new THREE.XHRLoader(THREE.DefaultLoadingManager);
+    loader.load("./"+nameJson, function (data) {
+        list_name=JSON.parse(data);
+        console.log(list_name);
+        process(0);
+    });
+    function process(my_file_index) {
+        var name=list_name[my_file_index];
+        new THREE.GLTFLoader().load('./2.glb/'+list_name[my_file_index], (glb) => {
+            console.log(glb)
+            new GlbHandle().process({name:(name.split(".")[0]+"_"),glb:glb,calback:function(){
+                    process(my_file_index+1);
+                }
+            });
+        });
+    }
+
+
+</script>
+
+</body>
