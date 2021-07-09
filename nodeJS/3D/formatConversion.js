@@ -14,12 +14,10 @@ const processGltf = gltfPipeline.processGltf;
 function Format() {
     this.path_FBX2glTF="./"
     this.fbx2glb=function (name) {
-        cmd.run('FBX2glTF.exe -i '+name+'.fbx -o '+name+'.glb ');
-        cmd.get(
-            'run run_exe',
-            function(data){
-                console.log("finish!");//console.log('the current dir contains these files :\n\n',data)
-            }
+        const convert = require('fbx2gltf');
+        convert(name+'.fbx', name+'.glb', ['--khr-materials-unlit']).then(
+            destPath => {console.log(destPath)},
+            error => {console.log(error)}
         );
     }
     this.obj2gltf=function(name) {
