@@ -624,7 +624,7 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 		// update scene graph
 		const bindings = this._bindings,
 			nBindings = this._nActiveBindings;
-		if(typeof (myTrackIndex)==="undefined"){
+		if(typeof (myTrackIndex)==="undefined"){//使用固定的track
 			//nBindings是动画轨迹track的个数
 			for ( let i = 0; i !== nBindings; ++ i ) {
 				bindings[ i ].apply( accuIndex );
