@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - cloth simulation</title>
+		<meta charset="utf-8">
+	</head>
+
+	<body>
+		<script type="module">
+			import * as THREE from './three.module.js';
+			import { OrbitControls } from './OrbitControls.js';
+			import { Net } from './Net.js';
+			let container;
+			let camera, scene, renderer;
+			init();
+			function init() {
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				// scene
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0xcce0ff );
+				scene.fog = new THREE.Fog( 0xcce0ff, 500, 10000 );
+
+				// camera
+				camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.set( 1000, 50, 1500 );
+
+				// lights
+				scene.add( new THREE.AmbientLight( 0xffffff ) );
+
+				// renderer
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+				renderer.outputEncoding = THREE.sRGBEncoding;
+				renderer.shadowMap.enabled = true;
+				// controls
+				new OrbitControls( camera, renderer.domElement );
+			}
+			render();
+			function render() {
+				requestAnimationFrame( render );
+				renderer.render( scene, camera );
+			}
+			scene.add(new Net().object)
+		</script>
+	</body>
+</html>
