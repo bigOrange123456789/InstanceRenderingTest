@@ -10,7 +10,6 @@
 </head>
 
 <body>
-
 <script src="lib/three.js"></script>
 <script src="main.js"></script>
 <script src="lib/GLTFLoader.js"></script>
@@ -22,7 +21,6 @@
 
 <script type="module">
     import {AnimationMixer} from  "../src/animation/AnimationMixer.js"
-
     var camera, scene, renderer;
     var light;
     init();
@@ -52,8 +50,6 @@
         requestAnimationFrame(render);
     }
 
-
-
     var loader= new THREE.GLTFLoader();
     loader.load("idle.glb", (glb) => {
         print(glb)
@@ -66,14 +62,9 @@
             print(glb)
             glb.animations.push(animations0)
             play(glb)
-
-            //将模型添加到场景中
-            //scene.add(glb.scene);
-
         });
     });
     function play(glb){
-
         var mixer2 = new AnimationMixer(glb.scene);
         mixer2.clipAction(glb.animations[0]).play();
         setInterval(function () {
@@ -89,7 +80,6 @@
         setInterval(function () {
             mixer.update(0.01,arr1);
         },10)
-        /**/
 
         //设置动画头部动画
         var arr2=[];
@@ -102,14 +92,12 @@
                 arr2.push(i1)
             }
         }
-        console.log(arr2)
 
         var mixer2 = new AnimationMixer(glb.scene);
         mixer2.clipAction(glb.animations[0]).play();
         setInterval(function () {
             mixer2.update(0.01,arr2);
         },10)
-
     }
     function print(glb){//数据信息
         console.log("name:",glb.scene.name)

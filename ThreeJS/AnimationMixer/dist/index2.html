@@ -22,7 +22,6 @@
 
 <script type="module">
     import {AnimationMixer} from  "../src/animation/AnimationMixer.js"
-
     var camera, scene, renderer;
     var light;
     init();
@@ -51,8 +50,6 @@
         renderer.render( scene, camera );
         requestAnimationFrame(render);
     }
-
-
 
     var loader= new THREE.GLTFLoader();
     loader.load("../../../../_DATA_/dongshizhang.gltf", (glb) => {
@@ -93,27 +90,22 @@
         setInterval(function () {
             mixer.update(0.01,arr1);
         },10)
-        /**/
 
         //设置动画头部动画
         var arr2=[];
         var arr0=arr1;
         for(var i1=0;i1<glb.animations[0].tracks.length;i1++){
-            for(var i2=0;i2<arr0.length;i2++){
+            for(var i2=0;i2<arr0.length;i2++)
                 if(arr0[i2]===i1)break;
-            }
-            if(i2===arr0.length){
+            if(i2===arr0.length)
                 arr2.push(i1)
-            }
         }
-        console.log(arr2)
 
         var mixer2 = new AnimationMixer(glb.scene);
         mixer2.clipAction(glb.animations[0]).play();
         setInterval(function () {
             mixer2.update(0.01,arr2);
         },10)
-
     }
     function print(glb){//数据信息
         console.log("name:",glb.scene.name)
