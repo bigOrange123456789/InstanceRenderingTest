@@ -7,14 +7,14 @@ class Net{
         const DRAG = 1 - DAMPING;
         const MASS = 0.3;//质量
         const restDistance = 25;//面片块大小
-        const xSegs = 10;//水平方向的面片块数
-        const ySegs = 10;//垂直方向的面片块数
+        const xSegs = 100;//水平方向的面片块数
+        const ySegs = 50;//垂直方向的面片块数
         const clothFunction = plane( restDistance * xSegs, restDistance * ySegs );
         function plane( width, height ) {//布面的宽、高
             return function ( u, v, target ) {
                 const x = ( u - 0.5 ) * width;
                 const y = ( v + 0.5 ) * height;
-                const z = 0;
+                const z = 120*Math.sin( Math.PI*10*u );
                 target.set( x, y, z );
             };
         }
@@ -22,7 +22,8 @@ class Net{
         const gravity = new THREE.Vector3( 0, - 981 * 1.4, 0 ).multiplyScalar( MASS );//重力=加速度*质量//F=A*M
         const TIMESTEP = 18 / 1000;//时间步长
         const TIMESTEP_SQ = Math.pow(TIMESTEP ,2);//时间步长的平方
-        let pins = [];
+        let pins = [];//模拟钉子
+        for(var i=0;i<=xSegs;i++)pins.push(i)
 
         const windForce = new THREE.Vector3(  );//风力
         const tmpForce = new THREE.Vector3();
@@ -31,7 +32,7 @@ class Net{
             this.position = new THREE.Vector3();
             this.previous = new THREE.Vector3();
             this.original = new THREE.Vector3();
-            this.a = new THREE.Vector3( 0, 0, 0 ); // acceleration
+            this.a = new THREE.Vector3(); // acceleration
             this.mass = mass;
             this.invMass = 1 / mass;
             this.tmp = new THREE.Vector3();
@@ -62,17 +63,7 @@ class Net{
 
         };
         const diff = new THREE.Vector3();
-        function satisfyConstraints( p1, p2, distance ) {
 
-            diff.subVectors( p2.position, p1.position );
-            const currentDist = diff.length();
-            if ( currentDist === 0 ) return; // prevents division by 0
-            const correction = diff.multiplyScalar( 1 - distance / currentDist );
-            const correctionHalf = correction.multiplyScalar( 0.5 );
-            p1.position.add( correctionHalf );
-            p2.position.sub( correctionHalf );
-
-        }
         function Cloth( w, h ) {//布料模拟
             w = w || 10;
             h = h || 10;
@@ -145,6 +136,37 @@ class Net{
             this.index = index;
 
         }
+
+
+        // cloth material
+        const loader = new THREE.TextureLoader();
+        const clothTexture = loader.load( './circuit_pattern.png' );
+        clothTexture.anisotropy = 16;
+
+        const clothMaterial = new THREE.MeshLambertMaterial( {
+            map: clothTexture,
+            side: THREE.DoubleSide,
+            alphaTest: 0.5
+        } );
+
+        // cloth geometry
+        var clothGeometry = new THREE.ParametricBufferGeometry( clothFunction, cloth.w, cloth.h );
+        // cloth mesh
+        this.object = new THREE.Mesh( clothGeometry, clothMaterial );
+        //scene.add( object );
+
+        animate( 0 );
+        function animate( time0 ) {
+            requestAnimationFrame( animate );
+            const p = cloth.particles;
+            for ( let i = 0, il = p.length; i < il; i ++ ) {
+                const v = p[ i ].position;
+                clothGeometry.attributes.position.setXYZ( i, v.x, v.y, v.z );
+            }
+            clothGeometry.attributes.position.needsUpdate = true;
+            clothGeometry.computeVertexNormals();
+            simulate( time0  );
+        }
         function simulate( now ) {//开始模拟
             const particles = cloth.particles;
             // Aerodynamics forces空气动力
@@ -183,58 +205,23 @@ class Net{
                 }
             }
 
-            // Pin Constraints销约束//pin 别针//丝网挂在了栏杆上
-            for ( let i = 0, il = pins.length; i < il; i ++ ) {
-                const xy = pins[ i ];
-                const p = particles[ xy ];
-                p.position.copy( p.original );
-                p.previous.copy( p.original );
+            // Pin Constraints销约束//pin 别针//丝网挂在了栏杆上//设置了11枚钉子
+            for ( let i = 0; i < pins.length; i ++ ) {
+                const xy = pins[ i ];//粒子编号
+                const p = particles[ xy ];//获取粒子
+                p.position.copy( p.original );//这些粒子的位置是固定的
             }
         }//完成模拟
-        /* testing cloth simulation */
-        const pinsFormation = [];
-        pins = [ 6 ];
-        pinsFormation.push( pins );
-        pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
-        pinsFormation.push( pins );
-        pins = [ 0 ];
-        pinsFormation.push( pins );
-        pins = []; // cut the rope ;)
-        pinsFormation.push( pins );
-        pins = [ 0, cloth.w ]; // classic 2 pins
-        pinsFormation.push( pins );
-        pins = pinsFormation[ 1 ];
+        function satisfyConstraints( p1, p2, distance ) {
 
+            diff.subVectors( p2.position, p1.position );
+            const currentDist = diff.length();
+            if ( currentDist === 0 ) return; // prevents division by 0
+            const correction = diff.multiplyScalar( 1 - distance / currentDist );
+            const correctionHalf = correction.multiplyScalar( 0.5 );
+            p1.position.add( correctionHalf );
+            p2.position.sub( correctionHalf );
 
-
-        // cloth material
-        const loader = new THREE.TextureLoader();
-        const clothTexture = loader.load( './circuit_pattern.png' );
-        clothTexture.anisotropy = 16;
-
-        const clothMaterial = new THREE.MeshLambertMaterial( {
-            map: clothTexture,
-            side: THREE.DoubleSide,
-            alphaTest: 0.5
-        } );
-
-        // cloth geometry
-        var clothGeometry = new THREE.ParametricBufferGeometry( clothFunction, cloth.w, cloth.h );
-        // cloth mesh
-        this.object = new THREE.Mesh( clothGeometry, clothMaterial );
-        //scene.add( object );
-
-        animate( 0 );
-        function animate( time0 ) {
-            requestAnimationFrame( animate );
-            const p = cloth.particles;
-            for ( let i = 0, il = p.length; i < il; i ++ ) {
-                const v = p[ i ].position;
-                clothGeometry.attributes.position.setXYZ( i, v.x, v.y, v.z );
-            }
-            clothGeometry.attributes.position.needsUpdate = true;
-            clothGeometry.computeVertexNormals();
-            simulate( time0  );
         }
     }
 
