@@ -5,7 +5,7 @@ class Net{
     constructor(){
         const DAMPING = 0.03;
         const DRAG = 1 - DAMPING;
-        const MASS = 0.1;
+        const MASS = 0.3;//质量
         const restDistance = 25;//面片块大小
         const xSegs = 10;//水平方向的面片块数
         const ySegs = 10;//垂直方向的面片块数
@@ -19,13 +19,12 @@ class Net{
             };
         }
         const cloth = new Cloth( xSegs, ySegs );
-        const GRAVITY = 981 * 1.4;
-        const gravity = new THREE.Vector3( 0, - GRAVITY, 0 ).multiplyScalar( MASS );
-        const TIMESTEP = 18 / 1000;
-        const TIMESTEP_SQ = TIMESTEP * TIMESTEP;
+        const gravity = new THREE.Vector3( 0, - 981 * 1.4, 0 ).multiplyScalar( MASS );//重力=加速度*质量//F=A*M
+        const TIMESTEP = 18 / 1000;//时间步长
+        const TIMESTEP_SQ = Math.pow(TIMESTEP ,2);//时间步长的平方
         let pins = [];
 
-        const windForce = new THREE.Vector3( 0, 0, 0 );//风力
+        const windForce = new THREE.Vector3(  );//风力
         const tmpForce = new THREE.Vector3();
 
         function Particle( x, y, z, mass ) {
@@ -43,13 +42,13 @@ class Net{
             clothFunction( x, y, this.previous ); // previous
             clothFunction( x, y, this.original );
         }
-        // Force -> Acceleration
+        // Force -> Acceleration力对应加速度
         Particle.prototype.addForce = function ( force ) {
             this.a.add(
                 this.tmp2.copy( force ).multiplyScalar( this.invMass )
             );
         };
-        // Performs Verlet integration
+        // Performs Verlet integration 执行Verlet集成 //Verlet 贷款
         Particle.prototype.integrate = function ( timesq ) {
             const newPos = this.tmp.subVectors( this.position, this.previous );
             newPos.multiplyScalar( DRAG ).add( this.position );
@@ -74,15 +73,13 @@ class Net{
             p2.position.sub( correctionHalf );
 
         }
-        function Cloth( w, h ) {
-
+        function Cloth( w, h ) {//布料模拟
             w = w || 10;
             h = h || 10;
             this.w = w;
             this.h = h;
-
-            const particles = [];
-            const constraints = [];
+            const particles = [];//粒子
+            const constraints = [];//约束
 
             // Create particles
             for ( let v = 0; v <= h; v ++ ) {
@@ -148,13 +145,13 @@ class Net{
             this.index = index;
 
         }
-        function simulate( now ) {
-            // Aerodynamics forces空气动力
+        function simulate( now ) {//开始模拟
             const particles = cloth.particles;
+            // Aerodynamics forces空气动力
             for ( let i = 0, il = particles.length; i < il; i ++ ) {
                 const particle = particles[ i ];
-                particle.addForce( gravity );
-                particle.integrate( TIMESTEP_SQ );
+                particle.addForce( gravity );//添加重力
+                particle.integrate( TIMESTEP_SQ );//时间步长的平方//integrate整合
             }
 
             // Start Constraints开始约束
@@ -178,16 +175,12 @@ class Net{
             const normals = clothGeometry.attributes.normal;
 
             for ( let i = 0, il = indices.count; i < il; i += 3 ) {
-
                 for ( let j = 0; j < 3; j ++ ) {
-
                     indx = indices.getX( i + j );
                     normal.fromBufferAttribute( normals, indx );
                     tmpForce.copy( normal ).normalize().multiplyScalar( normal.dot( windForce ) );
                     particles[ indx ].addForce( tmpForce );
-
                 }
-
             }
 
             // Pin Constraints销约束//pin 别针//丝网挂在了栏杆上
@@ -197,7 +190,7 @@ class Net{
                 p.position.copy( p.original );
                 p.previous.copy( p.original );
             }
-        }
+        }//完成模拟
         /* testing cloth simulation */
         const pinsFormation = [];
         pins = [ 6 ];

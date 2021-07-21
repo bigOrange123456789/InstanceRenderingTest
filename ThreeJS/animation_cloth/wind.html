@@ -39,12 +39,13 @@
 				// controls
 				new OrbitControls( camera, renderer.domElement );
 			}
+			scene.add(new Net().object)
 			render();
 			function render() {
 				requestAnimationFrame( render );
 				renderer.render( scene, camera );
 			}
-			scene.add(new Net().object)
+
 		</script>
 	</body>
 </html>
