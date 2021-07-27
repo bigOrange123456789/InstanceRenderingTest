@@ -7,11 +7,11 @@ class Net{
         const DRAG = 1 - DAMPING;
         const MASS = 0.3;//质量
         const restDistance = 25;//面片块大小
-        const xSegs = 100;//水平方向的面片块数
-        const ySegs = 50;//垂直方向的面片块数
+        const xSegs = 10;//水平方向的面片块数
+        const ySegs = 5;//垂直方向的面片块数
         const clothFunction = plane( restDistance * xSegs, restDistance * ySegs );
         function plane( width, height ) {//布面的宽、高
-            return function ( u, v, target ) {
+            return function ( u, v, target ) {//用于设置布块的初始位置
                 const x = ( u - 0.5 ) * width;
                 const y = ( v + 0.5 ) * height;
                 const z = 120*Math.sin( Math.PI*10*u );
@@ -23,7 +23,8 @@ class Net{
         const TIMESTEP = 18 / 1000;//时间步长
         const TIMESTEP_SQ = Math.pow(TIMESTEP ,2);//时间步长的平方
         let pins = [];//模拟钉子
-        for(var i=0;i<=xSegs;i++)pins.push(i)
+        //钉子的行数：ySegs+1     钉子的列数：xSegs+1 //钉子是从下往上排列的
+        for(var i=(xSegs+1)*ySegs;i<=(xSegs+1)*(ySegs+1)-1;i++)pins.push(i)//在最上面一行钉上钉子
 
         const windForce = new THREE.Vector3(  );//风力
         const tmpForce = new THREE.Vector3();
@@ -155,6 +156,14 @@ class Net{
         this.object = new THREE.Mesh( clothGeometry, clothMaterial );
         //scene.add( object );
 
+        //记录各个钉子的初始位置
+        for ( let i = 0; i < pins.length; i ++ ) {
+            const xy = pins[ i ];//粒子编号
+            const p = cloth.particles[ xy ];//获取粒子
+            p.original_x=p.original.x;
+            p.h=120;
+            //console.log(xy,p.original.x,p.original.y,p.original.z)
+        }
         animate( 0 );
         function animate( time0 ) {
             requestAnimationFrame( animate );
@@ -209,6 +218,13 @@ class Net{
             for ( let i = 0; i < pins.length; i ++ ) {
                 const xy = pins[ i ];//粒子编号
                 const p = particles[ xy ];//获取粒子
+                //生成拉帘子的动画
+                //console.log(xy,p.original_z,p.original.z)
+                if(p.original.x>p.original_x-i*10){
+                    p.original.x=p.original.x-i*0.05;
+                    p.h=p.h+5;
+                    p.original.z = p.h*Math.sin( Math.PI*10*i )
+                }
                 p.position.copy( p.original );//这些粒子的位置是固定的
             }
         }//完成模拟

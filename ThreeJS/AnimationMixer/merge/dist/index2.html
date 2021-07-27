@@ -10,6 +10,7 @@
 </head>
 
 <body>
+
 <script src="lib/three.js"></script>
 <script src="main.js"></script>
 <script src="lib/GLTFLoader.js"></script>
@@ -20,7 +21,7 @@
 <script src=tool/PlayerControl.js></script>
 
 <script type="module">
-    import {AnimationMixer} from  "../src/animation/AnimationMixer.js"
+    import {AnimationMixer} from "../src/animation/AnimationMixer.js"
     var camera, scene, renderer;
     var light;
     init();
@@ -51,26 +52,35 @@
     }
 
     var loader= new THREE.GLTFLoader();
-    loader.load("idle.glb", (glb) => {
+    loader.load("../../../../_DATA_/dongshizhang.gltf", (glb) => {
         print(glb)
-        var animations0=glb.animations[0];
-        play(glb)
-
-        //将模型添加到场景中
+        huishou(glb)
         scene.add(glb.scene);
-        loader.load("male_run.glb", (glb) => {
-            print(glb)
-            glb.animations.push(animations0)
-            play(glb)
-        });
+        function f(n){
+            window.mixer2.clipAction(glb.animations[n]).play();
+        }
+        window.f=f;
     });
     function play(glb){
-        var mixer2 = new AnimationMixer(glb.scene);
-        mixer2.clipAction(glb.animations[0]).play();
+        window.mixer2 = new AnimationMixer(glb.scene);
+        window.mixer2.clipAction(glb.animations[0]).play();
         setInterval(function () {
-            mixer2.update(0.01);
+            window.mixer2.update(0.01);
         },10)
+    }
 
+    function huishou(glb){
+        var animation=THREE.AnimationClip.findByName( glb.animations, 'huishou' );
+        var arr=[]//72
+        for(var i=20;i<72;i++){
+            for(var j=0;j<3;j++)
+                arr.push(3*i+j)
+        }
+        var mixer = new AnimationMixer(glb.scene);
+        mixer.clipAction(animation).play();
+        setInterval(function () {
+            mixer.update(0.01,arr);
+        },10)
     }
     function merge(){
         //设置动画头部动画
@@ -85,12 +95,10 @@
         var arr2=[];
         var arr0=arr1;
         for(var i1=0;i1<glb.animations[0].tracks.length;i1++){
-            for(var i2=0;i2<arr0.length;i2++){
+            for(var i2=0;i2<arr0.length;i2++)
                 if(arr0[i2]===i1)break;
-            }
-            if(i2===arr0.length){
+            if(i2===arr0.length)
                 arr2.push(i1)
-            }
         }
 
         var mixer2 = new AnimationMixer(glb.scene);

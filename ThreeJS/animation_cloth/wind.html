@@ -39,7 +39,9 @@
 				// controls
 				new OrbitControls( camera, renderer.domElement );
 			}
-			scene.add(new Net().object)
+			var obj=new Net().object
+			//obj.scale.set(0.1,0.1,0.1)
+			scene.add(obj)
 			render();
 			function render() {
 				requestAnimationFrame( render );
