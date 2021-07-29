@@ -231,12 +231,12 @@ function requestModelPackage(visibleList, type) {
     let postData = "";
     let tempModelArr = visibleList.split('/');
     for (let i = 0; i < tempModelArr.length - 1; i++) {
-        if (ModelHasBeenLoaded.indexOf(tempModelArr[i]) == -1) {
+        if (ModelHasBeenLoaded.indexOf(tempModelArr[i]) === -1) {
             postData += tempModelArr[i] + '/';
             packSize++;
         }
-        if (packSize >= NUM_PACKAGE || i == tempModelArr.length - 2) {
-            if (postData.length != 0) {
+        if (packSize >= NUM_PACKAGE || i === tempModelArr.length - 2) {
+            if (postData.length !== 0) {
                 requestModelPackageByHttp(postData, type);
                 packSize = 0;
                 postData = "";
@@ -266,7 +266,7 @@ function requestModelPackageByHttp(visibleList, type) {
             if (!glbLengthArr[i])
                 continue;
             let buffer = glbData.slice(totalLength, totalLength + 1.0 * glbLengthArr[i]);
-            reuseDataParser(buffer, i == glbLengthArr.length - 2);
+            reuseDataParser(buffer, i === glbLengthArr.length - 2);
             totalLength += 1.0 * glbLengthArr[i];
         }
         endTime = performance.now();
@@ -275,7 +275,7 @@ function requestModelPackageByHttp(visibleList, type) {
         //console.log("响应间隔：" + tempDelay.toFixed(2) + "S");
         startTime = endTime;
         //type用于区分可视列表的来源，1：peer 2：服务器
-        if (type == 1) {
+        if (type === 1) {
             synTotalTimes++;
             synFromPeerTimes++;
         } else {
@@ -290,7 +290,7 @@ function requestModelPackageByHttp(visibleList, type) {
 function reuseDataParser(data, isLastModel) {
     gltfLoader.parse(data.buffer, './', (gltf) => {
         let name = gltf.parser.json.nodes[0].name;
-        if (ModelHasBeenLoaded.indexOf(name) != -1)
+        if (ModelHasBeenLoaded.indexOf(name) !== -1)
             return;
         //console.log(gltf.scenes[0].uuid)
         // console.log(`scene add new model: ${name}`);
@@ -299,7 +299,7 @@ function reuseDataParser(data, isLastModel) {
         assignBufferUVs(geo);
         let matrixObj = gltf.parser.json.nodes[0].matrixArrs;
         let type = name.slice(name.indexOf('=') + 1);
-        if (matrixObj == undefined) {
+        if (matrixObj === undefined) {
             let mesh = gltf.scene.children[0];
             mesh.scale.set(sceneScale, sceneScale, sceneScale);
             mesh.name = name;
