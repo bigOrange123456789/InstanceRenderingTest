@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>骨骼动画的矩阵在哪里？</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {overflow:hidden;}
+    </style>
+</head>
+<body>
+<script src="lib/three.js"></script>
+<script src="lib/GLTFLoader.js"></script>
+<script src=tool/OrbitControls.js></script>
+<script src="main.js"></script>
+<script>
+    console.log(pack2)
+    //import {WebGLRenderer} from "./main.js"
+    console.log(WebGLRenderer)
+    //骨骼动画的矩阵在哪里？
+    //很有可能在shader里面
+    //import {WebGLRenderer} from "../src/renderers/WebGLRenderer.js"
+    var camera, scene, renderer;
+    var light;
+    init();
+    render();
+    function init() {
+        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 10000);
+        camera.position.z = 20;
+
+        scene = new THREE.Scene();
+
+        renderer = new WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xddddff);
+        document.body.appendChild( renderer.domElement );
+
+        if (renderer.capabilities.isWebGL2 === false && renderer.extensions.has('ANGLE_instanced_arrays') === false) {
+            document.getElementById('notSupported').style.display = '';
+            return;
+        }
+        light = new THREE.AmbientLight(0xffffff,1.0)
+        scene.add(light);
+        new OrbitControls(camera);
+    }
+    function render(){
+        renderer.render( scene, camera );
+        requestAnimationFrame(render);
+    }
+    var loader= new THREE.GLTFLoader();
+    loader.load("idle.glb", (glb) => {
+        //console.log(glb)
+        print(glb)
+        play(glb)
+        scene.add(glb.scene);
+    });
+    function play(glb){
+        var mixer2 = new THREE.AnimationMixer(glb.scene);
+        mixer2.clipAction(glb.animations[0]).play();
+        setInterval(function () {
+            mixer2.update(0.01);
+        },10)
+    }
+    function print(glb){//数据信息
+        //console.log("name:",glb.scene.name)
+        console.log("animation:",glb.animations)
+        glb.scene.traverse(function (mesh) {
+            if(mesh instanceof THREE.Mesh){
+                var skeleton=mesh.skeleton;
+                console.log(mesh)
+                console.log("skeleton:",skeleton);
+            }
+        })
+    }
+</script>
+</body>
+</html>

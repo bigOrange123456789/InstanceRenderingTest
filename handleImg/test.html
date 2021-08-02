@@ -1,0 +1,27 @@
+<html>
+<head>
+    <title>像素点绘制</title>
+    <meta http-equiv="content-type"content="text/html; charset=gb2312">
+</head>
+<body>
+<script src="ImgHandle.js"></script>
+
+
+<script>
+    //提取背景
+    var img = new Image();
+    img.src = "bg0.png";
+    //img.crossOrigin = 'Anonymous';
+    img.onload = function(){
+        var w=img.width,h=img.height;
+        var canvas = document.createElement("canvas");//画布
+        canvas.width = w; canvas.height = h;
+        var context =canvas.getContext("2d");//画笔
+        context.drawImage(img, 0,0,w,h)
+        document.body.append(canvas)
+        console.log(canvas.toDataURL("image/jpeg"))
+    }
+</script>
+</body>
+
+</html>
