@@ -143,9 +143,12 @@ const MathUtils = {
 	},
 
 	ceilPowerOfTwo: function ( value ) {
-
 		return Math.pow( 2, Math.ceil( Math.log( value ) / Math.LN2 ) );
-
+		// 2** log(n)/0.7
+		//Math.LN2	 :  0.6931471805599453
+		//Math.ceil  :  “向上取整”， 即小数部分直接舍去，
+		//Math.log	 :  一个数的自然对数
+		//Math.pow   :  指数
 	},
 
 	floorPowerOfTwo: function ( value ) {

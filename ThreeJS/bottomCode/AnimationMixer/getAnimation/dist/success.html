@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>共用骨骼动画</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {overflow:hidden;}
+    </style>
+</head>
+
+<body>
+<script src="lib/three.js"></script>
+<script src="lib/GLTFLoader.js"></script>
+<script src=tool/OrbitControls.js></script>
+<script src=tool/UI.js></script>
+<script src=tool/Referee.js></script>
+<script src=tool/OrbitControls.js></script>
+<script src=tool/PlayerControl.js></script>
+
+<script type="module">
+    var camera, scene, renderer;
+    var light;
+    init();
+    render();
+    function init() {
+        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 10000);
+        camera.position.z = 20;
+
+        scene = new THREE.Scene();
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xddddff);
+        document.body.appendChild( renderer.domElement );
+
+        light = new THREE.AmbientLight(0xffffff,1.0)
+        scene.add(light);
+        new OrbitControls(camera);
+    }
+    function render(){
+        renderer.render( scene, camera );
+        requestAnimationFrame(render);
+    }
+
+    var loader= new THREE.GLTFLoader();
+    loader.load("male_run.glb", (glb) => {
+        scene.add(glb.scene);
+        play(glb)
+    });
+    function play(glb){
+        var skeleton;
+        glb.scene.traverse(function (node) {
+            if(node instanceof THREE.SkinnedMesh)
+                skeleton=node.skeleton;
+        })
+        console.log(skeleton.bones.length)
+        var animation=glb.animations[0];
+        var times=glb.animations[0].tracks[0].times;
+        var time=times[times.length-1]
+        var mixer = new THREE.AnimationMixer(glb.scene);
+        var action=mixer.clipAction(animation);
+        action.play();
+        var n=8;//帧数量
+        var boneMatrice=[]
+        var interval=setInterval(function () {
+            if(action._loopCount<0){
+                mixer.update(time/n);//时间增量
+                for(var i=0;i<skeleton.bones.length;i++)
+                    for(var j=0;j<4;j++)
+                        for(var k=0;k<3;k++)
+                            boneMatrice.push(skeleton.boneMatrices[16*i+4*j+k])
+            }else{
+                clearInterval(interval)
+                console.log(boneMatrice)
+                var result={
+                    "config":[boneMatrice.length],
+                    "animation":[boneMatrice]
+                }
+
+                var str=JSON.stringify(result , null, "\t")
+
+                var link = document.createElement('a');
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.href = URL.createObjectURL(new Blob([str], { type: 'text/plain' }));
+                link.download ="crowdData_male.json";
+                link.click();
+            }
+        },30)
+    }
+</script>
+
+</body>
+</html>

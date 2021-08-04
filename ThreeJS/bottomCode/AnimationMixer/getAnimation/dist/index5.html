@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>共用骨骼动画</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {overflow:hidden;}
+    </style>
+</head>
+
+<body>
+<script src="lib/three.js"></script>
+<script src="lib/GLTFLoader.js"></script>
+<script src=tool/OrbitControls.js></script>
+<script src=tool/UI.js></script>
+<script src=tool/Referee.js></script>
+<script src=tool/OrbitControls.js></script>
+<script src=tool/PlayerControl.js></script>
+
+<script type="module">
+    var camera, scene, renderer;
+    var light;
+    init();
+    render();
+    function init() {
+        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 10000);
+        camera.position.z = 20;
+
+        scene = new THREE.Scene();
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xddddff);
+        document.body.appendChild( renderer.domElement );
+
+        light = new THREE.AmbientLight(0xffffff,1.0)
+        scene.add(light);
+        new OrbitControls(camera);
+    }
+    function render(){
+        renderer.render( scene, camera );
+        requestAnimationFrame(render);
+    }
+
+    var loader= new THREE.GLTFLoader();
+    loader.load("Female.glb", (glb) => {
+        scene.add(glb.scene);
+        play(glb)
+    });
+    function play(glb){
+        var skeleton;
+        glb.scene.traverse(function (node) {
+            if(!node instanceof THREE.Bone&&node.position){
+                node.position.set(0,0,0)
+                node.scale.set(1,1,1)
+                node.rotation.set(0,0,0)
+            }
+            if(node instanceof THREE.SkinnedMesh)
+                skeleton=node.skeleton;
+        })
+        console.log(skeleton)
+        console.log(skeleton.bones.length)
+        var animation=glb.animations[0];
+        var times=glb.animations[0].tracks[0].times;
+        var time=times[times.length-1]
+        var mixer = new THREE.AnimationMixer(glb.scene);
+        var action=mixer.clipAction(animation);
+        action.play();
+        var n=8;//帧数量
+        var boneMatrice=[]
+        var interval=setInterval(function () {
+            console.log(skeleton.bones[0].matrix.elements[13])
+            if(action._loopCount<0){
+                mixer.update(time/n);//时间增量
+                var frameData=[]
+                for(var i=0;i<skeleton.bones.length;i++){
+
+                    var m1=skeleton.boneInverses[i].clone ();
+                    var m2=skeleton.bones[i].matrixWorld;
+                    frameData.push( m1.multiply ( m2 ) )
+                }
+                boneMatrice.push(frameData)
+            }else{
+                clearInterval(interval)
+                console.log(boneMatrice)
+            }
+        },30)
+    }
+</script>
+
+</body>
+</html>

@@ -723,7 +723,6 @@ function WebGLRenderer( parameters ) {
 	};
 
 	this.renderBufferDirect = function ( camera, scene, geometry, material, object, group ) {
-
 		if ( scene === null ) scene = _emptyScene; // renderBufferDirect second parameter used to be fog (could be null)
 
 		const frontFaceCW = ( object.isMesh && object.matrixWorld.determinant() < 0 );
@@ -953,7 +952,6 @@ function WebGLRenderer( parameters ) {
 	this.render = function ( scene, camera ) {
 
 		let renderTarget, forceClear;
-
 		if ( arguments[ 2 ] !== undefined ) {
 
 			console.warn( 'THREE.WebGLRenderer.render(): the renderTarget argument has been removed. Use .setRenderTarget() instead.' );
@@ -1012,7 +1010,10 @@ function WebGLRenderer( parameters ) {
 		currentRenderList = renderLists.get( scene, camera );
 		currentRenderList.init();
 
+		//boneMatrices[0]:0
+		//if(window.skeleton)console.log("start")
 		projectObject( scene, camera, 0, _this.sortObjects );
+		//boneMatrices[0]:0.004093734547495842
 
 		currentRenderList.finish();
 
@@ -1023,7 +1024,6 @@ function WebGLRenderer( parameters ) {
 		}
 
 		//
-
 		if ( _clippingEnabled === true ) clipping.beginShadows();
 
 		const shadowsArray = currentRenderState.state.shadowsArray;
@@ -1152,6 +1152,9 @@ function WebGLRenderer( parameters ) {
 
 				if ( object.isSkinnedMesh ) {
 
+					if(window.skeleton){
+						console.log("boneMatrices[0]:"+window.skeleton.boneMatrices[0])
+					}
 					// update skeleton only once in a frame
 
 					if ( object.skeleton.frame !== info.render.frame ) {
@@ -1159,6 +1162,11 @@ function WebGLRenderer( parameters ) {
 						object.skeleton.update();
 						object.skeleton.frame = info.render.frame;
 
+					}
+
+					if(window.skeleton){
+						console.log("boneMatrices[0]:"+window.skeleton.boneMatrices[0])
+						if(window.skeleton.boneMatrices[0]!==0)window.skeleton=false;
 					}
 
 				}
@@ -1250,7 +1258,6 @@ function WebGLRenderer( parameters ) {
 				}
 
 			} else {
-
 				_currentArrayCamera = null;
 
 				renderObject( object, scene, camera, geometry, material, group );
@@ -1268,114 +1275,68 @@ function WebGLRenderer( parameters ) {
 
 		object.modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld );
 		object.normalMatrix.getNormalMatrix( object.modelViewMatrix );
-
 		if ( object.isImmediateRenderObject ) {
-
 			const program = setProgram( camera, scene, material, object );
-
 			state.setMaterial( material );
-
 			bindingStates.reset();
-
 			renderObjectImmediate( object, program );
-
 		} else {
-
 			_this.renderBufferDirect( camera, scene, geometry, material, object, group );
-
 		}
-
 		object.onAfterRender( _this, scene, camera, geometry, material, group );
 		currentRenderState = renderStates.get( scene, _currentArrayCamera || camera );
-
 	}
-
 	function initMaterial( material, scene, object ) {
-
 		if ( scene.isScene !== true ) scene = _emptyScene; // scene could be a Mesh, Line, Points, ...
-
 		const materialProperties = properties.get( material );
-
 		const lights = currentRenderState.state.lights;
 		const shadowsArray = currentRenderState.state.shadowsArray;
-
 		const lightsStateVersion = lights.state.version;
-
 		const parameters = programCache.getParameters( material, lights.state, shadowsArray, scene, object );
 		const programCacheKey = programCache.getProgramCacheKey( parameters );
-
 		let program = materialProperties.program;
 		let programChange = true;
-
 		if ( program === undefined ) {
-
 			// new material
 			material.addEventListener( 'dispose', onMaterialDispose );
-
 		} else if ( program.cacheKey !== programCacheKey ) {
-
 			// changed glsl or parameters
 			releaseMaterialProgramReference( material );
-
 		} else if ( materialProperties.lightsStateVersion !== lightsStateVersion ) {
-
 			programChange = false;
-
 		} else if ( parameters.shaderID !== undefined ) {
-
 			// same glsl and uniform list, envMap still needs the update here to avoid a frame-late effect
-
 			const environment = material.isMeshStandardMaterial ? scene.environment : null;
 			materialProperties.envMap = cubemaps.get( material.envMap || environment );
-
 			return;
-
 		} else {
-
 			// only rebuild uniform list
 			programChange = false;
-
 		}
-
 		if ( programChange ) {
-
 			parameters.uniforms = programCache.getUniforms( material );
-
 			material.onBeforeCompile( parameters, _this );
-
 			program = programCache.acquireProgram( parameters, programCacheKey );
-
 			materialProperties.program = program;
 			materialProperties.uniforms = parameters.uniforms;
 			materialProperties.outputEncoding = parameters.outputEncoding;
-
 		}
-
 		const uniforms = materialProperties.uniforms;
-
 		if ( ! material.isShaderMaterial &&
 			! material.isRawShaderMaterial ||
 			material.clipping === true ) {
-
 			materialProperties.numClippingPlanes = clipping.numPlanes;
 			materialProperties.numIntersection = clipping.numIntersection;
 			uniforms.clippingPlanes = clipping.uniform;
-
 		}
-
 		materialProperties.environment = material.isMeshStandardMaterial ? scene.environment : null;
 		materialProperties.fog = scene.fog;
 		materialProperties.envMap = cubemaps.get( material.envMap || materialProperties.environment );
-
 		// store the light setup it was created for
-
 		materialProperties.needsLights = materialNeedsLights( material );
 		materialProperties.lightsStateVersion = lightsStateVersion;
-
 		if ( materialProperties.needsLights ) {
-
 			// wire up the material to this renderer's lighting state
-
 			uniforms.ambientLightColor.value = lights.state.ambient;
 			uniforms.lightProbe.value = lights.state.probe;
 			uniforms.directionalLights.value = lights.state.directional;
@@ -1407,7 +1368,6 @@ function WebGLRenderer( parameters ) {
 	}
 
 	function setProgram( camera, scene, material, object ) {
-
 		if ( scene.isScene !== true ) scene = _emptyScene; // scene could be a Mesh, Line, Points, ...
 
 		textures.resetTextureUnits();
@@ -1578,15 +1538,13 @@ function WebGLRenderer( parameters ) {
 			p_uniforms.setOptional( _gl, object, 'bindMatrixInverse' );
 
 			const skeleton = object.skeleton;
-
 			if ( skeleton ) {
 
 				const bones = skeleton.bones;
-
 				if ( capabilities.floatVertexTextures ) {
-
+					//每一帧都执行
 					if ( skeleton.boneTexture === null ) {
-
+						//只执行一次
 						// layout (1 matrix = 4 pixels)
 						//      RGBA RGBA RGBA RGBA (=> column1, column2, column3, column4)
 						//  with  8x8  pixel texture max   16 bones * 4 pixels =  (8 * 8)
@@ -1595,21 +1553,33 @@ function WebGLRenderer( parameters ) {
 						//       64x64 pixel texture max 1024 bones * 4 pixels = (64 * 64)
 
 
-						let size = Math.sqrt( bones.length * 4 ); // 4 pixels needed for 1 matrix
+						let size = Math.sqrt( bones.length * 4 ); // 4 pixels needed for 1 matrix//l个矩阵需要4像素，1像素对应4个浮点数
+						//size : 10
 						size = MathUtils.ceilPowerOfTwo( size );
+						//size : 16
+						//ceilPowerOfTwo不知道求了个啥
+						//ceil Power Of Two 二次幂
 						size = Math.max( size, 4 );
+						//不知道size这样处理的原理是什么
 
 						const boneMatrices = new Float32Array( size * size * 4 ); // 4 floats per RGBA pixel
 						boneMatrices.set( skeleton.boneMatrices ); // copy current values
-
+						//boneMatrices.length : 1024
 						const boneTexture = new DataTexture( boneMatrices, size, size, RGBAFormat, FloatType );
 
 						skeleton.boneMatrices = boneMatrices;
 						skeleton.boneTexture = boneTexture;
 						skeleton.boneTextureSize = size;
+						//console.log(skeleton.boneTexture)
 
 					}
 
+					if(skeleton.preboneTexture){
+						skeleton.preimage=skeleton.boneTexture.image
+					}else{
+						//console.log(skeleton.preimage===skeleton.boneTexture.image);
+						skeleton.preimage=skeleton.boneTexture.image
+					}
 					p_uniforms.setValue( _gl, 'boneTexture', skeleton.boneTexture, textures );
 					p_uniforms.setValue( _gl, 'boneTextureSize', skeleton.boneTextureSize );
 

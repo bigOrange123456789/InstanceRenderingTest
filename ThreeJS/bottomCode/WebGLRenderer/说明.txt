@@ -1,0 +1,7 @@
+src/renderers/shaders/ShaderChunk/..
+	skinbase_vertex	获取四个矩阵
+	skinning_pars_vertex	骨骼数据解析
+	skinning_vertex	坐标变换
+	skinnormal_vertex	法线计算
+src/WebGLRenderer.js
+	骨骼动画数据的编码

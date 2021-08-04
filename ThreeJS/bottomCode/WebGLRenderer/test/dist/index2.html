@@ -12,14 +12,10 @@
 <script src="lib/three.js"></script>
 <script src="lib/GLTFLoader.js"></script>
 <script src=tool/OrbitControls.js></script>
-<script src="main.js"></script>
-<script>
-    console.log(pack2)
-    //import {WebGLRenderer} from "./main.js"
-    console.log(WebGLRenderer)
+<script type="module">
     //骨骼动画的矩阵在哪里？
     //很有可能在shader里面
-    //import {WebGLRenderer} from "../src/renderers/WebGLRenderer.js"
+    import {WebGLRenderer} from "../src/renderers/WebGLRenderer.js"
     var camera, scene, renderer;
     var light;
     init();

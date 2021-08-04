@@ -1628,6 +1628,7 @@ function WebGLRenderer( parameters ) {
 								skeleton.boneMatrices2[i*4+2]=bone.myScale[2]
 							}
 						}
+
 						//const myBoneMatrices = new Float32Array(1024);
 						//size的大小为16
 						const boneMatrices = new Float32Array( size * size * 4 ); // 4 floats per RGBA pixel
