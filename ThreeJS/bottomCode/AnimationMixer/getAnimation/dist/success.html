@@ -62,7 +62,7 @@
         var mixer = new THREE.AnimationMixer(glb.scene);
         var action=mixer.clipAction(animation);
         action.play();
-        var n=8;//帧数量
+        var n=20;//帧数量
         var boneMatrice=[]
         var interval=setInterval(function () {
             if(action._loopCount<0){
