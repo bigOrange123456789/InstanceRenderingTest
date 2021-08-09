@@ -5,7 +5,7 @@
  * Time: 下午1:20
  * To change this template use File | Settings | File Templates.
  */
-
+//npm install socket.io@2.0.4
 var express = require('express'),
     io = require('socket.io');
 
@@ -13,7 +13,7 @@ var app  =express();
 
 app.use(express.static(__dirname));
 
-var server = app.listen(8888, '100.67.74.153');
+var server = app.listen(8888, '100.68.241.229');
 
 
 var ws = io.listen(server);

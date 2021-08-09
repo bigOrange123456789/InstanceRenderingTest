@@ -1,0 +1,72 @@
+<html>
+<head>
+    <title>test</title>
+    <meta http-equiv="content-type"content="text/html; charset=gb2312">
+</head>
+<body>
+
+<script>
+    var imgURL=prompt("请输入json路径：","./face.json")
+    console.log(imgURL)
+    var request = new XMLHttpRequest();
+    request.open("get", imgURL);
+    request.send(null);
+    request.onload = function () {
+        if (request.status === 200) {
+            var json = JSON.parse(request.responseText);
+            var ctx=getCans();
+            for(var kk=0;kk<json.length;kk++){
+                draw0(ctx,
+                    json[kk].content,
+                    json[kk].labels.labelColor);
+            }
+        }
+    }
+    function randomColor() {
+        var color = "#";
+        for (var i = 0; i < 6; i++) color+=parseInt(Math.random() * 16).toString(16);
+        return color;
+    }
+
+    function draw0(ctx,area0,color) {
+        /*var color="red";
+        var area0=[
+            {x:20,y:30},
+            {x:120,y:90},
+            {x:220,y:60}
+        ]*/
+        var area=[]
+        for(var i=0;i<area0.length;i++){
+            area.push([area0[i].x,area0[i].y])
+        }
+        drawFill(ctx,area,color)
+    }
+
+    function getCans() {
+        var canvas = document.createElement("canvas");//画布
+        canvas.width = 1000; canvas.height = 1000;
+        document.body.append(canvas)
+        return canvas.getContext('2d');
+    }
+    function drawFill(ctx,area,color) {
+        area.push(area[0])
+        ctx.moveTo(area[0][0],area[0][1])
+        for(var i=1;i<area.length;i++)
+            ctx.lineTo(area[i][0],area[i][1]);
+        ctx.fillStyle = color;  //填充颜色
+        ctx.fill();  //填充
+        ctx.lineWidth=1;//描边
+        //ctx.strokeStyle = color;  //描边颜色
+        ctx.stroke();  //描边
+    }
+
+
+
+
+
+
+
+</script>
+</body>
+
+</html>

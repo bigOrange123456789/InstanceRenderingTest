@@ -58,12 +58,12 @@
     ws.on('send.message', function(from, msg) {addMessage(from, msg);});
     ws.on('announcement', function(from, msg) {addMessage(from, msg);});
     document.querySelector('textarea').addEventListener('keypress', function(event) {
-        if (event.which == 13) {
+        if (event.which === 13) {
             send();
         }
     });
     document.querySelector('textarea').addEventListener('keydown', function(event) {
-        if (event.which == 13) {
+        if (event.which === 13) {
             send();
         }
     });
