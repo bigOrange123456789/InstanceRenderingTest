@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+		</style>
+	</head>
+
+	<body>
+
+	<script src="js/lib/threeJS/three.js"></script>
+	<script src="js/lib/threeJS/GLTFLoader.js"></script>
+	<script src="js/playerControl/PlayerControl.js"></script>
+	<script src="js/Main.js"></script>
+
+	<script  type="module">
+		var myMain = new Main();
+		myMain.start();
+		myMain.scene.background = new THREE.Color( 0xcce0ff );
+		new PlayerControl(myMain.camera);
+
+		getMesh('test.glb')
+		function myRequest(path,callback) {
+			var oReq = new XMLHttpRequest();
+			oReq.open("POST", "http://localhost:8080", true);
+			oReq.responseType = "arraybuffer";
+			oReq.onload = ()=>callback(new Uint8Array(oReq.response))//接收数据
+			oReq.send(path);//发送请求
+		}
+		function getMesh(path) {
+			myRequest(path,unitArray=>{
+				new THREE.GLTFLoader().parse(unitArray.buffer, './', glb=> {
+					myMain.scene.add(glb.scene)
+					glb.scene.traverse(node=>{
+						if(node instanceof THREE.Mesh){
+							getTexture("w1.jpg",node)
+						}
+					})
+				});
+			})
+		}
+		function getTexture(path,mesh) {
+			myRequest(path,unitArray=>{
+				var str=String.fromCharCode.apply(null,unitArray)
+				var image = document.createElement('img')
+				var b64encoded = btoa(str)
+				image.src ='data:image/jpeg;base64,'+ b64encoded;
+
+				var texture = new THREE.Texture();
+				texture.image =image;
+				texture.wrapS = THREE.RepeatWrapping;
+				texture.wrapT = THREE.RepeatWrapping;
+				texture.needsUpdate = true;
+				mesh.material = new THREE.MeshBasicMaterial({map: texture});
+			})
+		}
+	</script>
+	</body>
+</html>
