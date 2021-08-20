@@ -26,7 +26,13 @@
 			var oReq = new XMLHttpRequest();
 			oReq.open("POST", "http://localhost:8080", true);
 			oReq.responseType = "arraybuffer";
-			oReq.onload = ()=>callback(new Uint8Array(oReq.response))//接收数据
+			oReq.onload = ()=>{
+				var data=oReq.response;//ArrayBuffer
+				var imageType = oReq.getResponseHeader("Content-Type");
+				var blob = new Blob([data], { type: imageType });//用于图片解析
+				var unityArray=new Uint8Array(data)//用于glb文件解析
+				callback(unityArray,blob)
+			}//接收数据
 			oReq.send(path);//发送请求
 		}
 		function getMesh(path) {
@@ -42,16 +48,13 @@
 			})
 		}
 		function getTexture(path,mesh) {
-			myRequest(path,unitArray=>{
-				var str=String.fromCharCode.apply(null,unitArray)
+			myRequest(path,(unityArray,blob)=>{
 				var image = document.createElement('img')
-				var b64encoded = btoa(str)
-				image.src ='data:image/jpeg;base64,'+ b64encoded;
+				image.src =(window.URL || window.webkitURL).createObjectURL(blob);
 
 				var texture = new THREE.Texture();
 				texture.image =image;
-				texture.wrapS = THREE.RepeatWrapping;
-				texture.wrapT = THREE.RepeatWrapping;
+				texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 				texture.needsUpdate = true;
 				mesh.material = new THREE.MeshBasicMaterial({map: texture});
 			})
