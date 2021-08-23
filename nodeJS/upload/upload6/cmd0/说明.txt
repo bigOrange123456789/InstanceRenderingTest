@@ -1,0 +1,12 @@
+一、安装：
+1.将文件夹node_modules放到"D:\"目录下
+2.将文件夹upload5放到"D:\"目录下
+3.配置环境变量“D:\upload5\cmd0\dist”
+4.在“D:\upload5"目录下运行"forever start app.js"
+二、使用：
+1.在“D:\upload5\config.json"中添加接收方的id和ip地址
+2.通过命令行输入：“send   对方id  文件名”
+3.接收到的数据会被保存到"D:\upload5\receive"目录中
+---------------------------------------------
+其它
+//pyinstaller --onefile --nowindowed send.py
