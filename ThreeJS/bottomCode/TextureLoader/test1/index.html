@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+
+	<body>
+
+	<script src="js/lib/threeJS/three.js"></script>
+	<script src="js/lib/threeJS/GLTFLoader.js"></script>
+	<script src="js/playerControl/PlayerControl.js"></script>
+	<script src="js/Main.js"></script>
+
+	<script  type="module">
+		import {TextureLoader} from "../src/loaders/TextureLoader.js"
+		var myMain = new Main();
+		myMain.start();
+		myMain.scene.background = new THREE.Color( 0xcce0ff );
+		new PlayerControl(myMain.camera);
+
+		GLB("../Female")
+		function GLB(url) {
+			new THREE.GLTFLoader().load(url+".glb", (glb) => {
+				var mesh=glb.scene.children[0].children[1]
+				console.log(mesh)
+				mesh.position.set(0,0,-10)
+				mesh.rotation.set(0,-Math.PI/2,0)
+				myMain.scene.add(mesh)
+				new TextureLoader().load(
+						"../m0.jpg",// resource URL
+						function ( texture ) {// onLoad callback
+							texture.flipY=false;
+							texture.wrapS = THREE.RepeatWrapping;
+							texture.wrapT = THREE.RepeatWrapping;
+							mesh.material.map=texture
+						}
+				);
+			});
+		}
+	</script>
+	</body>
+</html>
