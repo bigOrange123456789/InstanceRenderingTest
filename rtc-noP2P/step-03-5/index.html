@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Realtime communication with WebRTC</title>
+  <script>
+    console.oldLog = console.log;
+    console.log = function(str1,str2) {
+      if(typeof str2==="undefined")str2=""
+      console.oldLog(str1,str2);
+      var tag=document.createElement("div")
+      tag.innerHTML=str1+"  "+str2
+      document.body.append(tag)
+    }
+  </script>
+</head>
+<body>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

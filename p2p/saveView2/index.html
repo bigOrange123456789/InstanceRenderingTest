@@ -4,15 +4,17 @@
     <title>P2P test</title>
     <script>
         console.oldLog = console.log;
-        console.log = function(str) {
-            console.oldLog(str);
+        console.log = function(str1,str2) {
+            if(typeof str2==="undefined")str2=""
+            console.oldLog(str1,str2);
             var tag=document.createElement("div")
-            tag.innerHTML=str
+            tag.innerHTML=str1+"  "+str2
             document.body.append(tag)
         }
     </script>
 </head>
 <body>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="http://youku3d.com/smart3d/lib/RTCMultiConnection.min.js"></script>
     <script src="http://youku3d.com/smart3d/lib/socket.io.js"></script>
     <script src="http://youku3d.com/smart3d/lib/FileBufferReader.js"></script>

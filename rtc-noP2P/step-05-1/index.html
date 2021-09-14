@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>05-1 a</title>
+</head>
+
+<body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script>
+    var socket = io.connect();
+    socket.emit('create or join', 'room001')
+    socket.on('created', room=>console.log('Created room', room))
+    socket.on('full', room=>console.log('Room ' + room + ' is full'))
+    socket.on('join', room=>console.log('join: ' + room))
+    socket.on('joined', room=>console.log('joined: ' + room))
+    socket.on('log', array=>console.log.apply(console, array))
+    socket.on('message', message=>console.log('received:', message))
+
+    setTimeout(()=>{
+      for(var i=0;i<5;i++)
+        socket.emit('message', i)
+    },100)
+  </script>
+
+</body>
+
+</html>

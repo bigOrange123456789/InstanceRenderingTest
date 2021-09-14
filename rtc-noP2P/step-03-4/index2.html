@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Realtime communication with WebRTC</title>
+  <script>
+    console.oldLog = console.log;
+    console.log = function(str1,str2) {
+      if(typeof str2==="undefined")str2=""
+      console.oldLog(str1,str2);
+      var tag=document.createElement("div")
+      tag.innerHTML=str1+"  "+str2
+      document.body.append(tag)
+    }
+  </script>
+</head>
+<body>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script>
+    'use strict';
+    var receiveChannel;
+
+    //开始创建连接
+    var servers = null;
+    var pcConstraint = null;
+    var dataConstraint = null;
+
+    //接收？
+    var localConnection = new RTCPeerConnection(servers, pcConstraint);//对于SCTP，可靠且有序的交付默认为true。
+    var sendChannel = localConnection.createDataChannel('sendDataChannel', dataConstraint);
+    localConnection.onicecandidate = event=> {
+      if (event.candidate) {
+        localConnection.addIceCandidate(
+                event.candidate
+        ).then(
+                ()=>console.log('AddIceCandidate success.'),
+                (e)=>console.log('Failed to add Ice Candidate: ',e)
+        );
+        console.log('Remote ICE candidate: \n ' + event.candidate.candidate);
+      }
+    }
+
+    //发送 ？
+    var remoteConnection = new RTCPeerConnection(servers, pcConstraint);
+    remoteConnection.onicecandidate = event =>{
+      if (event.candidate) {
+        localConnection.addIceCandidate(
+                event.candidate
+        ).then(
+                ()=>console.log('AddIceCandidate success.'),
+                (e)=>console.log('Failed to add Ice Candidate: ',e)
+        );
+        console.log('Remote ICE candidate: \n ' + event.candidate.candidate);
+      }
+    };
+    remoteConnection.ondatachannel = event=>{
+      receiveChannel = event.channel;
+      receiveChannel.onmessage = (event)=>console.log("receive:",event.data);
+    };
+
+    localConnection.createOffer().then(
+            desc =>{
+              localConnection.setLocalDescription(desc);
+              console.log('Offer from localConnection \n' + desc.sdp);
+              remoteConnection.setRemoteDescription(desc);
+              remoteConnection.createAnswer().then(
+                      desc0 =>{
+                        remoteConnection.setLocalDescription(desc0);
+                        localConnection.setRemoteDescription(desc0);
+                      },
+                      e=>console.log(e)
+              );
+            },
+            e=>console.log(e)
+    );
+
+    var time=0
+    setInterval(()=>{
+      sendChannel.send(time);
+      time++
+    },1000)
+    //完成创建连接
+
+  </script>
+</body>
+</html>
