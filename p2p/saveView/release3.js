@@ -1,40 +1,26 @@
-// http://127.0.0.1:9001
-// http://localhost:9001
-
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
 var httpServer = require('http');
-
-const ioServer = require('socket.io');
 const RTCMultiConnectionServer = require('rtcmulticonnection-server');
-
 var PORT = 9001;
-var isUseHTTPs = false;
-
 const jsonPath = {
     config: 'config.json',
     logs: 'logs.json'
-};
-
+}
 const BASH_COLORS_HELPER = RTCMultiConnectionServer.BASH_COLORS_HELPER;
 const getValuesFromConfigJson = RTCMultiConnectionServer.getValuesFromConfigJson;
 const getBashParameters = RTCMultiConnectionServer.getBashParameters;
 const resolveURL = RTCMultiConnectionServer.resolveURL;
-
 var config = getValuesFromConfigJson(jsonPath);
 config = getBashParameters(config, BASH_COLORS_HELPER);
 
-// if user didn't modifed "PORT" object
-// then read value from "config.json"
 if(PORT === 9001) {
     PORT = config.port;
 }
-if(isUseHTTPs === false) {
-    isUseHTTPs = config.isUseHTTPs;
-}
 
 function serverHandler(request, response) {
+    var path0=''
     // to make sure we always get valid info from json file
     // even if external codes are overriding it
     config = getValuesFromConfigJson(jsonPath);
@@ -69,6 +55,7 @@ function serverHandler(request, response) {
                 pushLogs(config, '!GET or ..', e);
             }
         }
+
         if(filename.indexOf(resolveURL('/admin/')) !== -1 && config.enableAdmin !== true) {
             try {
                 response.writeHead(401, {
@@ -82,18 +69,21 @@ function serverHandler(request, response) {
             }
             return;
         }
+
         var matched = false;
-        ['/demos/', '/dev/', '/dist/', '/socket.io/', '/node_modules/canvas-designer/', '/admin/'].forEach(function(item) {
+        [path0+'/', '/dev/', '/myLib/', '/socket.io/', '/node_modules/canvas-designer/', '/admin/'].forEach(function(item) {
             if (filename.indexOf(resolveURL(item)) !== -1) {
                 matched = true;
             }
         });
+
         // files from node_modules
         ['RecordRTC.js', 'FileBufferReader.js', 'getStats.js', 'getScreenId.js', 'adapter.js', 'MultiStreamsMixer.js'].forEach(function(item) {
             if (filename.indexOf(resolveURL('/node_modules/')) !== -1 && filename.indexOf(resolveURL(item)) !== -1) {
                 matched = true;
             }
         });
+
         if (filename.search(/.js|.json/g) !== -1 && !matched) {
             try {
                 response.writeHead(404, {
@@ -122,12 +112,12 @@ function serverHandler(request, response) {
         try {
             stats = fs.lstatSync(filename);
 
-            if (filename.search(/demos/g) === -1 && filename.search(/admin/g) === -1 && stats.isDirectory() && config.homePage === '/demos/index.html') {
+            if (filename.search(/demos2/g) === -1 && filename.search(/admin/g) === -1 && stats.isDirectory() && config.homePage === path0+'/index.html') {
                 if (response.redirect) {
-                    response.redirect('/demos/');
+                    response.redirect(path0+'/');
                 } else {
                     response.writeHead(301, {
-                        'Location': '/demos/'
+                        'Location': path0+'/'
                     });
                 }
                 response.end();
@@ -148,22 +138,22 @@ function serverHandler(request, response) {
                     'Content-Type': 'text/html'
                 });
 
-                if (filename.indexOf(resolveURL('/demos/MultiRTC/')) !== -1) {
-                    filename = filename.replace(resolveURL('/demos/MultiRTC/'), '');
-                    filename += resolveURL('/demos/MultiRTC/index.html');
+                if (filename.indexOf(resolveURL(path0+'/MultiRTC/')) !== -1) {
+                    filename = filename.replace(resolveURL(path0+'/MultiRTC/'), '');
+                    filename += resolveURL(path0+'/MultiRTC/index.html');
                 } else if (filename.indexOf(resolveURL('/admin/')) !== -1) {
                     filename = filename.replace(resolveURL('/admin/'), '');
                     filename += resolveURL('/admin/index.html');
-                } else if (filename.indexOf(resolveURL('/demos/dashboard/')) !== -1) {
-                    filename = filename.replace(resolveURL('/demos/dashboard/'), '');
-                    filename += resolveURL('/demos/dashboard/index.html');
-                } else if (filename.indexOf(resolveURL('/demos/video-conference/')) !== -1) {
-                    filename = filename.replace(resolveURL('/demos/video-conference/'), '');
-                    filename += resolveURL('/demos/video-conference/index.html');
-                } else if (filename.indexOf(resolveURL('/demos')) !== -1) {
-                    filename = filename.replace(resolveURL('/demos/'), '');
-                    filename = filename.replace(resolveURL('/demos'), '');
-                    filename += resolveURL('/demos/index.html');
+                } else if (filename.indexOf(resolveURL(path0+'/dashboard/')) !== -1) {
+                    filename = filename.replace(resolveURL(path0+'/dashboard/'), '');
+                    filename += resolveURL(path0+'/dashboard/index.html');
+                } else if (filename.indexOf(resolveURL(path0+'/video-conference/')) !== -1) {
+                    filename = filename.replace(resolveURL(path0+'/video-conference/'), '');
+                    filename += resolveURL(path0+'/video-conference/index.html');
+                } else if (filename.indexOf(resolveURL(path0)) !== -1) {
+                    filename = filename.replace(resolveURL(path0+'/'), '');
+                    filename = filename.replace(resolveURL(path0), '');
+                    filename += resolveURL(path0+'/index.html');
                 } else {
                     filename += resolveURL(config.homePage);
                 }
@@ -214,53 +204,7 @@ function serverHandler(request, response) {
     }
 }
 
-var httpApp;
-
-if (isUseHTTPs) {
-    httpServer = require('https');
-
-    // See how to use a valid certificate:
-    // https://github.com/muaz-khan/WebRTC-Experiment/issues/62
-    var options = {
-        key: null,
-        cert: null,
-        ca: null
-    };
-
-    var pfx = false;
-
-    if (!fs.existsSync(config.sslKey)) {
-        console.log(BASH_COLORS_HELPER.getRedFG(), 'sslKey:\t ' + config.sslKey + ' does not exist.');
-    } else {
-        pfx = config.sslKey.indexOf('.pfx') !== -1;
-        options.key = fs.readFileSync(config.sslKey);
-    }
-
-    if (!fs.existsSync(config.sslCert)) {
-        console.log(BASH_COLORS_HELPER.getRedFG(), 'sslCert:\t ' + config.sslCert + ' does not exist.');
-    } else {
-        options.cert = fs.readFileSync(config.sslCert);
-    }
-
-    if (config.sslCabundle) {
-        if (!fs.existsSync(config.sslCabundle)) {
-            console.log(BASH_COLORS_HELPER.getRedFG(), 'sslCabundle:\t ' + config.sslCabundle + ' does not exist.');
-        }
-
-        options.ca = fs.readFileSync(config.sslCabundle);
-    }
-
-    if (pfx === true) {
-        options = {
-            pfx: sslKey
-        };
-    }
-
-    httpApp = httpServer.createServer(options, serverHandler);
-} else {
-    httpApp = httpServer.createServer(serverHandler);
-}
-
+var httpApp = httpServer.createServer(serverHandler);
 RTCMultiConnectionServer.beforeHttpListen(httpApp, config);
 httpApp = httpApp.listen(process.env.PORT || PORT, process.env.IP || "0.0.0.0", function() {
     RTCMultiConnectionServer.afterHttpListen(httpApp, config);
@@ -268,20 +212,7 @@ httpApp = httpApp.listen(process.env.PORT || PORT, process.env.IP || "0.0.0.0", 
 
 // --------------------------
 // socket.io codes goes below
-
+const ioServer = require('socket.io');
 ioServer(httpApp).on('connection', function(socket) {
     RTCMultiConnectionServer.addSocket(socket, config);
-
-    // ----------------------
-    // below code is optional
-
-    const params = socket.handshake.query;
-
-    if (!params.socketCustomEvent) {
-        params.socketCustomEvent = 'custom-message';
-    }
-
-    socket.on(params.socketCustomEvent, function(message) {
-        socket.broadcast.emit(params.socketCustomEvent, message);
-    });
 });

@@ -1,6 +1,3 @@
-// http://127.0.0.1:9001
-// http://localhost:9001
-
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
@@ -69,6 +66,7 @@ function serverHandler(request, response) {
                 pushLogs(config, '!GET or ..', e);
             }
         }
+
         if(filename.indexOf(resolveURL('/admin/')) !== -1 && config.enableAdmin !== true) {
             try {
                 response.writeHead(401, {
@@ -82,18 +80,21 @@ function serverHandler(request, response) {
             }
             return;
         }
+
         var matched = false;
-        ['/demos/', '/dev/', '/dist/', '/socket.io/', '/node_modules/canvas-designer/', '/admin/'].forEach(function(item) {
+        ['/demos2/', '/dev/', '/myLib/', '/socket.io/', '/node_modules/canvas-designer/', '/admin/'].forEach(function(item) {
             if (filename.indexOf(resolveURL(item)) !== -1) {
                 matched = true;
             }
         });
+
         // files from node_modules
         ['RecordRTC.js', 'FileBufferReader.js', 'getStats.js', 'getScreenId.js', 'adapter.js', 'MultiStreamsMixer.js'].forEach(function(item) {
             if (filename.indexOf(resolveURL('/node_modules/')) !== -1 && filename.indexOf(resolveURL(item)) !== -1) {
                 matched = true;
             }
         });
+
         if (filename.search(/.js|.json/g) !== -1 && !matched) {
             try {
                 response.writeHead(404, {
@@ -122,12 +123,12 @@ function serverHandler(request, response) {
         try {
             stats = fs.lstatSync(filename);
 
-            if (filename.search(/demos/g) === -1 && filename.search(/admin/g) === -1 && stats.isDirectory() && config.homePage === '/demos/index.html') {
+            if (filename.search(/demos2/g) === -1 && filename.search(/admin/g) === -1 && stats.isDirectory() && config.homePage === '/demos2/index.html') {
                 if (response.redirect) {
-                    response.redirect('/demos/');
+                    response.redirect('/demos2/');
                 } else {
                     response.writeHead(301, {
-                        'Location': '/demos/'
+                        'Location': '/demos2/'
                     });
                 }
                 response.end();
@@ -148,22 +149,22 @@ function serverHandler(request, response) {
                     'Content-Type': 'text/html'
                 });
 
-                if (filename.indexOf(resolveURL('/demos/MultiRTC/')) !== -1) {
-                    filename = filename.replace(resolveURL('/demos/MultiRTC/'), '');
-                    filename += resolveURL('/demos/MultiRTC/index.html');
+                if (filename.indexOf(resolveURL('/demos2/MultiRTC/')) !== -1) {
+                    filename = filename.replace(resolveURL('/demos2/MultiRTC/'), '');
+                    filename += resolveURL('/demos2/MultiRTC/index.html');
                 } else if (filename.indexOf(resolveURL('/admin/')) !== -1) {
                     filename = filename.replace(resolveURL('/admin/'), '');
                     filename += resolveURL('/admin/index.html');
-                } else if (filename.indexOf(resolveURL('/demos/dashboard/')) !== -1) {
-                    filename = filename.replace(resolveURL('/demos/dashboard/'), '');
-                    filename += resolveURL('/demos/dashboard/index.html');
-                } else if (filename.indexOf(resolveURL('/demos/video-conference/')) !== -1) {
-                    filename = filename.replace(resolveURL('/demos/video-conference/'), '');
-                    filename += resolveURL('/demos/video-conference/index.html');
-                } else if (filename.indexOf(resolveURL('/demos')) !== -1) {
-                    filename = filename.replace(resolveURL('/demos/'), '');
-                    filename = filename.replace(resolveURL('/demos'), '');
-                    filename += resolveURL('/demos/index.html');
+                } else if (filename.indexOf(resolveURL('/demos2/dashboard/')) !== -1) {
+                    filename = filename.replace(resolveURL('/demos2/dashboard/'), '');
+                    filename += resolveURL('/demos2/dashboard/index.html');
+                } else if (filename.indexOf(resolveURL('/demos2/video-conference/')) !== -1) {
+                    filename = filename.replace(resolveURL('/demos2/video-conference/'), '');
+                    filename += resolveURL('/demos2/video-conference/index.html');
+                } else if (filename.indexOf(resolveURL('/demos2')) !== -1) {
+                    filename = filename.replace(resolveURL('/demos2/'), '');
+                    filename = filename.replace(resolveURL('/demos2'), '');
+                    filename += resolveURL('/demos2/index.html');
                 } else {
                     filename += resolveURL(config.homePage);
                 }
@@ -272,15 +273,10 @@ httpApp = httpApp.listen(process.env.PORT || PORT, process.env.IP || "0.0.0.0", 
 ioServer(httpApp).on('connection', function(socket) {
     RTCMultiConnectionServer.addSocket(socket, config);
 
-    // ----------------------
-    // below code is optional
-
     const params = socket.handshake.query;
-
     if (!params.socketCustomEvent) {
         params.socketCustomEvent = 'custom-message';
     }
-
     socket.on(params.socketCustomEvent, function(message) {
         socket.broadcast.emit(params.socketCustomEvent, message);
     });

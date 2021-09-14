@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>File Sharing using RTCMultiConnection</title>
+</head>
+<body>
+    <script src="http://youku3d.com/smart3d/lib/RTCMultiConnection.min.js"></script>
+    <script src="http://youku3d.com/smart3d/lib/adapter.js"></script>
+    <script src="http://youku3d.com/smart3d/lib/socket.io.js"></script>
+    <script src="http://youku3d.com/smart3d/lib/FileBufferReader.js"></script>
+    <script>
+        window.time0=performance.now()
+        var connection = new RTCMultiConnection();
+        // to make sure, "connection-reconnect" doesn't sends files again
+        connection.fileReceived = {};
+        // by default, socket.io server is assumed to be deployed on your own URL
+        //connection.socketURL = '/';
+        connection.socketURL = "http://localhost:9001/";
+        // comment-out below line if you do not have your own socket.io server
+        // connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
+        connection.socketMessageEvent = 'file-sharing-demo';
+        connection.sdpConstraints.mandatory = {
+            OfferToReceiveAudio: false,
+            OfferToReceiveVideo: false
+        };
+        connection.enableFileSharing = true;
+        connection.session = {
+            data: true
+        };
+        connection.iceServers = [{
+            'urls': [
+                'stun:stun.l.google.com:19302',
+                'stun:stun1.l.google.com:19302',
+                'stun:stun2.l.google.com:19302',
+                'stun:stun.l.google.com:19302?transport=udp',
+            ]
+        }];
+        connection.connectedWith = {};
+        connection.onmessage = function(event) {
+            console.log(event)
+            console.log(performance.now()-window.time0)
+        };
+        connection.onopen = function(e) {
+            setInterval(()=>{
+                connection.send({arr:[1,.2],str:'hello everyone'});
+            },1000)
+        };
+        connection.onclose = function(e) {};
+        connection.onerror = function(e) {};
+        connection.openOrJoin("myRoom1");
+        window.connection = connection;
+    </script>
+</body>
+</html>

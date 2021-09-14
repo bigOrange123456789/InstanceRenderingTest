@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>demos3/index.html</title>
+</head>
+<body>
+    <script src="http://youku3d.com/smart3d/lib/RTCMultiConnection.js"></script>
+    <script src="http://youku3d.com/smart3d/lib/adapter.js"></script>
+    <script src="http://youku3d.com/smart3d/lib/socket.io.js"></script>
+    <script src="http://youku3d.com/smart3d/lib/FileBufferReader.js"></script>
+    <script>
+        window.time0=performance.now()
+        var connection = new RTCMultiConnection();
+        connection.fileReceived = {};
+        //connection.socketURL ="/"
+        connection.socketURL = "http://localhost:9001/";
+
+        //connection.socketURL = "http://100.67.7.193:9001/";
+        //connection.socketURL ="http://110.40.255.87:9001/"
+        //connection.socketURL = "http://localhost:9001/"
+        //connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';//服务器地址
+        connection.socketMessageEvent = 'file-sharing-demo';
+        connection.sdpConstraints.mandatory = {
+            OfferToReceiveAudio: false,
+            OfferToReceiveVideo: false
+        };
+        connection.enableFileSharing = true;
+        connection.session = {
+            data: true
+        };
+        connection.iceServers = [{
+            'urls': [
+                'stun:stun.l.google.com:19302',
+                'stun:stun1.l.google.com:19302',
+                'stun:stun2.l.google.com:19302',
+                'stun:stun.l.google.com:19302?transport=udp',
+            ]
+        }];
+        connection.connectedWith = {};
+        connection.onmessage = function(event) {
+            console.log(event)
+        };
+        connection.onopen = function(e) {
+            console.log({
+                number:1+connection.peers.getLength(),
+                time:performance.now()-window.time0
+            })
+        };
+        connection.onclose = function(e) {};
+        connection.onerror = function(e) {};
+        connection.openOrJoin("myRoom1");
+        window.connection = connection;
+    </script>
+</body>
+</html>

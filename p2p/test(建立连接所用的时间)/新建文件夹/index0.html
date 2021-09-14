@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+		</style>
+	</head>
+	<body>
+	<script src="../static/js/lib/threeJS/three.js"></script>
+	<script src="../static/js/lib/threeJS/GLTFExporter.js"></script>
+	<script src="../static/js/lib/threeJS/GLTFLoader.js"></script>
+	<script src="../static/js/lib/threeJS/OBJLoader.js"></script>
+	<script src="../static/js/playerControl/PlayerControl.js"></script>
+	<script src="../static/js/Main.js"></script>
+	<script>
+		var myMain = new Main();
+		myMain.start();
+
+
+		var list;
+		var list_index=0;
+		getList()
+		function getList(){
+			var oReq = new XMLHttpRequest();
+			oReq.open("GET", "http://localhost:5000/getList", true);
+			oReq.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			oReq.responseType = "arraybuffer";
+			oReq.onload = function () {//接收数据
+				if (oReq.readyState === 4&&oReq.status === 200){
+					var str=String.fromCharCode.apply(null, new Uint8Array(oReq.response))
+					list=str.split(",")
+					OBJ("static/input/"+list[list_index])
+				}else{
+					console.log(oReq.readyState,oReq.status)
+				}
+			};
+			oReq.send();//发送请求
+		}
+		function OBJ(url) {
+			new THREE.OBJLoader().load(url, (obj) => {
+				var mesh=obj.children[0];
+				mesh.material=new THREE.MeshLambertMaterial();
+				myMain.scene.add(mesh)
+				window.downloadNumber=null
+				saveImg()
+				//download()
+			});
+		}
+		function saveImg(){
+			requestAnimationFrame(saveImg);
+			var n=window.downloadNumber
+			if(n===null){
+				window.downloadNumber=0;
+			}else if(n===0){
+				var renderer=myMain.renderer;
+				//获取画布
+				var canvas=renderer.domElement;
+				let url = canvas.toDataURL("image/jpeg"); //得到图片的base64编码数据
+
+				var oReq = new XMLHttpRequest();
+				url=url.split(",")[1]
+				var arr=url.split("+")
+				var sendData=""
+				for(var i=0;i<arr.length;i++){
+					if(i!==0) sendData+=","
+					sendData+=arr[i]
+				}
+				console.log(list[list_index])
+				oReq.open("GET", "http://localhost:5000/saveImg?"
+						+"name="+list[list_index]+"&"
+						+"text="+sendData, true);
+				oReq.responseType = "arraybuffer";
+				oReq.onload = function () {//接收数据
+					var str=String.fromCharCode.apply(null, new Uint8Array(oReq.response))
+					console.log(str)
+					nextModel()
+				};
+				oReq.send();//发送请求
+
+				window.downloadNumber=1;
+			}
+		}
+		function nextModel() {
+			if(list_index===list.length-1)alert("finish!")
+			else OBJ("static/input/"+list[++list_index])
+		}
+		function download() {
+			requestAnimationFrame(download);
+			var n=window.downloadNumber
+			if(typeof (n)==="undefined"){
+				window.downloadNumber=0;
+			}else if(n===0){
+				var renderer=myMain.renderer;
+				//获取画布
+				var canvas=renderer.domElement;
+				console.log(canvas)
+				document.body.append(canvas)
+				let url = canvas.toDataURL("image/jpeg"); //得到图片的base64编码数据
+				let a = document.createElement("a"); // 生成一个a元素
+				let event = new MouseEvent("click"); // 创建一个单击事件
+				a.download ="img.jpg"; // 设置图片名称
+				a.href = url; // 将生成的URL设置为a.href属性
+				a.dispatchEvent(event); // 触发a的单击事件
+				window.downloadNumber=1;
+			}
+		}
+
+	</script>
+	</body>
+</html>

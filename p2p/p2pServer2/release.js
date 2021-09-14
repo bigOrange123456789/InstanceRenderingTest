@@ -1,6 +1,3 @@
-// http://127.0.0.1:9001
-// http://localhost:9001
-
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
@@ -69,6 +66,7 @@ function serverHandler(request, response) {
                 pushLogs(config, '!GET or ..', e);
             }
         }
+
         if(filename.indexOf(resolveURL('/admin/')) !== -1 && config.enableAdmin !== true) {
             try {
                 response.writeHead(401, {
@@ -82,18 +80,21 @@ function serverHandler(request, response) {
             }
             return;
         }
+
         var matched = false;
-        ['/demos/', '/dev/', '/dist/', '/socket.io/', '/node_modules/canvas-designer/', '/admin/'].forEach(function(item) {
+        ['/demos/', '/dev/', '/myLib/', '/socket.io/', '/node_modules/canvas-designer/', '/admin/'].forEach(function(item) {
             if (filename.indexOf(resolveURL(item)) !== -1) {
                 matched = true;
             }
         });
+
         // files from node_modules
         ['RecordRTC.js', 'FileBufferReader.js', 'getStats.js', 'getScreenId.js', 'adapter.js', 'MultiStreamsMixer.js'].forEach(function(item) {
             if (filename.indexOf(resolveURL('/node_modules/')) !== -1 && filename.indexOf(resolveURL(item)) !== -1) {
                 matched = true;
             }
         });
+
         if (filename.search(/.js|.json/g) !== -1 && !matched) {
             try {
                 response.writeHead(404, {
@@ -272,15 +273,10 @@ httpApp = httpApp.listen(process.env.PORT || PORT, process.env.IP || "0.0.0.0", 
 ioServer(httpApp).on('connection', function(socket) {
     RTCMultiConnectionServer.addSocket(socket, config);
 
-    // ----------------------
-    // below code is optional
-
     const params = socket.handshake.query;
-
     if (!params.socketCustomEvent) {
         params.socketCustomEvent = 'custom-message';
     }
-
     socket.on(params.socketCustomEvent, function(message) {
         socket.broadcast.emit(params.socketCustomEvent, message);
     });

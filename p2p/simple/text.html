@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+    <title>File Sharing using RTCMultiConnection</title>
+</head>
+<body>
+
+<script src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js"></script>
+<script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+<script type="module">
+    //import {p2plib} from './p2plib.js';
+    //var p2plib0=new p2plib()
+    //var RTCMultiConnection=p2plib0.RTCMultiConnection;
+
+    var connection = new RTCMultiConnection();
+    //connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';//服务器地址
+    connection.socketURL = "./";
+
+    connection.session = {
+        data: true// 文本或文件通信
+    };
+    //调用选择文件对话框
+    /*connection.invokeSelectFileDialog(file=>{
+        var file = this.files[0];
+        if(file){
+            connection.shareFile(file);
+        }
+    })*/
+    connection.onopen = function(event) {
+        setInterval(()=>{
+            //connection.send({arr:[1,.2],str:'hello everyone'});
+            //connection.shareFile("test")
+        },3000)
+    };
+
+    connection.onmessage = function(event) {
+        console.log(event.userid + ' said: ' + event.data);
+        if(event.data.arr)console.log(event.data.arr)
+        if(event.data.str)console.log(event.data.str)
+    };
+
+    connection.openOrJoin('your-room-id');
+    window.connection=connection
+
+    window.test=function () {
+        console.log(
+            "connection.connectedWith",
+            connection.connectedWith
+        )
+        console.log(
+            "connection.peers",
+            connection.peers
+        )
+    }
+    window.set=function (id) {
+        connection.changeUserId(id)
+    }
+    window.send=function(data,user){
+        connection.send(data,user)
+    }
+    window.shareFile=function(data,user){
+        connection.shareFile(data,user)
+    }
+    window.check=function (roomId) {
+        connection.checkPresence(roomId, function(isRoomEists, roomid) {
+            connection.close()
+            connection.openOrJoin(roomid)
+        });
+    }
+</script>
+</body>
+

@@ -1,0 +1,60 @@
+<script src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js"></script>
+<script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+
+<script>
+var connection = new RTCMultiConnection();
+connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';//服务器地址
+
+
+connection.session = {
+    data: true// 文本或文件通信
+};
+
+connection.onopen = function(event) {
+    setInterval(()=>{
+        connection.send('hello everyone');
+    },1000)
+};
+connection.onopen = function(e) {
+
+    if (connection.connectedWith[e.userid]) return;
+    connection.connectedWith[e.userid] = true;
+
+    var message = '<b>' + e.userid + '</b><br>is connected.';
+    appendLog(message);
+
+    if (!lastSelectedFile) return;
+
+    // already shared the file
+
+    var file = lastSelectedFile;
+    setTimeout(function() {
+        appendLog('Sharing file<br><b>' + file.name + '</b><br>Size: <b>' + bytesToSize(file.size) + '<b><br>With <b>' + connection.getAllParticipants().length + '</b> users');
+
+        connection.send({
+            doYouWannaReceiveThisFile: true,
+            fileName: file.size + file.name
+        });
+    }, 500);
+};
+connection.onmessage = function(event) {
+    console.log(event.userid + ' said: ' + event.data);
+};
+connection.onmessage = function(event) {
+    if(event.data.doYouWannaReceiveThisFile) {
+        if(!connection.fileReceived[event.data.fileName]) {
+            connection.send({
+                yesIWannaReceive:true,
+                fileName: event.data.fileName
+            });
+        }
+    }
+
+    if(event.data.yesIWannaReceive && !!lastSelectedFile) {
+        connection.shareFile(lastSelectedFile, event.userid);
+    }
+};
+connection.openOrJoin('your-room-id');
+
+
+</script>

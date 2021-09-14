@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>P2P test</title>
+    <script>
+        console.oldLog = console.log;
+        console.log = function(str) {
+            console.oldLog(str);
+            var tag=document.createElement("div")
+            tag.innerHTML=str
+            document.body.append(tag)
+        }
+    </script>
+</head>
+<body>
+    <script src="http://youku3d.com/smart3d/lib/RTCMultiConnection.min.js"></script>
+    <script src="http://youku3d.com/smart3d/lib/socket.io.js"></script>
+    <script src="http://youku3d.com/smart3d/lib/FileBufferReader.js"></script>
+    <script>
+        var connection = new RTCMultiConnection()
+        connection.socketURL = "http://110.40.255.87:9001/"
+        connection.socketMessageEvent = 'file-sharing-demo';
+        connection.sdpConstraints.mandatory = {
+            OfferToReceiveAudio: false,
+            OfferToReceiveVideo: false
+        };
+        connection.enableFileSharing = true;
+        connection.session = {
+            data: true
+        }
+        connection.onmessage = function(event) {
+            console.log(event.userid+" : "+event.data)
+        };
+        window.time0=performance.now()
+        connection.onopen = function(e) {
+            console.log({
+                number:1+connection.peers.getLength(),
+                time:performance.now()-window.time0
+            })
+            window.time=0
+            setInterval(()=>{
+                console.log('send:'+time)
+                connection.send(time)
+                window.time++
+            },2500)
+        }
+        connection.openOrJoin("myRoom1");
+    </script>
+</body>
+</html>
