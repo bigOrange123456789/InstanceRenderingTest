@@ -1,117 +1,8 @@
-import {isNull} from "./globals.js";
 import {PeerInitiator} from "./PeerInitiator.js";
 import {TextReceiver} from "./TextReceiver.js";
-import {getRandomString, isString} from "./globals.js";
+
 export{MultiPeers}
-// TextSender.js
 
-var TextSender = {
-    send: function(config) {
-        var connection = config.connection;
-
-        var channel = config.channel,
-            remoteUserId = config.remoteUserId,
-            initialText = config.text,
-            packetSize = connection.chunkSize || 1000,
-            textToTransfer = '',
-            isobject = false;
-
-        if (!isString(initialText)) {
-            isobject = true;
-            initialText = JSON.stringify(initialText);
-        }
-
-        // uuid is used to uniquely identify sending instance
-        var uuid = getRandomString();
-        var sendingTime = new Date().getTime();
-
-        sendText(initialText);
-
-        function sendText(textMessage, text) {
-            var data = {
-                type: 'text',
-                uuid: uuid,
-                sendingTime: sendingTime
-            };
-
-            if (textMessage) {
-                text = textMessage;
-                data.packets = parseInt(text.length / packetSize);
-            }
-
-            if (text.length > packetSize) {
-                data.message = text.slice(0, packetSize);
-            } else {
-                data.message = text;
-                data.last = true;
-                data.isobject = isobject;
-            }
-
-            channel.send(data, remoteUserId);
-
-            textToTransfer = text.slice(data.message.length);
-
-            if (textToTransfer.length) {
-                setTimeout(function() {
-                    sendText(null, textToTransfer);
-                }, connection.chunkInterval || 100);
-            }
-        }
-    }
-};
-var OnIceCandidateHandler = (function() {
-    function processCandidates(connection, icePair) {
-        var candidate = icePair.candidate;
-
-        var iceRestrictions = connection.candidates;
-        var stun = iceRestrictions.stun;
-        var turn = iceRestrictions.turn;
-
-        if (!isNull(iceRestrictions.reflexive)) {
-            stun = iceRestrictions.reflexive;
-        }
-
-        if (!isNull(iceRestrictions.relay)) {
-            turn = iceRestrictions.relay;
-        }
-
-        if (!iceRestrictions.host && !!candidate.match(/typ host/g)) {
-            return;
-        }
-
-        if (!turn && !!candidate.match(/typ relay/g)) {
-            return;
-        }
-
-        if (!stun && !!candidate.match(/typ srflx/g)) {
-            return;
-        }
-
-        var protocol = connection.iceProtocols;
-
-        if (!protocol.udp && !!candidate.match(/ udp /g)) {
-            return;
-        }
-
-        if (!protocol.tcp && !!candidate.match(/ tcp /g)) {
-            return;
-        }
-
-        if (connection.enableLogs) {
-            console.debug('Your candidate pairs:', candidate);
-        }
-
-        return {
-            candidate: candidate,
-            sdpMid: icePair.sdpMid,
-            sdpMLineIndex: icePair.sdpMLineIndex
-        };
-    }
-
-    return {
-        processCandidates: processCandidates
-    };
-})();
 function MultiPeers(connection) {
     var self = this;
 
@@ -152,30 +43,12 @@ function MultiPeers(connection) {
         send: function(data, remoteUserId) {
             var that = this;
 
-            if (!isNull(data.size) && !isNull(data.type)) {
-                if (connection.enableFileSharing) {
-                    self.shareFile(data, remoteUserId);
-                    return;
-                }
 
-                if (typeof data !== 'string') {
-                    data = JSON.stringify(data);
-                }
-            }
-
-            if (data.type !== 'text' && !(data instanceof ArrayBuffer) && !(data instanceof DataView)) {
-                TextSender.send({
-                    text: data,
-                    channel: this,
-                    connection: connection,
-                    remoteUserId: remoteUserId
-                });
-                return;
-            }
 
             if (data.type === 'text') {
                 data = JSON.stringify(data);
             }
+            console.log(data)
 
             if (remoteUserId) {
                 var remoteUser = connection.peers[remoteUserId];
@@ -236,12 +109,6 @@ function MultiPeers(connection) {
             channels: userPreferences.channels || [],
             onLocalSdp: function(localSdp) {
                 self.onNegotiationNeeded(localSdp, remoteUserId);
-            },
-            onLocalCandidate: function(localCandidate) {
-                localCandidate = OnIceCandidateHandler.processCandidates(connection, localCandidate)
-                if (localCandidate) {
-                    self.onNegotiationNeeded(localCandidate, remoteUserId);
-                }
             },
             remoteSdp: remoteSdp,
             onDataChannelMessage: function(message) {
@@ -372,33 +239,7 @@ function MultiPeers(connection) {
         connection.peers[remoteUserId] = new PeerInitiator(localConfig);
     };
 
-    this.replaceTrack = function(track, remoteUserId, isVideoTrack) {
-        if (!connection.peers[remoteUserId]) {
-            throw 'This peer (' + remoteUserId + ') does not exist.';
-        }
 
-        var peer = connection.peers[remoteUserId].peer;
-
-        if (!!peer.getSenders && typeof peer.getSenders === 'function' && peer.getSenders().length) {
-            peer.getSenders().forEach(function(rtpSender) {
-                if (isVideoTrack && rtpSender.track.kind === 'video') {
-                    connection.peers[remoteUserId].peer.lastVideoTrack = rtpSender.track;
-                    rtpSender.replaceTrack(track);
-                }
-
-                if (!isVideoTrack && rtpSender.track.kind === 'audio') {
-                    connection.peers[remoteUserId].peer.lastAudioTrack = rtpSender.track;
-                    rtpSender.replaceTrack(track);
-                }
-            });
-            return;
-        }
-
-        console.warn('RTPSender.replaceTrack is NOT supported.');
-        this.renegotiatePeer(remoteUserId);
-    };
-
-    this.onNegotiationNeeded = function(message, remoteUserId) {};
     this.addNegotiatedMessage = function(message, remoteUserId) {
         if (message.type && message.sdp) {
             if (message.type == 'answer') {
@@ -417,17 +258,6 @@ function MultiPeers(connection) {
 
             if (connection.enableLogs) {
                 console.log('Remote peer\'s sdp:', message.sdp);
-            }
-            return;
-        }
-
-        if (message.candidate) {
-            if (connection.peers[remoteUserId]) {
-                connection.peers[remoteUserId].addRemoteCandidate(message);
-            }
-
-            if (connection.enableLogs) {
-                console.log('Remote peer\'s candidate pairs:', message.candidate);
             }
             return;
         }
@@ -462,28 +292,7 @@ function MultiPeers(connection) {
         if (message.readyForOffer) {
             connection.onReadyForOffer(remoteUserId, message.userPreferences);
         }
-
-        function cb(stream) {
-            gumCallback(stream, message, remoteUserId);
-        }
     };
-
-    function gumCallback(stream, message, remoteUserId) {
-        var streamsToShare = {};
-        connection.attachStreams.forEach(function(stream) {
-            streamsToShare[stream.streamid] = {
-                isAudio: !!stream.isAudio,
-                isVideo: !!stream.isVideo,
-                isScreen: !!stream.isScreen
-            };
-        });
-        message.userPreferences.streamsToShare = streamsToShare;
-
-        self.onNegotiationNeeded({
-            readyForOffer: true,
-            userPreferences: message.userPreferences
-        }, remoteUserId);
-    }
 
     this.onGettingRemoteMedia = function(stream, remoteUserId) {};
     this.onRemovingRemoteMedia = function(stream, remoteUserId) {};
@@ -504,30 +313,6 @@ function MultiPeers(connection) {
             connection.onFileEnd(file);
         };
     }
-
-    this.shareFile = function(file, remoteUserId) {
-        initFileBufferReader();
-
-        connection.fbr.readAsArrayBuffer(file, function(uuid) {
-            var arrayOfUsers = connection.getAllParticipants();
-
-            if (remoteUserId) {
-                arrayOfUsers = [remoteUserId];
-            }
-
-            arrayOfUsers.forEach(function(participant) {
-                connection.fbr.getNextChunk(uuid, function(nextChunk) {
-                    connection.peers[participant].channels.forEach(function(channel) {
-                        channel.send(nextChunk);
-                    });
-                }, participant);
-            });
-        }, {
-            userid: connection.userid,
-            // extra: connection.extra,
-            chunkSize: DetectRTC.browser.name === 'Firefox' ? 15 * 1000 : connection.chunkSize || 0
-        });
-    };
 
     if (typeof 'TextReceiver' !== 'undefined') {
         var textReceiver = new TextReceiver(connection);

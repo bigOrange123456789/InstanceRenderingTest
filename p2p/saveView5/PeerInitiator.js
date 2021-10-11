@@ -11,21 +11,9 @@ function setSdpConstraints(config) {
 }
 
 function PeerInitiator(config) {
-    if (typeof window.RTCPeerConnection !== 'undefined') {
-        RTCPeerConnection = window.RTCPeerConnection;
-    } else if (typeof mozRTCPeerConnection !== 'undefined') {
-        RTCPeerConnection = mozRTCPeerConnection;
-    } else if (typeof webkitRTCPeerConnection !== 'undefined') {
-        RTCPeerConnection = webkitRTCPeerConnection;
-    }
 
     RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription;
-    RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate;
     MediaStreamTrack = window.MediaStreamTrack;
-
-    if (!RTCPeerConnection) {
-        throw 'WebRTC 1.0 (RTCPeerConnection) API are NOT available in this browser.';
-    }
 
     var connection = config.rtcMultiConnection;
 
@@ -37,10 +25,6 @@ function PeerInitiator(config) {
 
     this.addStream = function(session) {
         connection.addStream(session, self.userid);
-    };
-
-    this.removeStream = function(streamid) {
-        connection.removeStream(streamid, self.userid);
     };
 
     var self = this;
@@ -72,11 +56,6 @@ function PeerInitiator(config) {
 
     if (!renegotiatingPeer) {
         var iceTransports = 'all';
-        if (connection.candidates.turn || connection.candidates.relay) {
-            if (!connection.candidates.stun && !connection.candidates.reflexive && !connection.candidates.host) {
-                iceTransports = 'relay';
-            }
-        }
 
         try {
             // ref: developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration
@@ -84,10 +63,6 @@ function PeerInitiator(config) {
                 iceServers: connection.iceServers,
                 iceTransportPolicy: connection.iceTransportPolicy || iceTransports
             };
-
-            if (typeof connection.iceCandidatePoolSize !== 'undefined') {
-                params.iceCandidatePoolSize = connection.iceCandidatePoolSize;
-            }
 
             if (typeof connection.bundlePolicy !== 'undefined') {
                 params.bundlePolicy = connection.bundlePolicy;
@@ -143,6 +118,8 @@ function PeerInitiator(config) {
     }
 
     peer.onicecandidate = function(event) {
+        console.log("event.candidate",event.candidate===null,event.candidate)
+
         if (!event.candidate) {
             if (!connection.trickleIce) {
                 var localSdp = peer.localDescription;
@@ -155,17 +132,9 @@ function PeerInitiator(config) {
                     dontGetRemoteStream: !!config.dontGetRemoteStream,
                     extra: connection ? connection.extra : {},
                     streamsToShare: streamsToShare
-                });
+                })
             }
-            return;
         }
-
-        if (!connection.trickleIce) return;
-        config.onLocalCandidate({
-            candidate: event.candidate.candidate,
-            sdpMid: event.candidate.sdpMid,
-            sdpMLineIndex: event.candidate.sdpMLineIndex
-        });
     };
 
     localStreams.forEach(function(localStream) {
@@ -238,7 +207,6 @@ function PeerInitiator(config) {
 
     defaults.sdpConstraints = setSdpConstraints(sdpConstraints);
 
-    var streamObject;
     var dontDuplicate = {};
 
     peer.ontrack = function(event) {
@@ -315,45 +283,16 @@ function PeerInitiator(config) {
         };
     }
 
-    this.addRemoteCandidate = function(remoteCandidate) {
-        peer.addIceCandidate(new RTCIceCandidate(remoteCandidate));
-    };
-
-    function oldAddRemoteSdp(remoteSdp, cb) {
-        cb = cb || function() {};
-
-        if (DetectRTC.browser.name !== 'Safari') {
-            remoteSdp.sdp = connection.processSdp(remoteSdp.sdp);
-        }
-        peer.setRemoteDescription(new RTCSessionDescription(remoteSdp), cb, function(error) {
-            if (!!connection.enableLogs) {
-                console.error('setRemoteDescription failed', '\n', error, '\n', remoteSdp.sdp);
-            }
-
-            cb();
-        });
-    }
-
     this.addRemoteSdp = function(remoteSdp, cb) {
         cb = cb || function() {};
 
         if (DetectRTC.browser.name !== 'Safari') {
             remoteSdp.sdp = connection.processSdp(remoteSdp.sdp);
         }
-
-        peer.setRemoteDescription(new RTCSessionDescription(remoteSdp)).then(cb, function(error) {
-            if (!!connection.enableLogs) {
-                console.error('setRemoteDescription failed', '\n', error, '\n', remoteSdp.sdp);
-            }
-
-            cb();
-        }).catch(function(error) {
-            if (!!connection.enableLogs) {
-                console.error('setRemoteDescription failed', '\n', error, '\n', remoteSdp.sdp);
-            }
-
-            cb();
-        });
+        console.log("setRemoteDescription",remoteSdp)
+        peer.setRemoteDescription(new RTCSessionDescription(remoteSdp)).then(
+            cb, ()=> cb()
+        ).catch(()=> cb());
     };
 
     var isOfferer = true;
@@ -364,6 +303,8 @@ function PeerInitiator(config) {
 
     this.createDataChannel = function() {
         var channel = peer.createDataChannel('sctp', {});
+        console.log("channel",channel)
+        window.channel=channel
         setChannelEvents(channel);
     };
 
@@ -377,22 +318,6 @@ function PeerInitiator(config) {
             this.createDataChannel();
         }
     }
-
-    this.enableDisableVideoEncoding = function(enable) {
-        var rtcp;
-        peer.getSenders().forEach(function(sender) {
-            if (!rtcp && sender.track.kind === 'video') {
-                rtcp = sender;
-            }
-        });
-
-        if (!rtcp || !rtcp.getParameters) return;
-
-        var parameters = rtcp.getParameters();
-        parameters.encodings[1] && (parameters.encodings[1].active = !!enable);
-        parameters.encodings[2] && (parameters.encodings[2].active = !!enable);
-        rtcp.setParameters(parameters);
-    };
 
     if (config.remoteSdp) {
         if (config.remoteSdp.remotePeerSdpConstraints) {
@@ -413,7 +338,8 @@ function PeerInitiator(config) {
         };
 
         channel.onopen = function() {
-            config.onDataChannelOpened(channel);
+            console.log("channel已经打开！")
+            config.onDataChannelOpened(channel);//这个操作会把channel放到channels中
         };
 
         channel.onerror = function(error) {
@@ -452,46 +378,11 @@ function PeerInitiator(config) {
         };
     });
 
-    function oldCreateOfferOrAnswer(_method) {
-        peer[_method](function(localSdp) {
-            if (DetectRTC.browser.name !== 'Safari') {
-                localSdp.sdp = connection.processSdp(localSdp.sdp);
-            }
-            peer.setLocalDescription(localSdp, function() {
-                if (!connection.trickleIce) return;
-
-                config.onLocalSdp({
-                    type: localSdp.type,
-                    sdp: localSdp.sdp,
-                    remotePeerSdpConstraints: config.remotePeerSdpConstraints || false,
-                    renegotiatingPeer: !!config.renegotiatingPeer || false,
-                    connectionDescription: self.connectionDescription,
-                    dontGetRemoteStream: !!config.dontGetRemoteStream,
-                    extra: connection ? connection.extra : {},
-                    streamsToShare: streamsToShare
-                });
-
-                connection.onSettingLocalDescription(self);
-            }, function(error) {
-                if (!!connection.enableLogs) {
-                    console.error('setLocalDescription-error', error);
-                }
-            });
-        }, function(error) {
-            if (!!connection.enableLogs) {
-                console.error('sdp-' + _method + '-error', error);
-            }
-        }, defaults.sdpConstraints);
-    }
-
-    function createOfferOrAnswer(_method) {
+    function createOfferOrAnswer(_method) {//这个函数,每建立一次连接这个函数就被调用2次，通信双方各一次
         peer[_method](defaults.sdpConstraints).then(function(localSdp) {
-            if (DetectRTC.browser.name !== 'Safari') {
-                localSdp.sdp = connection.processSdp(localSdp.sdp);
-            }
+            console.log("setLocalDescription",localSdp,_method)
             peer.setLocalDescription(localSdp).then(function() {
-                if (!connection.trickleIce) return;
-
+                if (!connection.trickleIce) return
                 config.onLocalSdp({
                     type: localSdp.type,
                     sdp: localSdp.sdp,
@@ -501,17 +392,9 @@ function PeerInitiator(config) {
                     dontGetRemoteStream: !!config.dontGetRemoteStream,
                     extra: connection ? connection.extra : {},
                     streamsToShare: streamsToShare
-                });
-
-                connection.onSettingLocalDescription(self);
-            }, function(error) {
-                if (!connection.enableLogs) return;
-                console.error('setLocalDescription error', error);
+                })
+                connection.onSettingLocalDescription(self)
             });
-        }, function(error) {
-            if (!!connection.enableLogs) {
-                console.error('sdp-error', error);
-            }
         });
     }
 

@@ -190,7 +190,7 @@ function signalingMessageCallback(message) {
       sdpMLineIndex: message.label,
       sdpMid: message.id
     }));
-    
+
   }
 }
 
@@ -251,6 +251,7 @@ function onDataChannelCreated(channel) {
 
   channel.onopen = function() {
     console.log('CHANNEL opened!!!');
+    window.channel=channel
     sendBtn.disabled = false;
     snapAndSendBtn.disabled = false;
   };

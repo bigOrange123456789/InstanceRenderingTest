@@ -1,5 +1,4 @@
-import{setHarkEvents,setMuteHandlers,getRandomString,getRMCMediaElement,
-    isData,isAudioPlusTab,isUnifiedPlanSupportedDefault}from "./globals.js"
+import{getRandomString,isData,isUnifiedPlanSupportedDefault}from "./globals.js"
 import{SocketConnection}from"./SocketConnection.js"
 import{getUserMediaHandler}from"./getUserMediaHandler.js"
 import{MultiPeers}from"./MultiPeers.js"
@@ -18,110 +17,8 @@ class RTCMultiConnection{
 
         var mPeer = new MultiPeers(connection);
 
-        var preventDuplicateOnStreamEvents = {};
-        mPeer.onGettingLocalMedia = function(stream, callback) {
-            callback = callback || function() {};
-
-            if (preventDuplicateOnStreamEvents[stream.streamid]) {
-                callback();
-                return;
-            }
-            preventDuplicateOnStreamEvents[stream.streamid] = true;
-
-            try {
-                stream.type = 'local';
-            } catch (e) {}
-
-            connection.setStreamEndHandler(stream);
-
-            getRMCMediaElement(stream, function(mediaElement) {
-                mediaElement.id = stream.streamid;
-                mediaElement.muted = true;
-                mediaElement.volume = 0;
-
-                if (connection.attachStreams.indexOf(stream) === -1) {
-                    connection.attachStreams.push(stream);
-                }
-
-                if (typeof StreamsHandler !== 'undefined') {
-                    StreamsHandler.setHandlers(stream, true, connection);
-                }
-
-                connection.streamEvents[stream.streamid] = {
-                    stream: stream,
-                    type: 'local',
-                    mediaElement: mediaElement,
-                    userid: connection.userid,
-                    extra: connection.extra,
-                    streamid: stream.streamid,
-                    isAudioMuted: true
-                };
-
-                try {
-                    setHarkEvents(connection, connection.streamEvents[stream.streamid]);
-                    setMuteHandlers(connection, connection.streamEvents[stream.streamid]);
-
-                    connection.onstream(connection.streamEvents[stream.streamid]);
-                } catch (e) {
-                    //
-                }
-
-                callback();
-            }, connection);
-        };
-
-        mPeer.onGettingRemoteMedia = function(stream, remoteUserId) {
-            try {
-                stream.type = 'remote';
-            } catch (e) {}
-
-            connection.setStreamEndHandler(stream, 'remote-stream');
-
-            getRMCMediaElement(stream, function(mediaElement) {
-                mediaElement.id = stream.streamid;
-
-                if (typeof StreamsHandler !== 'undefined') {
-                    StreamsHandler.setHandlers(stream, false, connection);
-                }
-
-                connection.streamEvents[stream.streamid] = {
-                    stream: stream,
-                    type: 'remote',
-                    userid: remoteUserId,
-                    extra: connection.peers[remoteUserId] ? connection.peers[remoteUserId].extra : {},
-                    mediaElement: mediaElement,
-                    streamid: stream.streamid
-                };
-
-                setMuteHandlers(connection, connection.streamEvents[stream.streamid]);
-
-                connection.onstream(connection.streamEvents[stream.streamid]);
-            }, connection);
-        };
-
-        mPeer.onRemovingRemoteMedia = function(stream, remoteUserId) {
-            var streamEvent = connection.streamEvents[stream.streamid];
-            if (!streamEvent) {
-                streamEvent = {
-                    stream: stream,
-                    type: 'remote',
-                    userid: remoteUserId,
-                    extra: connection.peers[remoteUserId] ? connection.peers[remoteUserId].extra : {},
-                    streamid: stream.streamid,
-                    mediaElement: connection.streamEvents[stream.streamid] ? connection.streamEvents[stream.streamid].mediaElement : null
-                };
-            }
-
-            if (connection.peersBackup[streamEvent.userid]) {
-                streamEvent.extra = connection.peersBackup[streamEvent.userid].extra;
-            }
-
-            connection.onstreamended(streamEvent);
-
-            delete connection.streamEvents[stream.streamid];
-        };
-
         mPeer.onNegotiationNeeded = function(message, remoteUserId, callback) {
+            //需要谈判
             callback = callback || function() {};
 
             remoteUserId = remoteUserId || message.remoteUserId;
@@ -144,19 +41,6 @@ class RTCMultiConnection{
             });
         };
 
-        function onUserLeft(remoteUserId) {
-            connection.deletePeer(remoteUserId);
-        }
-
-        mPeer.onUserLeft = onUserLeft;
-        mPeer.disconnectWith = function(remoteUserId, callback) {
-            if (connection.socket) {
-                connection.socket.emit('disconnect-with', remoteUserId, callback || function() {});
-            }
-
-            connection.deletePeer(remoteUserId);
-        };
-
         connection.socketOptions = {
             // 'force new connection': true, // For SocketIO version < 1.0
             // 'forceNew': true, // For SocketIO version >= 1.0
@@ -166,28 +50,19 @@ class RTCMultiConnection{
         function connectSocket(connectCallback) {
             connection.socketAutoReConnect = true;
 
-            if (connection.socket) { // todo: check here readySate/etc. to make sure socket is still opened
+            if (connection.socket) {
                 if (connectCallback) {
                     connectCallback(connection.socket);
                 }
-                return;
+            }else{
+                new SocketConnection(connection, function(s) {
+                    if (connectCallback) {
+                        connectCallback(connection.socket);
+                    }
+                });
             }
 
-            if (typeof SocketConnection === 'undefined') {
-                if (typeof FirebaseConnection !== 'undefined') {
-                    window.SocketConnection = FirebaseConnection;
-                } else if (typeof PubNubConnection !== 'undefined') {
-                    window.SocketConnection = PubNubConnection;
-                } else {
-                    throw 'SocketConnection.js seems missed.';
-                }
-            }
 
-            new SocketConnection(connection, function(s) {
-                if (connectCallback) {
-                    connectCallback(connection.socket);
-                }
-            });
         }
 
         // 1st paramter is roomid
@@ -196,20 +71,17 @@ class RTCMultiConnection{
             callback = callback || function() {};
 
             connection.checkPresence(roomid, function(isRoomExist, roomid) {
-                if (isRoomExist) {
+                if (isRoomExist) {//加入房间//如果房间已存在
                     connection.sessionid = roomid;
-
-                    var localPeerSdpConstraints = false;
-                    var remotePeerSdpConstraints = false;
                     var isOneWay = !!connection.session.oneway;
                     var isDataOnly = isData(connection.session);
 
-                    remotePeerSdpConstraints = {
+                    var remotePeerSdpConstraints = {
                         OfferToReceiveAudio: connection.sdpConstraints.mandatory.OfferToReceiveAudio,
                         OfferToReceiveVideo: connection.sdpConstraints.mandatory.OfferToReceiveVideo
                     }
 
-                    localPeerSdpConstraints = {
+                    var localPeerSdpConstraints = {
                         OfferToReceiveAudio: isOneWay ? !!connection.session.audio : connection.sdpConstraints.mandatory.OfferToReceiveAudio,
                         OfferToReceiveVideo: isOneWay ? !!connection.session.video || !!connection.session.screen : connection.sdpConstraints.mandatory.OfferToReceiveVideo
                     }
@@ -225,51 +97,28 @@ class RTCMultiConnection{
                         },
                         sender: connection.userid
                     };
+                    joinRoom(connectionDescription, callback);
+                }else{//新建房间
+                    connection.waitingForLocalMedia = true;
+                    connection.isInitiator = true;
+                    connection.sessionid = roomid || connection.sessionid;
 
-                    beforeJoin(connectionDescription.message, function() {
-                        joinRoom(connectionDescription, callback);
+                    if (isData(connection.session)) {
+                        openRoom(callback);
+                        return;
+                    }
+
+                    connection.captureUserMedia(function() {
+                        openRoom(callback);
                     });
-                    return;
                 }
 
-                connection.waitingForLocalMedia = true;
-                connection.isInitiator = true;
 
-                connection.sessionid = roomid || connection.sessionid;
-
-                if (isData(connection.session)) {
-                    openRoom(callback);
-                    return;
-                }
-
-                connection.captureUserMedia(function() {
-                    openRoom(callback);
-                });
             });
         };
 
         // don't allow someone to join this person until he has the media
         connection.waitingForLocalMedia = false;
-
-        connection.open = function(roomid, callback) {
-            callback = callback || function() {};
-
-            connection.waitingForLocalMedia = true;
-            connection.isInitiator = true;
-
-            connection.sessionid = roomid || connection.sessionid;
-
-            connectSocket(function() {
-                if (isData(connection.session)) {
-                    openRoom(callback);
-                    return;
-                }
-
-                connection.captureUserMedia(function() {
-                    openRoom(callback);
-                });
-            });
-        };
 
         // this object keeps extra-data records for all connected users
         // this object is never cleared so you can always access extra-data even if a user left
@@ -308,15 +157,12 @@ class RTCMultiConnection{
 
             if ((remoteUserId && remoteUserId.session) || !remoteUserId || typeof remoteUserId === 'string') {
                 var session = remoteUserId ? remoteUserId.session || connection.session : connection.session;
-
                 isOneWay = !!session.oneway;
                 isDataOnly = isData(session);
-
                 remotePeerSdpConstraints = {
                     OfferToReceiveAudio: connection.sdpConstraints.mandatory.OfferToReceiveAudio,
                     OfferToReceiveVideo: connection.sdpConstraints.mandatory.OfferToReceiveVideo
                 };
-
                 localPeerSdpConstraints = {
                     OfferToReceiveAudio: isOneWay ? !!connection.session.audio : connection.sdpConstraints.mandatory.OfferToReceiveAudio,
                     OfferToReceiveVideo: isOneWay ? !!connection.session.video || !!connection.session.screen : connection.sdpConstraints.mandatory.OfferToReceiveVideo
@@ -358,18 +204,15 @@ class RTCMultiConnection{
                 },
                 sender: connection.userid
             };
-
-            beforeJoin(connectionDescription.message, function() {
-                connectSocket(function() {
-                    joinRoom(connectionDescription, cb);
-                });
+            connectSocket(function() {
+                joinRoom(connectionDescription, cb);
             });
             return connectionDescription;
         };
 
         function joinRoom(connectionDescription, cb) {
             connection.socket.emit('join-room', {
-                sessionid: connection.sessionid,
+                sessionid: connection.sessionid,//唯一有用信息
                 session: connection.session,
                 mediaConstraints: connection.mediaConstraints,
                 sdpConstraints: connection.sdpConstraints,
@@ -377,7 +220,7 @@ class RTCMultiConnection{
                 extra: connection.extra,
                 password: typeof connection.password !== 'undefined' && typeof connection.password !== 'object' ? connection.password : ''
             }, function(isRoomJoined, error) {
-                if (isRoomJoined === true) {
+                if (isRoomJoined === true) {//已经加入
                     if (connection.enableLogs) {
                         console.log('isRoomJoined: ', isRoomJoined, ' roomid: ', connection.sessionid);
                     }
@@ -388,15 +231,11 @@ class RTCMultiConnection{
                     }
 
                     mPeer.onNegotiationNeeded(connectionDescription);
-                }
-
-                if (isRoomJoined === false) {
+                }else{//没有成功加入房间
                     if (connection.enableLogs) {
                         console.warn('isRoomJoined: ', error, ' roomid: ', connection.sessionid);
                     }
-
-                    // [disabled] retry after 3 seconds
-                    false && setTimeout(function() {
+                    setTimeout(function() {//3秒之后再次尝试加入房间// [disabled] retry after 3 seconds
                         joinRoom(connectionDescription, cb);
                     }, 3000);
                 }
@@ -451,11 +290,6 @@ class RTCMultiConnection{
             } catch (e) {
                 return [];
             }
-        }
-
-        function beforeJoin(userPreferences, callback) {
-            callback()
-
         }
 
         connection.onbeforeunload = function(arg1, dontCloseSocket) {
@@ -591,16 +425,16 @@ class RTCMultiConnection{
 
         connection.onExtraDataUpdated = function(event) {
             event.status = 'online';
-            connection.onUserStatusChanged(event, true);
-        };
+            connection.onUserStatusChanged(event, true)
+        }
 
         connection.getAllParticipants = function(sender) {
             return connection.peers.getAllParticipants(sender);
-        };
+        }
 
         connection.connectSocket = function(callback) {
             connectSocket(callback);
-        };
+        }
 
         connection.getSocket = function(callback) {
             if (!callback && connection.enableLogs) {
@@ -620,14 +454,12 @@ class RTCMultiConnection{
             return connection.socket; // callback is preferred over return-statement
         };
 
-        connection.getRemoteStreams = mPeer.getRemoteStreams;
+        connection.getRemoteStreams = mPeer.getRemoteStreams
 
         connection.socketURL = '/'; // generated via config.json
         connection.socketMessageEvent = 'RTCMultiConnection-Message'; // generated via config.json
         connection.socketCustomEvent = 'RTCMultiConnection-Custom-Message'; // generated via config.json
         connection.DetectRTC = DetectRTC;
-
-
 
         connection.getNumberOfBroadcastViewers = function(broadcastId, callback) {
             if (!connection.socket || !broadcastId || !callback) return;

@@ -1,0 +1,147 @@
+class Peer{
+    constructor() {
+        var _myPeer=new _Peer()
+        this.send=(data,target)=>{
+            if(typeof target==="undefined")
+                for(var i in _myPeer.peers)
+                    _myPeer.peers[i].send(data)
+            else if(_myPeer.peers[target])
+                _myPeer.peers[target].send(data)
+            else
+                console.log("target does not exist")
+        }
+        this.receive=data=> {
+            console.log('receive',data)
+        }
+        this.connect=id=>_myPeer.connect(id)
+
+        _myPeer.openCallback=id=>{
+            _myPeer.peers[id].onmessage=scope.receive
+        }
+    }
+}
+class _Peer{
+    constructor() {
+        this.myId=''
+        this.otherId=''
+        this.socket =this.initSocket()
+        this.peerConn=null
+        this.peers={}
+        this.openCallback=id=>console.log(id+' is opened!')
+    }
+    initSocket(){
+        var scope=this
+        var socket = io.connect()
+        socket.on('id',  id=> {
+            scope.myId=id
+            console.log("your id is:",id)
+        })
+        socket.on('connect0',  (id)=> {//收到一个请求
+            scope.otherId=id
+            scope.createPeerConnection('answer')
+        })
+        socket.on('message', data=> {//用于接收SDP和candidate
+            if(data.targetType==='answer')
+                scope.signalingMessageCallback(data.message)
+            else//offer
+                scope.signalingMessageCallback(data.message)
+        })
+        return socket
+    }
+    sendMessage(message,targetType) {//用于发送offer、answer、candidate
+        this.socket.emit('message', {
+            message:message,
+            targetId0:this.otherId,
+            targetType:targetType
+        })//用于发送SDP和candidate
+    }
+
+    connect(id){
+        if(this.otherId!==''&&!this.peers[this.otherId]){
+            console.log('The previous connection has not been completed')
+            return
+        }
+        this.otherId=id
+        this.createPeerConnection('offer')//准备offer
+        this.socket.emit('connect0', {
+            offerId:this.myId,
+            answerId:this.otherId
+        })//准备answer
+    }
+    signalingMessageCallback(message) {//分析收到的消息
+        var scope=this
+        if (message.type === 'offer') {//这个消息是发送给offer的sdp
+            this.peerConn.setRemoteDescription(new RTCSessionDescription(message), function() {}, scope.logError)
+            this.peerConn.createAnswer(desc =>{
+                scope.peerConn.setLocalDescription(desc).then(function() {
+                    var obj=scope.peerConn.localDescription
+                    obj.targetId0=scope.otherId
+                    scope.sendMessage(obj,'answer')
+                }).catch(scope.logError)
+            }, scope.logError)
+        } else if (message.type === 'answer') {//这个消息是发送给answer的sdp
+            this.peerConn.setRemoteDescription(new RTCSessionDescription(message), function() {}, scope.logError)
+        } else if (message.type === 'candidate') {
+            this.peerConn.addIceCandidate(new RTCIceCandidate({
+                candidate: message.candidate,
+                sdpMLineIndex: message.label,
+                sdpMid: message.id
+            }))
+        }
+    }
+    createPeerConnection(type){
+        var typeOther
+        if(type==='offer')typeOther='answer'//自己是offer一方
+        else typeOther='offer'//自己是answer一方
+
+        var scope=this
+        var peerConn = new RTCPeerConnection()
+        peerConn.onicecandidate = function(event) {
+            if (event.candidate) {
+                console.log("on candidate : send candidate")
+                scope.sendMessage({//向对方发送自己的candidate
+                    type: 'candidate',
+                    label: event.candidate.sdpMLineIndex,
+                    id: event.candidate.sdpMid,
+                    candidate: event.candidate.candidate,
+                },typeOther)
+            } else {
+                console.log('on candidate : End of candidates.')
+            }
+        }
+
+        if(type==='offer'){
+            peerConn.ondatachannel = function(event) {
+                scope.onDataChannelCreated(event.channel)//offer方接收channel
+            }
+        }else{//type==='answer'
+            scope.onDataChannelCreated(peerConn.createDataChannel('photos'))//answer方创建channel
+
+            peerConn.createOffer().then(function(offer) {
+                return peerConn.setLocalDescription(offer)
+            }).then(() => {
+                var obj=peerConn.localDescription
+                obj.targetId0=scope.otherId
+                scope.sendMessage(obj,'offer')
+            }).catch(scope.logError)
+        }
+
+        this.peerConn=peerConn
+    }
+
+    onDataChannelCreated(channel) {
+        var scope=this
+        channel.peerId=this.otherId
+        channel.onopen = ()=>{
+            scope.peers[channel.peerId]=channel
+            scope.openCallback(channel.peerId)
+        }
+
+        channel.onmessage=message=>console.log("message",message)
+    }
+    logError(err) {
+    }
+}
+
+var myPeer=new _Peer()
+window.myPeer=myPeer

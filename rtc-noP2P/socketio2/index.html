@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>test</title>
+</head>
+<body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="http://youku3d.com/smart3d/lib/adapter.js"></script>
+  <script>
+    var socket = io.connect()
+    socket.on('receive', data=> console.log(data))
+    socket.emit('send','This is a broadcast message')
+  </script>
+</body>
+</html>

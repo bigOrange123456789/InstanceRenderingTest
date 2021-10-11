@@ -1,0 +1,7 @@
+创建RTCPeerConnection对象的位置：
+    DetectRTC.js
+    globals.js
+    PeerInitiator.js
+
+candidate出现的地方：
+    PeerInitiator.js

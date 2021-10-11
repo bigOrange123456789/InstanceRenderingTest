@@ -270,7 +270,12 @@ httpApp = httpApp.listen(process.env.PORT || PORT, process.env.IP || "0.0.0.0", 
 // --------------------------
 // socket.io codes goes below
 
-ioServer(httpApp).on('connection', function(socket) {
+ioServer(httpApp, {
+    cors: {
+        origin: ['http://localhost:8080','http://localhost:63342','http://localhost:8081'],
+        credentials: true
+    }
+}).on('connection', function(socket) {
     RTCMultiConnectionServer.addSocket(socket, config);
 
     const params = socket.handshake.query;

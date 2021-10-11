@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8f008d4b-33c2-4c1f-82b1-353f0a4cbfdd" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../saveView4/.idea/saveView4.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodecsHandler.js" beforeDir="false" afterPath="$PROJECT_DIR$/CodecsHandler.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DetectRTC.js" beforeDir="false" afterPath="$PROJECT_DIR$/DetectRTC.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MultiPeers.js" beforeDir="false" afterPath="$PROJECT_DIR$/MultiPeers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PeerInitiator.js" beforeDir="false" afterPath="$PROJECT_DIR$/PeerInitiator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RTCMultiConnection.js" beforeDir="false" afterPath="$PROJECT_DIR$/RTCMultiConnection.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/globals.js" beforeDir="false" afterPath="$PROJECT_DIR$/globals.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../rtc-noP2P/step-03-6/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../rtc-noP2P/step-03-6/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../rtc-noP2P/step-06/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../rtc-noP2P/step-06/js/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../transmission/client2/src/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../transmission/client2/src/config.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectId" id="1yAUbkX6ycl2GRdNypcUhbx9cYB" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../rtc-noP2P" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8f008d4b-33c2-4c1f-82b1-353f0a4cbfdd" name="Default Changelist" comment="" />
+      <created>1631693959561</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1631693959561</updated>
+      <workItem from="1631693960740" duration="4389000" />
+      <workItem from="1631707785672" duration="1207000" />
+      <workItem from="1631709077750" duration="8361000" />
+      <workItem from="1631749742126" duration="48791000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="634" y="216" key="FileChooserDialogImpl" timestamp="1631882352277">
+      <screen x="0" y="0" width="1707" height="920" />
+    </state>
+    <state x="634" y="216" key="FileChooserDialogImpl/0.0.1707.920@0.0.1707.920" timestamp="1631882352277" />
+  </component>
+</project>

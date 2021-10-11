@@ -99,50 +99,6 @@ class CodecsHandler_{
                 return info;
             }
 
-            function removeVPX(sdp) {
-                var info = splitLines(sdp);
-
-                // last parameter below means: ignore these codecs
-                sdp = preferCodecHelper(sdp, 'vp9', info, true);
-                sdp = preferCodecHelper(sdp, 'vp8', info, true);
-
-                return sdp;
-            }
-
-            function disableNACK(sdp) {
-                if (!sdp || typeof sdp !== 'string') {
-                    throw 'Invalid arguments.';
-                }
-
-                sdp = sdp.replace('a=rtcp-fb:126 nack\r\n', '');
-                sdp = sdp.replace('a=rtcp-fb:126 nack pli\r\n', 'a=rtcp-fb:126 pli\r\n');
-                sdp = sdp.replace('a=rtcp-fb:97 nack\r\n', '');
-                sdp = sdp.replace('a=rtcp-fb:97 nack pli\r\n', 'a=rtcp-fb:97 pli\r\n');
-
-                return sdp;
-            }
-
-            function prioritize(codecMimeType, peer) {
-                if (!peer || !peer.getSenders || !peer.getSenders().length) {
-                    return;
-                }
-
-                if (!codecMimeType || typeof codecMimeType !== 'string') {
-                    throw 'Invalid arguments.';
-                }
-
-                peer.getSenders().forEach(function(sender) {
-                    var params = sender.getParameters();
-                    for (var i = 0; i < params.codecs.length; i++) {
-                        if (params.codecs[i].mimeType == codecMimeType) {
-                            params.codecs.unshift(params.codecs.splice(i, 1));
-                            break;
-                        }
-                    }
-                    sender.setParameters(params);
-                });
-            }
-
             function removeNonG722(sdp) {
                 return sdp.replace(/m=audio ([0-9]+) RTP\/SAVPF ([0-9 ]*)/g, 'm=audio $1 RTP\/SAVPF 9');
             }
@@ -310,36 +266,7 @@ class CodecsHandler_{
                 return sdp;
             }
 
-            // forceStereoAudio => via webrtcexample.com
-            // requires getUserMedia => echoCancellation:false
-            function forceStereoAudio(sdp) {
-                var sdpLines = sdp.split('\r\n');
-                var fmtpLineIndex = null;
-                for (var i = 0; i < sdpLines.length; i++) {
-                    if (sdpLines[i].search('opus/48000') !== -1) {
-                        var opusPayload = extractSdp(sdpLines[i], /:(\d+) opus\/48000/i);
-                        break;
-                    }
-                }
-                for (var i = 0; i < sdpLines.length; i++) {
-                    if (sdpLines[i].search('a=fmtp') !== -1) {
-                        var payload = extractSdp(sdpLines[i], /a=fmtp:(\d+)/);
-                        if (payload === opusPayload) {
-                            fmtpLineIndex = i;
-                            break;
-                        }
-                    }
-                }
-                if (fmtpLineIndex === null) return sdp;
-                sdpLines[fmtpLineIndex] = sdpLines[fmtpLineIndex].concat('; stereo=1; sprop-stereo=1');
-                sdp = sdpLines.join('\r\n');
-                return sdp;
-            }
-
             return {
-                removeVPX: removeVPX,
-                disableNACK: disableNACK,
-                prioritize: prioritize,
                 removeNonG722: removeNonG722,
                 setApplicationSpecificBandwidth: function(sdp, bandwidth, isScreen) {
                     return setBAS(sdp, bandwidth, isScreen);
@@ -350,11 +277,7 @@ class CodecsHandler_{
                 setOpusAttributes: function(sdp, params) {
                     return setOpusAttributes(sdp, params);
                 },
-                preferVP9: function(sdp) {
-                    return preferCodec(sdp, 'vp9');
-                },
                 preferCodec: preferCodec,
-                forceStereoAudio: forceStereoAudio
             };
         })();
     }

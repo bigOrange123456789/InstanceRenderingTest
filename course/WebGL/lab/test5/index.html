@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>索引缓存区</title>
+    <meta http-equiv="content-type"content="text/html; charset=gb2312">
+    <style>
+        body {overflow:hidden;}
+    </style>
+    <script src="glMatrix.js"></script>
+
+</head>
+<body>
+<canvas id="myCanvas" width="600" height="450"></canvas>
+<script src="index.js"></script>
+<script>
+    var canvas=document.getElementById("myCanvas");//创建画布//createElement('canvas');
+    var webgl=canvas.getContext("webgl")//获得webgl环境（上下文）//WebGLRenderingContext
+
+    webgl.viewport(0,0,canvas.clientWidth,canvas.clientHeight);//设置canvas的位置和尺寸//设置webgl窗口尺寸为canvas画布尺寸
+
+    loadJson('model.json',myModel=>
+        start(myModel)
+    )
+    function initTexture(imageFile){
+        var textureHandle=webgl.createTexture();//创建一个纹理//返回一个句柄，也是一个ID
+        var image=new Image()
+        image.src=imageFile;//指定图片的路径
+        image.onload=function(){//当图片被加载后调用这个函数
+            var texture=textureHandle
+            webgl.bindTexture(webgl.TEXTURE_2D,texture);
+            webgl.texImage2D(webgl.TEXTURE_2D,0,webgl.RGBA,webgl.RGBA,webgl.UNSIGNED_BYTE,texture.image);
+            //                指明2D纹理   , 级别,纹理的存储格式, 图片格式  ,RGBA中每个元素的类型
+
+            //纹理采样//filter过滤器//nearest最近的
+            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MAG_FILTER,webgl.NEAREST);
+            //                 指定纹理放大时候的算法：对应点采样
+            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MIN_FILTER,webgl.NEAREST);
+
+            //纹理包装//wrap包裹  clamp夹住 edge
+            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_WRAP_S,webgl.CLAMP_TO_EDGE);
+            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_WRAP_T,webgl.CLAMP_TO_EDGE);
+
+            webgl.bindTexture(webgl.TEXTURE_2D,texture);//这是一个状态机，将它置空以不影响接下来的使用
+        }
+        textureHandle.image=image
+        return textureHandle;
+    }
+    function loadTex(name) {
+        let xhr = new XMLHttpRequest(),
+            okStatus = document.location.protocol === "file:" ? 0 : 200;
+        xhr.open('GET', name, false);
+        xhr.overrideMimeType("text/html;charset=utf-8");//默认为utf-8
+        xhr.send(null);
+        return xhr.status === okStatus ? xhr.responseText : null;
+    }
+    function loadJson(url,cb) {
+        var request = new XMLHttpRequest();
+        request.open("get", url);
+        request.send(null);
+        request.onload = function () {
+            if (request.status === 200) {
+                cb(JSON.parse(request.responseText))
+            }
+        }
+    }
+    function start(myModel){
+        var vertexShaderObject=webgl.createShader(webgl.VERTEX_SHADER)//创建顶点shader对象//一个顶点渲染器对象vertexShaderObject
+        var fragmentShaderObject=webgl.createShader(webgl.FRAGMENT_SHADER)//创建片元shader对象
+        webgl.shaderSource(vertexShaderObject, loadTex('vertex.vert'))
+        webgl.shaderSource(fragmentShaderObject, loadTex('fragment.frag'))
+
+        //1编译
+        webgl.compileShader(vertexShaderObject)///编译canvas中的顶点着色器代码//compile编译
+        webgl.compileShader(fragmentShaderObject)///编译canvas中的片元着色器代码
+
+        //2链接
+        var programObject=webgl.createProgram();
+        webgl.attachShader(programObject,vertexShaderObject);
+        webgl.attachShader(programObject,fragmentShaderObject);
+
+        webgl.bindAttribLocation(programObject,0,'v3Position');//将shader中的变量和JS中的变量进行绑定绑定
+
+        webgl.linkProgram(programObject);//链接
+        webgl.useProgram(programObject);//使用
+
+        //纹理
+        var attrUV=webgl.getAttribLocation(programObject,'inUV');//0001
+        var uniformTexture=webgl.getUniformLocation(programObject,'texture');//0001
+
+        //纹理处理
+        var textureHandle=initTexture('../1.png');
+        webgl.activeTexture(webgl.TEXTURE0);//激活纹理//一个三角面上最多可以贴32张纹理，对应32个阶段//这里激活第0个阶段
+        webgl.bindTexture(webgl.TEXTURE_2D,textureHandle);//绑定纹理
+        webgl.uniform1i(uniformTexture,0);
+
+        //投影矩阵
+        var uniformProj=webgl.getUniformLocation(programObject,'proj');//0001
+        webgl.clear(webgl.COLOR_BUFFER_BIT|webgl.DEPTH_BUFFER_BIT)
+
+        //3设置缓存区
+        webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
+        webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array(myModel.vertex),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
+        webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER,webgl.createBuffer())//绑定缓存区方法是一个状态机///绑定缓存区//指明缓存区的类型
+        webgl.bufferData(webgl.ELEMENT_ARRAY_BUFFER,new Uint16Array(myModel.index),webgl.STATIC_DRAW)//设置缓冲区//执行这一句才分配了内存
+
+        var mvp=mat4.create();//模型矩阵
+
+        var projectMat0=t.getProjectMat(canvas.clientWidth,canvas.clientHeight,0.1,100)
+        var scale=t.getScale(10*canvas.clientWidth,10*canvas.clientHeight,-1,0)
+        projectMat0=t.mul(projectMat0,scale)
+
+        var time=0;
+
+        webgl.enableVertexAttribArray(attrUV);
+        webgl.vertexAttribPointer(attrUV,2,webgl.FLOAT,false,4*9,4*3)
+
+        setInterval(function(){
+            var modelMat=t.getModelMat({
+                move:{x:0,y:0,z:-70},
+                rot:{x:time*0.01,y:0,z:0},
+                scale:{x:1,y:1,z:1}
+            })
+            time++;
+            mvp=t.mul(projectMat0,modelMat)
+
+            webgl.uniformMatrix4fv(uniformProj,false,new Float32Array(t.toList(mvp)));
+
+            webgl.enableVertexAttribArray(0);//v3Position
+            webgl.vertexAttribPointer(0,3,webgl.FLOAT,false,4*9,0)//Pointer指针//给属性变量赋值
+            //        顶点属性的指针          赋值类型是3维元素/变量类型是浮点数/不规格化
+            //4*6的含义：4是指一个float类型的字节数，6是指每个点所占用的float类型变量个数
+
+            //4绘制
+            //设置背景颜色
+            webgl.clearColor(0,0,0,1);
+
+            webgl.clear(webgl.COLOR_BUFFER_BIT|webgl.DEPTH_BUFFER_BIT)//清空颜色缓冲区和深度缓冲区//清空深度缓冲区会有遮挡关系
+            webgl.enable(webgl.DEPTH_TEST)//启用深度测试
+            webgl.drawElements(webgl.TRIANGLES,36,webgl.UNSIGNED_SHORT,0);//照三角形绘制，从第0个点开始，绘制6个点
+        },20)
+    }
+
+
+</script>
+</body>
+</html>

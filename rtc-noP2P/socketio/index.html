@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebRTC-3</title>
+</head>
+<body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="http://youku3d.com/smart3d/lib/adapter.js"></script>
+  <script>
+    var socket = io.connect()
+    socket.on('receive', data=> console.log(data))
+    socket.emit('listen', "origin:client")
+    window.send=message=> socket.emit('send',message)
+    window.join=roomId=> socket.emit('join',roomId)
+    window.roomSend=(room,message)=> socket.emit('roomSend',{room:room,message:message})
+  </script>
+</body>
+</html>

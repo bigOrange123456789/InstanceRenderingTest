@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html id="home" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="https://www.webrtc-experiment.com/style.css">
+
+    <style>
+        audio, video {
+            -moz-transition: all 1s ease;
+            -ms-transition: all 1s ease;
+
+            -o-transition: all 1s ease;
+            -webkit-transition: all 1s ease;
+            transition: all 1s ease;
+            vertical-align: top;
+        }
+
+        p { padding: 1em; }
+
+        li {
+            border-bottom: 1px solid rgb(189, 189, 189);
+            border-left: 1px solid rgb(189, 189, 189);
+            padding: .5em;
+        }
+
+        .videos-container {
+            display: inline-block;
+            border: 2px solid black;
+            padding: .1em;
+            border-radius: 0.2em;
+            margin: 2em .2em;
+            background: white;
+            vertical-align: top;
+        }
+        .videos-container h2 {
+            border: 0;
+            border-top: 1px solid black;
+            margin: 0;
+            text-align: center;
+            display:block;
+        }
+        video {
+            width:20em;
+            height: 15em;
+            background: black;
+        }
+    </style>
+    <!-- for HTML5 el styling -->
+    <script>
+        document.createElement('article');
+    </script>
+</head>
+
+<body>
+<article>
+    <div style="text-align:center;">
+        <div class="videos-container">
+            <video id="peer1-to-peer2" autoplay controls></video>
+            <h2>Offerer-to-Answerer</h2>
+
+        </div>
+    </div>
+    <script>
+        var mediaConstraints = {
+            optional: [],
+            mandatory: {
+                OfferToReceiveAudio: true,
+                OfferToReceiveVideo: true
+            }
+        };
+    </script>
+    <script>
+        var offerer, answerer;
+        var offererToAnswerer = document.getElementById('peer1-to-peer2');
+
+        window.RTCPeerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+        window.RTCSessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
+        window.RTCIceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
+
+        navigator.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
+        window.URL = window.webkitURL || window.URL;
+
+        window.iceServers = {
+            iceServers: [{
+                url: 'stun:23.21.150.121'
+            }
+            ]
+        };
+    </script>
+    <script>
+        /* answerer */
+
+        function answererPeer(offer, video_stream) {
+            answerer = new RTCPeerConnection(window.iceServers);
+            // answerer.addStream(video_stream);
+
+            answerer.onaddstream = function (event) {
+                offererToAnswerer.src = URL.createObjectURL(event.stream);
+                offererToAnswerer.play();
+            };
+
+            answerer.onicecandidate = function (event) {
+                if (!event || !event.candidate) return;
+                sendToP1({
+                    'action' : 'candidate',
+                    'candidate' :event.candidate
+                })
+                //offerer.addIceCandidate(event.candidate);
+            };
+
+            answerer.setRemoteDescription(new RTCSessionDescription(offer));
+            answerer.createAnswer(function (answer) {
+                answerer.setLocalDescription(answer);
+                sendToP1({
+                    'action' : 'answer' ,
+                    'answer' : answer
+                })
+                //offerer.setRemoteDescription(answer);
+            }, function() {}, mediaConstraints);
+        }
+
+        function receiveMessage(data){
+            data = JSON.parse(data.data)
+            console.log(data)
+            switch(data.action){
+                case "create":
+                    answererPeer(data.offer , data.stream)
+                    break
+                case "candidate":
+                    answerer.addIceCandidate(new RTCIceCandidate(data.candidate))
+                    break
+            }
+        }
+        window.addEventListener("message", receiveMessage, false)
+
+        function sendToP1(data) {
+            opener.postMessage(JSON.stringify(data) , window.location)
+        }
+    </script>
+
+
+</article>
+
+
+
+</body>
+
+</html>

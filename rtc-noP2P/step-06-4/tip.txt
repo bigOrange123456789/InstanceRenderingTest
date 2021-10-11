@@ -1,0 +1,30 @@
+//有新用户加入房间
+Creating connection
+Creating Channel
+onChannelCreated
+
+Creating an offer
+set local sdp                       [1]
+send local sdp
+on candidate : send candidate       [2]
+receive answer : set remote sdp     [3]
+receive candidate : add candidate   [4]
+
+on candidate : End of candidates.
+channel opened
+receive answer : set remote sdp     [?]
+
+//进入房间
+Creating Peer connection
+Creating Peer connection
+receive offer : set remote sdp & create answer[1]
+receive candidate : add candidate   [2]
+set local sdp                       [3]
+send local sdp
+on candidate : send candidate       [4]
+on candidate : End of candidates.
+
+receive answer : set remote sdp     [?]
+receive candidate : add candidate   [?]
+get channel
+channel opened

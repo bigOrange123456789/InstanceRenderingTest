@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>P2P test 7</title>
+    <title>P2P test 21</title>
 </head>
 <body>
     <script src="http://youku3d.com/smart3d/lib/adapter.js"></script>
@@ -15,7 +15,7 @@
         tag.innerHTML="user : "+connection.userid
         document.body.append(tag)
 
-        connection.socketURL = "http://110.40.255.87:9001/"
+        connection.socketURL = "http://localhost:9001/"
         connection.sdpConstraints.mandatory = {
             OfferToReceiveAudio: false,
             OfferToReceiveVideo: false
@@ -28,12 +28,19 @@
             document.body.append(tag)
         }
         connection.onopen = event=> {
-            connection.peers.send(
-                performance.now(),
-                event.userid)
+            //var data={"type":"text","message":"test6","last":true,"isobject":false}
+            //data = JSON.stringify(data)
+            //connection.peers[event.userid].channels[0].send(data)
         }
-        connection.openOrJoin("myRoom2");
+        connection.openOrJoin("myRoom2")
+
         window.connection=connection
+        window.send=function(message){
+            var data={"type":"text","message":message,"last":true,"isobject":false}
+            data = JSON.stringify(data)
+            var peer=connection.peers.selectFirst()
+            peer.channels[0].send(data)
+        }
     </script>
 </body>
 </html>

@@ -591,36 +591,6 @@ class DetectRTC_{
                 }
             }
 
-            function handleCandidate(candidate) {
-                if (!candidate) {
-                    callback(); // Pass nothing to tell that ICE-gathering-ended
-                    return;
-                }
-
-                var match = regexIpv4.exec(candidate);
-                if (!match) {
-                    return;
-                }
-                var ipAddress = match[1];
-                var isPublic = (candidate.match(regexIpv4Local)),
-                    isIpv4 = true;
-
-                if (ipDuplicates[ipAddress] === undefined) {
-                    callback(ipAddress, isPublic, isIpv4);
-                }
-
-                ipDuplicates[ipAddress] = true;
-            }
-
-            // listen for candidate events
-            pc.onicecandidate = function(event) {
-                if (event.candidate && event.candidate.candidate) {
-                    handleCandidate(event.candidate.candidate);
-                } else {
-                    handleCandidate(); // Pass nothing to tell that ICE-gathering-ended
-                }
-            };
-
             // create data channel
             if (!stream) {
                 try {
@@ -640,13 +610,6 @@ class DetectRTC_{
             }
 
             function afterCreateOffer() {
-                var lines = pc.localDescription.sdp.split('\n');
-
-                lines.forEach(function(line) {
-                    if (line && line.indexOf('a=candidate:') === 0) {
-                        handleCandidate(line);
-                    }
-                });
             }
         }
 

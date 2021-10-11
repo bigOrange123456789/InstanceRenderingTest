@@ -20,8 +20,8 @@
 <script src="./lib/RTCMultiConnection.js"></script>
 <script>
 	var rtConnection = new RTCMultiConnection();
-	//rtConnection.socketURL = "http://100.68.241.229:9001/";
-	rtConnection.socketURL ='https://rtcmulticonnection.herokuapp.com:443/';//
+	rtConnection.socketURL = "http://localhost:9001/";
+	//rtConnection.socketURL ='https://rtcmulticonnection.herokuapp.com:443/';//
 	rtConnection.enableFileSharing = true; // by default, it is "false".
 	rtConnection.session = {data: true};
 	rtConnection.onopen = function () {

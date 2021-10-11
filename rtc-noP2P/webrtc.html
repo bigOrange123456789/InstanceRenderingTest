@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html id="home" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <style>
+
+        p { padding: 1em; }
+
+        li {
+            border-bottom: 1px solid rgb(189, 189, 189);
+            border-left: 1px solid rgb(189, 189, 189);
+            padding: .5em;
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+<script>
+    var mediaConstraints = {
+        optional: [],
+        mandatory: {
+            OfferToReceiveAudio: false,
+            OfferToReceiveVideo: true
+        }
+    };
+</script>
+<script>
+    var offerer
+        ,answererWin
+
+    window.RTCPeerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+    window.RTCSessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
+    window.RTCIceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
+
+    navigator.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
+    window.URL = window.webkitURL || window.URL;
+
+    window.iceServers = {
+        iceServers: [{
+            url: 'stun:23.21.150.121'
+        }
+        ]
+    };
+</script>
+<script>
+    /* offerer */
+    function offererPeer(video_stream) {
+        offerer = new RTCPeerConnection(window.iceServers)
+        offerer.addStream(video_stream)
+
+        offerer.onaddstream = function (event) {
+            // 本地显示video
+        }
+
+        offerer.onicecandidate = function (event) {
+            if (!event || !event.candidate) return
+
+            sendToP2({
+                'action' : 'candidate',
+                'candidate' :event.candidate
+            })
+
+        }
+
+        offerer.createOffer(function (offer) {
+            offerer.setLocalDescription(offer)
+            sendToP2({
+                'action' : 'create',
+                'offer':offer
+            })
+
+        }, function() {}, mediaConstraints)
+    }
+</script>
+<script>
+    var video_constraints = {
+        mandatory: {},
+        optional: []
+    }
+
+    function getUserMedia(callback) {
+        var n = navigator
+        n.getMedia = n.webkitGetUserMedia || n.mozGetUserMedia
+        n.getMedia({
+            audio: false,
+            video: video_constraints
+        }, callback, onerror)
+
+        function onerror(e) {
+            alert(JSON.stringify(e, null, '\t'))
+        }
+    }
+</script>
+<script>
+    function sendToP2(data){
+        answererWin.postMessage(JSON.stringify(data) ,
+            window.location)
+
+    }
+    function receiveMessage(data){
+        data = JSON.parse(data.data)
+        switch ( data.action) {
+            case 'answer' :
+                offerer.setRemoteDescription(new RTCSessionDescription(data.answer))
+                break
+            case "candidate":
+                offerer.addIceCandidate(new RTCIceCandidate(data.candidate))
+                break
+
+        }
+        console.log('msg' ,data)
+    }
+
+
+    window.addEventListener("message", receiveMessage, false)
+    answererWin = window.open('webrtc2.html' ,'t')
+    getUserMedia(function (video_stream) {
+        offererPeer(video_stream)
+    });
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>answer</title>
+</head>
+<body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://youku3d.com/smart3d/lib/adapter.js"></script>
+<script>
+  var myId=''
+  var otherId=''
+  // Connect to the signaling server
+  var socket = io.connect()
+  socket.on('ready',  (id)=> {//收到一个请求
+    otherId=id
+    console.log({otherId:otherId})
+    createPeerConnection()
+  })
+  socket.on('id',  id=> {
+    myId=id
+    console.log(id)
+  })
+  socket.on('message', message=> {//用于接收SDP和candidate
+    signalingMessageCallback(message)
+  })
+  function sendMessage(message) {
+    socket.emit('message', {
+      message:message,
+      targetId0:otherId
+    })//用于发送SDP和candidate
+  }
+  socket.emit('create or join', "room001")
+  window.connect0=(id)=>{
+    otherId=id
+    socket.emit('connect0', {offerId:myId,answerId:otherId})
+  }
+  /****************************************************************************
+   * WebRTC peer connection and data channel
+   ****************************************************************************/
+  var peerConn
+
+  function signalingMessageCallback(message) {
+    if (message.type === 'answer') {
+      peerConn.setRemoteDescription(new RTCSessionDescription(message), function() {}, logError)
+    } else if (message.type === 'candidate') {
+      peerConn.addIceCandidate(new RTCIceCandidate({
+        candidate: message.candidate,
+        sdpMLineIndex: message.label,
+        sdpMid: message.id
+      }))
+    }
+  }
+  function createPeerConnection() {
+    peerConn = new RTCPeerConnection()
+    peerConn.onicecandidate = function(event) {
+      if (event.candidate) {
+        console.log("on candidate : send candidate")
+        sendMessage({//向对方发送自己的candidate
+          type: 'candidate',
+          label: event.candidate.sdpMLineIndex,
+          id: event.candidate.sdpMid,
+          candidate: event.candidate.candidate,
+          targetId0:otherId
+        })
+      } else {
+        console.log('on candidate : End of candidates.')
+      }
+    }
+
+    onDataChannelCreated(peerConn.createDataChannel('photos'))
+
+    peerConn.createOffer().then(function(offer) {
+      return peerConn.setLocalDescription(offer)
+    }).then(() => {
+      var obj=peerConn.localDescription
+      obj.targetId0=otherId
+      sendMessage(obj)
+    }).catch(logError)
+  }
+  /////////////////////////////////////////////////////////////////
+  function onDataChannelCreated(channel) {
+    channel.onopen = ()=>{
+      console.log('channel opened!!!!!!!!!!!!!!!!!')
+      window.send=channel.send
+    }
+    channel.onmessage=message=>console.log("message",message)
+  }
+
+  function logError(err) {
+  }
+
+</script>
+</body>
+
+</html>

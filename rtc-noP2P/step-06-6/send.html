@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>send4</title>
+</head>
+<body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://youku3d.com/smart3d/lib/adapter.js"></script>
+<script>
+  // Connect to the signaling server
+  var socket = io.connect()
+  socket.on('ready',  ()=> {//收到一个请求
+    createPeerConnection()
+  })
+  socket.on('message', message=> {//用于接收SDP和candidate
+    signalingMessageCallback(message)
+  })
+  function sendMessage(message) {
+    socket.emit('message', message)//用于发送SDP和candidate
+  }
+  socket.emit('create or join', "room001")
+  /****************************************************************************
+   * WebRTC peer connection and data channel
+   ****************************************************************************/
+  var peerConn
+
+  function signalingMessageCallback(message) {
+    if (message.type === 'offer') {
+      console.log('receive offer : set remote sdp & create answer')
+      peerConn.setRemoteDescription(new RTCSessionDescription(message), function() {}, logError)
+      peerConn.createAnswer(desc =>{
+        console.log('set local sdp')
+        peerConn.setLocalDescription(desc).then(function() {
+          console.log('send local sdp')
+          sendMessage(peerConn.localDescription)
+        }).catch(logError)
+      }, logError)
+    } else if (message.type === 'candidate') {
+      console.log('receive candidate : add candidate')
+      console.log(message)
+      peerConn.addIceCandidate(new RTCIceCandidate({
+        candidate: message.candidate,
+        sdpMLineIndex: message.label,
+        sdpMid: message.id
+      }))
+    }
+  }
+  function createPeerConnection() {
+    console.log('Creating Peer connection')
+    peerConn = new RTCPeerConnection()
+    peerConn.onicecandidate = function(event) {
+      if (event.candidate) {
+        console.log("on candidate : send candidate")
+        sendMessage({
+          type: 'candidate',
+          label: event.candidate.sdpMLineIndex,
+          id: event.candidate.sdpMid,
+          candidate: event.candidate.candidate
+        })
+      } else {
+        console.log('on candidate : End of candidates.')
+      }
+    }
+    peerConn.ondatachannel = function(event) {
+      onDataChannelCreated(event.channel)
+    }
+  }
+  ////////////////////////////////////////////
+  function onDataChannelCreated(channel) {
+    channel.onopen = ()=>{
+      console.log('channel opened!!!!!!!!!!!!!!!!!')
+      window.send=channel.send
+      var data=Math.random()
+      console.log({data:data})
+      channel.send(data)
+    }
+    channel.onclose = ()=>console.log('Channel closed')
+    channel.onmessage=message=>console.log("message",message)
+  }
+  function logError(err) {
+  }
+
+</script>
+</body>
+
+</html>
