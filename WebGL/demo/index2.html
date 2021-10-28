@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+	</head>
+	<body>
+<script src="https://wow.techbrood.com/libs/jquery/jquery-1.11.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r82/three.min.js"></script>
+<script>
+
+var scene = new THREE.Scene();
+var sWidth = window.innerWidth;
+var sHeight = window.innerHeight;
+var sRatio = sWidth / sHeight;
+var camera = new THREE.PerspectiveCamera(75, sRatio, 0.1, 1000);
+camera.position.z = 10;
+var vFOV = camera.fov * Math.PI / 180;
+var renderer = new THREE.WebGLRenderer({
+    antialias: true
+});
+renderer.setSize(sWidth, sHeight);
+
+function setDimensions() {
+    sWidth = window.innerWidth;
+    sHeight = window.innerHeight;
+    sRatio = sWidth / sHeight;
+    renderer.setSize(sWidth, sHeight);
+    camera.aspect = sRatio;
+    camera.updateProjectionMatrix();
+    vFOV = camera.fov * Math.PI / 180;
+}
+window.addEventListener('resize', setDimensions);
+document.body.appendChild(renderer.domElement);
+
+camera.position.z = 30;
+/* end init */
+
+/* start light */
+var spotLight = new THREE.SpotLight(0xcccccc, 0.1, 0, Math.PI / 2);
+spotLight.position.set(50, 0, 1000);
+//scene.add(spotLight);
+
+var light = new THREE.PointLight(0xeeeeee, 2, 15);
+scene.add(light);
+var orbGeometry = new THREE.SphereGeometry(0.5, 64, 64);
+var orbMaterial = new THREE.LineBasicMaterial();
+var orb = new THREE.Mesh(orbGeometry, orbMaterial);
+orb.position.copy(light.position);
+//scene.add(orb);
+
+var phongMaterial = new THREE.MeshPhongMaterial({
+    color: 0xdddddd,
+    specular: 0x999999,
+    shininess: 30,
+    shading: THREE.FlatShading
+});
+var geometryYRepeat = 30;
+var geometry = new THREE.TorusKnotGeometry(9, 1.5, 300, geometryYRepeat);
+var torusKnot = new THREE.Mesh(geometry, phongMaterial);
+torusKnot.rotation.x = -0.7;
+torusKnot.rotation.y = -0.2;
+scene.add(torusKnot);
+
+var faceCenter = function faceCenter(geom, faceIndex) {
+    var face = geom.faces[faceIndex];
+    var vertices = [geom.vertices[face.a], geom.vertices[face.b], geom.vertices[face.c]];
+    return average(vertices).add(face.normal).applyEuler(torusKnot.rotation);
+};
+
+var faceIndex = 40;
+var orbPosition = new THREE.Vector3(0, 0, 0);
+var update = function update(time) {
+    orbPosition = faceCenter(geometry, faceIndex);
+    faceIndex = faceIndex + geometryYRepeat * 2;
+    if (faceIndex >= geometry.faces.length) {
+        faceIndex -= geometry.faces.length;
+    }
+
+    light.position.copy(orbPosition);
+    orb.position.copy(orbPosition);
+};
+var render = function render(time) {
+    requestAnimationFrame(render);
+
+    update(time);
+
+    renderer.render(scene, camera);
+};
+render();
+
+
+function average(vertices) {
+    return vertices.reduce(function(curr, next) {
+        if (!curr) return next.clone();
+        return curr.lerp(next, 0.5);
+    }, undefined);
+}
+
+</script>
+
+	</body>
+</html>

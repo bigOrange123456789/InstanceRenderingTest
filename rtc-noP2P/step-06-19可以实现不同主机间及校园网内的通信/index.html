@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>p2p</title>
+</head>
+<body>
+<script src="http://youku3d.com/smart3d/lib/socket.io.js"></script>
+<!--script src="/socket.io/socket.io.js"></script-->
+<script src="http://youku3d.com/smart3d/lib/adapter.js"></script>
+<script type="module">
+    //import {Peer} from "http://localhost:8080/Peer.js";
+    import {Peer} from "./Peer.js";
+    window.myPeer=new Peer({socketURL:'http://100.66.196.213:8088'})
+</script>
+<script>
+</script>
+</body>
+</html>

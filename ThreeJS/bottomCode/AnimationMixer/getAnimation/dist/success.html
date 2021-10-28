@@ -55,7 +55,6 @@
             if(node instanceof THREE.SkinnedMesh)
                 skeleton=node.skeleton;
         })
-        console.log(skeleton.bones.length)
         var animation=glb.animations[0];
         var times=glb.animations[0].tracks[0].times;
         var time=times[times.length-1]

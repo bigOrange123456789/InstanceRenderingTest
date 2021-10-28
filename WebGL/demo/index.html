@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+		<script src="js/Network.js"></script>
+	</head>
+	<body style="margin: 0">
+<script src="https://wow.techbrood.com/libs/jquery/jquery-1.11.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r82/three.min.js"></script>
+<script>
+'use strict';
+
+/* init */
+var scene = new THREE.Scene();
+var sWidth = window.innerWidth;
+var sHeight = window.innerHeight;
+var sRatio = sWidth / sHeight;
+var camera = new THREE.PerspectiveCamera(75, sRatio, 0.1, 1000);
+camera.position.z = 10;
+var vFOV = camera.fov * Math.PI / 180;
+var renderer = new THREE.WebGLRenderer({
+    antialias: true
+});
+renderer.setSize(sWidth, sHeight);
+
+function setDimensions() {
+    sWidth = window.innerWidth;
+    sHeight = window.innerHeight;
+    sRatio = sWidth / sHeight;
+    renderer.setSize(sWidth, sHeight);
+    camera.aspect = sRatio;
+    camera.updateProjectionMatrix();
+    vFOV = camera.fov * Math.PI / 180;
+}
+window.addEventListener('resize', setDimensions);
+document.body.appendChild(renderer.domElement);
+
+var stats = new Stats();
+stats.setMode(1);
+stats.domElement.style.position = 'absolute';
+stats.domElement.style.left = '0px';
+stats.domElement.style.zIndex = 2;
+stats.domElement.style.top = '0px';
+document.body.appendChild(stats.domElement);
+
+camera.position.z = 30;
+/* end init */
+
+/* start light */
+var spotLight = new THREE.SpotLight(0xcccccc, 0.1, 0, Math.PI / 2);
+spotLight.position.set(50, 0, 1000);
+scene.add(spotLight);
+
+var light = new THREE.PointLight(0xeeeeee, 2, 15);
+scene.add(light);
+var orbGeometry = new THREE.SphereGeometry(0.5, 64, 64);
+var orbMaterial = new THREE.LineBasicMaterial();
+var orb = new THREE.Mesh(orbGeometry, orbMaterial);
+orb.position.copy(light.position);
+scene.add(orb);
+/* end light */
+
+/* start torus knot mesh  */
+var phongMaterial = new THREE.MeshPhongMaterial({
+    color: 0xdddddd,
+    specular: 0x999999,
+    shininess: 30,
+    shading: THREE.FlatShading
+});
+var geometryYRepeat = 30;
+var geometry = new THREE.TorusKnotGeometry(9, 1.5, 300, geometryYRepeat);
+var torusKnot = new THREE.Mesh(geometry, phongMaterial);
+torusKnot.rotation.x = -0.7;
+torusKnot.rotation.y = -0.2;
+scene.add(torusKnot);
+/* end torus knot mesh */
+
+/* start upate & render */
+var faceCenter = function faceCenter(geom, faceIndex) {
+    var face = geom.faces[faceIndex];
+    var vertices = [geom.vertices[face.a], geom.vertices[face.b], geom.vertices[face.c]];
+    return average(vertices).add(face.normal).applyEuler(torusKnot.rotation);
+};
+
+var faceIndex = 40;
+var orbPosition = new THREE.Vector3(0, 0, 0);
+var update = function update(time) {
+    orbPosition = faceCenter(geometry, faceIndex);
+    faceIndex = faceIndex + geometryYRepeat * 2;
+    if (faceIndex >= geometry.faces.length) {
+        faceIndex -= geometry.faces.length;
+    }
+
+    light.position.copy(orbPosition);
+    orb.position.copy(orbPosition);
+};
+var render = function render(time) {
+    requestAnimationFrame(render);
+
+    stats.update();
+    update(time);
+
+    renderer.render(scene, camera);
+};
+render();
+/* end update & render */
+
+// TODO: OPTIMIZE BY CALCULATING UP FRONT
+function subdividePath(vertices) {
+    var subdivide = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+}
+
+function average(vertices) {
+    return vertices.reduce(function(curr, next) {
+        if (!curr) return next.clone();
+        return curr.lerp(next, 0.5);
+    }, undefined);
+}
+
+function interpolatePathAlongFaces(geometry) {
+    var startFaceIndex = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+    var faceIndexIncrement = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+    var subdivide = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+    var maxPathLength = arguments.length <= 4 || arguments[4] === undefined ? 10000 : arguments[4];
+    var faces = geometry.faces;
+    var vertices = geometry.vertices;
+
+    var path = [];
+    var index = startFaceIndex;
+    var iterations = 0;
+    var maxIterations = 1000000;
+    do {
+        index++;
+        var face = faces[index];
+        var faceVertices = [vertices[face.a], vertices[face.b], vertices[face.c]];
+        path.push(average(faceVertices));
+        index += faceIndexIncrement;
+        if (index >= geometry.faces.length) {
+            index -= geometry.faces.length;
+        }
+
+        iterations++;
+        if (iterations > maxIterations) {
+            throw 'Too many iterations interpolating path';
+        }
+    } while (index !== startFaceIndex && path.length < maxPathLength);
+    return path;
+}
+
+// let path = interpolatePathAlongFaces(geometry, 40, geometryYRepeat * 2)
+</script>
+
+	</body>
+</html>
