@@ -30,7 +30,6 @@ class Peer{//对 _Peer 对象进行封装
                 console.log('delay of '+sourceId+' is '+delay)
             }
         }
-        //this.connect=id=>_myPeer.connect(id)
         //以下是重新函数
         _myPeer.addUser=idOther=>{
             if(_myPeer.idle())
@@ -43,7 +42,6 @@ class Peer{//对 _Peer 对象进行封装
             if(waitingUser.length>0){
                 _myPeer.connect(waitingUser.splice(0,1)[0])
             }
-            //waitingUser.push(idOther)
         }
         _myPeer.openCallback=id=>{
             console.log(id+' is opened!')

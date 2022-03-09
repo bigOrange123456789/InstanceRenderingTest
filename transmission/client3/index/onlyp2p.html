@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Residential building Scene</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+		}
+	</style>
+	<link rel="icon" href="data:;base64,=">
+</head>
+
+<body>
+
+<!-- <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> -->
+<script src="../lib/webrtc/adapter-latest.js"></script>
+<!-- <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script> -->
+<script src="../lib/webrtc/socket.io.js"></script>
+<!-- <script src="https://cdn.webrtc-experiment.com/FileBufferReader.js"></script> -->
+<script src="../lib/webrtc/FileBufferReader.js"></script>
+<script src="../lib/RTCMultiConnection.js"></script>
+<script>
+	var rtConnection = new RTCMultiConnection();
+	0rtConnection.socketURL = "http://100.68.241.229:9001/";
+	rtConnection.socketURL ='https://rtcmulticonnection.herokuapp.com:443/';//
+	rtConnection.enableFileSharing = true; // by default, it is "false".
+	rtConnection.session = {data: true};
+	rtConnection.onopen = function () {
+		console.log("Open the connection");
+		setInterval(() => {
+			rtConnection.send(Array.from("data"));
+		}, 1000);
+	};
+	rtConnection.onmessage = function (event) {
+		console.log(event.data)
+	};
+	rtConnection.onerror = function () {
+		console.log("error, disconnect to other peers");
+	};
+	rtConnection.onclose = function () {
+		console.log("Close the connection");
+	};
+	rtConnection.openOrJoin("room001");
+</script>
+</body>
+</html>

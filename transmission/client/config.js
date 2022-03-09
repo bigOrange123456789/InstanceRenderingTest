@@ -1,4 +1,4 @@
-let ipconfig = '100.68.241.229';
+let ipconfig = 'localhost'//'100.68.241.229';
 
 //unity视点服务器：cgm的端口是8081； demo1的端口是8082；
 

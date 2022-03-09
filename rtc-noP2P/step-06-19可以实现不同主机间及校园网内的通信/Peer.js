@@ -142,12 +142,11 @@ class _Peer{
         else typeOther='offer'//自己是answer一方
 
         var scope=this
-        var pcConfig = {
-            'iceServers': [{//?
-                'urls': 'stun:stun.l.google.com:19302'
+        var peerConn = new RTCPeerConnection({
+            'iceServers': [{//没有这个配置就无法实现主机间的通信
+                'urls': 'stun:stun.l.google.com:19302'//TURN服务器
             }]
-        };
-        var peerConn = new RTCPeerConnection(pcConfig)
+        })
         peerConn.onicecandidate = function(event) {
             if (event.candidate) {
                 //console.log("on candidate : send candidate")

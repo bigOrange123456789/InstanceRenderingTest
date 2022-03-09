@@ -28,6 +28,24 @@ ImgHandle.prototype={
         if(typeof (name)==="undefined")name="bg.jpg";
         this.download(name);
     },
+    getGrayPicture:function(name){
+        var ctx=this.canvas.getContext( "2d" );  //设置画布类型2d
+        for( var y = 0; y < this.canvas.height; y++ ) {
+            for( var x = 0; x < this.canvas.width ; x++ ) {
+                // 获取当前位置的元素
+                var pixel = ctx.getImageData( x, y, 1, 1 );//获取一个像素点的数据
+                // 判断透明度不为0
+                if(true){//if( !(pixel.data[0]==pixel.data[1]&&pixel.data[1]===pixel.data[2]) ) {//如果颜色较亮
+                    //ctx.fillStyle = pixel.data[0];//白色
+                    //ctx.fillRect(x,y,1,1);
+                    pixel.data[0]=pixel.data[1]=pixel.data[2]=Math.floor((pixel.data[0]+pixel.data[1]+pixel.data[2])/3)
+                    ctx.putImageData(pixel, x, y);
+                }
+            }
+        }
+        if(typeof (name)==="undefined")name="gray.jpg";
+        this.download(name);
+    },
     getContent:function(name){
         var ctx=this.canvas.getContext( "2d" );  //设置画布类型2d
         ctx.fillStyle = "#FFFFFF";//白色
