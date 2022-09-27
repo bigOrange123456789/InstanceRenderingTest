@@ -173,9 +173,6 @@ window.addEventListener("load",()=>{
                window["myObject"].terrainScene.children[0].receiveShadow=true
             }
         }
-        import("../myJs/loadBackground.js").then(function(mod){
-            mod.loadBackgroundHugeSphere("../myImage/backgroundImage.jpg");
-        });
         let speciesLib=null;
         loadGLTFloader().then(function(loader){
             loader.load("../models/tree_plane.glb",function(gltf){
