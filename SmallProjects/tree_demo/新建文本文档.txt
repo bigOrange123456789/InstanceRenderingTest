@@ -1,0 +1,11 @@
+g=window.editor.scene.children
+[
+    Group, #光照(山和高模的颜色) # myMain_1.js          # function addLight(group){}
+    Object3D, #山体             #
+    Group,  #高模               #
+    Mesh,   #天空盒             # loadBackground.js    # window.editor.addObject(mesh);
+    Group   #低模               # myMain_1.js          # window["myObject"]["tree_plane"]
+]
+g[2].children
+(8) [InstancedMesh, InstancedMesh, InstancedMesh, InstancedMesh, InstancedMesh, InstancedMesh, InstancedMesh, InstancedMesh]
+每一个对象都是树木的一个部分
