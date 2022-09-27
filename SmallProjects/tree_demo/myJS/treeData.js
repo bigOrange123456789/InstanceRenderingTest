@@ -1408,87 +1408,25 @@ class TreeReferring{
    generateMergedInstancedBranches(group,info,species,tree_index,species_name){
     
         let geo=info.geo;
-
-   // let geo=geoDataToBufferGeo(geoData);
-    // let  geo=new THREE.BoxBufferGeometry();
-   /*   let mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial());
-     let mat=new THREE.Matrix4();
-     //mat.makeScale(30,30,30);
-     
-     mesh.applyMatrix4(mat);
-     mesh.name="tree_geo_1";
-   window.editor.addObject(mesh);  */
         let mat=new THREE.MeshStandardMaterial();
-
-
         let treesInstanced=this.InstanceID;
-    
-       
-
         let level=info.level;
         geo.computeBoundingBox();
-   /*      if(level=="1"){
-          
-        } */
         if(!this.boundingBox){
             this.boundingBox=geo.boundingBox;
         }else{
             this.boundingBox.union(geo.boundingBox);
         }
 
-        this.branchesLibLOD[level]=new THREE.InstancedMesh(geo,mat,treesInstanced.length/Number(level));
+        this.branchesLibLOD[level]=new THREE.InstancedMesh(geo,mat,treesInstanced.length/Number(level));//树干的实例化渲染
         this.branchesLibLOD[level].name=`instancedMergedBranchesLOD_${species_name}_${tree_index}_${level}`;
         if(Number(level)<=2)  this.branchesLibLOD[level].castShadow=true;
         this.branchesLibLOD[level].count=0;
-     /*    for(let i=0;i<treesInstanced.length;i++){
-              let id=treesInstanced[i];
-            this.branchesLibLOD[level].setMatrixAt(i,species.trees[id].transformMatrix);
-            this.branchesLibLOD[level].count++;
-        }
-        console.log(`add ${this.branchesLibLOD[level].name}`); */
-     
         group.add(this.branchesLibLOD[level]);
         info.status="added_no_material";
 }
-generateMergedInstancedLeaves(group,info,species,tree_index,species_name){
-        let geo=info.geo;
-/*         geo.computeBoundingBox();
-        if(!this.boundingBox){  
-            this.boundingBox=geo.boundingBox;
-        }else{
-            this.boundingBox.expandByObject(geo);
-        } */
-        geo.computeBoundingBox();
-        if(!this.boundingBox){
-            this.boundingBox=geo.boundingBox;
-        }else{
-            this.boundingBox.union(geo.boundingBox);
-        }
-         let matID=info.materialID;
-        let treesInstanced=this.InstanceID;
-
-        let instancedMergedLeavesMesh=new THREE.InstancedMesh(geo,new THREE.MeshStandardMaterial(),treesInstanced.length);
-       
-        instancedMergedLeavesMesh.count=0;
-        instancedMergedLeavesMesh.name=`instancedMergedLeavesMesh_${species_name}_${tree_index}_${matID}`;
-/*         for(let i=0;i<treesInstanced.length;i++){
-              let id=treesInstanced[i];
-
-              instancedMergedLeavesMesh.setMatrixAt(i,species.trees[id].transformMatrix);
-        } */
-        this.leavesLib[matID]=instancedMergedLeavesMesh;
-        this.leavesLib[matID].castShadow=true;
-        info.status="added_no_material";
-        group.add(this.leavesLib[matID]);
- }
  generateMergedInstancedLeavesLOD(group,info,species,tree_index,species_name,level){
     let geo=info.geo;
-/*         geo.computeBoundingBox();
-    if(!this.boundingBox){  
-        this.boundingBox=geo.boundingBox;
-    }else{
-        this.boundingBox.expandByObject(geo);
-    } */
     geo.computeBoundingBox();
     if(!this.boundingBox){
         this.boundingBox=geo.boundingBox;
@@ -1498,15 +1436,10 @@ generateMergedInstancedLeaves(group,info,species,tree_index,species_name){
      let matID=info.materialID;
     let treesInstanced=this.InstanceID;
 
-    let instancedMergedLeavesMesh=new THREE.InstancedMesh(geo,new THREE.MeshStandardMaterial(),treesInstanced.length/(level+1));
+    let instancedMergedLeavesMesh=new THREE.InstancedMesh(geo,new THREE.MeshStandardMaterial(),treesInstanced.length/(level+1));//树叶的实例化
    
     instancedMergedLeavesMesh.count=0;
     instancedMergedLeavesMesh.name=`instancedMergedLeavesMesh_${species_name}_${tree_index}_${matID}_${level}`;
-/*         for(let i=0;i<treesInstanced.length;i++){
-          let id=treesInstanced[i];
-
-          instancedMergedLeavesMesh.setMatrixAt(i,species.trees[id].transformMatrix);
-    } */
     if(!this.leavesLibLOD[String(level)])  this.leavesLibLOD[String(level)]={};
     this.leavesLibLOD[String(level)][matID]=instancedMergedLeavesMesh;
     this.leavesLibLOD[String(level)][matID].castShadow=true;
@@ -1576,70 +1509,7 @@ function buildForest(x,y,count,branchLib,treeLib,meshLib,materialLib){
         }
 
     }
-    forest["generateInstancedLeaves"]=function(forest_group){
-                let leavesLib={}
-                 let leavesGroup=new THREE.Group();leavesGroup.name="leaves_group";
-                for(let t of forest["trees"] ){
-                         let treeTransform=buildTreeTransformMat(t.transform);
-                         for(let leaf of  forest["treeLib"][t.referringTreeID]["leaves"]){
-                                    let meshID=leaf.mesh;
-                                    let materialID=leaf.materail;
-                                  if(!leavesLib[meshID])leavesLib[meshID]={};
-                                  if(!leavesLib[meshID][materialID])leavesLib[meshID][materialID]=[];
-                                  let leafTransform=computeLeafTransform(leaf.transformData);
-                                  let totalTransform=new THREE.Matrix4();
-                                  totalTransform.multiply(treeTransform);
-                                  totalTransform.multiply(leafTransform);
-                                  leavesLib[meshID][materialID].push(totalTransform);
-                         }
 
-                }
-               
-                for(let meshID of Object.keys(leavesLib)){
-                         let mesh=forest.meshLib[meshID].geo;
-                    for(let materialID of Object.keys(leavesLib[meshID])){
-                        let mat=forest.materialLib[materialID];
-                        mat.alphaTest=0.46;
-                        mat.roughness=0.4;
-                        mat.normalScale.x=0.3;   mat.normalScale.y=0.3;
-                        mat.side=THREE.DoubleSide;
-                      
-                        let totoalMatrixs=leavesLib[meshID][materialID];
-
-                     let instancedLeaf=new THREE.InstancedMesh(mesh,mat,totoalMatrixs.length);
-                     instancedLeaf.count=totoalMatrixs.length;
-                              instancedLeaf.name="instancedLeaf_"+meshID+"_"+materialID;
-                              instancedLeaf.castShadow=true;
-                              instancedLeaf.customDepthMaterial = new THREE.MeshDepthMaterial( {
-                                depthPacking: THREE.RGBADepthPacking,
-                                alphaMap: mat.alphaMap,
-                                alphaTest:0.46
-                            } );
-
-                            if(!mat.alphaMap){
-                                let timer=setInterval(function(){
-                                  if(mat.alphaMap){
-                                    instancedLeaf.customDepthMaterial = new THREE.MeshDepthMaterial( {
-                                          depthPacking: THREE.RGBADepthPacking,
-                                          alphaMap: mat.alphaMap,
-                                          alphaTest:0.46
-                                      } );
-                                      forceRender();
-                                      clearInterval(timer);
-                                  }
-                                },500);
-                         }
-
-                              for(let i=0;i<totoalMatrixs.length;i++){
-                                instancedLeaf.setMatrixAt(i,totoalMatrixs[i]);
-                            }
-                            leavesGroup.add(instancedLeaf);
-                    }
-
-                }
-                forest_group.add(leavesGroup);
-                //forest["leavesLib"]=leavesLib;
-    }
     forest["generateInstancedBranches"]=function(forest_group){
 
         let branchLib=forest["branchLib"];
@@ -1658,51 +1528,7 @@ function buildForest(x,y,count,branchLib,treeLib,meshLib,materialLib){
       } */
 
   }
-  forest["generateMergedInstancedLeaves"]=function(forest_group){
-     let leavesGroup=new THREE.Group();leavesGroup.name="leavesMerged_group";
-        let tree_index=0;
-     for(let tree of  forest["treeLib"]){
-         if(tree["leavesLib"])continue;
-         tree["leavesLib"]={};
-        for(let leavesMerged  of tree.leavesMerged){
-            let geo=leavesMerged.geometry;
-            let materialID=leavesMerged.materialID;
-            let mat= forest["materialLib"][materialID];
-  
-            //set up leaf material
-            mat.alphaTest=0.46;
-            mat.roughness=0.4;
-           mat.normalScale.x=0.3;   mat.normalScale.y=0.3;
-            mat.side=THREE.DoubleSide; 
-             
-            let treesInstanced=tree.InstanceID;
 
-            let instancedMergedLeavesMesh=new THREE.InstancedMesh(geo,mat,treesInstanced.length);
-            instancedMergedLeavesMesh.name=`instancedMergedLeavesMesh_${tree_index}_${leavesMerged.meshID}_${leavesMerged.materialID}`;
-            //set up shadow
-            instancedMergedLeavesMesh.castShadow=true;
-            instancedMergedLeavesMesh.customDepthMaterial = new THREE.MeshDepthMaterial( {
-               depthPacking: THREE.RGBADepthPacking,
-               alphaMap: mat.alphaMap,
-               alphaTest:0.46
-           } );
-            for(let i=0;i<treesInstanced.length;i++){
-                  let id=treesInstanced[i];
-                  let matrix=buildTreeTransformMat(forest["trees"][id].transform);
-                  instancedMergedLeavesMesh.setMatrixAt(i,matrix);
-            }
-            tree["leavesLib"][`${leavesMerged.meshID}_${leavesMerged.materialID}`]=instancedMergedLeavesMesh;
-            leavesGroup.add(instancedMergedLeavesMesh);
-            tree_index++;
-    }
-     }
-     
-
-   
-     
-    forest_group.add(leavesGroup);
-    //forest["leavesLib"]=leavesLib;
-}
     forest["updateLOD"]=function(){
            let that=forest;
    
@@ -1842,30 +1668,6 @@ function mergeLeavesAndBuildMesh(leavesInfo,meshes,materials){
            //window.editor.addObject(mergedLeavesMesh);
         }
     } 
-/*     for(let meshID of Object.keys(this.leaves)){
-        let mesh=this.meshes[meshID]["geo"];
-        for(let matID of Object.keys(this.leaves[meshID])){
-     
-            //let mat=this.meshes[neshID];
-            let mat=this.materials[matID];
-         
-            mat.alphaTest=0.46;
-            let count=this.leaves[meshID][matID].length;
-            let instancedLeaves=new THREE.InstancedMesh(mesh,mat,count);
-            instancedLeaves.castShadow=true;
-            instancedLeaves.customDepthMaterial = new THREE.MeshDepthMaterial( {
-                depthPacking: THREE.RGBADepthPacking,
-                alphaMap: mat.alphaMap,
-                alphaTest: 0.4
-            } );
-
-            instancedLeaves.instanceMatrix.setUsage( THREE.DynamicDrawUsage ); 
-            instancedLeaves.instanceMatrix.needsUpdate = true;
-            instancedLeaves.name="instancedLeaves_"+meshID+"_"+matID;
-            for(let i=0;i<count;i++)instancedLeaves.setMatrixAt(i,this.leaves[meshID][matID][i]);
-            treeGroup.add(instancedLeaves);
-        }
-    } */
  
 return leavesGroup;
 
@@ -1958,93 +1760,6 @@ class TreeSpecies{
         tree_branches_group.add(branchLib[id].InstancedMesh);
       }
       species_group.add(tree_branches_group);
-    };
-    generateMergedInstancedBranches(species_group){
-
-        let branchesGroup=new THREE.Group();
-        branchesGroup.name="branchesGroup";
-        let tree_index=0;
-     
-     for(let tree of this.treeLib){
-     
-            let geo=new THREE.BufferGeometry().fromGeometry(tree.branchesMerged);
-           
-            let mat=this.materialLib[this.barkMaterialID];
-  
-   
-            let treesInstanced=tree.InstanceID;
-
-/*             let instancedMergedBranchesMesh=new THREE.InstancedMesh(geo,mat,treesInstanced.length);
-            instancedMergedBranchesMesh.name=`instancedMergedBranches_${tree_index}`; */
-           
-            for(let level of Object.keys(tree.branchesMergedLOD)){
-                         tree.branchesMergedLODBuffered[level]=new THREE.BufferGeometry().fromGeometry(tree.branchesMergedLOD[level]);
-                          tree.branchesLibLOD[level]=new THREE.InstancedMesh(tree.branchesMergedLODBuffered[level],mat,treesInstanced.length/Number(level));
-                          tree.branchesLibLOD[level].name=`instancedMergedBranchesLOD_${tree_index}_${level}`;
-                          if(Number(level)<=2)tree.branchesLibLOD[level].castShadow=true;
-                          tree.branchesLibLOD[level].count=0;
-
-            }
-            for(let i=0;i<treesInstanced.length;i++){
-                  let id=treesInstanced[i];
-                /*   instancedMergedBranchesMesh.setMatrixAt(i,this.trees[id].transformMatrix); */
-                
-                    tree.branchesLibLOD["1"].setMatrixAt(i,this.trees[id].transformMatrix);
-                    tree.branchesLibLOD["1"].count++;
-            }
-            /* tree.branchesLib=instancedMergedBranchesMesh; */
-            //branchesGroup.add(instancedMergedBranchesMesh);
-            for(let mesh of Object.values(tree.branchesLibLOD) ){
-                branchesGroup.add( mesh);
-            }
-           
-    tree_index++;
-     }
-     species_group.add(branchesGroup);
-    }
-    generateMergedInstancedLeaves(species_group){
-        let leavesGroup=new THREE.Group();
-        leavesGroup.name="leavesMerged_group";
-        let tree_index=0;
-     for(let tree of this.treeLib){
-        for(let leavesMerged  of tree.leavesMerged){
-            let geo=leavesMerged.geometry;
-            let materialID=leavesMerged.materialID;
-            let mat=this.materialLib[materialID];
-  
-            //set up leaf material
-            mat.alphaTest=0.46;
-            mat.roughness=0.4;
-           mat.normalScale.x=0.3;   mat.normalScale.y=0.3;
-            mat.side=THREE.DoubleSide; 
-             
-            let treesInstanced=tree.InstanceID;
-
-            let instancedMergedLeavesMesh=new THREE.InstancedMesh(geo,mat,treesInstanced.length);
-            instancedMergedLeavesMesh.name=`instancedMergedLeavesMesh_${tree_index}_${leavesMerged.meshID}_${leavesMerged.materialID}`;
-            //set up shadow
-            instancedMergedLeavesMesh.castShadow=true;
-            instancedMergedLeavesMesh.customDepthMaterial = new THREE.MeshDepthMaterial( {
-               depthPacking: THREE.RGBADepthPacking,
-               alphaMap: mat.alphaMap,
-               alphaTest:0.46
-           } );
-            for(let i=0;i<treesInstanced.length;i++){
-                  let id=treesInstanced[i];
- 
-                  instancedMergedLeavesMesh.setMatrixAt(i,this.trees[id].transformMatrix);
-            }
-            tree.leavesLib[`${leavesMerged.meshID}_${leavesMerged.materialID}`]=instancedMergedLeavesMesh;
-            leavesGroup.add(instancedMergedLeavesMesh);
-         
-    }
-    tree_index++;
-     }
-     
-
-   
-     
-     species_group.add(leavesGroup);
     };
     updateLODAndFustumCulliing(camera,fustum){
         if(this.planarTree)this.planarTree.clear();
@@ -2241,8 +1956,7 @@ class PlanarTree{
             //let geo=new THREE.PlaneBufferGeometry(baseScale,baseScale);
             geo.applyMatrix4(scaleMatrix);
                if(child.name=="Branch_plane"){
-                   
-                this.branches=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial(),maxCount);
+                this.branches=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial(),maxCount);//低模纸片树木的生成
                 this.branches.material.side=THREE.DoubleSide;
                 this.branches.name=`${name}_PlanarTree_branches`;
                 this.branches.count=0;
@@ -2266,8 +1980,9 @@ class PlanarTree{
                 this.bottom.material.side=THREE.DoubleSide;
                 this.bottom.name=`${name}_PlanarTree_bottom`;
                 this.bottom.count=0;
-                //this.group.add(this.bottom);
-            }
+               }
+               console.log(child.parent)
+               child.parent.visible=false
            }
            //handle texture
            let loader = new THREE.TextureLoader();

@@ -322,11 +322,6 @@ function buildTreeFromTXT(txt,input_file_name,offset,hasHelper=false){
 	//window.treeTXT=txt;
 	let dataArray=txt.split('\n');
 	for(let i=0;i<dataArray.length;i++)dataArray[i]=dataArray[i].replace(/[\x00-\x1F\x7F-\x9F]/g, "");
-	if(dataArray[0][0]=='b'){
-
-        buildBranchLib(dataArray);
-		return;
-	}
 	let now=0;let state="";
 	let tree_group=new THREE.Group();
 	let _name="tree";
@@ -607,11 +602,7 @@ group.name="group_1";
 group.add(cube);
 group.position.y=3;
  
-function buildTreeFromServiceSide(url){
-	loadXML(url,
-	buildTreeFromXML
- );
-}
+
 //buildTreeFromServiceSide("../models/test_3.xml");
  
 }
@@ -719,17 +710,13 @@ function loadTreeLib(count,lib){
   for(let i=0;i<count;i++){
 
 
-	let xmlhttp=new XMLHttpRequest();
-	xmlhttp.onreadystatechange=function state_Change()
+let xmlhttp=new XMLHttpRequest();
+xmlhttp.onreadystatechange=function state_Change()
 {
-	//console.log(xmlhttp.readyState);
-	//console.log(xmlhttp.status);
 if (xmlhttp.readyState==4)
   {// 4 = "loaded"
   if (xmlhttp.status==200)
-    {// 200 = OK
-    // ...our code here...
-    //console.log(xmlhttp.response);
+    {
 	if(lib["name"]!=undefined){
 		lib["treeLib"].push( new TreeReferring(xmlhttp.response));
         if(lib["treeLib"].length==count){
