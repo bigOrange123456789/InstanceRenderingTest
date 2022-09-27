@@ -2430,13 +2430,6 @@ function mergedLeavesSeperateingOnLOD(leavesInfo,meshes,leavesMerged){
             let id=data[i].index;
             let leafInfo=leavesInfo[id];
             let matrix=computeLeafTransform(leafInfo.transformData);
-         /*    if(i<data.length*0.25){
-                lod_0.merge(geo,matrix);
-            }else  if(i<data.length*0.5){
-                lod_1.merge(geo,matrix);
-            }else {
-                lod_2.merge(geo,matrix);
-            } */
             if(i%4<1){
                 lod_0.merge(geo,matrix);
             }else  if(i%4<2){

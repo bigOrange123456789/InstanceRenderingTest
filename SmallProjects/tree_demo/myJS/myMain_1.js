@@ -51,7 +51,7 @@ function addLight(group){
         group.add( light.target );
         group.add( hemi_light );
     }
-    let movingShadowLight=setInterval(()=>{   
+    setInterval(()=>{   
         let camera_pos=window.editor.camera.position;
         light.position.x=initPos.x+camera_pos.x;
         //light.position.y=initPos.y+camera_pos.y;
@@ -177,7 +177,7 @@ window.addEventListener("load",()=>{
         loadGLTFloader().then(function(loader){
             loader.load("../models/tree_plane.glb",function(gltf){
                 console.info("tree_plane loading ok");
-                window["myObject"]["tree_plane"]=gltf.scene;//这个是低模
+                window["myObject"]["tree_plane"]=gltf.scene;//这个是低模 //平面树木的加载
         });
      });
      if( checkPlatform()=="PC"){

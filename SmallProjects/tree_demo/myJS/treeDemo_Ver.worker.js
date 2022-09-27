@@ -949,20 +949,15 @@ function loadForestWithMultiSpecies(x,y,Species,_inWorker){
 		 for(let species of speciesLib){
 			let species_group=new THREE.Group();
 			species_group.name=species.name+"_species_group";
-			 //species.generateInstancedBranches(species_group);
-			 species.generateMergedInstancedBranches(species_group);
-			 species.generateMergedInstancedLeaves(species_group);
-			 forest_group.add(species_group);
+			species.generateMergedInstancedBranches(species_group);
+			species.generateMergedInstancedLeaves(species_group);
+			forest_group.add(species_group);
 		 }
 		if(!inWorker) window.editor.addObject(forest_group);
 		else{
 			self.postMessage({message:"loading finished",data:forest_group});
 		}
 		 res(speciesLib);
-		 //need edit
-	/* 	 let LODAndFustumCulling=buildUpdateLODAndFustumCulliingFunc(speciesLib);
-		 let LODAndFustumCulling_timer=setInterval(LODAndFustumCulling,1000/30); */
-		 //window.myObject["forest"].updateLOD();
 		},1500); 
 	});
 	return promise;
@@ -975,12 +970,6 @@ function loadGeometrySperated(speciesLib){
 
 }
 function loadForestWithMultiSpeciesProgressively(x,y,Species){
-
-/* 	let forestLoader=new Worker("../myJS/forestLoaderWorker.js");
-    forestLoader.onmessage=function(e){
-        console.log(e);
-	}; */
-	
 	let speciesLib={};
 	for(let sp of Species){
 		   let _name=sp.name;

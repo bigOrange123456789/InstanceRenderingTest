@@ -1,26 +1,5 @@
-function mouse3DcanvasPos(evt){
-    let rect=evt.currentTarget.getBoundingClientRect();
-    let x=evt.clientX;
-    let y=evt.clientY;
-    let _2DcanvasPos=new THREE.Vector2( ( x - rect.left ) / rect.width, ( y - rect.top ) / rect.height);
-    let _3DcanvasPos=new THREE.Vector2(  ( _2DcanvasPos.x * 2 ) - 1, - ( _2DcanvasPos.y * 2 ) + 1);
-    return _3DcanvasPos;
-}
 function forceRender(isDisposeRenderer){
     window.editor.render(isDisposeRenderer);
-}
-function initCanvasWithImageURL(canvasID,imageURL){
-    let promise=new Promise(
-      function(res,rej){
-      let ctx = document.getElementById(canvasID).getContext('2d');
-        let img = new Image();
-        img.src =imageURL;
-        img.onload = function(){
-          ctx.drawImage(img,0,0);
-          res();
-        }
-    });
-    return promise;
 }
 function castUVtoCanvasXY(uv,_canvas){
     let _x =uv.x * _canvas.width;

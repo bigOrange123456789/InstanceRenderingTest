@@ -1238,12 +1238,7 @@ function loadHeroTree_progressively( name, pos ) {
 				leaves.material.needsUpdate = true;
 				leaves.customDepthMaterial.needsUpdate = true;
 				setUpLeavesMaterial_unInstanced( leaves, "Black_Gum" );
-
-
-
 			}
 		);
-
 	} );
-
 }

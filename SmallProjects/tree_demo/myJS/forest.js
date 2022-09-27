@@ -200,12 +200,7 @@ class TreeIndividual_verII{
                     let boundingBox=new THREE.Box3();
                  for(let i=0;i<that.maxLevel;i++){
                        let geo=that.fullMeshes[i];
-
                        let bufferGeo=new THREE.BufferGeometry().fromGeometry(geo);
-                      /*  let mesh=new THREE.Mesh(bufferGeo,that.materials["1"]);
-                        
-                       mesh.name=`fm_${i}`;
-                       group.add(mesh); */
                        bufferGeo.computeBoundingBox();
                        boundingBox.union(bufferGeo.boundingBox);
                      let count=Math.floor(MaxTreeCount/(i+1) );
@@ -278,18 +273,8 @@ class TreeIndividual_verII{
           for(let mesh of Object.values(this.fullLeavesnstancedMeshes))if(mesh)_group.add(mesh);
           _group.add(this.planarTree.group);
              clearInterval(waitLoading);
-             window.editor.addObject(_group);
-           /*  if(obj.group){
-                obj.group.add(_group);
-                }
-            if(obj.editor){
-                obj.editor.addObject(_group);
-               } */
-        
+             window.editor.addObject(_group);   
         },500);
-      
-          
-         
     }
     updateLOD(camera,individualTreeData,frustum){
         if(this.branchInstancedMeshes.length==0||this.LODInstancedMeshes.length==0||Object.values(this.fullLeavesnstancedMeshes).length==0)return;
@@ -315,11 +300,7 @@ class TreeIndividual_verII{
                     this.planarTree.addTree(mat,dot,dist);
                     continue;
                  }
-               /*   if(this.planarTree&&lod==-1){
-                    this.planarTree.addTree(mat);
-                 } */
                  if(lod==-1)continue;
-                 
                  if(lod==0){
                     addInstancedMesh(this.branchInstancedMeshes[0],mat);
                     addInstancedMesh(this.LODInstancedMeshes[1],mat);

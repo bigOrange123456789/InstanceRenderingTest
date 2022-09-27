@@ -1,4 +1,3 @@
-importScripts('../myJS/myHelperFunction.js');
 importScripts('../myJS/treeData_Ver.worker.js');
 importScripts('../myJS/treeDemo_Ver.worker.js');
 importScripts('../build/three.js');
