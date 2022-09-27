@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>����������</title>
+    <meta http-equiv="content-type"content="text/html; charset=gb2312">
+    <style>
+        body {overflow:hidden;}
+    </style>
+
+</head>
+<body>
+<canvas id="myCanvas" width="600" height="450"></canvas>
+<script src="index.js"></script>
+<script>
+    var canvas=document.getElementById("myCanvas");//��������//createElement('canvas');
+    var webgl=canvas.getContext("webgl")//���webgl�����������ģ�//WebGLRenderingContext
+
+    webgl.viewport(0,0,canvas.clientWidth,canvas.clientHeight);//����canvas��λ�úͳߴ�//����webgl���ڳߴ�Ϊcanvas�����ߴ�
+
+    loadJson('model.json',myModel=>
+        start(myModel)
+    )
+    function initTexture(imageFile){
+        var textureHandle=webgl.createTexture();//����һ������//����һ�������Ҳ��һ��ID
+        var image=new Image()
+        image.src=imageFile;//ָ��ͼƬ��·��
+        image.onload=function(){//��ͼƬ�����غ�����������
+            var texture=textureHandle
+            webgl.bindTexture(webgl.TEXTURE_2D,texture);
+            webgl.texImage2D(webgl.TEXTURE_2D,0,webgl.RGBA,webgl.RGBA,webgl.UNSIGNED_BYTE,texture.image);
+
+            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MAG_FILTER,webgl.NEAREST);
+            //                 ָ�������Ŵ�ʱ����㷨����Ӧ�����
+            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_MIN_FILTER,webgl.NEAREST);
+
+            //������װ//wrap����  clamp��ס edge
+            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_WRAP_S,webgl.CLAMP_TO_EDGE);
+            webgl.texParameteri(webgl.TEXTURE_2D,webgl.TEXTURE_WRAP_T,webgl.CLAMP_TO_EDGE);
+
+            webgl.bindTexture(webgl.TEXTURE_2D,texture);//����һ��״̬���������ÿ��Բ�Ӱ���������ʹ��
+        }
+        textureHandle.image=image
+        return textureHandle;
+    }
+    function loadTex(name) {
+        let xhr = new XMLHttpRequest(),
+            okStatus = document.location.protocol === "file:" ? 0 : 200;
+        xhr.open('GET', name, false);
+        xhr.overrideMimeType("text/html;charset=utf-8");//Ĭ��Ϊutf-8
+        xhr.send(null);
+        return xhr.status === okStatus ? xhr.responseText : null;
+    }
+    function loadJson(url,cb) {
+        var request = new XMLHttpRequest();
+        request.open("get", url);
+        request.send(null);
+        request.onload = function () {
+            if (request.status === 200) {
+                cb(JSON.parse(request.responseText))
+            }
+        }
+    }
+    function start(myModel){
+        var vertexShaderObject=webgl.createShader(webgl.VERTEX_SHADER)//��������shader����//һ��������Ⱦ������vertexShaderObject
+        var fragmentShaderObject=webgl.createShader(webgl.FRAGMENT_SHADER)//����ƬԪshader����
+        webgl.shaderSource(vertexShaderObject, loadTex('vertex.vert'))
+        webgl.shaderSource(fragmentShaderObject, loadTex('fragment.frag'))
+
+        //1
+        webgl.compileShader(vertexShaderObject)///����canvas�еĶ�����ɫ������//compile����
+        webgl.compileShader(fragmentShaderObject)///����canvas�е�ƬԪ��ɫ������
+
+        //2
+        var programObject=webgl.createProgram();
+        webgl.attachShader(programObject,vertexShaderObject);
+        webgl.attachShader(programObject,fragmentShaderObject);
+
+        webgl.bindAttribLocation(programObject,0,'v3Position');//��shader�еı�����JS�еı������а󶨰�
+
+        webgl.linkProgram(programObject);//����
+        webgl.useProgram(programObject);//ʹ��
+
+        var attrUV=webgl.getAttribLocation(programObject,'inUV');//0001
+        var uniformTexture=webgl.getUniformLocation(programObject,'texture');//0001
+
+        var textureHandle=initTexture('../1.png');
+        webgl.activeTexture(webgl.TEXTURE0);//��������//һ������������������32����������Ӧ32���׶�//���Ｄ���0���׶�
+        webgl.bindTexture(webgl.TEXTURE_2D,textureHandle);//������
+        webgl.uniform1i(uniformTexture,0);
+
+        //ͶӰ����
+        var uniformProj=webgl.getUniformLocation(programObject,'proj');//0001
+        webgl.clear(webgl.COLOR_BUFFER_BIT|webgl.DEPTH_BUFFER_BIT)
+        //��ͼ����
+        var uniformView=webgl.getUniformLocation(programObject,'view');//0001
+        webgl.clear(webgl.COLOR_BUFFER_BIT|webgl.DEPTH_BUFFER_BIT)
+        //ģ�;���
+        var uniformModel=webgl.getUniformLocation(programObject,'model');//0001
+        webgl.clear(webgl.COLOR_BUFFER_BIT|webgl.DEPTH_BUFFER_BIT)
+
+        //3���û�����
+        webgl.bindBuffer(webgl.ARRAY_BUFFER,webgl.createBuffer())//�󶨻�����������һ��״̬��///�󶨻�����//ָ��������������
+        webgl.bufferData(webgl.ARRAY_BUFFER,new Float32Array(myModel.vertex),webgl.STATIC_DRAW)//���û�����//ִ����һ��ŷ������ڴ�
+        webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER,webgl.createBuffer())//�󶨻�����������һ��״̬��///�󶨻�����//ָ��������������
+        webgl.bufferData(webgl.ELEMENT_ARRAY_BUFFER,new Uint16Array(myModel.index),webgl.STATIC_DRAW)//���û�����//ִ����һ��ŷ������ڴ�
+        webgl.enableVertexAttribArray(attrUV);
+        webgl.vertexAttribPointer(attrUV,2,webgl.FLOAT,false,4*9,4*3)
+
+        var time=0;
+
+        var projectMat=t.getProjectMat(canvas.clientWidth,canvas.clientHeight,0.1,100)
+        var scale=t.getScale(10*canvas.clientWidth,10*canvas.clientHeight,-1,0)
+        projectMat=t.mul(projectMat,scale)
+        setInterval(function(){
+            var viewMat=t.getViewMat({eye:[0,0,-70],look:[0.1,0,0]})
+            var modelMat=t.getModelMat({
+                move:{x:0,y:0,z:0},
+                rot:{x:time*0.01,y:time*0.01,z:0},
+                scale:{x:1,y:1,z:1}
+            })
+            time++;
+
+            webgl.uniformMatrix4fv(uniformProj,false,new Float32Array(t.toList(projectMat)));
+            webgl.uniformMatrix4fv(uniformView,false,new Float32Array(t.toList(viewMat)));
+            webgl.uniformMatrix4fv(uniformModel,false,new Float32Array(t.toList(modelMat)));
+
+            webgl.enableVertexAttribArray(0);//v3Position
+            webgl.vertexAttribPointer(0,3,webgl.FLOAT,false,4*9,0)
+            webgl.clearColor(0,0,0,1);
+
+            webgl.clear(webgl.COLOR_BUFFER_BIT|webgl.DEPTH_BUFFER_BIT)
+            webgl.enable(webgl.DEPTH_TEST)
+            webgl.drawElements(webgl.TRIANGLES,36,webgl.UNSIGNED_SHORT,0)
+        },20)
+    }
+
+
+</script>
+</body>
+</html>
