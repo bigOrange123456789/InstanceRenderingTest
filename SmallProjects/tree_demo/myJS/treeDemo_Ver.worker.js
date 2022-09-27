@@ -205,18 +205,7 @@ function buildTreeFromXML(xml,input_file_name){
 	   window.editor.addObject(treeGroup_1);
 	   forceRender();
 	},5000);
-   /* let treeGroup_1 = new THREE.Group();
-   treeGroup_1.name="treeGroup_1";
-   let treeGroup_2 = new THREE.Group();
-   treeGroup_2.name="treeGroup_2";
-   //addBranch(treeGroup_1,objects[1],false);
-   for(let obj of objects){
-	   if(obj["Spine"]!=null){
-		   addBranch(treeGroup_1,obj,false);
-		   //addBranch(treeGroup_2,obj,true);
-	   }
-   }
-     */
+
    
    let output=document.querySelector("#tree_output");
  

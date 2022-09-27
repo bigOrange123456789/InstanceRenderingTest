@@ -598,7 +598,6 @@ function loadBranchLib( x, y, lib ) {
 	xmlhttp.send( null );
 
 }
-
 function loadTreeLib( count, lib ) {
 
 	if ( lib[ "name" ] != undefined ) {
@@ -663,7 +662,6 @@ function loadTreeLib( count, lib ) {
 	}
 
 }
-
 function loadForest( x, y, count ) {
 
 	let output = {};
@@ -731,7 +729,6 @@ function loadForest( x, y, count ) {
 	}, 3000 );
 
 }
-
 function loadHeroTree( name ) {
 
 	let xmlhttp = new XMLHttpRequest();
@@ -779,9 +776,6 @@ function loadHeroTree( name ) {
 
 
 }
-
-
-
 function loadForestWithMultiSpecies( x, y, Species, _inWorker ) {
 
 	if ( _inWorker )inWorker = true;
@@ -871,7 +865,6 @@ function loadForestWithMultiSpecies( x, y, Species, _inWorker ) {
 	return promise;
 
 }
-
 function geoDataToBufferGeo( geoData ) {
 
 	let geo = new THREE.BufferGeometry();
@@ -888,7 +881,6 @@ function geoDataToBufferGeo( geoData ) {
 	 return geo;
 
 }
-
 function loadGeometrySperated( speciesLib ) {
 
 	window[ "loadingStatus" ][ "geometry" ] = {};
@@ -945,7 +937,6 @@ function loadGeometrySperated( speciesLib ) {
 	}
 
 }
-
 function loadMaterialLibSperated( speciesLib ) {
 
 	window[ "loadingStatus" ][ "material" ] = {};
@@ -1035,7 +1026,6 @@ function loadMaterialLibSperated( speciesLib ) {
 	}
 
 }
-
 function loadForestWithMultiSpeciesProgressively( x, y, Species ) {
 	window[ "loadingStatus" ] = {};
 	let speciesLib = {};
@@ -1121,124 +1111,6 @@ function loadForestWithMultiSpeciesProgressively( x, y, Species ) {
 			}
 
 		}
-		/* 	 if( window["loadingStatus"]["geometry"]=="finished"){
-				 clearInterval(loadingStatusChecker);
-			 } */
-
 	}, 333 );
 	 return speciesLib;
-
-}
-
-function loadHeroTree_progressively( name, pos ) {
-
-	let loadGeometry = new Promise( function ( res, rej ) {
-
-		import( "../examples/jsm/loaders/DRACOLoader.js" ).then( function ( mod ) {
-
-			let dracoLoader = new mod.DRACOLoader();
-			dracoLoader.setDecoderPath( '../examples/js/libs/draco/' );
-			import( "../examples/jsm/loaders/GLTFLoader.js" ).then( function ( mod ) {
-
-				let loader = new mod.GLTFLoader();
-				loader.setDRACOLoader( dracoLoader );
-
-				loader.load(
-					`../models/forest/Hero/${name}/model.glb`,
-					  function ( gltf ) {
-
-							  res( gltf );
-
-					}
-				);
-
-			} );
-
-		} );
-
-	} );
-	loadGeometry.then( function ( gltf ) {
-
-	 //console.log(gltf);
-		let tree = gltf.scene;
-		tree.name = "hero_tree";
-		let leaves;
-		let branches;
-		if ( tree.children[ 0 ].name == "Branches" ) {
-
-			branches = tree.children[ 0 ];
-			leaves = tree.children[ 1 ];
-
-		} else {
-
-			branches = tree.children[ 1 ];
-			leaves = tree.children[ 0 ];
-
-		}
-
-		leaves.castShadow = true;
-		branches.castShadow = true;
-		branches.material.vertexColors = false;
-		tree.position.x = pos[ 0 ];	tree.position.y = pos[ 1 ]; tree.position.x = pos[ 0 ];	tree.position.z = pos[ 2 ];
-		window.editor.addObject( tree );
-		forceRender();
-		let textureLoader = new THREE.TextureLoader();
-		textureLoader.load(
-			`../models/forest/Hero/${name}/branch_color.jpg`,
-			function ( tex ) {
-
-				tex.encoding = THREE.sRGBEncoding;
-				branches.material.map = tex;
-				branches.material.needsUpdate = true;
-
-			}
-		);
-		textureLoader.load(
-			`../models/forest/Hero/${name}/branch_normal.jpg`,
-			function ( tex ) {
-
-				tex.encoding = THREE.sRGBEncoding;
-				branches.material.normalMap = tex;
-				branches.material.needsUpdate = true;
-
-			}
-		);
-		leaves.material = new THREE.MeshStandardMaterial();
-		textureLoader.load(
-			`../models/forest/Hero/${name}/leaf_color.jpg`,
-			function ( tex ) {
-
-				tex.encoding = THREE.sRGBEncoding;
-				leaves.material.map = tex;
-				leaves.material.needsUpdate = true;
-
-			}
-		);
-		textureLoader.load(
-			`../models/forest/Hero/${name}/leaf_normal.jpg`,
-			function ( tex ) {
-
-				tex.encoding = THREE.sRGBEncoding;
-				leaves.material.normalMap = tex;
-				leaves.material.needsUpdate = true;
-
-			}
-		);
-		textureLoader.load(
-			`../models/forest/Hero/${name}/leaf_opacity.jpg`,
-			function ( tex ) {
-
-				tex.encoding = THREE.sRGBEncoding;
-				leaves.material.alphaMap = tex;
-				leaves.customDepthMaterial = new THREE.MeshDepthMaterial( {
-					depthPacking: THREE.RGBADepthPacking,
-					alphaMap: tex,
-					alphaTest: 0.46
-				} );
-				leaves.material.needsUpdate = true;
-				leaves.customDepthMaterial.needsUpdate = true;
-				setUpLeavesMaterial_unInstanced( leaves, "Black_Gum" );
-			}
-		);
-	} );
 }

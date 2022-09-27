@@ -211,7 +211,6 @@ class TreeIndividual_verII{
                     mesh.setMatrixAt( mesh.count,mat_now );
                     mesh.count++;
                     mesh.instanceMatrix.needsUpdate = true;
-                    //group.add( mesh );
                     that.branchInstancedMeshes[i]=mesh;
                    }
                    that.boundingBox=boundingBox;
