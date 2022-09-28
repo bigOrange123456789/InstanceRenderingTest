@@ -1981,7 +1981,6 @@ class PlanarTree{
                 this.bottom.name=`${name}_PlanarTree_bottom`;
                 this.bottom.count=0;
                }
-               console.log(child.parent)
                child.parent.visible=false
            }
            //handle texture

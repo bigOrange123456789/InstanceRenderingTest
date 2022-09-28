@@ -1,20 +1,17 @@
 function addLight(group){
-    //light is shadow light
-
-    let initPos=new THREE.Vector3(-200,1000,200);
+   let initPos=new THREE.Vector3(-200,1000,200);
    let  light = new THREE.DirectionalLight( 0xffffff, 0.5 );
    light.position.x =initPos.x;
    light.position.y =initPos.y;
    light.position.z =initPos.z;
-   //directionalLight.target=new THREE.Vector3(0,0,0);
-   light.name="directionalShadowLight_position";
+   light.name="directionalShadowLight_position"
    
    light.castShadow = true;
 
    light.shadow.mapSize.width = 8192;
    light.shadow.mapSize.height = 8192;
 
-   let d = 4096;let offset=500;
+   let d = 4096;
    light.intensity=0.8;
    light.shadow.camera.left = - d;
    light.shadow.camera.right = d;
@@ -25,7 +22,7 @@ function addLight(group){
    
    light.shadow.camera.near = 1;
    light.target=new THREE.Object3D();
-   light.target.name="shadow_light_target";
+   light.target.name="shadow_light_target"
    light.target.position.x=0;
    light.target.position.y=0;
    light.target.position.z=0;
@@ -35,12 +32,12 @@ function addLight(group){
    light_0.position.x =initPos.x;
    light_0.position.y =initPos.y;
    light_0.position.z =initPos.z;
-   light_0.name="main_light";
+   light_0.name="main_light"
    light_0.intensity=0.1;
 
     //ground plane
     let hemi_light = new THREE.HemisphereLight( 0x00AAFF, 0xFFAA00,0.1 );
-    hemi_light.name="hemi_light";
+    hemi_light.name="hemi_light"
     if(!group){
         window.editor.scene.add( light );
         window.editor.scene.add( light.target );
@@ -54,17 +51,15 @@ function addLight(group){
     setInterval(()=>{   
         let camera_pos=window.editor.camera.position;
         light.position.x=initPos.x+camera_pos.x;
-        //light.position.y=initPos.y+camera_pos.y;
         light.position.z=initPos.z+camera_pos.z;
         light.target.position.x=0+camera_pos.x;
-        //light.target.position.y=0+camera_pos.y;
         light.target.position.z=0+camera_pos.z;
         forceRender();
     },300);
 }
 function addSceneSetupObject(){
     let sceneSetupGroup=new THREE.Group();
-    sceneSetupGroup.name="sceneSetup";
+    sceneSetupGroup.name="sceneSetup"
     for(let obj of window.editor.scene.children){
         if(obj.name=="sceneSetup")return;
     }

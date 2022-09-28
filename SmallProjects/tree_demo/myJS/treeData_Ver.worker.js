@@ -1365,7 +1365,7 @@ class BranchReferred{
            this.material=	new THREE.MeshStandardMaterial();
            this.maxCount=max*maxCountPerTree;
            this.InstancedMesh=new THREE.InstancedMesh(this.geo,this.material, this.maxCount);
- 
+        
            if(level<2)this.InstancedMesh.castShadow=true;
            else{
             this.InstancedMesh.castShadow=false;
