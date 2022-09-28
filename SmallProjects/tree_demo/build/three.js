@@ -18016,6 +18016,7 @@
 		var shader = gl.createShader( type );
 
 		gl.shaderSource( shader, string );
+		console.log("shader",shader)
 		gl.compileShader( shader );
 
 		return shader;

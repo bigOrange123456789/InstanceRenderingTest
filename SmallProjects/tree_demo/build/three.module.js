@@ -18073,6 +18073,15 @@ function WebGLShader( gl, type, string ) {
 	const shader = gl.createShader( type );
 
 	gl.shaderSource( shader, string );
+	
+	// if(string.split("gl_FragColor").length<2)
+	// 	console.log(
+	// 		string.split("gl_FragColor").length, 
+	// 		string.split("test123").length,
+	// 		gl, type, "\n" )
+	if(string.split("test123").length>1)
+		console.log(string)
+	
 	gl.compileShader( shader );
 
 	return shader;
