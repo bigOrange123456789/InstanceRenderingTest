@@ -8,3 +8,25 @@ g=window.editor.scene.children
 g[2].children
 (8) [InstancedMesh, InstancedMesh, InstancedMesh, InstancedMesh, InstancedMesh, InstancedMesh, InstancedMesh, InstancedMesh]
 每一个对象都是树木的一个部分
+
+
+/////////////////////////////// start /////////////////////////////////////////
+   generateMergedInstancedBranches(group,info,species,tree_index,species_name){
+        let geo=info.geo;
+        let mat=new THREE.MeshStandardMaterial();
+        let treesInstanced=this.InstanceID;
+        let level=info.level;
+        geo.computeBoundingBox();
+        if(!this.boundingBox){
+            this.boundingBox=geo.boundingBox;
+        }else{
+            this.boundingBox.union(geo.boundingBox);
+        }
+        this.branchesLibLOD[level]=new THREE.InstancedMesh(geo,mat,treesInstanced.length/Number(level));//树干的实例化渲染
+        this.branchesLibLOD[level].name=`instancedMergedBranchesLOD_${species_name}_${tree_index}_${level}`;
+        if(Number(level)<=2)  this.branchesLibLOD[level].castShadow=true;
+        this.branchesLibLOD[level].count=0;
+        group.add(this.branchesLibLOD[level]);
+        info.status="added_no_material";
+    }
+/////////////////////////////// end /////////////////////////////////////////
