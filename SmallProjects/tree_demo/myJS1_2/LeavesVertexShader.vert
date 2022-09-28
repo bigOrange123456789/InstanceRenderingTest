@@ -20,6 +20,8 @@ precision highp int;
 #define DOUBLE_SIDED
 #define USE_SHADOWMAP
 #define SHADOWMAP_TYPE_PCF
+uniform float time;
+uniform mat4 testmat0;
 uniform mat4 modelMatrix;
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
@@ -65,8 +67,7 @@ attribute vec2 uv;
 #endif
 
 
-            //test123
-            //test123
+            //LeavesVertexShader
             #define STANDARD
 varying vec3 vViewPosition;
 #ifndef FLAT_SHADED
@@ -266,6 +267,9 @@ vec2 equirectUv( in vec3 dir ) {
 #if 0 > 0
 	varying vec3 vClipPosition;
 #endif
+float modFloor(float a, float b){
+    return float(int(a)%int(b));
+}
 void main() {
 #ifdef USE_UV
 	vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
@@ -360,10 +364,26 @@ vec3 transformed = vec3( position );
 #ifdef USE_DISPLACEMENTMAP
 	transformed += normalize( objectNormal ) * ( texture2D( displacementMap, vUv ).x * displacementScale + displacementBias );
 #endif
+///////////////////////////////////////////////////////////////////////////////////////////
+
 vec4 mvPosition = vec4( transformed, 1.0 );
+float y0=mvPosition.y;
 #ifdef USE_INSTANCING
 	mvPosition = instanceMatrix * mvPosition;
 #endif
+
+float time0=testmat0[0][0];//testmat0.x;//
+float T1=400.;//一个周期
+float T2=200.;//一个周期
+time0=modFloor( time0 ,T1+T2);
+if(time0<T1){
+	time0=time0/T1;
+}else{
+	time0=1.-(time0-T1)/T2;
+}
+mvPosition.x=mvPosition.x+0.8*time0*(y0+0.5);
+// mvPosition.x=mvPosition.x+2.*y0;
+////////////////////////////////////////////////////////////////////////////////////////////
 mvPosition = modelViewMatrix * mvPosition;
 gl_Position = projectionMatrix * mvPosition;
 #ifdef USE_LOGDEPTHBUF
@@ -410,6 +430,5 @@ gl_Position = projectionMatrix * mvPosition;
 	fogDepth = - mvPosition.z;
 #endif
 }
-            //test123
-            //test123
+            //LeavesVertexShader
             

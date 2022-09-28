@@ -42,7 +42,7 @@ var Viewport = function ( editor ) {
 	// helpers
 
 	var grid = new THREE.GridHelper( 30, 30, 0x444444, 0x888888 );
-	sceneHelpers.add( grid );
+	// sceneHelpers.add( grid );
 
 	var array = grid.geometry.attributes.color.array;
 

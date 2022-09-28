@@ -141,9 +141,7 @@ window.addEventListener("load",()=>{
     window["myObject"]["cameraMode"]="auto";
     addSceneSetupObject();
     let beginMovingCamera=function (){
-    // let cameraControl=buildCameraControl(window.editor.camera);
     function re_Render(){
-        // if(window["myObject"]["cameraMode"]=="auto")cameraControl();
         forceRender();
         requestAnimationFrame(re_Render);
     }
@@ -172,7 +170,7 @@ window.addEventListener("load",()=>{
         })
      ////////////////////////////////////////////////////////////////////////
      if( checkPlatform()=="PC"){
-            speciesLib=loadForestWithMultiSpeciesProgressively(100,1,//100,100,//模型的行数和列数
+            speciesLib=loadForestWithMultiSpeciesProgressively(30,30,//100,100,//模型的行数和列数
                 [
                    {name:"Black_Gum",count:1,barkMaterialID:"1",scaleBase:2,planarTreeScale:15}
                 ]);

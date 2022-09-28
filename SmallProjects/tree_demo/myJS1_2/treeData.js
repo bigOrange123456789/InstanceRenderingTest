@@ -1925,31 +1925,18 @@ function buildForestMultiSpecies(x,y,species,useMerged){
 }
 }
  
-function setUpLeavesMaterial(mesh,material){//对高模数据的处理    
+function setUpLeavesMaterial(mesh,material){//对高模数据的处理
+      
     material.onBeforeCompile=function(shader,render){
-        // shader.vertexShader=
-        // shader.vertexShader.replace(
-        //     `#define STANDARD
-        //     `,
-        //     `
-        //     //test123
-        //     #define STANDARD
-        //     `
-        //     )
-
-        // console.log(
-        //     "shader.fragmentShader\n",
-        //     shader.vertexShader
-        // );
-        shader.vertexShader=
+        shader.fragmentShader=
+            shader.fragmentShader+
             `
-            //test123
-            //test123
-            `+
-            shader.vertexShader
-            +`
-            //test123
-            //test123
+            //LeavesFragment
+            `
+        shader.vertexShader=
+            shader.vertexShader+
+            `
+            //LeavesVertexShader
             `
     }
     mesh.material=material;
@@ -1962,6 +1949,20 @@ function setUpLeavesMaterial(mesh,material){//对高模数据的处理
         alphaMap: material.alphaMap,
         alphaTest:0.46
     } );
+    // mesh.scale.set(0,2,2)
+
+    var clock = new THREE.Clock();  
+    var uniforms={
+        time : { value: 0 }
+    }
+    mesh.material.uniforms=uniforms
+    function updateAnimation() {
+            let time = clock.getElapsedTime();
+            uniforms.time = { value: time };
+            requestAnimationFrame(updateAnimation);
+            // console.log(time)
+    }updateAnimation();
+
 }
 
 class PlanarTree{
@@ -2011,24 +2012,22 @@ class PlanarTree{
            let loader = new THREE.TextureLoader();
            let that=this;
            loader.load(`../models/forest/${name}/plane/leaves_color.jpg`,function(tex){
-               tex.encoding=THREE.sRGBEncoding;
-               tex.flipY=false;
-   
-            that.leaves.material.map=tex;
-        
-            that.top.material.map=tex;
-            that.leaves.material.needsUpdate=true;
-            that.top.material.needsUpdate=true;
+                tex.encoding=THREE.sRGBEncoding;
+                tex.flipY=false;
+                that.leaves.material.map=tex;
+                that.top.material.map=tex;
+                that.leaves.material.needsUpdate=true;
+                that.top.material.needsUpdate=true;
            });
            loader.load(`../models/forest/${name}/plane/leaves_opacity.jpg`,function(tex){
-            tex.encoding=THREE.sRGBEncoding;
-            tex.flipY=false;
-            that.leaves.material.alphaMap=tex;
-            that.leaves.material.alphaTest=0.46;
-            that.top.material.alphaMap=tex;
-            that.top.material.alphaTest=0.46;
-            that.leaves.material.needsUpdate=true;
-            that.top.material.needsUpdate=true;
+                tex.encoding=THREE.sRGBEncoding;
+                tex.flipY=false;
+                that.leaves.material.alphaMap=tex;
+                that.leaves.material.alphaTest=0.46;
+                that.top.material.alphaMap=tex;
+                that.top.material.alphaTest=0.46;
+                that.leaves.material.needsUpdate=true;
+                that.top.material.needsUpdate=true;
            });
            loader.load(`../models/forest/${name}/plane/branch_color.jpg`,function(tex){
             tex.encoding=THREE.sRGBEncoding;

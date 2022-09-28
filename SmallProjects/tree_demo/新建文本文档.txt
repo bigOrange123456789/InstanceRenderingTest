@@ -1,6 +1,13 @@
 g=window.editor.scene.children
 [
     Group, #光照(山和高模的颜色) # myMain_1.js          # function addLight(group){}
+    Group,  #高模               #
+    Group   #低模               # myMain_1.js          # window["myObject"]["tree_plane"]
+]
+
+g=window.editor.scene.children
+[
+    Group, #光照(山和高模的颜色) # myMain_1.js          # function addLight(group){}
     Object3D, #山体             #
     Group,  #高模               #
     Group   #低模               # myMain_1.js          # window["myObject"]["tree_plane"]
@@ -30,3 +37,6 @@ g[2].children
         info.status="added_no_material";
     }
 /////////////////////////////// end /////////////////////////////////////////
+树木个数设置
+myMain_1.js
+loadForestWithMultiSpeciesProgressively(100,100,//100,100,//模型的行数和列数
