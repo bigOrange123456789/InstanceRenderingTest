@@ -141,9 +141,9 @@ window.addEventListener("load",()=>{
     window["myObject"]["cameraMode"]="auto";
     addSceneSetupObject();
     let beginMovingCamera=function (){
-    let cameraControl=buildCameraControl(window.editor.camera);
+    // let cameraControl=buildCameraControl(window.editor.camera);
     function re_Render(){
-        if(window["myObject"]["cameraMode"]=="auto")cameraControl();
+        // if(window["myObject"]["cameraMode"]=="auto")cameraControl();
         forceRender();
         requestAnimationFrame(re_Render);
     }

@@ -43,7 +43,6 @@
 		<script src="js/libs/ternjs/doc_comment.js"></script>
 		<script src="js/libs/tern-threejs/threejs.js"></script>
 		<script src="js/libs/signals.min.js"></script>
-		<script src="../examples/js/vr/HelioWebXRPolyfill.js"></script>
 
 		<script type="module">
 
@@ -67,7 +66,6 @@
 
 			};
 
-			//
 
 			var editor = new Editor();
 
@@ -78,22 +76,9 @@
 			var viewport = new Viewport( editor );
 			document.body.appendChild( viewport.dom );
 			window.viewport=viewport;
-			var toolbar = new Toolbar( editor );
-			document.body.appendChild( toolbar.dom );
-
-			var script = new Script( editor );
-			document.body.appendChild( script.dom );
-
-			var player = new Player( editor );
-			document.body.appendChild( player.dom );
 
 			var sidebar = new Sidebar( editor );
 			document.body.appendChild( sidebar.dom );
-
-			var menubar = new Menubar( editor );
-			document.body.appendChild( menubar.dom );
-
-			//
 
 			editor.storage.init( function () {
 
@@ -173,15 +158,11 @@
 			}, false );
 
 			document.addEventListener( 'drop', function ( event ) {
-
 				event.preventDefault();
 
 				if ( event.dataTransfer.types[ 0 ] === 'text/plain' ) return; // Outliner drop
 
 				if ( event.dataTransfer.items ) {
-
-					// DataTransferItemList supports folders
-
 					editor.loader.loadItemList( event.dataTransfer.items );
 
 				} else {
@@ -193,54 +174,20 @@
 			}, false );
 
 			function onWindowResize() {
-
 				editor.signals.windowResize.dispatch();
-
-			}
-
+			}onWindowResize()
 			window.addEventListener( 'resize', onWindowResize, false );
 
-			onWindowResize();
-
-			//
-
-			var isLoadingFromHash = false;
-			var hash = window.location.hash;
-
-			if ( hash.substr( 1, 5 ) === 'file=' ) {
-
-				var file = hash.substr( 6 );
-
-				if ( confirm( 'Any unsaved data will be lost. Are you sure?' ) ) {
-
-					var loader = new THREE.FileLoader();
-					loader.crossOrigin = '';
-					loader.load( file, function ( text ) {
-
-						editor.clear();
-						editor.fromJSON( JSON.parse( text ) );
-
-					} );
-
-					isLoadingFromHash = true;
-
-				}
-
-			}
 
 		</script>
 		
 		        <link rel="stylesheet" href="../myCSS/myCSS.css">
 		
-				<script src="../myJS1/treeData.js"></script>
-				<script src="../myJS1/treeDemo.js"></script>
-				<script src="../myJS1/myLibrary.js"></script>
-				
-				<script src="../myJS1/myHelperFunction.js"></script>
-				<script src="../myJS1/myMain_1.js"></script>
-
-		  <img id="terrain_heightMap" src="../myImage/heightMap_256.png" hidden >
-		  <img id="terrain_colorMap" src="../myImage/uv_checker.png" hidden >
+				<script src="../myJS1_1/treeData.js"></script>
+				<script src="../myJS1_1/treeDemo.js"></script>
+				<script src="../myJS1_1/myLibrary.js"></script>
+				<script src="../myJS1_1/myHelperFunction.js"></script>
+				<script src="../myJS1_1/myMain_1.js"></script>
 		  
 	</body>
 </html>
