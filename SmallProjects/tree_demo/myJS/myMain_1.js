@@ -176,7 +176,7 @@ window.addEventListener("load",()=>{
         });
      });
      if( checkPlatform()=="PC"){
-            speciesLib=loadForestWithMultiSpeciesProgressively(100,100,
+            speciesLib=loadForestWithMultiSpeciesProgressively(100,100,//100,100,//模型的行数和列数
                 [
                    {name:"Black_Gum",count:1,barkMaterialID:"1",scaleBase:2,planarTreeScale:15}
                 ]);

@@ -1,8 +1,5 @@
-
 function lerp ( x, y, t ) {
-
     return ( 1 - t ) * x + t * y;
-
 }
 function _parseDataStr(count,str){
 	let ans=[];

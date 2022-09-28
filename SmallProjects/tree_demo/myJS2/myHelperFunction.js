@@ -157,9 +157,6 @@ function loadShader(vShaderUrl,fShaderUrl){
   });
   
     return promise;
-    
-
-
 };
 
 class myShaderProgram{
@@ -167,51 +164,34 @@ class myShaderProgram{
               let gl=obj._gl;
               let vao=obj._vao;
               let posBuffer=obj._posBuffer;
-              this.program=webglUtils.createProgramFromSources(gl,
-                                    [obj._vs, obj._fs]);
-
-
-
+              this.program=webglUtils.createProgramFromSources(
+                gl,
+                [obj._vs, obj._fs]
+              );
               this.gl=gl;
               this.vao=vao;
-                this.LOC={};
-                this.LOC["posLocation"]= gl.getAttribLocation(this.program, "pos");
-                this.LOC["iResolutionLocation"] = gl.getUniformLocation(this.program, "iResolution");
-                this.LOC["iChannel0Location"] = gl.getUniformLocation(this.program, "iChannel0");
+              this.LOC={};
+              this.LOC["posLocation"]= gl.getAttribLocation(this.program, "pos");
+              this.LOC["iResolutionLocation"] = gl.getUniformLocation(this.program, "iResolution");
+              this.LOC["iChannel0Location"] = gl.getUniformLocation(this.program, "iChannel0");
                
-                let  posLocation=this.LOC["posLocation"];
-                gl.bindVertexArray(vao);
+              let  posLocation=this.LOC["posLocation"];
+              gl.bindVertexArray(vao);
                 
-                gl.enableVertexAttribArray(posLocation);
+              gl.enableVertexAttribArray(posLocation);
 
-                gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+              gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
 
-                gl.vertexAttribPointer(
-                  posLocation, 2, gl.FLOAT, false, 0, 0);
-                /*   gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-                  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-                      -1.0, 1.0,
-                      1.0, 1.0,
-                      1.0, -1.0,
-                      -1.0, 1.0,
-                      1.0, -1.0,
-                       -1.0, -1.0
-                   ]), gl.STATIC_DRAW); */
-
+              gl.vertexAttribPointer(posLocation, 2, gl.FLOAT, false, 0, 0);
        }
        render(framebuffer_1){
-             let gl=this.gl;
+        let gl=this.gl;
 
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.useProgram(this.program);
-
-
-   
-
-         
 
         gl.bindVertexArray(this.vao);
         
@@ -221,11 +201,6 @@ class myShaderProgram{
         gl.bindTexture(gl.TEXTURE_2D, framebuffer_1);
         gl.uniform1i(  this.LOC["iChannel0Location"] , 0);
         
-        
         gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-       
        }
-
-
 }

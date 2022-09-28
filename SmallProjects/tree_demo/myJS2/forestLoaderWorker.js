@@ -44,8 +44,6 @@ function loading_recursively(speciesArray,now_id){
                                             }
 
                                         }
-
-                                
                              
                                         for(let i=2;i<=tree.maxLevel;i++){
                                             let geo= tree.generateMergedBranchesSingleLevel(String(i),BranchAndMesh["branchLib"]);

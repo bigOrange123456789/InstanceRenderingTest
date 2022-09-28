@@ -951,12 +951,7 @@ function loadForestWithMultiSpeciesProgressively(x,y,Species){
 		   let _name=sp.name;
 		   speciesLib[_name]=new TreeSpecies(sp);
 	}
-	 loadGeometrySperated(speciesLib);
-	 loadMaterialLibSperated(speciesLib);
-	 buildForestMultiSpeciesMetaDataOnly(x,y,speciesLib);
-
-	 let loadingStatusChecker=setInterval(function(){
-              //checker loading status then assemble and add to scene
-
-	 },500);
+	 loadGeometrySperated(speciesLib)		//几何处理
+	 loadMaterialLibSperated(speciesLib)	//材质处理
+	 buildForestMultiSpeciesMetaDataOnly(x,y,speciesLib)
 }

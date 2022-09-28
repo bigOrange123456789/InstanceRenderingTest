@@ -1046,8 +1046,8 @@ function loadForestWithMultiSpeciesProgressively( x, y, Species ) {
 	window.editor.addObject( forest_group );
 	 let loadingStatusChecker = setInterval( function () {
 
-			  //checker loading status then assemble and add to scene
-			  let flag = true;
+		//checker loading status then assemble and add to scene
+		let flag = true;
 		for ( let species_name of Object.keys( speciesLib ) ) {
 
 			for ( let treeID of Object.keys( speciesLib[ species_name ][ "treeLib" ] ) ) {
@@ -1090,16 +1090,11 @@ function loadForestWithMultiSpeciesProgressively( x, y, Species ) {
 						}
 
 						if ( info.status == "added_no_material" ) {
-
-							console.log( "try add material" );
-							console.log( info );
 							   if ( window[ "loadingStatus" ][ "material" ][ species_name ] == "finished" ) {
-
 								   let material = speciesLib[ species_name ].materialLib[ info.materialID ];
 								   let mesh =	speciesLib[ species_name ][ "treeLib" ][ treeID ].leavesLibLOD[ String( level ) ][ info.materialID ];
 								   setUpLeavesMaterial( mesh, material, species_name );
 								   info.status = "material_added";
-
 							}
 
 						}

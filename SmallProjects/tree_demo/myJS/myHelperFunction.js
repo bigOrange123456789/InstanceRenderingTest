@@ -72,26 +72,8 @@ function buildSendTimeToGPU(){
       gl=canvas.getContext('webgl');
     }
     if(!gl)return null;
-    let begin=window.performance.now();
-     let sendTimeToGPU=function(){
-      let now=window.performance.now();
-           for(let sp of window["shaderProgram"]){
-             let program=sp.program;
-             let type=typeof program;    
-             let timeLocation = null; 
-             try{
-                timeLocation=gl.getUniformLocation(program, "u_time");
-             }catch(err){
-                continue;
-             }
-             if(timeLocation){
-                gl.useProgram(program);
-                gl.uniform1f(timeLocation, (now-begin)/1000.0);
-             }
-           } 
-         
-     }
-     return sendTimeToGPU;
+    let sendTimeToGPU=function(){}
+    return sendTimeToGPU;
 }
 
 function loadGLTFloader(){
