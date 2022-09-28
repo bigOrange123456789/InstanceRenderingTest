@@ -6,7 +6,7 @@ function terrainDemoMain_fast(Terrain){
       window.editor.execute( new RemoveObjectCommand(window.editor, obj ) );
     }
 }
- let promise=new Promise(function(res,rej){
+let promise=new Promise(function(res,rej){
   let heightMap= document.getElementById("terrain_heightMap");
   let xS = 63, yS = 63;
   let colorMap=document.getElementById("terrain_colorMap");
