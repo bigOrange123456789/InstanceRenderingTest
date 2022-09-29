@@ -1,6 +1,3 @@
-importScripts('./treeData_Ver.worker.js');
-importScripts('./treeDemo_Ver.worker.js');
-importScripts('../../build/three.js');
 function loading_recursively(speciesArray,now_id){
     if(now_id>=speciesArray.length)return;
     let obj=speciesArray[now_id];
@@ -63,13 +60,27 @@ function loading_recursively(speciesArray,now_id){
                        }); 
         });
 }
-self.addEventListener('message', function (e) {
-    console.log('In worker');
-    self["InWorker"]=true;
-    let message=e.data;
-    if(message.command=="loading"){
-        let speciesLib=message.data;
-        self["speciesLib"]=speciesLib;
-        loading_recursively(Object.values( self["speciesLib"]),0);
+// self.addEventListener('message', function (e) {   
+//     self["InWorker"]=true;  
+//     let message=e.data;  
+//     if(message.command=="loading"){  
+//         let speciesLib=message.data;  
+//         self["speciesLib"]=speciesLib;  
+//         loading_recursively(Object.values( self["speciesLib"]),0);  
+//     }  
+// }, false);    
+class ForestLoader{
+    constructor(onmessage){
+        this.onmessage=onmessage//cb
     }
-}, false);
+    postMessage(e){
+        self["InWorker"]=true;
+        let message=e;
+        if(message.command=="loading"){
+            let speciesLib=message.data;
+            self["speciesLib"]=speciesLib;
+            loading_recursively(Object.values( self["speciesLib"]),0);
+        }
+    }
+
+}

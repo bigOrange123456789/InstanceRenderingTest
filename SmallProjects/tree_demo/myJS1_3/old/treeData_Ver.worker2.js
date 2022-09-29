@@ -1,8 +1,5 @@
-var targetMaxCount=10000;
 function lerp ( x, y, t ) {
-
     return ( 1 - t ) * x + t * y;
-
 }
 function _parseDataStr(count,str){
 	let ans=[];
@@ -511,27 +508,12 @@ function branchGeoFromTwoCircleToGeo(pre_circle,now_circle,geo,order,uvInfo){
 class BranchData{
     constructor(obj,treeObj){
         //this.tree=treeObj;
-        this.name=null;
-        this.id=null;
-        this.layer=-1;
-        this.idInlayer=-1;
-        this.posAbs=null;
-        this.posRel=null;
-        this.parentID=null;
-        this.growingPos=null;
-        this.spinePointCount=-1;
-        this.spinePoints=null;
-        this.childrenBranchCount=-1;
-        this.childrenBranchIndices=null
-        this.childrenBranchPos=null;
-        this.childrenleafCount=-1;
-        this.childrenLeafs=null;
-        if(!obj||!treeObj)return;
         this.name=obj["_Name"];
         this.id=obj["_ID"];
  
         //layer
-  
+        this.layer=-1;
+        this.idInlayer=-1;
         //position
         this.posAbs=readAbsPos(obj);
         this.posRel=readAbsPos(obj);
@@ -711,18 +693,7 @@ class BranchData{
         this.spinePoints=ans;
 };
      
-      produceBranchGeo(obj){
-
-        let treeGroup=obj._treeGroup;
-        let style=obj.style;
-     
-        let level=obj._level;
-        let _material=obj.bark_material;
-        let uvFactor=obj.uvFactor;
-        let haveHelper=obj.haveHelper;
-        let mergeToGroup=obj.mergeToGroup;
-       let lodFactor=obj.lodFactor;
-        let fullMeshGeo=obj.treeIndividualGeo;
+      produceBranchGeo(treeGroup,style,level,_material,uvFactor,haveHelper=true){
         let count=this.spinePointCount;
         let X=this.spinePoints.posX;
          let Y=this.spinePoints.posY;
@@ -741,8 +712,7 @@ class BranchData{
              let linePoint=[];
               
                 
-             let now_segment=(24-level*4);
-             if(lodFactor)now_segment*=lodFactor;
+             let now_segment=24-level*4;
                   //growing point;
         if(this.growingPos["growingPoint"]){
             let now_pos=this.growingPos["growingPoint"];
@@ -767,12 +737,7 @@ class BranchData{
          uvInfo["vertexUv"]=[];
          uvInfo["now_len"]=0;
          uvInfo["uv_u_step"]=0;
-         let cap=null;
-         let axis_step=2;
-         
-          for(let i=0;i<list.length;i+=axis_step){
-              let next_i=i+axis_step;
-              if(next_i>=list.length)i=list.length-1;
+          for(let i=0;i<list.length;i++){
               let now_data=list[i];
   
               let circleGeo = new THREE.CircleGeometry(now_data.R, now_segment );   
@@ -807,7 +772,6 @@ class BranchData{
                  circleGeo.lookAt(new THREE.Vector3(x,y,z)); 
              }
              circleGeo.translate(now_pos.x,now_pos.y,now_pos.z);
-             if(i==list.length-1)cap=circleGeo;
              if(i==0){
                 pre_circle=circleGeo;
 
@@ -830,64 +794,42 @@ class BranchData{
              let pre_pos=pre_data.pos;
              let now_pos=now_data.pos;
              len+=pre_pos.distanceTo(now_pos);
-             uvInfo["now_len"]=len;
-             let step=2*Math.PI*now_data.R/now_segment;
+             uvInfo["now_len"]=len;let step=2*Math.PI*now_data.R/now_segment;
              uvInfo["uv_u_step"]=step;
-    
              branchGeoFromTwoCircleToGeo(pre_circle,circleGeo,cylinderGeo,'n',uvInfo);
        /*         branchGeoFromTwoCircleToGeo(pre_circle,circleGeo,cylinderGeo); */
                pre_circle=circleGeo;
-         
                //branchGeo.merge(cylinder_geo);
              }
-               //branchGeo.merge(circleGeo);
+               branchGeo.merge(circleGeo);
   
           }
           //let cylinderGeo = new buildBranchTube(this.spinePoints.toList(),this.layer,0.2,true);
           branchGeo.merge(cylinderGeo);
-          if(cap)branchGeo.merge(cap);
-         
-          if(!mergeToGroup){
-            let bufferBranch=  new THREE.BufferGeometry().fromGeometry(branchGeo);
-            let bufferMesh=new THREE.Mesh( bufferBranch, material );
-             bufferMesh.name="mesh";
-             branchGroup.add(bufferMesh);
-             //line
-             if(style=="line"){
-                 let geometry = new THREE.BufferGeometry().setFromPoints( linePoint );
-                 let material = new THREE.LineBasicMaterial( { color: 0x000000,linewidth:0.5 } );
-                 let line = new THREE.Line( geometry, material );
-                 line.name="line";
-                 if(haveHelper)branchGroup.add(line);
-             }
- 
-        
- 
-            branchGroup.translateX(this.posAbs.x);branchGroup.translateY(this.posAbs.y);branchGroup.translateZ(this.posAbs.z);
-            let tempGeo=branchGeo.clone();
-            let matrixTran=new THREE.Matrix4();
-            matrixTran.makeTranslation(this.posAbs.x,this.posAbs.y,this.posAbs.z);
-            tempGeo.applyMatrix4(matrixTran);
-            if(fullMeshGeo)fullMeshGeo.merge(tempGeo);
-            branchGroup["treeLevel"]=this.layer;
-            //console.log(branchGroup);
-            //console.log( branchGroup["treeLevel"]);
-            
-           treeGroup.add(branchGroup);
+           let bufferBranch=  new THREE.BufferGeometry().fromGeometry(branchGeo);
+           let bufferMesh=new THREE.Mesh( bufferBranch, material );
+            bufferMesh.name="mesh";
+            branchGroup.add(bufferMesh);
+            //line
+            if(style=="line"){
+                let geometry = new THREE.BufferGeometry().setFromPoints( linePoint );
+                let material = new THREE.LineBasicMaterial( { color: 0x000000,linewidth:0.5 } );
+                let line = new THREE.Line( geometry, material );
+                line.name="line";
+                if(haveHelper)branchGroup.add(line);
+            }
 
+       
 
-          }else{
-               let mat=new THREE.Matrix4();
-               mat.makeTranslation(this.posAbs.x,this.posAbs.y,this.posAbs.z);
-               treeGroup.merge(branchGeo,mat);
-             
-          }
-          
-      };
-      produceLeavesOnBranch(tree,container){
-          let leaves=null;
-          if(container)leaves=container;
-          else  leaves=tree.leaves;
+           branchGroup.translateX(this.posAbs.x);branchGroup.translateY(this.posAbs.y);branchGroup.translateZ(this.posAbs.z);
+           branchGroup["treeLevel"]=this.layer;
+           //console.log(branchGroup);
+           //console.log( branchGroup["treeLevel"]);
+           
+          treeGroup.add(branchGroup);
+      }
+      produceLeavesOnBranch(tree){
+          let leaves=tree.leaves;
         for(let id of this.childrenLeafs){
             let data=tree.leavesInfo[id];
             if(!leaves[data.mesh]){
@@ -898,7 +840,7 @@ class BranchData{
             }
             leaves[data.mesh][data.materail].push(computeLeafTransform(data["transformData"]));
         }
-      };
+      }
       toTXTFormat(tree,isMore=false){
           let txt="";
           let parentID=-1;
@@ -935,19 +877,7 @@ class BranchData{
               txt+=pos.x+" "+pos.y+" "+pos.z+" "+r+"\n";
           }
           return txt;
-      };
-      isZeroBranch(){
-          return this.spinePoints.length==0;
-      };
-      //for blending tree
-      computePart_Sum(){
-
-      };
-      normalizedPosToWorld(){
-
-      };
-      moveToWorld(){};
-
+      }
 }  
 function meshToTXT(mesh,id){
     
@@ -1110,7 +1040,6 @@ function generateMaterialFromJSON(json,material){
         }
     }
 }
-
 function loadTextureOnMaterial(type,name,material){
      if(type=="Color"||type=="Opacity"||type=="Normal"){
         let colorMapLoader=new THREE.TextureLoader();
@@ -1162,9 +1091,149 @@ for(let info of data["Map"]){
 tree.materialsInfo.push(materialInfo);
 return material;
 }
-function blendBranch(t1, t2, now_branch_1, now_branch_2){
-    let ans=new BranchData();
-    return ans;
+class TreeData{
+    constructor(data,type){
+     if(type=="xml"){
+        let x2js = new X2JS();
+        let json= x2js.xml_str2json( data );
+        //console.log(JSON.stringify(json));
+        let speedTreeJSON=json["SpeedTreeRaw"];
+        //meshes
+        this.meshes={};
+        this.materials={};
+        this.materialsInfo=[];
+        if(speedTreeJSON[ "Meshes"]){
+            if(speedTreeJSON[ "Meshes"]["Mesh"]){
+                let meshArray=speedTreeJSON[ "Meshes"]["Mesh"];
+                this.meshCount=Number(speedTreeJSON[ "Meshes"]["_Count"]);
+
+                if(!Array.isArray(meshArray)){
+                    let mesh=meshArray;
+                    meshArray=[];
+                    meshArray.push(mesh);
+                }
+                for(let mesh of meshArray.values()){
+                    let id=mesh["_ID"];
+                    this.meshes[id]=generateMesh(mesh);
+                }
+            }
+           
+        }
+        //TODO materials
+        if(speedTreeJSON[ "Materials"]){
+            if(speedTreeJSON[ "Materials"]["Material"]){
+                let materialArray=speedTreeJSON[ "Materials"]["Material"];
+                this.materialCount=Number(speedTreeJSON[ "Materials"]["_Count"]);
+
+                if(!Array.isArray(materialArray)){
+                    let material=materialArray;
+                    materialArray=[];
+                    materialArray.push(material);
+                }
+                for(let material of materialArray.values()){
+                    let id=material["_ID"];
+                    this.materials[id]=generateMaterial(material,this);
+                }
+            }
+           
+        }
+        this.rootIndices=[];
+        this.localPos={};
+        this.branches={};
+        this.leaves={};
+        this.leavesInfo=[];
+        //object,include branch and leaf
+        if(speedTreeJSON["Objects"]){
+            if(speedTreeJSON["Objects"]["Object"]){
+               
+                let objects=speedTreeJSON["Objects"]["Object"];
+                if(!Array.isArray(objects)){
+                    let object=objects;
+                    objects=[];
+                    objects.push(object);
+                }
+                for(let obj of objects){
+                    if(obj[ "_ParentID"]=="0") this.rootIndices.push(obj[ "_ID"]);
+                    if(!obj[ "_ParentID"]){
+                        this.localPos["posAbs"]=readAbsPos(obj);
+                        this.localPos["posRel"]=readRelPos(obj);
+                    }
+                    else if(obj["Spine"]!=null){
+                        let id=obj["_ID"];
+                        let pid=obj[ "_ParentID"];
+                        this.branches[id]=new BranchData(obj,this);
+                        if(pid!="0")this.branches[pid].addChildBranch(this.branches[id]);
+                    }else if(obj["LeafReferences"]!=null){
+                        let pid=obj[ "_ParentID"];
+                        this.branches[pid].addChildLeaves(obj,this,pid);
+                    }
+                }
+            }
+         
+        }
+        //find level structure
+        let now=this.rootIndices;let now_layer=0;
+        while(now.length!=0){
+            let next=[];
+            let now_id=0;
+            for(let id of now){
+                this.branches[id].layer=now_layer;
+                this.branches[id].idInlayer=now_id;now_id++;
+                for(let n of  this.branches[id].childrenBranchIndices){
+                    next.push(n);
+                }
+            }
+            now=next;
+            now_layer++;
+        }
+       
+        this.maxLevel=now_layer-1;
+
+         //weld point
+        let values=Object.values(this.branches);
+        for(let branch of values){
+            branch.findChildrenGrowingPos(0.05,this);
+        }
+     }
+      if(type=="txt"){}
+    }
+    
+    toTXTFormat(isMore=false){
+        let maxL=this.maxLevel+1;
+        let txt=maxL.toString()+"\n";
+        console.log(this);
+        let now=this.rootIndices;let now_layer=0;
+        while(now.length!=0){
+            txt+="Layer "+now_layer+"\n";
+            txt+=now.length.toString()+"\n";
+            let next=[];
+            for(let id of now){
+                txt+=this.branches[id].toTXTFormat(this,isMore);
+                for(let n of  this.branches[id].childrenBranchIndices){
+                    next.push(n);
+                }
+               
+            }
+            now=next;
+            now_layer++;
+        }
+        txt+="BranchesEnd\n";
+       if(isMore){
+          txt+="LeavesBegin\n";
+          for(let info of this.leavesInfo){
+              txt+=info.toTXTFormat();
+          }
+          txt+="LeavesEnd\n";
+          txt+="MeshesBegin\n";
+         for(let key of Object.keys(this.meshes)){
+             txt+=meshToTXT(this.meshes[key],key);
+         }
+         txt+="MeshesEnd\n";
+          txt+="MaterialsInfo\n";
+          txt+=JSON.stringify(this.materialsInfo)+'\n';
+       }
+        return txt;
+    }
 }
 function toFloat32Array(list,count){
     if(!count)count=list.length;
@@ -1286,10 +1355,23 @@ function buildBranchTube(list,level,uvFactor,isUnBuffer){
         return bufferBranch;
 
 }
+class BranchReferred{//每一根树枝？
+   constructor(data,max,maxCountPerTree,level,id){
+           this.unbuffered_geometry=buildBranchTube(data,level,0.2,true);
+           this.geo=new THREE.BufferGeometry().fromGeometry(this.unbuffered_geometry);
+           this.InstancedMesh={
+            "geometry":this.geo,
+           }
 
+        
+
+   }
+
+}
 class TreeReferring{
    constructor(data){
        this.branches=[];
+       this.branchesLevelSeperated={};
        this.leaves=[];
        this.InstanceID=[];
        this.leavesLib={};
@@ -1302,9 +1384,7 @@ class TreeReferring{
        this.branchesLib=null;
        this.branchesLibLOD={};
        this.leavesLibLOD={};
-       this.status="loading";
-     this.leavesMergedLOD={};
-       if(!data)return;
+       this.maxLevel=0;
      let list=data.split('\n');
      for(let i=0;i<list.length;i++)list[i]=list[i].replace(/[\x00-\x1F\x7F-\x9F]/g, "");
      let now=0;let now_level=0;
@@ -1312,7 +1392,11 @@ class TreeReferring{
      {
          if(list[now].length==0)break;
          if(list[now]=="BranchesEnd")break;
-         if(list[now][0]=='L')now_level++;
+         if(list[now][0]=='L'){
+            now_level++;this.maxLevel=now_level;
+            this.branchesLevelSeperated[String(now_level)]=[];
+
+         }
        let info=list[now].split('_');
        if(info.length==3){
             let branch={};
@@ -1320,7 +1404,8 @@ class TreeReferring{
             branch["level"]=now_level;
             now++;
             branch["matrix"]=toFloat32Array(list[now].split(' '),8);
-            this.branches.push(branch)
+            this.branches.push(branch);
+            this.branchesLevelSeperated[String(now_level)].push(branch);
        }
        now++;
      }
@@ -1336,10 +1421,7 @@ class TreeReferring{
             this.leaves.push(leaf);
             now+=2;
            }
-
-
      }
-   
      }
      let a=666;
    }
@@ -1355,32 +1437,35 @@ class TreeReferring{
        }
      return tree_group;
    }
-   generateInstancedTree(transform,branchLib,id,level,useMerged){
- if(!useMerged){
+   generateInstancedTree(transform,branchLib,id,level){
+ 
     for(let b of this.branches){
  
-        let branchReferred=branchLib[b.id]; 
-        let now_pos=branchReferred.InstancedMesh.count;
-        if(now_pos>branchReferred.maxCount){
-            console.log(b.id+ " excess max count");
-            return;
-        }
-        b["instancedID"]=now_pos;
-        let mat=new THREE.Matrix4();
-        mat.multiply(transform);
-        mat.multiply(buildBranchTransformMat(b.matrix));
-        branchReferred.InstancedMesh.setMatrixAt(now_pos,mat);
-        branchReferred.parentTreeID.push([id,b.level]);
-        branchReferred.matrix.push(mat);
-        branchReferred.InstancedMesh.count++;
-    }
- }
-
+       let branchReferred=branchLib[b.id]; 
+       let now_pos=branchReferred.InstancedMesh.count;
+       if(now_pos>branchReferred.maxCount){
+           console.log(b.id+ " excess max count");
+           return;
+       }
+       b["instancedID"]=now_pos;
+       let mat=new THREE.Matrix4();
+       mat.multiply(transform);
+       mat.multiply(buildBranchTransformMat(b.matrix));
+       branchReferred.InstancedMesh.setMatrixAt(now_pos,mat);
+       branchReferred.parentTreeID.push([id,b.level]);
+       branchReferred.matrix.push(mat);
+       branchReferred.InstancedMesh.count++;
+   }
    this.InstanceID.push(id);
    }
    generateMergedLeaves(meshes){
              this.leavesMerged=mergeLeaves(this.leaves,meshes);
+
    }
+   generateMergedLeavesWithLOD(meshes){
+    this.leavesMerged=mergeLeaves_includeID(this.leaves,meshes);
+    mergedLeavesSeperateingOnLOD(this.leaves,meshes,this.leavesMerged);
+}
    generateMergedBranches(branchLib){
  
     let result=new THREE.Geometry();
@@ -1404,51 +1489,20 @@ class TreeReferring{
      result.computeBoundingBox();
      //this.boundingSphere=result.boundingSphere;
      this.boundingBox=result.boundingBox;
-   }
-   generateMergedInstancedBranches(group,info,species,tree_index,species_name){
-    
-        let geo=info.geo;
-        let mat=new THREE.MeshStandardMaterial();
-        let treesInstanced=this.InstanceID;
-        let level=info.level;
-        geo.computeBoundingBox();
-        if(!this.boundingBox){
-            this.boundingBox=geo.boundingBox;
-        }else{
-            this.boundingBox.union(geo.boundingBox);
-        }
-
-        this.branchesLibLOD[level]=new THREE.InstancedMesh(geo,mat,treesInstanced.length/Number(level));//树干的实例化渲染
-        this.branchesLibLOD[level].name=`instancedMergedBranchesLOD_${species_name}_${tree_index}_${level}`;
-        if(Number(level)<=2)  this.branchesLibLOD[level].castShadow=true;
-        this.branchesLibLOD[level].count=0;
-        group.add(this.branchesLibLOD[level]);
-        info.status="added_no_material";
-}
- generateMergedInstancedLeavesLOD(group,info,species,tree_index,species_name,level){
-    let geo=info.geo;
-    geo.computeBoundingBox();
-    if(!this.boundingBox){
-        this.boundingBox=geo.boundingBox;
-    }else{
-        this.boundingBox.union(geo.boundingBox);
     }
-     let matID=info.materialID;
-    let treesInstanced=this.InstanceID;
-    var material=new THREE.MeshStandardMaterial()
-    let instancedMergedLeavesMesh=new THREE.InstancedMesh(geo,material,treesInstanced.length/(level+1));//树叶的实例化
-
-    
-
-   
-    instancedMergedLeavesMesh.count=0;
-    instancedMergedLeavesMesh.name=`instancedMergedLeavesMesh_${species_name}_${tree_index}_${matID}_${level}`;
-    if(!this.leavesLibLOD[String(level)])  this.leavesLibLOD[String(level)]={};
-    this.leavesLibLOD[String(level)][matID]=instancedMergedLeavesMesh;
-    this.leavesLibLOD[String(level)][matID].castShadow=true;
-    info.status="added_no_material";
-    group.add(this.leavesLibLOD[String(level)][matID]);
-}
+    generateMergedBranchesSingleLevel(level,branchLib){
+    for(let b of this.branchesLevelSeperated[String(level)]){
+       let geo=branchLib[b.id].unbuffered_geometry;
+       let sf=1/b.matrix[7];
+       if(sf<0.2)continue;
+       let matrix=buildBranchTransformMat(b.matrix);
+       if(!this.branchesMergedLOD[level]){
+           this.branchesMergedLOD[level]=new THREE.Geometry();
+           this.branchesMergedLOD[level].merge(geo,matrix);
+        }else  this.branchesMergedLOD[level].merge(geo,matrix);
+    }
+    return this.branchesMergedLOD[level];
+   }
 }
 class TreeInstanced{
     constructor(referringTreeID,transform,id){
@@ -1458,26 +1512,81 @@ class TreeInstanced{
            this.lod=9;
            this.transformMatrix=buildTreeTransformMat(transform);
     }
-    generateInstancedTree(branchLib,treeLib,useMerged){
+    generateInstancedTree(branchLib,treeLib){
           let mat=buildTreeTransformMat(this.transform);
-          treeLib[this.referringTreeID].generateInstancedTree(mat,branchLib, this.id,this.level,useMerged);
-    }
-    updateLOD(){
-        let cameraPos=window.editor.camera.position;
-        let treePos=new THREE.Vector3(this.transform[0],this.transform[1],this.transform[2]);
-        let dist=cameraPos.distanceTo(treePos);
-        if(dist<50){
-            this.lod=4;
-        }else if(dist<500){
-            this.lod=3;
-
-        }else{
-            this.lod=2;
-        }
+          treeLib[this.referringTreeID].generateInstancedTree(mat,branchLib, this.id,this.level);
     }
 }
  
+function buildBranchLib(_list,max,meshLib,materialInfo){
+    
+     let data=_list.split('\n');
+     for(let i=0;i<data.length;i++)data[i]=data[i].replace(/[\x00-\x1F\x7F-\x9F]/g, "");
+     let now=1;
+     let ans={};
+     let now_id="";
+     let now_len=0;
+     let now_spinePoints=[];
+     let maxCount=0;
+     let now_level=-1;
+     while(now<data.length){
+         let str=data[now];
+         if(str.length==0){
+            now++;continue;
+         }
+         if(str=="branchLibEnd"){
+             break;
+         }
+         let list=str.split('_');
+         if(list.length==3){
+                now_level=Number(list[1]);
+                list=str.split(':');
+                 now_id=String(list[0]);maxCount=Number(list[1]);
+                 now+=2;
+                 let splitTest=data[now].split(':');
+                 if(splitTest.length!=1){
+                    now_len=Number(splitTest[0]);
+                 }else now_len=Number(data[now]);
+                 continue;
+         }
+         list=str.split(' ');
+         if(list.length==4){
+            now_spinePoints.push(toFloat32Array(list,4));
+           if(now_len!=0&&now_spinePoints.length==now_len){
+          
+            ans[now_id]=new BranchReferred(now_spinePoints,max,maxCount,now_level,now_id);
 
+            now_id="";
+            now_len=0;
+
+            now_spinePoints=[];
+            maxCount=0;
+            now_level=-1;
+           }
+        }
+        now++;
+     } 
+if(data[now]=="branchLibEnd"){
+  now++;
+  //load mesh
+  if(data[now]=="meshesBegin"&&meshLib){
+      now++;
+     
+        while(now<data.length){
+           if(data[now]=="meshesEnd")break; 
+           let mesh=generateMeshFromTXT(data[now],data[now+1]);
+           meshLib[mesh.idInXML]=mesh;
+           now+=2;
+        }
+  }
+  if(data[now]=="meshesEnd")now++;
+  if(data[now]=="materialnfo"&&materialInfo){
+    now++;
+    materialInfo["JSON"]=JSON.parse(data[now]);
+}
+}
+     return ans;
+};
 
 function buildForest(x,y,count,branchLib,treeLib,meshLib,materialLib){
     let interval=128;let forest={};
@@ -1524,14 +1633,8 @@ function buildForest(x,y,count,branchLib,treeLib,meshLib,materialLib){
           tree_branches_group.add(branchLib[id].InstancedMesh);
         }
         forest_group.add(tree_branches_group);
-       /*  for(let id of Object.keys(this)){
-          if(id=="generateInstancedBranches")continue;
-          this[id].InstancedMesh.geometry.dispose(); 
-          this[id].InstancedMesh.material.dispose(); 
-      } */
 
   }
-
     forest["updateLOD"]=function(){
            let that=forest;
    
@@ -1654,28 +1757,118 @@ function mergeLeavesAndBuildMesh(leavesInfo,meshes,materials){
             alphaMap: mat.alphaMap,
             alphaTest:0.46
         } );
-   /*     if(!mat.alphaMap){
-              let timer=setInterval(function(){
-                if(mat.alphaMap){
-                    mergedLeavesMesh.customDepthMaterial = new THREE.MeshDepthMaterial( {
-                        depthPacking: THREE.RGBADepthPacking,
-                        alphaMap: mat.alphaMap,
-                        alphaTest:0.46
-                    } );
-                    clearInterval(timer);
-                }
-              },500);
-       }    */
            leavesGroup.add(mergedLeavesMesh);
            //window.editor.addObject(mergedLeavesMesh);
         }
     } 
+    return leavesGroup;
+}
+function mergeLeaves(leavesInfo,meshes){
+    let leavesInstance={};
+    let result=[];
+    let id=0;
+    for(let info of leavesInfo){
+         if(!leavesInstance[info.mesh]){
+            leavesInstance[info.mesh]={};
+         }
+         if(!leavesInstance[info.mesh][info.materail]){
+            leavesInstance[info.mesh][info.materail]=[];
+            leavesInstance[info.mesh][info.materail].push(id);
+         }else{
+     
+            leavesInstance[info.mesh][info.materail].push(id);
+         }
+         id++;
+    }
+    for(let meshID of Object.keys(leavesInstance)){
+        if(meshID[meshID.length-1]==""){
+            meshID=meshID.substring(0,mesh.length-1);
+        }
+        let geo=meshes[meshID]["geometry_unbuffered"];
+        for(let matID of Object.keys(leavesInstance[meshID])){
+            let list =leavesInstance[meshID][matID];
+            let count=list.length;
+            let geometry=new THREE.Geometry();
+            for(let i=0;i<count;i++){
+                let leafInfo=leavesInfo[list[i]];
+                let matrix=computeLeafTransform(leafInfo.transformData);
+                geometry.merge(geo,matrix);
+            }
+            let bufferGeo=new THREE.BufferGeometry().fromGeometry(geometry) ;
+            result.push({materialID:matID,meshID:meshID,geometry:bufferGeo});
+        }
+    } 
+    return result;
+}
+class TreeSpecies{
+    constructor(sp){
+        this.name=sp.name;
+        this.count=sp.count;
+        this.treeLib="Loading";
+        this.treeLib_state="Loading";
+        this.branchLib="Loading";
+        this.meshLib="Loading";
+        this.materialLib="Loading";
+        this.trees=[];
+        this.barkMaterialID=sp.barkMaterialID;
+        this.scaleBase=sp.scaleBase;
+    }
+    addInstancedTree(transform){
+        let referingID=Math.floor(Math.random()*this.count);
+        //let referingID=8;
+        let index=  this.trees.length
+        let _transform=transform
+        if(this.scaleBase)_transform[4]*=this.scaleBase;
+        this.trees.push(new TreeInstanced(referingID,_transform,index));
+        this.trees[index].generateInstancedTree(this.branchLib,this.treeLib);
+    }
+    generateInstancedBranches(species_group){
+        let branchLib=this.branchLib
+        let tree_branches_group=new THREE.Group()
+        tree_branches_group.name="branches_group"
+        for(let id of Object.keys(branchLib)){
+            branchLib[id].InstancedMesh.name="InstancedBranches_"+id
+            tree_branches_group.add(branchLib[id].InstancedMesh)
+        }
+        species_group.add(tree_branches_group);
+    }
+}
+function buildForestMultiSpecies(x,y,species,terrain){
+    let terrainSize=window["myObject"].terrainScene.terrainOptions.xSize;
+    let interval=terrainSize/x; 
+    let baseScale=2.5;
  
-return leavesGroup;
+
+
+    let index=0;let total_count=x*y;
+    let begin_x=-1*x*interval*0.5;let begin_z=-1*y*interval*0.5;
+	
+    for(let i=0;i<x;i++){
+        for(let j=0;j<y;j++){
+            let transform=new Float32Array(5);
+            let random_offset_x=interval/3*(-1+2*Math.random());
+            let random_offset_y=interval/3*(-1+2*Math.random());
+            transform[0]=begin_x+i*interval+random_offset_x;
+            transform[2]=begin_z+j*interval+random_offset_y;
+            let sampleY=0;
+             //need edit
+ 
+                sampleY=samplingPositionYOnTerrain( transform[0],transform[2]);
+                if(!sampleY)continue;
+ 
+            transform[1]=sampleY;
+            transform[3]=Math.random()*Math.PI*2;
+            transform[4]=(Math.random()*0.6+0.7)*baseScale;
+            let speciesID=Math.floor(Math.random()*species.length);
+       
+            //let neo_tree=new TreeInstanced(id,transform);
+            //neo_tree.generateInstancedTree(branchLib,treeLib);
+            species[speciesID].addInstancedTree(transform);
+        }
 
 }
-
-function mergeLeaves(leavesInfo,meshes){
+}
+function mergeLeaves_includeID(leavesInfo,meshes){
             
  
     let leavesInstance={};
@@ -1707,377 +1900,57 @@ function mergeLeaves(leavesInfo,meshes){
  
             let count=list.length;
             let geometry=new THREE.Geometry();
+
             for(let i=0;i<count;i++){
                 let leafInfo=leavesInfo[list[i]];
+         
                 let matrix=computeLeafTransform(leafInfo.transformData);
                 geometry.merge(geo,matrix);
             }
     
                let bufferGeo=new THREE.BufferGeometry().fromGeometry(geometry) ;
-               result.push({materialID:matID,meshID:meshID,geometry:bufferGeo});
+               result.push({materialID:matID,meshID:meshID,geometry:bufferGeo,index:list});
         }
     } 
- 
- 
+
 return result;
 }
-class TreeSpecies{
-    constructor(sp){
-        this.name=sp.name;
-        this.count=sp.count;
-        this.treeLib="Loading";
-        this.treeLib_state="Loading";
-        this.branchLib="Loading";
-        this.meshLib="Loading";
-        this.materialLib="Loading";
-        this.trees=[];
-        this.barkMaterialID=sp.barkMaterialID;
-        this.scaleBase=sp.scaleBase;
-        this.planarTreeScale=sp.planarTreeScale;
-        let that=this;
-        let checkTreePlaneLoading=setInterval(function(){
-            if(window["myObject"]["tree_plane"]){
-                 clearInterval(checkTreePlaneLoading);
-                 that.planarTree=new PlanarTree(that.name,that.planarTreeScale);
-                 window.editor.addObject(that.planarTree.group);
+function mergedLeavesSeperateingOnLOD(leavesInfo,meshes,leavesMerged){
+    for(let leaves of leavesMerged){
+        leaves.geometry.computeBoundingSphere();
+        let center=leaves.geometry.boundingSphere.center;
+        let geo=meshes[leaves.meshID]["geometry_unbuffered"];
+        let data=[];
+        for(let id of leaves.index){
+            let transform=leavesInfo[id].transformData;
+            let position=new THREE.Vector3(transform[0],transform[1],transform[2]);
+            let dist=center.distanceTo(position);
+            data.push({index:id,distance:dist});
+        }
+        data.sort(
+            function(a,b){
+            if(a.index<b.index)return 1;
+          if(a.index==b.index)return 0;
+          if(a.index>b.index)return -1;
+        });
+ 
+        let lod_0=new THREE.Geometry();let lod_1=new THREE.Geometry();let lod_2=new THREE.Geometry();
+        for(let i=0;i<data.length;i++){
+            let id=data[i].index;
+            let leafInfo=leavesInfo[id];
+            let matrix=computeLeafTransform(leafInfo.transformData);
+            if(i%4<1){
+                lod_0.merge(geo,matrix);
+            }else  if(i%4<2){
+                lod_1.merge(geo,matrix);
+            }else {
+                lod_2.merge(geo,matrix);
             }
-        },1000);
-    }
-    addInstancedTree(transform,useMerged){
-        let referingID=Math.floor(Math.random()*this.count);
-        //let referingID=8;
-        let index=  this.trees.length;
-        let _transform=transform;
-        if(this.scaleBase)_transform[4]*=this.scaleBase;
-        this.trees.push(new TreeInstanced(referingID,_transform,index));
-        this.trees[index].generateInstancedTree(this.branchLib,this.treeLib,useMerged);
-    };
-    generateInstancedBranches(species_group){
-        let branchLib=this.branchLib;
-        let tree_branches_group=new THREE.Group();
-        tree_branches_group.name="branches_group";
-      for(let id of Object.keys(branchLib)){
-         
-        branchLib[id].InstancedMesh.name="InstancedBranches_"+id;
-        tree_branches_group.add(branchLib[id].InstancedMesh);
-      }
-      species_group.add(tree_branches_group);
-    };
-    updateLODAndFustumCulliing(camera,fustum){
-        if(this.planarTree)this.planarTree.clear();
-        for(let tree of Object.values(this.treeLib)){
-            let index=0;
-            let maxLevel=0;
-            for(let level of Object.keys(tree.branchesLibLOD))maxLevel=Math.max(maxLevel,Number(level));
-        
-            for(let instancedMergedLeavesMesh of Object.values(tree.leavesLib)){ instancedMergedLeavesMesh.count=0;};
-
-            for(let level of Object.keys(tree.branchesLibLOD)){ 
-                tree.branchesLibLOD[level].count=0;
-            };
-            for(let leavesLevel of Object.values(tree.leavesLibLOD) ){
-          
-                     for(let leavesInstancedMesh of Object.values(leavesLevel)){
-                        leavesInstancedMesh.count=0;
-                     }
-            }
-
-                //tree.branchesLib.count=0;
-                for(let treeID of Object.values(tree.InstanceID)){
-                             let treeInstanced=this.trees[treeID];
-                             let pos=new THREE.Vector3(treeInstanced.transform[0],treeInstanced.transform[1],treeInstanced.transform[2]);
-                             //let boundingSphere=tree.boundingSphere.clone();
-                            // boundingSphere.applyMatrix4(treeInstanced.transformMatrix);
-                            if(!tree.boundingBox)continue;
-                            let boundingBox=tree.boundingBox.clone();
-                            boundingBox.applyMatrix4(treeInstanced.transformMatrix)
-                             if(fustum.intersectsBox(boundingBox)){
-                                 let dist=pos.distanceTo(camera.position);
-                                 if(dist>=3000){
-                                    if(this.planarTree){
-                                        this.planarTree.addTree(treeInstanced.transformMatrix);
-                                    }
-                                }
-                             
-                                 if(dist<3000){
-                                    let now_index=tree.branchesLibLOD["1"].count;
-                                    tree.branchesLibLOD["1"].setMatrixAt(now_index,treeInstanced.transformMatrix);
-                                    tree.branchesLibLOD["1"].count++;
-                                    if(tree.leavesLibLOD["0"]){
-                                        for(let instancedLeaves of Object.values(tree.leavesLibLOD["0"])){
-                                            let now_index=instancedLeaves.count;
-                                            instancedLeaves.setMatrixAt(now_index,treeInstanced.transformMatrix);
-                                            instancedLeaves.count++;
-                                           }
-                                      }
-                                 }
-                                 if(dist<1500){
-                                    if(maxLevel>=2){
-                                        let now_index=tree.branchesLibLOD["2"].count;
-                                        tree.branchesLibLOD["2"].setMatrixAt(now_index,treeInstanced.transformMatrix);
-                                        tree.branchesLibLOD["2"].count++;
-                                    }
-                                    if(tree.leavesLibLOD["1"]){
-                                        for(let instancedLeaves of Object.values(tree.leavesLibLOD["1"])){
-                                            let now_index=instancedLeaves.count;
-                                            instancedLeaves.setMatrixAt(now_index,treeInstanced.transformMatrix);
-                                            instancedLeaves.count++;
-                                           }
-                                      }
-                                 }
-                                 if(dist<500){
-                                    if(maxLevel>=3){
-                                        for(let level=3;level<=maxLevel;level++){
-                                            let now_index=tree.branchesLibLOD[String(level)].count;
-                                            tree.branchesLibLOD[String(level)].setMatrixAt(now_index,treeInstanced.transformMatrix);
-                                            tree.branchesLibLOD[String(level)].count++;
-                                          }
-                                        }
-                                        if(tree.leavesLibLOD["2"]){
-                                            for(let instancedLeaves of Object.values(tree.leavesLibLOD["2"])){
-                                                let now_index=instancedLeaves.count;
-                                                instancedLeaves.setMatrixAt(now_index,treeInstanced.transformMatrix);
-                                                instancedLeaves.count++;
-                                               }
-                                          }
-                                 }
-                                index++;
-                             }
-
-                }
-               // for(let instancedMergedLeavesMesh of Object.values(tree.leavesLib)){ instancedMergedLeavesMesh.instanceMatrix.needsUpdate=true;};
-               for(let leavesLevel of Object.values(tree.leavesLibLOD) ){
-                for(let leavesInstancedMesh of Object.values(leavesLevel)){
-                   leavesInstancedMesh.instanceMatrix.needsUpdate=true;
-                }
-            }
-                for(let instancedMergedBranchesLODMesh of Object.values(tree.branchesLibLOD)){instancedMergedBranchesLODMesh.instanceMatrix.needsUpdate=true;}
-             
         }
-        if(this.planarTree){
-            this.planarTree.update();
-        }
+         lod_0=new THREE.BufferGeometry().fromGeometry(lod_0);
+         lod_1=new THREE.BufferGeometry().fromGeometry(lod_1);
+          lod_2=new THREE.BufferGeometry().fromGeometry(lod_2);
+        leaves["LOD"]=[lod_0,lod_1,lod_2];
     }
-}
-function assembleData(speciesLib,data){
-/*     console.log("assemble Data");
-    console.log(data); */
-    let _geo=geoDataToBufferGeo(data.geo);
-   if(data["type"]=="branches"){
-    speciesLib[data.species]["treeLib"][data.treeID].branchesMergedLOD[data.level]={level:data.level,geo:_geo,status:"unadded"};
-   }
-   if(data["type"]=="leaves"){
-    //speciesLib[data.species]["treeLib"][data.treeID].leavesMerged[data.material]={materialID:data.material,geo:_geo,status:"unadded"};
-    if(!speciesLib[data.species]["treeLib"][data.treeID].leavesMergedLOD[data.LOD]) speciesLib[data.species]["treeLib"][data.treeID].leavesMergedLOD[data.LOD]=[];
-    speciesLib[data.species]["treeLib"][data.treeID].leavesMergedLOD[data.LOD].push({materialID:data.material,geo:_geo,status:"unadded"});
-}
-}
-function buildUpdateLODAndFustumCulliingFunc(speciesLib){
-    let that=speciesLib;
-    let func=function(){
-         let camera=window.editor.camera;
-         let fustum=buildFustumFromCamera(camera);
-          for(let species of Object.values(that)){  
-                species.updateLODAndFustumCulliing(camera,fustum);
-          }
-          //forceRender();
-    }
-    return func;
-};
 
-function buildForestMultiSpecies(x,y,species,useMerged){
-    
-    let terrainSize=8192//window["myObject"].terrainScene.terrainOptions.xSize;
-    let interval=terrainSize/x; 
-    let baseScale=2.5;
- 
-
-
-    let index=0;let total_count=x*y;
-    let begin_x=-1*x*interval*0.5;let begin_z=-1*y*interval*0.5;
-	
-    for(let i=0;i<x;i++){
-        for(let j=0;j<y;j++){
-            let transform=new Float32Array(5);
-            let random_offset_x=interval/3*(-1+2*Math.random());
-            let random_offset_y=interval/3*(-1+2*Math.random());
-            transform[0]=begin_x+i*interval+random_offset_x;
-            transform[2]=begin_z+j*interval+random_offset_y;
-            let sampleY=0;
-             //need edit
- 
-                sampleY=samplingPositionYOnTerrain( transform[0],transform[2]);
-                if(!sampleY)continue;
- 
-            transform[1]=sampleY;
-            transform[3]=Math.random()*Math.PI*2;
-            transform[4]=(Math.random()*0.6+0.7)*baseScale;
-
-            let speciesCount=Object.keys(species).length;
-            let speciesID=Math.floor(Math.random()*speciesCount);
-       
-            //let neo_tree=new TreeInstanced(id,transform);
-            //neo_tree.generateInstancedTree(branchLib,treeLib);
-            let id=Object.keys(species)[speciesID];
-            species[id].addInstancedTree(transform,useMerged);
-        }
-
-}
-}
- 
-function setUpLeavesMaterial(mesh,material){//对高模数据的处理
-      
-    material.onBeforeCompile=function(shader,render){
-        shader.fragmentShader=
-            shader.fragmentShader+
-            `
-            //LeavesFragment
-            `
-        shader.vertexShader=
-            shader.vertexShader+
-            `
-            //LeavesVertexShader
-            `
-    }
-    mesh.material=material;
-    mesh.material.alphaTest=0.46;
-    mesh.material.roughness=0.4; 
-    mesh.material.normalScale=new THREE.Vector2(0.6,0.6);
-    mesh.material.side=THREE.DoubleSide;
-    mesh.customDepthMaterial = new THREE.MeshDepthMaterial( {
-        depthPacking: THREE.RGBADepthPacking,
-        alphaMap: material.alphaMap,
-        alphaTest:0.46
-    } );
-    // mesh.scale.set(0,2,2)
-
-    var clock = new THREE.Clock();  
-    var uniforms={
-        time : { value: 0 }
-    }
-    mesh.material.uniforms=uniforms
-    function updateAnimation() {
-            let time = clock.getElapsedTime();
-            uniforms.time = { value: time };
-            requestAnimationFrame(updateAnimation);
-            // console.log(time)
-    }updateAnimation();
-
-}
-
-class PlanarTree{
-    constructor(name,baseScale,maxTreeCount=10000){
-           this.name=name;
-           let model_group=window["myObject"]["tree_plane"];
-           this.group=new THREE.Group();
-           this.group.name=`${name}_PlanarTree`;
-           this.nowCount=0;
-           let scaleMatrix=new THREE.Matrix4();
-           scaleMatrix.makeScale(baseScale,baseScale,baseScale);
-           let maxCount=maxTreeCount;
-           //if(targetMaxCount)maxCount=targetMaxCount*0.4;
-           for(let child of model_group.children){
-            let geo=child.geometry.clone();
-            //let geo=new THREE.PlaneBufferGeometry(baseScale,baseScale);
-            geo.applyMatrix4(scaleMatrix);
-               if(child.name=="Branch_plane"){
-                this.branches=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial(),maxCount);//低模纸片树木的生成
-                this.branches.material.side=THREE.DoubleSide;
-                this.branches.name=`${name}_PlanarTree_branches`;
-                this.branches.count=0;
-                this.group.add(this.branches);
-               }else if(child.name=="Leaves_plane"){
-                this.leaves=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial(),maxCount);
-                this.leaves.material.side=THREE.DoubleSide;
-                this.leaves.name=`${name}_PlanarTree_leaves`;
-                this.leaves.material.shininess=44;
-                this.leaves.count=0;
-                this.group.add(this.leaves);
-               }else if(child.name=="top_plane"){
-                this.top=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial(),maxCount);
-                this.top.material.side=THREE.DoubleSide;
-                this.top.name=`${name}_PlanarTree_top`;
-                this.top.material.shininess=44;
-                this.top.count=0;
-                this.group.add(this.top);
-               }else if(child.name=="bottom_plane"){
-                this.bottom=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial(),maxCount);
-                this.bottom.material.side=THREE.DoubleSide;
-                this.bottom.name=`${name}_PlanarTree_bottom`;
-                this.bottom.count=0;
-               }
-               child.parent.visible=false
-           }
-           //handle texture
-           let loader = new THREE.TextureLoader();
-           let that=this;
-           loader.load(`../models/forest/${name}/plane/leaves_color.jpg`,function(tex){
-                tex.encoding=THREE.sRGBEncoding;
-                tex.flipY=false;
-                that.leaves.material.map=tex;
-                that.top.material.map=tex;
-                that.leaves.material.needsUpdate=true;
-                that.top.material.needsUpdate=true;
-           });
-           loader.load(`../models/forest/${name}/plane/leaves_opacity.jpg`,function(tex){
-                tex.encoding=THREE.sRGBEncoding;
-                tex.flipY=false;
-                that.leaves.material.alphaMap=tex;
-                that.leaves.material.alphaTest=0.46;
-                that.top.material.alphaMap=tex;
-                that.top.material.alphaTest=0.46;
-                that.leaves.material.needsUpdate=true;
-                that.top.material.needsUpdate=true;
-           });
-           loader.load(`../models/forest/${name}/plane/branch_color.jpg`,function(tex){
-            tex.encoding=THREE.sRGBEncoding;
-            tex.flipY=false;
-          
-            that.branches.material.map=tex;
-            that.branches.material.needsUpdate=true;
-  
-           });
-           loader.load(`../models/forest/${name}/plane/branch_opacity.jpg`,function(tex){
-            tex.encoding=THREE.sRGBEncoding;
-            tex.flipY=false;
-            that.branches.material.alphaMap=tex;
-            that.branches.material.alphaTest=0.46;
-            that.branches.material.needsUpdate=true;
-  
-           });
-    }
-    clear(){
-        this.branches.count=0;
-        this.leaves.count=0;
-        this.top.count=0;
-        this.bottom.count=0;
-        this.nowCount=0;
-    }
-    addTree(matrix,v_dot,dist){
-        if(dist<3000||!dist||v_dot<0.2){
-            let branch_count=this.branches.count;
-            this.branches.setMatrixAt(branch_count,matrix);
-            this.leaves.setMatrixAt(branch_count,matrix);
-           
-            
-            this.branches.count++;
-            this.leaves.count++;
-
-        }
-        
-if(!(dist<1000)&&v_dot>0.8||dist>=3000){
-    let top_count=this.top.count;
-    this.top.setMatrixAt(top_count,matrix);
-    this.top.count++;
-}
-      //this.bottom.setMatrixAt(this.nowCount,matrix);
-        //this.bottom.count++;
-        this.nowCount++;
-    }
-    update(){
-        this.branches.instanceMatrix.needsUpdate=true;
-        this.leaves.instanceMatrix.needsUpdate=true;
-        this.top.instanceMatrix.needsUpdate=true;
-        //this.bottom.instanceMatrix.needsUpdate=true;
-    }
 }

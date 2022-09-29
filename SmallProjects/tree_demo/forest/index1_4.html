@@ -80,7 +80,6 @@
 				} );
 				var timeout;
 				function saveState() {
-					//my edit close saveState
                      return;
 					if ( editor.config.getKey( 'autosave' ) === false ) {
 						return;
@@ -94,9 +93,7 @@
 						}, 100 );
 					}, 1000 );
 				}
-
 			} )
-
 			document.addEventListener( 'dragover', function ( event ) {
 				event.preventDefault();
 				event.dataTransfer.dropEffect = 'copy';
@@ -114,20 +111,14 @@
 			function onWindowResize() {
 				editor.signals.windowResize.dispatch();
 			}onWindowResize()
-			window.addEventListener( 'resize', onWindowResize, false );
-
-
+			window.addEventListener( 'resize', onWindowResize, false )
 		</script>
-		
 		        <link rel="stylesheet" href="../myCSS/myCSS.css">
 
-				<!-- <script src="../myJS1_3/ForestLoader.js"></script> -->
-
-				<script src="../myJS1_3/treeData.js"></script>
-				<script src="../myJS1_3/treeDemo.js"></script>
-				<script src="../myJS1_3/myLibrary.js"></script>
-				<script src="../myJS1_3/myHelperFunction.js"></script>
-				<script src="../myJS1_3/myMain_1.js"></script>
-		  
+				<script src="../myJS1_4/treeData.js"></script>
+				<script src="../myJS1_4/treeDemo.js"></script>
+				<script src="../myJS1_4/myLibrary.js"></script>
+				<script src="../myJS1_4/myHelperFunction.js"></script>
+				<script src="../myJS1_4/myMain_1.js"></script>
 	</body>
 </html>
