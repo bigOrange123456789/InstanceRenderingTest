@@ -21,8 +21,6 @@ function toVectorArray(vectors,count){
 	}
 	return array;
 }
-
-
 function pointDistanceToLine(begin,end,point){
     let v1=new THREE.Vector3();
     v1.copy(end);
@@ -55,16 +53,15 @@ function straightness(vectors){
     let begin=vectors[0];
     let end=vectors[vectors.length-1];
 
- let D=0;let d=0;
- for(let i=1;i<vectors.length-2;i++){
-      let v1=new THREE.Vector3();
-     v1.copy(vectors[i]);
-     v1.addScaledVector(begin,-1.0);
-       D+=v1.length();
-       d+=pointDistanceToLine(begin,end,vectors[i]);
-      
- }
- return 1-d/D;
+    let D=0;let d=0;
+    for(let i=1;i<vectors.length-2;i++){
+        let v1=new THREE.Vector3();
+        v1.copy(vectors[i])
+        v1.addScaledVector(begin,-1.0)
+        D+=v1.length();
+        d+=pointDistanceToLine(begin,end,vectors[i])
+    }
+    return 1-d/D;
  }
 class SpinePoints{
     constructor(count,obj){
@@ -91,10 +88,9 @@ class SpinePoints{
             if(Math.abs(this.R[i])<0.005)this.R[i]=0.005;
         }
     }
-
-     pos(i,offSet){
-         let pos=new THREE.Vector3(this.posX[i],this.posY[i],this.posZ[i]);
-         if(offSet)pos.add(offSet);
+    pos(i,offSet){
+        let pos=new THREE.Vector3(this.posX[i],this.posY[i],this.posZ[i]);
+        if(offSet)pos.add(offSet);
         return pos;
     }
     radius(i){
@@ -116,39 +112,34 @@ class SpinePoints{
         this.R.push(r);
     }
     toList(){
-            let list=[];
-            for(let i=0;i<this.length;i++){
-                list.push(new Float32Array([this.posX[i],this.posY[i],this.posZ[i],this.R[i]]));
-            } 
-            return list;
+        let list=[];
+        for(let i=0;i<this.length;i++){
+            list.push(new Float32Array([this.posX[i],this.posY[i],this.posZ[i],this.R[i]]));
+        } 
+        return list;
     }
-};
-
+}
 class LeafInfo{
      constructor(transform=null,materailID=-1,meshID=-1,pID=-1,groupID=-1){
-
-       this.pID=pID;
-       this.groupID=groupID;
+        this.pID=pID;
+        this.groupID=groupID;
         this.transformData=transform;
         this.materail=materailID;
         this.mesh=meshID;
-
      }
      toTXTFormat(){
-         let ans= `${this.pID} ${this.groupID} ${this.materail} ${this.mesh} \n`;
-         ans=ans+this.transformData+'\n';
-         return ans;
+        let ans= `${this.pID} ${this.groupID} ${this.materail} ${this.mesh} \n`;
+        ans=ans+this.transformData+'\n';
+        return ans;
      }
      setFromTXT(str,transform){
-             let info=str.split(" ",4);
-             for(let i=0;i<4;i++)info[i]=info[i].replace(/[\x00-\x1F\x7F-\x9F]/g, "");
-             this.pID=info[0];
-             this.groupID=info[1];
-    
-              this.materail=info[2];
-              this.mesh=info[3];
-
-              this.transformData=toFloat32Array(transform.split(","),8);
+        let info=str.split(" ",4);
+        for(let i=0;i<4;i++)info[i]=info[i].replace(/[\x00-\x1F\x7F-\x9F]/g, "");
+        this.pID=info[0];
+        this.groupID=info[1];
+        this.materail=info[2];
+        this.mesh=info[3];
+        this.transformData=toFloat32Array(transform.split(","),8);
      }
 }
 function _reduceSpinePoints(vectors,threshold,maxReducedDist){
@@ -174,8 +165,7 @@ function _reduceSpinePoints(vectors,threshold,maxReducedDist){
 				end=now+i;
 				break;
 			}
-		}
-	 
+		}	 
 		now=end+1;
 	}
     let ans=new SpinePoints(array.length);let i=0;
@@ -191,26 +181,19 @@ function readAbsPos(obj){
 function readRelPos(obj){
     return new THREE.Vector3(Number(obj["_RelX"]),Number(obj["_RelY"]),Number(obj["_RelZ"]));
 }
-
 function buildBranch(data,level,id,input_color,hasHelper,_material,uvFactor){
     let list=data["sPoints"];
     let count=list.length;
  
-
     //if(count!=39)return;
     let name=level+"_"+(id+1);
     let branchGroup=new THREE.Group();
     branchGroup.name="branch_"+name;
     let branchGeo = new THREE.Geometry();
 
-      
-    
        //let material = new THREE.MeshStandardMaterial({ color: "#555555" ,side:THREE.DoubleSide} );
          let material=new THREE.MeshNormalMaterial({side:THREE.DoubleSide});
-    
          let linePoint=[];
-
-
 
     //growing point;
     if(hasHelper==undefined||hasHelper==true){
@@ -218,13 +201,13 @@ function buildBranch(data,level,id,input_color,hasHelper,_material,uvFactor){
         let now_pos=new THREE.Vector3(now_data[0],now_data[1],now_data[2]); 
         linePoint.push(now_pos);
    
-     let sphereGeo=  new THREE.SphereBufferGeometry(0.15,4,4);
-     sphereGeo.translate(now_pos.x,now_pos.y,now_pos.z);
-     let material_red = new THREE.MeshBasicMaterial({ color: "red" } );
+        let sphereGeo=  new THREE.SphereBufferGeometry(0.15,4,4);
+        sphereGeo.translate(now_pos.x,now_pos.y,now_pos.z);
+        let material_red = new THREE.MeshBasicMaterial({ color: "red" } );
 
-     let mesh=new THREE.Mesh( sphereGeo, material_red );
-      mesh.name="growing_point_"+name;
-      if(haveHelper)branchGroup.add(mesh);
+        let mesh=new THREE.Mesh( sphereGeo, material_red );
+        mesh.name="growing_point_"+name;
+        if(haveHelper)branchGroup.add(mesh);
 
     }
          let now_segment=32/(level+1);
@@ -248,23 +231,21 @@ let len=0;
             let now_pos=new THREE.Vector3(now_data[0],now_data[1],now_data[2]);
           //circleGeo.translate(now_pos.x,now_pos.y,now_pos.z);
          
-          linePoint.push(now_pos);
-       
-         
-         if(i!=list.length-1){
-             let next_data=list[i+1];
-             let next_pos=new THREE.Vector3(next_data[0],next_data[1],next_data[2]);
-           let x=next_pos.x-now_pos.x;
-           let y=next_pos.y-now_pos.y;
-           let z=next_pos.z-now_pos.z;
-           circleGeo.lookAt(new THREE.Vector3(x,y,z));
-         }else{
+        linePoint.push(now_pos)
+        if(i!=list.length-1){
+            let next_data=list[i+1];
+            let next_pos=new THREE.Vector3(next_data[0],next_data[1],next_data[2]);
+            let x=next_pos.x-now_pos.x;
+            let y=next_pos.y-now_pos.y;
+            let z=next_pos.z-now_pos.z;
+            circleGeo.lookAt(new THREE.Vector3(x,y,z));
+        }else{
             let pre_data=list[i-1];
             let pre_pos=new THREE.Vector3(pre_data[0],pre_data[1],pre_data[2]);
        
-              let x=now_pos.x-pre_pos.x;
-              let y=now_pos.y-pre_pos.y;
-              let z=now_pos.z-pre_pos.z;
+            let x=now_pos.x-pre_pos.x;
+            let y=now_pos.y-pre_pos.y;
+            let z=now_pos.z-pre_pos.z;
                 
              circleGeo.lookAt(new THREE.Vector3(x,y,z)); 
          }
@@ -287,9 +268,7 @@ let len=0;
             //add ending as begining
                cylinderGeo["vertices"].push(pre_circle["vertices"][1]);
                 uvInfo["vertexUv"].push(new THREE.Vector2(now_u*uvFactor,0*uvFactor)); 
-         }
-         else{
-           //let cylinder_geo=branchGeoFromTwoCircle(pre_circle,circleGeo); 
+         }else{
            let pre_data=list[i-1];
            let pre_pos=new THREE.Vector3(pre_data[0],pre_data[1],pre_data[2]);
            let now_pos=new THREE.Vector3(now_data[0],now_data[1],now_data[2]);
@@ -297,9 +276,7 @@ let len=0;
            uvInfo["now_len"]=len;let step=2*Math.PI*now_data[3]/now_segment;
            uvInfo["uv_u_step"]=step;
            branchGeoFromTwoCircleToGeo(pre_circle,circleGeo,cylinderGeo,'n',uvInfo);
-     /*         branchGeoFromTwoCircleToGeo(pre_circle,circleGeo,cylinderGeo); */
-             pre_circle=circleGeo;
-           //branchGeo.merge(cylinder_geo);
+           pre_circle=circleGeo
          }
       }
        
@@ -316,9 +293,6 @@ let len=0;
         //tube
         let bufferTube= new THREE.BufferGeometry().fromGeometry(cylinderGeo);
         let tubeMaterial=new THREE.MeshStandardMaterial({color:"#DDDDDD"});
-    /*     if(input_color){
-            tubeMaterial=new THREE.MeshBasicMaterial({color:input_color});
-        } */
    if(_material)tubeMaterial=_material;
         let bufferTubeMesh=new THREE.Mesh( bufferTube, tubeMaterial );
         bufferTubeMesh.name="tube"+name;
@@ -332,8 +306,6 @@ let len=0;
                 bufferCapMesh.name="cap";
                 branchGroup.add(bufferCapMesh);
             }
-          
-
         }
        //child link
        if(hasHelper==undefined||hasHelper==true){
@@ -354,8 +326,6 @@ let len=0;
             cylinder.name="child_growing_point_id_"+(level+1)+"_"+c_id;
             branchGroup.add(cylinder);
          }
-     
-
        }
     
        }
@@ -639,7 +609,6 @@ class BranchData{
            let nearestPoint=new THREE.Vector3();
            let nearest_r=0;
        
-          
            let now_pos=this.spinePoints.pos(spinePointId);
            let next_pos=this.spinePoints.pos(spinePointId+1);
 
@@ -664,10 +633,6 @@ class BranchData{
                 nearest_r=lerp(now_r,next_r,t);
                 ans.push(nearestPoint.x,nearestPoint.y,nearestPoint.z,nearest_r);
             }
-          
-         
-
-         
           //child branch
           let childID=pos["branchID"];
           let childBranch=tree.branches[childID];
@@ -691,8 +656,7 @@ class BranchData{
         }
         this.spinePointCount=ans.length;
         this.spinePoints=ans;
-};
-     
+}
       produceBranchGeo(treeGroup,style,level,_material,uvFactor,haveHelper=true){
         let count=this.spinePointCount;
         let X=this.spinePoints.posX;
@@ -700,18 +664,12 @@ class BranchData{
          let Z=this.spinePoints.posZ;
           let R=this.spinePoints.R;
           let list=toVectorArray({_X:X,_Y:Y,_Z:Z,_R:R},count);
-          
           let branchGroup = new THREE.Group();
           branchGroup.name=this.name+"_"+this.id;
           let branchGeo = new THREE.Geometry();
-        
            let material = new THREE.MeshStandardMaterial({ color: "#555555"} );
            if(_material)material=_material;
-            //let material=new THREE.MeshNormalMaterial({side:THREE.DoubleSide});
-              
              let linePoint=[];
-              
-                
              let now_segment=24-level*4;
                   //growing point;
         if(this.growingPos["growingPoint"]){
@@ -772,7 +730,7 @@ class BranchData{
                  circleGeo.lookAt(new THREE.Vector3(x,y,z)); 
              }
              circleGeo.translate(now_pos.x,now_pos.y,now_pos.z);
-             if(i==0){
+            if(i==0){
                 pre_circle=circleGeo;
 
                 let uv_u_step=2*Math.PI*now_data.R/now_segment;
@@ -787,7 +745,7 @@ class BranchData{
                    cylinderGeo["vertices"].push(pre_circle["vertices"][1]);
                     uvInfo["vertexUv"].push(new THREE.Vector2(now_u*uvFactor,0*uvFactor)); 
              }
-             else{
+            else{
               // let cylinder_geo=branchGeoFromTwoCircle(pre_circle,circleGeo);
                  //For UV
              let pre_data=list[i-1];
@@ -797,10 +755,9 @@ class BranchData{
              uvInfo["now_len"]=len;let step=2*Math.PI*now_data.R/now_segment;
              uvInfo["uv_u_step"]=step;
              branchGeoFromTwoCircleToGeo(pre_circle,circleGeo,cylinderGeo,'n',uvInfo);
-       /*         branchGeoFromTwoCircleToGeo(pre_circle,circleGeo,cylinderGeo); */
-               pre_circle=circleGeo;
-               //branchGeo.merge(cylinder_geo);
-             }
+             pre_circle=circleGeo;
+             
+            }
                branchGeo.merge(circleGeo);
   
           }
@@ -818,18 +775,14 @@ class BranchData{
                 line.name="line";
                 if(haveHelper)branchGroup.add(line);
             }
-
-       
-
            branchGroup.translateX(this.posAbs.x);branchGroup.translateY(this.posAbs.y);branchGroup.translateZ(this.posAbs.z);
            branchGroup["treeLevel"]=this.layer;
            //console.log(branchGroup);
-           //console.log( branchGroup["treeLevel"]);
-           
+           //console.log( branchGroup["treeLevel"]);   
           treeGroup.add(branchGroup);
       }
       produceLeavesOnBranch(tree){
-          let leaves=tree.leaves;
+        let leaves=tree.leaves;
         for(let id of this.childrenLeafs){
             let data=tree.leavesInfo[id];
             if(!leaves[data.mesh]){
@@ -847,13 +800,10 @@ class BranchData{
           if(tree.branches[this.parentID]){
             parentID=tree.branches[this.parentID].idInlayer+1
           }
-          
           let growingPos=-1;
           if(this.growingPos["spinePointIdInParent"]!=undefined&&this.growingPos["spinePointIdInParent"]!=null){
             growingPos=this.growingPos["spinePointIdInParent"]+1;
           }
-     
-       
           txt+=parentID+" "+growingPos+"\n";
          
           let offset=this.posAbs;
@@ -928,13 +878,7 @@ function generateMesh(RawData){
         'uv',
         new THREE.BufferAttribute(uvs, uvNumComponents));
         let idData= RawData["LOD"][0]["TriangleIndices"];
-        
         geometry.setIndex(parseDataStrToArray(idData));
-
-        //let mat=new THREE.MeshBasicMaterial({"color":"green"});
-
-        //let mesh=new THREE.Mesh(geometry,mat);
-        //window.editor.addObject(mesh);
         let mesh={
                 filename:_filename,
                    geo:geometry
@@ -949,11 +893,8 @@ constructor(_idInXML,_filename,_maxCountPreUnit,geometry,_geometry_unbuffered){
   this.maxCountPreUnit=_maxCountPreUnit;
   this.geometry_unbuffered=_geometry_unbuffered;
 }
-
-
 }
 function generateMeshFromTXT(meta,geo){
-
     let metaData=meta.split("|");
     let _idInXML=metaData[0];
    
@@ -961,32 +902,19 @@ function generateMeshFromTXT(meta,geo){
     let vData=geo.split("|");
 
     let _filename=metaData[1];
-   let _maxCountPreUnit=0;
-   if(metaData.length>3){
-    _maxCountPreUnit=Number(metaData[3]);
-   }
+    let _maxCountPreUnit=0;
+    if(metaData.length>3){
+        _maxCountPreUnit=Number(metaData[3]);
+    }
     let geometry = new THREE.BufferGeometry();
     let positionNumComponents = 3;
     let normalNumComponents = 3;
     let uvNumComponents = 2;
     
-
     let positions=toFloat32Array(vData[0].split(","));
     let normals=toFloat32Array(vData[1].split(","));
     let uvs=  toFloat32Array(vData[2].split(","));
 
-    
- 
-/*     for(let i=0;i<vCount;i++){
-        positions[i*positionNumComponents]=vData[0][i];
-        positions[i*positionNumComponents+1]=vData[1][i];
-        positions[i*positionNumComponents+2]=vData[2][i];
-        normals[i*normalNumComponents]=vData["NormalX"][i];
-        normals[i*normalNumComponents+1]=vData["NormalY"][i];
-        normals[i*normalNumComponents+2]=vData["NormalZ"][i];
-        uvs[i*uvNumComponents]=vData["TexcoordU"][i];
-        uvs[i*uvNumComponents+1]=vData["TexcoordV"][i];
-    } */
     geometry.setAttribute(
         'position',
         new THREE.BufferAttribute(positions, positionNumComponents));
@@ -1536,7 +1464,6 @@ class TreeInstanced{
           treeLib[this.referringTreeID].generateInstancedTree(mat,branchLib, this.id,this.level);
     }
 }
- 
 function buildBranchLib(_list,max,meshLib,materialInfo){
     
      let data=_list.split('\n');
@@ -1551,33 +1478,31 @@ function buildBranchLib(_list,max,meshLib,materialInfo){
      while(now<data.length){
          let str=data[now];
          if(str.length==0){
-            now++;continue;
+            now++
+            continue
          }
          if(str=="branchLibEnd"){
-             break;
+             break
          }
-         let list=str.split('_');
+         let list=str.split('_')
          if(list.length==3){
-                now_level=Number(list[1]);
-                list=str.split(':');
-                 now_id=String(list[0]);maxCount=Number(list[1]);
-                 now+=2;
+                now_level=Number(list[1])
+                list=str.split(':')
+                 now_id=String(list[0]);maxCount=Number(list[1])
+                 now+=2
                  let splitTest=data[now].split(':');
                  if(splitTest.length!=1){
                     now_len=Number(splitTest[0]);
                  }else now_len=Number(data[now]);
-                 continue;
+                 continue
          }
-         list=str.split(' ');
+         list=str.split(' ')
          if(list.length==4){
             now_spinePoints.push(toFloat32Array(list,4));
            if(now_len!=0&&now_spinePoints.length==now_len){
-          
-            ans[now_id]=new BranchReferred(now_spinePoints,max,maxCount,now_level,now_id);
-
+            ans[now_id]=new BranchReferred(now_spinePoints,max,maxCount,now_level,now_id)
             now_id="";
             now_len=0;
-
             now_spinePoints=[];
             maxCount=0;
             now_level=-1;
@@ -1586,11 +1511,10 @@ function buildBranchLib(_list,max,meshLib,materialInfo){
         now++;
      } 
 if(data[now]=="branchLibEnd"){
-  now++;
+  now++
   //load mesh
   if(data[now]=="meshesBegin"&&meshLib){
-      now++;
-     
+      now++
         while(now<data.length){
            if(data[now]=="meshesEnd")break; 
            let mesh=generateMeshFromTXT(data[now],data[now+1]);
@@ -1600,7 +1524,7 @@ if(data[now]=="branchLibEnd"){
   }
   if(data[now]=="meshesEnd")now++;
   if(data[now]=="materialnfo"&&materialInfo){
-    now++;
+    now++
     materialInfo["JSON"]=JSON.parse(data[now]);
 }
 }
@@ -1608,20 +1532,20 @@ if(data[now]=="branchLibEnd"){
 };
 
 function buildForest(x,y,count,branchLib,treeLib,meshLib,materialLib){
-    let interval=128;let forest={};
-    let baseScale=2;
+    let interval=128
+    let forest={}
+    let baseScale=2
     forest["trees"]=[];
     forest["branchLib"]=branchLib;
     forest["treeLib"]=treeLib;
     forest["meshLib"]=meshLib;
     forest["materialLib"]=materialLib;
-
     for(let b of Object.values(branchLib)){
             b.InstancedMesh.material=materialLib["1"];
     }
-    let index=0;let total_count=x*y;
+    let index=0;
+    let total_count=x*y;
     let begin_x=-1*x*interval*0.5;let begin_z=-1*y*interval*0.5;
-	
     for(let i=0;i<x;i++){
         for(let j=0;j<y;j++){
             let transform=new Float32Array(5);
@@ -1632,31 +1556,23 @@ function buildForest(x,y,count,branchLib,treeLib,meshLib,materialLib){
             transform[3]=Math.random()*Math.PI*2;
             transform[4]=(Math.random()*0.6+0.7)*baseScale;
             let referingID=Math.floor(Math.random()*count);
-            //let neo_tree=new TreeInstanced(id,transform);
-            //neo_tree.generateInstancedTree(branchLib,treeLib);
             forest["trees"].push(new TreeInstanced(referingID,transform,index));
             forest["trees"][index].generateInstancedTree(branchLib,treeLib);
             index++;
         }
-
     }
-
     forest["generateInstancedBranches"]=function(forest_group){
-
         let branchLib=forest["branchLib"];
           let tree_branches_group=new THREE.Group();
           tree_branches_group.name="forest_branches";
         for(let id of Object.keys(branchLib)){
-           
           branchLib[id].InstancedMesh.name="InstancedBranches_"+id;
           tree_branches_group.add(branchLib[id].InstancedMesh);
         }
         forest_group.add(tree_branches_group);
-
   }
     forest["updateLOD"]=function(){
            let that=forest;
-   
             setInterval(function(){
                 for(let tree of that.trees )tree.updateLOD();
                 for(let id of Object.keys(that.branchLib)){
@@ -1668,7 +1584,6 @@ function buildForest(x,y,count,branchLib,treeLib,meshLib,materialLib){
     return forest;
 }
 function buildForestMaterial(prefix,type,material){
-          
                    let promise=new Promise(
                         function(res,rej){
                             let colorMapLoader=new THREE.TextureLoader();
@@ -1747,59 +1662,37 @@ function mergeLeavesAndBuildMesh(leavesInfo,meshes,materials){
         for(let matID of Object.keys(leavesInstance[meshID])){
      
             let mat=materials[matID].clone();
-         
-             
-           mat.alphaTest=0.46;
+                      
+            mat.alphaTest=0.46;
             mat.roughness=0.4;
-           mat.normalScale.x=0.3;   mat.normalScale.y=0.3;
+            mat.normalScale.x=0.3;   mat.normalScale.y=0.3;
             mat.side=THREE.DoubleSide; 
             let count=leavesInstance[meshID][matID].length;
             let list =leavesInstance[meshID][matID];
             let geometry=new THREE.Geometry();
-          /* 
-            let mesh_test=new THREE.Mesh(geo,mat);
-            mesh_test.name="mesh_test_1";
-            window.editor.addObject(mesh_test); */
-           
+
             for(let i=0;i<count;i++){
                 let leafInfo=leavesInfo[list[i]];
                 let matrix=computeLeafTransform(leafInfo.transformData);
                 geometry.merge(geo,matrix);
             }
-        //shadow and Material
-     let bufferGeo=new THREE.BufferGeometry().fromGeometry(geometry) ;
-        let mergedLeavesMesh=new THREE.Mesh(bufferGeo,mat);
-        mergedLeavesMesh.name="merged_leaves_"+meshID+"_"+matID;
-        mergedLeavesMesh.castShadow=true;
-         mergedLeavesMesh.customDepthMaterial = new THREE.MeshDepthMaterial( {
-            depthPacking: THREE.RGBADepthPacking,
-            alphaMap: mat.alphaMap,
-            alphaTest:0.46
-        } );
-   /*     if(!mat.alphaMap){
-              let timer=setInterval(function(){
-                if(mat.alphaMap){
-                    mergedLeavesMesh.customDepthMaterial = new THREE.MeshDepthMaterial( {
-                        depthPacking: THREE.RGBADepthPacking,
-                        alphaMap: mat.alphaMap,
-                        alphaTest:0.46
-                    } );
-                    clearInterval(timer);
-                }
-              },500);
-       }    */
-           leavesGroup.add(mergedLeavesMesh);
-           //window.editor.addObject(mergedLeavesMesh);
+            
+            //shadow and Material
+            let bufferGeo=new THREE.BufferGeometry().fromGeometry(geometry) ;
+            let mergedLeavesMesh=new THREE.Mesh(bufferGeo,mat);
+            mergedLeavesMesh.name="merged_leaves_"+meshID+"_"+matID;
+            mergedLeavesMesh.castShadow=true;
+            mergedLeavesMesh.customDepthMaterial = new THREE.MeshDepthMaterial( {
+                depthPacking: THREE.RGBADepthPacking,
+                alphaMap: mat.alphaMap,
+                alphaTest:0.46
+            } )
+            leavesGroup.add(mergedLeavesMesh);
         }
     } 
- 
-return leavesGroup;
-
+    return leavesGroup;
 }
-
-function mergeLeaves(leavesInfo,meshes){
-            
- 
+function mergeLeaves(leavesInfo,meshes){           
     let leavesInstance={};
     let result=[];
     let id=0;
@@ -1820,13 +1713,9 @@ function mergeLeaves(leavesInfo,meshes){
         if(meshID[meshID.length-1]==""){
             meshID=meshID.substring(0,mesh.length-1);
         }
- 
         let geo=meshes[meshID]["geometry_unbuffered"];
-        
         for(let matID of Object.keys(leavesInstance[meshID])){
-          
             let list =leavesInstance[meshID][matID];
- 
             let count=list.length;
             let geometry=new THREE.Geometry();
             for(let i=0;i<count;i++){
@@ -1834,13 +1723,10 @@ function mergeLeaves(leavesInfo,meshes){
                 let matrix=computeLeafTransform(leafInfo.transformData);
                 geometry.merge(geo,matrix);
             }
-    
-               let bufferGeo=new THREE.BufferGeometry().fromGeometry(geometry) ;
-               result.push({materialID:matID,meshID:meshID,geometry:bufferGeo});
+            let bufferGeo=new THREE.BufferGeometry().fromGeometry(geometry) ;
+            result.push({materialID:matID,meshID:meshID,geometry:bufferGeo});
         }
     } 
- 
- 
 return result;
 }
 class TreeSpecies{

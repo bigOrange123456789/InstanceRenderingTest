@@ -188,15 +188,13 @@ function decodeColor(id){
 	let b=Math.floor(Number(data[1])*Number(data[1])%256);
 	r=Math.floor(r*2)%256;g=Math.floor((g+1)*10)%256;b=Math.floor(((b+1)*20))%256;
 	if(isNaN(r)||isNaN(g)||isNaN(b))return null;
-	return "rgb("+r+","+ g+","+b+ ")";
+	return "rgb("+r+","+ g+","+b+ ")"
 }
 function buildTreeFromXML(xml,input_file_name){
-		//let json=$.xml2json(xml);
-		//console.log(json);
    let x2js = new X2JS();
    let jsonObj = x2js.xml_str2json( xml );
    let editor=window.editor;
-   //
+   
    let TreeData_1=new TreeData(xml,"xml");
    window["myObject"]["sampleTree"]=TreeData_1;
    let objects=jsonObj["SpeedTreeRaw"]["Objects"]["Object"];
@@ -205,10 +203,7 @@ function buildTreeFromXML(xml,input_file_name){
 	   window.editor.addObject(treeGroup_1);
 	   forceRender();
 	},5000);
-
-   
    let output=document.querySelector("#tree_output");
- 
    output.style.display="block";
    let range_input=document.querySelector("#spRaw-range-input");
    range_input.max=TreeData_1.maxLevel+1;
@@ -217,19 +212,15 @@ function buildTreeFromXML(xml,input_file_name){
 	hideBelow(treeGroup_1,Number(e.target.value));
 	window.editor.render();
    })
-   //window.editor.addObject(treeGroup_2);
    let _name="tree";
    if(input_file_name)_name=input_file_name.substring(0,input_file_name.length-4);
    document.getElementById('spRaw-file-output_txt').addEventListener('click',
 	 function(){
 		let text=TreeData_1.toTXTFormat(true);
-		//let jsonStr=JSON.stringify(TreeData_1);
 		downloadFile(_name+".txt",text);}
 	 , false);
-
 	 document.getElementById('spRaw-file-output_json').addEventListener('click',
 	 function(){
-		//let text=TreeData_1.toTXTFormat();
 		let jsonStr=JSON.stringify(TreeData_1);
 		downloadFile(_name+".json",jsonStr);}
 	 , false);
@@ -244,14 +235,8 @@ function checkBarkMaterial(_material){
 	return materialBark;
 }
 function loadMaterialLib(materialsInfo,materials,species){
-
-
-
 	let promise =new Promise(function(res,rej){
-
-		console.log("Promise loadMaterialLib Begin");
 		let _loadTextureOnMaterial=function(targetMap,name,material){
-		 
 			   let colorMapLoader=new THREE.TextureLoader();
 				let path="";
 				if(!species){
@@ -270,17 +255,12 @@ function loadMaterialLib(materialsInfo,materials,species){
 				   let ratio=material[targetMap].image.height/material[targetMap].image.width;
 				   material[targetMap].repeat.set(ratio,1);
 				   material[targetMap].updateMatrix ();
-			
-				   //check is all map loaded
                             let flag=true;
 				   for(let _material of Object.values(materials)){
-
 					for(let item of Object.values(_material["LoadiingStatus"])){
                                   if(item=="Loading"){
 									  flag=false;break;
 								  }
-             
-
 					}
                             if(!flag)break;
 				   }
@@ -289,7 +269,6 @@ function loadMaterialLib(materialsInfo,materials,species){
 					   res(materials);
 					}
 			   });
-	 	
 	   }
 	   let _generateMaterialFromJSON=function(json,material){
 		material["LoadiingStatus"]={};
@@ -313,13 +292,10 @@ function loadMaterialLib(materialsInfo,materials,species){
 	for(let obj of Object.values(materialsInfo)){
 		_generateMaterialFromJSON(obj,materials[obj.id]);
 	}
-
 });
       return promise;
 }
 function buildTreeFromTXT(txt,input_file_name,offset,hasHelper=false){
-	//console.log(txt);
-	//window.treeTXT=txt;
 	let dataArray=txt.split('\n');
 	for(let i=0;i<dataArray.length;i++)dataArray[i]=dataArray[i].replace(/[\x00-\x1F\x7F-\x9F]/g, "");
 	let now=0;let state="";
@@ -334,12 +310,10 @@ function buildTreeFromTXT(txt,input_file_name,offset,hasHelper=false){
 	let now_color=null;
 	let now_IDInXML=-1;let now_parentIDinXML=-1;
     while(now<dataArray.length){
- 
 		if(dataArray[now].includes("BranchesEnd")){
 			break;
 		}
 		let line=dataArray[now].split(' ');
-
 		if(line.length==2||line.length==3){
 			if(!isNaN(line[0])&&!isNaN(line[1])){
 				parentID=Number(line[0]);
@@ -354,8 +328,6 @@ function buildTreeFromTXT(txt,input_file_name,offset,hasHelper=false){
 				branches.push([]);
 			}
 			now++;
-		
-			
 		}else if(line.length==1&&state=="2 before Read"){
 			now++;
 			state="2-1 before Read";
@@ -391,8 +363,7 @@ function buildTreeFromTXT(txt,input_file_name,offset,hasHelper=false){
 		}
 	}
     //console.log(branches);
-
-//handle Leaves
+	//handle Leaves
 	let leavesReference=null;
 	let meshes=null;
 	let materialsInfo=null;
@@ -435,8 +406,6 @@ function buildTreeFromTXT(txt,input_file_name,offset,hasHelper=false){
 		now+=2;
 	}
  	loadMaterialPromise.then(function(_material){
-
-
 		let materialBark=new THREE.MeshStandardMaterial();
 		for(let mat of Object.values(_material)){
 			if(mat.name.includes("bark")||mat.name.includes("Bark")){
@@ -453,24 +422,14 @@ function buildTreeFromTXT(txt,input_file_name,offset,hasHelper=false){
 			tree_group.position.x=offset.x;
 			tree_group.position.y=offset.y;
 			tree_group.position.z=offset.z;
-		
-	
 		}
-
-
 		let leaves=buildInstancedLeaves(leavesReference,meshes,_material);
 		//let leaves_merged=mergeLeavesAndBuildMesh(leavesReference,meshes,_material);
 		tree_group.add(leaves);
 		//tree_group.add(leaves_merged);
-  
-
 		window["myObject"]["materialLib"]=materials;
 		window.editor.addObject(tree_group);
 	});  
-
-	
-
-
 }
 function buildReadSingleFileHandler(next){
 	function readSingleFile(e) {
@@ -492,7 +451,6 @@ function buildReadMultipleFilesHandler(next){
 	function readMultipleFiles(e) {
 		if(!e.target.files)return;
 		file_data.count=e.target.files.length;
-	 
 		for(let file of e.target.files){
 			let file_name=file.name;
 			if (!file)return;
@@ -508,27 +466,20 @@ function buildReadMultipleFilesHandler(next){
 }
 function downloadFile(filename, text) {
 	var element = document.createElement('a');
-	
 	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
 	element.setAttribute('download', filename);
-  
 	element.style.display = 'none';
 	document.body.appendChild(element);
-  
 	element.click();
-  
 	document.body.removeChild(element);
   }
-
 function addUI(){
 	 let viewport = document.querySelector("#viewport");
 	 if(viewport){
 //el_1 transfer file
 	   let el_1=document.createElement("div");
 	   el_1.setAttribute('class', "myTreeDemoUI myUI");
-	 
 	   el_1.setAttribute('id', "myTreeDemoUI_transfer");
-
 el_1.innerHTML=`
 	  <label>Load SpeedTreeRawXML/Compressed TXT file</label>
 	  <input type="file" id="spRaw-file-input" accept=".xml,.txt" ></input>
@@ -553,8 +504,6 @@ el_1.innerHTML=`
 		  }	 
 	   )
 	   , false);
-	  
-//el_2 matching then blending
 let el_2=document.createElement("div");
 el_2.setAttribute('class', "myTreeDemoUI myUI");
  
@@ -565,9 +514,7 @@ el_2.setAttribute('class', "myTreeDemoUI myUI");
 <input type="file"  multiple="multiple" id="spBlending-file-input" accept=".txt" ></input>
 `
 viewport.appendChild(el_2);
-
 let fileBtn_2=document.getElementById('spBlending-file-input');
-
 fileBtn_2.addEventListener('change',
       buildReadMultipleFilesHandler(
 		function (files) {
@@ -577,22 +524,16 @@ fileBtn_2.addEventListener('change',
 		 	for(let i=0;i< files.length;i++ ){
 				buildTreeFromTXT(matchedFiles[i],files[i].name,new THREE.Vector3(x_off,0,0),false); 
 				x_off+=30;
-			}  
-			
+			}  	
 		  }	 
 	   ));
-
 	 }
-//el_3 canvas_heightmap
-
- 
 }
 
 function treeDemoMain(){
 	console.log("tree_demo.js");
 	 addUI();
 	let editor=window.editor;
-
 	let geometry = new THREE.BoxGeometry();
 let material = new THREE.MeshStandardMaterial( { color:"grey"} );
 let cube = new THREE.Mesh( geometry, material );
@@ -601,10 +542,6 @@ let group = new THREE.Group();
 group.name="group_1";
 group.add(cube);
 group.position.y=3;
- 
-
-//buildTreeFromServiceSide("../models/test_3.xml");
- 
 }
 function loadingBranchAndMesh(lib){
 
@@ -612,14 +549,10 @@ function loadingBranchAndMesh(lib){
 	let xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function state_Change()
 {
-	//console.log(xmlhttp.readyState);
-	//console.log(xmlhttp.status);
 if (xmlhttp.readyState==4)
   {// 4 = "loaded"
   if (xmlhttp.status==200)
     {// 200 = OK
-    // ...our code here...
-	//console.log(xmlhttp.response);
 	let _meshLib={}; 
 	let _branchLib=buildBranchLib(xmlhttp.response,0,_meshLib);
 	lib["branchLib"]=_branchLib;
@@ -632,7 +565,6 @@ if (xmlhttp.readyState==4)
     }
   }
 }
-
 if(lib["name"]!=undefined){
 	xmlhttp.open("GET","../models/forest/"+lib["name"]+"/branchLib.txt",true);}
 else{
@@ -641,10 +573,8 @@ else{
 xmlhttp.send(null);
  });
  return promise;
-
 }
 function loadBranchLib(x,y,lib){
-
 	let xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function state_Change()
 {
@@ -693,7 +623,6 @@ if(lib["name"]!=undefined){
     }
   }
 }
-
 if(lib["name"]!=undefined){
 	xmlhttp.open("GET","../models/forest/"+lib["name"]+"/branchLib.txt",true);}
 else{
@@ -741,15 +670,12 @@ else{
 }
 xmlhttp.send(null);
 }
-
   }
 function loadingTreeSeperated(obj){
 	let count =obj.count;
 	let promise=new Promise(function(res,rej){
 		let treeLib={};
 		for(let i=0;i<count;i++){
-
-
 			let xmlhttp=new XMLHttpRequest();
 			xmlhttp.onreadystatechange=function state_Change()
 		{
@@ -780,17 +706,12 @@ function loadingTreeSeperated(obj){
 		}
 		xmlhttp.send(null);
 		}
-
-
-
 	});
 	return promise;
 }
 function loadForest(x,y,count){
 	let output={};
- 
 	let treeLib=[];
-	
 	loadTreeLib(count,treeLib);
 	loadBranchLib(x,y,output);
  let timer=setInterval(function(){
@@ -806,7 +727,6 @@ function loadForest(x,y,count){
 	  //window.editor.addObject(forest);
 	  let forest_group=new THREE.Group();
 	  forest_group.name="forest";
-	  
 	  let materialLib={};
 	  for(let obj of output.materialInfo){
 		materialLib[obj.id]=new THREE.MeshStandardMaterial();
@@ -817,21 +737,12 @@ function loadForest(x,y,count){
 			tree.generateMergedLeaves(output.meshLib);
 		}
 			  let forestObj=buildForest(x,y,count,output.branchLib,treeLib,output.meshLib,materialLib);
-		
 			 forestObj.generateInstancedBranches(forest_group);
 			//forestObj.generateInstancedLeaves(forest_group);
-			 
 			 forestObj.generateMergedInstancedLeaves(forest_group);
-			
 			 window.myObject["forest"]=forestObj;
-		
 			 window.editor.addObject(forest_group);
-
-
-
-
 	  });
-
 	 //window.myObject["forest"].updateLOD();
 	},3000); 
 }
@@ -870,9 +781,6 @@ if (xmlhttp.readyState==4)
 }
 xmlhttp.open("GET",`../models/forest/hero/${name}.json`,true);
 xmlhttp.send(null);
-
-
-
 }
 
 

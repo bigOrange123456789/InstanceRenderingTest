@@ -4,7 +4,6 @@ importScripts('../build/three.js');
 function loading_recursively(speciesArray,now_id){
     if(now_id>=speciesArray.length)return;
     let obj=speciesArray[now_id];
- 
         loadingBranchAndMesh(obj).then(function(BranchAndMesh){
             self["speciesLib"][obj.name]["meshLib"]="loadingFinished";
             self["speciesLib"][obj.name]["branchLib"]="loadingFinished";
@@ -15,20 +14,20 @@ function loading_recursively(speciesArray,now_id){
                             let tree= self["speciesLib"][obj.name]["treeLib"][_treeID];
                            let geo= tree.generateMergedBranchesSingleLevel("1",BranchAndMesh["branchLib"]);
                            let bufferGeo=new THREE.BufferGeometry().fromGeometry(geo);
-                                            self.postMessage({
-                                                command:"assemble",
-                                                data:{
-                                                    species:obj.name,
-                                                    treeID:_treeID,
-                                                    type:"branches",
-                                                    geo:bufferGeo,
-                                                    level:"1",
-                                                    maxLevel:tree.maxLevel
-                                                }
-                                        });
+                              self.postMessage({
+                                    command:"assemble",
+                                    data:{
+                                        species:obj.name,
+                                        treeID:_treeID,
+                                        type:"branches",
+                                        geo:bufferGeo,
+                                        level:"1",
+                                        maxLevel:tree.maxLevel
+                                     }
+                                    });
+                                    
                                         tree.generateMergedLeavesWithLOD(BranchAndMesh["meshLib"]);
                                         for(let i=0;i<3;i++){
-
                                             for(let leave of tree.leavesMerged){
                                                 self.postMessage({
                                                     command:"assemble",
@@ -42,11 +41,7 @@ function loading_recursively(speciesArray,now_id){
                                                     }
                                             });
                                             }
-
                                         }
-
-                                
-                             
                                         for(let i=2;i<=tree.maxLevel;i++){
                                             let geo= tree.generateMergedBranchesSingleLevel(String(i),BranchAndMesh["branchLib"]);
                                             if(!geo)continue;
@@ -68,7 +63,6 @@ function loading_recursively(speciesArray,now_id){
                             loading_recursively(speciesArray,now_id+1);
                        }); 
         });
- 
 }
 self.addEventListener('message', function (e) {
     console.log('In worker');
@@ -79,13 +73,9 @@ self.addEventListener('message', function (e) {
         self["speciesLib"]=speciesLib;
         loading_recursively(Object.values( self["speciesLib"]),0);
 }
- 
-    //loadForestWithMultiSpecies(info.size[0],info.size[1],info.species,true); 
-    let checkerCanClose=setInterval(function(){
+        let checkerCanClose=setInterval(function(){
         let flag=true;
-/*    console.log("check can close");
-   console.log( self["speciesLib"]); */
-      let  speciesLib= self["speciesLib"];
+        let  speciesLib= self["speciesLib"];
       for(let sp of Object.values(speciesLib)){
         if(sp["meshLib"]!="loadingFinished"||sp["branchLib"]!="loadingFinished"){
             flag=false;break;
@@ -106,5 +96,4 @@ self.addEventListener('message', function (e) {
             self.close();
         } 
 },5000);
-
 }, false);
