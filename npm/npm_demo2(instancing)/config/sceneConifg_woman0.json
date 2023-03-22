@@ -1,0 +1,107 @@
+[
+    { 
+        "path": [
+            "assets/sim/woman01/",
+            "assets/sim/woman02/",
+            "assets/sim/woman03/"
+        ],
+
+        "pathTexture":[
+            "./assets/textures_sim1/woman01/",
+            "./assets/textures_sim1/woman02/",
+            "./assets/textures_sim1/woman03/"
+        ],
+        "meshType":[
+            {
+
+                "CloW_A_body_geo": "coat",
+                "CloW_A_kuzi_geo": "coat",
+                "CloW_A_shangyi_geo": "coat",
+                "CloW_A_waitao_geo1": "coat",
+
+                "CloW_A_xiezi_geo": "shoes",
+                "CloW_E_eyeLeft_geo02": "eye",
+                "CloW_E_eyeRight_geo01": "eye",
+                "eyelash": "eyelash",
+                "hair": "hair",
+                "head": "head",
+                "teeth": null
+            },
+            {
+                "CloW_E_eyeLeft_geo02":null,
+                "CloW_E_eyeRight_geo01":null,
+                "eyelash":null,
+                "hair":"hair",
+
+                "body2":"coat",
+                "qipao22":"coat",
+                "waitao1": "coat",
+                "xiezi":null,
+                "head":null,
+                "teeth":null
+            },
+            {
+                "CloW_C_body_geo1":"coat",
+                "CloW_C_qunzi_geo3456":"coat",
+                "CloW_C_shangyi_geo":"coat",
+                "CloW_C_xie_geo":null,
+                "head":null,
+                "CloW_E_eyeLeft_geo02":null,
+                "CloW_E_eyeRight_geo01":null,
+                "eyelash":null,
+                "teeth":null,
+                "hair":"hair"
+            }
+        ],
+        "lod_visible": [
+            {
+                "CloW_A_body_geo": 5,
+                "CloW_A_kuzi_geo": 5,
+                "CloW_A_shangyi_geo": 5,
+                "CloW_A_waitao_geo1": 5,
+                "CloW_A_xiezi_geo": 4,
+                "CloW_E_eyeLeft_geo02": 4,
+                "CloW_E_eyeRight_geo01": 4,
+                "eyelash": 3,
+                "hair": 5,
+                "head": 5
+            },
+            {
+                "hair":5,
+                "body2":5,
+                "qipao22":5,
+                "waitao1": 5,
+                "head":5
+            },
+            {
+                "CloW_C_body_geo1":5,
+                "CloW_C_qunzi_geo3456":5,
+                "CloW_C_shangyi_geo":5,
+                "CloW_C_xie_geo":4,
+                "head":5,
+                "CloW_E_eyeLeft_geo02":3,
+                "CloW_E_eyeRight_geo01":3,
+                "eyelash":3,
+                "hair":5
+            }
+        ],
+        "useColorTag": [
+        ],
+        
+
+        "walkAnimationList": [
+            5,8
+        ],
+        "sitAnimationList": [
+            
+        ],
+        "standAnimationList": [
+            0,1,2,3,4,6,7,9,10,11,12
+        ],
+        "pathAnima":  "assets/animation_woman0.bin" ,
+
+        "lod_distance":[ 2,   3,   5,    30,  50 ],
+        "lod_geometry":    [ 20,  19,   10,    5,   1  ],
+        "lod_avatarCount": [ 100, 200, 340,  3800, 6600]
+    }
+]
