@@ -1,0 +1,79 @@
+[
+    { 
+        "path": [
+            "assets/sim/man_B/"
+        ],
+
+        "pathTexture":[
+            "./assets/textures_sim1/"
+        ],
+        "meshType":[
+            {
+                "CloM_E_hair_geo":"hair",
+                "CloM_C_Eye_lash_geo":"eyelash",
+                "CloM_C_Eyebrow_geo":"eyelash",
+                "CloM_C_Teeth_geo":null,
+                
+                "CloM_E_shorthair_geo":"hair",
+                "CloM_B_body_geo2":"body",
+                "CloM_B_Nail_geo":null,
+                "CloM_B_kuzi_geo":"trousers", 
+                "CloM_B_lianzi_geo":null, 
+                "CloM_B_xie_geo":"shoes",
+                "CloM_C_head_geo":"head",
+                "CloM_C_Saliva_geo":null, 
+                "CloM_B_chenshan_geo1":"coat",
+                "CloM_B_waitao_geo2":"coat",
+                "CloM_B_xianglian_geo":null,
+                "CloM_C_EyeLeft_geo":"eye",
+                "CloM_C_EyeRight_geo":"eye"
+
+            }
+        ],
+        "lod_visible": [
+            {
+                "CloM_B_kuzi_geo":3, 
+                "CloM_B_chenshan_geo1":3,
+                "CloM_B_waitao_geo2":3,
+
+                "CloM_E_hair_geo":3,
+                
+                "CloM_E_shorthair_geo":3,
+                "CloM_B_body_geo2":3,
+                
+                "CloM_B_xie_geo":3,
+                "CloM_C_head_geo":4,
+                
+                "CloM_C_EyeLeft_geo":2,
+                "CloM_C_EyeRight_geo":2,
+
+                "CloM_C_Eye_lash_geo":2,
+                "CloM_C_Eyebrow_geo":2
+
+            }
+        ],
+        "useColorTag": [
+            "CloW_A_xifu_geo",
+            "CloW_A_kuzi_geo",
+            
+            "CloW_E_shangyi_geo",
+            "CloW_E_kuzi_geo"
+        ],
+        
+
+        "walkAnimationList": [
+            5,8
+        ],
+        "sitAnimationList": [
+            
+        ],
+        "standAnimationList": [
+            0,1,2,3,4,6,7,9,10
+        ],
+        "pathAnima":  "assets/animation_man0.bin" ,
+
+        "lod_distance":[ 5,   15,   30,    60,  100 ],
+        "lod_geometry":    [ 14,  10,   1,    0,   0  ],
+        "lod_avatarCount": [ 200, 900, 3240,  8800, 12600]
+    }
+]

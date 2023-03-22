@@ -1,0 +1,58 @@
+[
+    { 
+        "path": [
+            "assets/sim/woman02/"
+        ],
+        "pathTexture":[
+            "./assets/textures_sim1/woman02/"
+        ],
+        "meshType":[
+            {
+                "CloW_E_eyeLeft_geo02":"eye",
+                "CloW_E_eyeRight_geo01":"eye",
+                "eyelash":"eyelash",
+                "hair":"hair",
+                "body2":"body",
+                "qipao22":"trousers",
+                "waitao1": "coat",
+                "xiezi":"xiezi",
+                "head":"head",
+                "teeth":null
+            }
+        ],
+        "lod_visible": [
+            {
+                "CloW_E_eyeLeft_geo02":4,
+                "CloW_E_eyeRight_geo01":4,
+                "eyelash":3,
+                "hair":5,
+                "body2":5,
+                "qipao22":5,
+                "waitao1": 5,
+                "xiezi":4,
+                "head":5
+            }
+        ],
+        "useColorTag": [
+                "qipao22",
+                "waitao1",
+                "xiezi"
+        ],
+        
+
+        "walkAnimationList": [
+            5,8
+        ],
+        "sitAnimationList": [
+            
+        ],
+        "standAnimationList": [
+            0,1,2,3,4,6,7,9,10,11,12
+        ],
+        "pathAnima":  "assets/animation_woman0.bin" ,
+
+        "lod_distance":[ 2,   3,   5,    30,  50 ],
+        "lod_geometry":    [ 20,  19,   10,    5,   1  ],
+        "lod_avatarCount": [ 100, 200, 340,  3800, 6600]
+    }
+]

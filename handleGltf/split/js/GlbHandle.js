@@ -9,15 +9,6 @@ function GlbHandle(){
     this.resourceInfo={}
     this.resourceManager=new ResourceManager();
     this.needCorrectName=false;
-    //maps
-    // url
-    // interest
-    // modelURL
-    //models
-    // url
-    // interest
-    // boundingSphere
-    //    x,y,z,r
 }
 GlbHandle.prototype={
     process:function (opt) {
@@ -78,7 +69,6 @@ GlbHandle.prototype={
                 scope.index=0;
                 clearInterval(myInterval);
                 scope.resourceInfo.mapsIndex=myMaterialHandle.mapsIndex;
-                //scope.download.jsonDownload(scope.resourceInfo,"resourceInfo.json");
                 if(finishFunction)finishFunction();
             }
         },1000);//有时不需要下载也要等待，这需要优化
@@ -96,7 +86,6 @@ GlbHandle.prototype={
         var myObstacle=[];
         this.resourceManager.name=name;
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
-
         var allMax;
         var allMin;
         for(var k=0;k<this.resourceManager.meshs.length;k++){
@@ -104,7 +93,6 @@ GlbHandle.prototype={
             var geometry=node.geometry;
             var position=geometry.attributes.position;
             var arr=position.array;
-            //console.log(node.name+"--"+position.count);
             var matrix=node.matrix;
             console.log(matrix);
             var e=matrix.elements;
@@ -112,12 +100,10 @@ GlbHandle.prototype={
                 var x=arr[3*i];
                 var y=arr[3*i+1];
                 var z=arr[3*i+2];
-
                 arr[3*i]  =x*e[0]+y*e[4]+z*e[8]+e[12];
                 arr[3*i+1]=x*e[1]+y*e[5]+z*e[9]+e[13];
                 arr[3*i+2]=x*e[2]+y*e[6]+z*e[10]+e[14];
             }
-
             var index=geometry.index;
             arr=index.array;
             for(i=0;i<index.count/3;i++){
@@ -184,7 +170,6 @@ GlbHandle.prototype={
         var myObstacle=[];
         this.resourceManager.name=name;
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
-
         var allMax;
         var allMin;
         for(var k=0;k<this.resourceManager.meshs.length;k++){
@@ -200,12 +185,10 @@ GlbHandle.prototype={
                 var x=arr[3*i];
                 var y=arr[3*i+1];
                 var z=arr[3*i+2];
-
                 arr[3*i]  =x*e[0]+y*e[4]+z*e[8]+e[12];
                 arr[3*i+1]=x*e[1]+y*e[5]+z*e[9]+e[13];
                 arr[3*i+2]=x*e[2]+y*e[6]+z*e[10]+e[14];
             }
-
             var index=geometry.index;
             arr=index.array;
             for(i=0;i<index.count/3;i++){
@@ -217,7 +200,6 @@ GlbHandle.prototype={
                 var p3=getPosByIndex(position,i_p3);
                 var min=[p1[0],p1[1],p1[2]];
                 var max=[p1[0],p1[1],p1[2]];
-
                 if(p2[0]<min[0])min[0]=p2[0];
                 if(p2[1]<min[1])min[1]=p2[1];
                 if(p2[2]<min[2])min[2]=p2[2];
@@ -239,9 +221,7 @@ GlbHandle.prototype={
                         for(var k3=Math.round(min[2]);k3<=Math.round(max[2]);k3++){
                             myObstacle.push([k1,k2,k2]);
                         }
-
                 function voxel2(number) {
-
                     var voxel=[];
                     for(var i=0;i<number;i++){
                         voxel.push([])
@@ -252,16 +232,12 @@ GlbHandle.prototype={
                             }
                         }
                     }
-
                     for(var k1=Math.round(min[0]);k1<=Math.round(max[0]);k1++)
                         for(var k2=Math.round(min[1]);k2<=Math.round(max[1]);k2++)
                             for(var k3=Math.round(min[2]);k3<=Math.round(max[2]);k3++){
                                 myObstacle.push([k1,k2,k2]);
                             }
                 }
-
-                //var num=0;
-                //for(i=0;i<num;i++)
                 function getPosByIndex(position,i0){//通过索引获取顶点
                     return [
                         position.array[3*i0],
@@ -349,7 +325,6 @@ GlbHandle.prototype={
                 var p3=getPosByIndex(position,i_p3);
                 var min=[p1[0],p1[1],p1[2]];
                 var max=[p1[0],p1[1],p1[2]];
-
                 if(p2[0]<min[0])min[0]=p2[0];
                 if(p2[1]<min[1])min[1]=p2[1];
                 if(p2[2]<min[2])min[2]=p2[2];
@@ -365,21 +340,17 @@ GlbHandle.prototype={
                 if(p3[0]>max[0])max[0]=p3[0];
                 if(p3[1]>max[1])max[1]=p3[1];
                 if(p3[2]>max[2])max[2]=p3[2];
-
                 for(var k1=Math.round(min[0]);k1<=Math.round(max[0]);k1++)
                     for(var k2=Math.round(min[1]);k2<=Math.round(max[1]);k2++)
                         for(var k3=Math.round(min[2]);k3<=Math.round(max[2]);k3++){
-                            //myObstacle.push([k1,k2,k2]);
-                            //console.log(k1,k2,k3)
                             voxel[k1][k2][k3]=1;
                         }
-
                 function getPosByIndex(position,i0){//通过索引获取顶点
                     return [
                         position.array[3*i0],
                         position.array[3*i0+1],
                         position.array[3*i0+2]
-                    ];
+                    ]
                 }
             }
         }
@@ -420,13 +391,11 @@ GlbHandle.prototype={
                 matrix:matrix,
                 boundingBox:boundingBox
             };
-
     },
     eigenvector2:function (glb,number) {
         //var myObstacle=[];
         this.resourceManager.name=name;
         this.myGlbSplit.getArray(glb,this.resourceManager);//拆分、去除某些部件
-
         //var allMax;
         //var allMin;
         if(this.resourceManager.meshs>0){
@@ -442,7 +411,6 @@ GlbHandle.prototype={
             var boundingBox=geometry.boundingBox;
             var position=geometry.attributes.position;
             var arr=position.array;
-
             /*
             var matrix=node.matrix;
             var e=matrix.elements;
@@ -450,7 +418,6 @@ GlbHandle.prototype={
                 var x=arr[3*i];
                 var y=arr[3*i+1];
                 var z=arr[3*i+2];
-
                 arr[3*i]  =x*e[0]+y*e[4]+z*e[8]+e[12];
                 arr[3*i+1]=x*e[1]+y*e[5]+z*e[9]+e[13];
                 arr[3*i+2]=x*e[2]+y*e[6]+z*e[10]+e[14];
