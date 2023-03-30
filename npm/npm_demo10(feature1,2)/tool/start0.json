@@ -1,0 +1,12 @@
+{
+    "id":0,
+    "getwall":{
+        "threshold_entropy":1.7,
+        "threshold_sim":0.0007
+    },
+    "doorCid":[],
+    "feature2coefficient":{
+        "wall":0,
+        "door":0.5
+    }
+}
