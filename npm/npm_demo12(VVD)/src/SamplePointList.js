@@ -6,20 +6,18 @@ export class SamplePointList{
         this.config=config.src.SamplePointList
         this.parentGroup=parentGroup
         this.meshes=meshes
-        this.polarAngle  =Math.PI/2
-        this.azimuthAngle=0
+        this.azimuthAngle=0//偏航角
+        window.samplePointList=this
         this.list=this.createSphere0(createSphere)
         this.arrow=this.createArrow()
         this.eventListening()
     }
     getDirection(){
-        let polarAngle=this.polarAngle 
         let azimuthAngle=this.azimuthAngle
-        let position=this.sphere.position
         var d={
-            "x":Math.sin(polarAngle) * Math.cos(azimuthAngle),
-            "y":position.y+Math.cos(polarAngle),
-            "z":position.z+Math.sin(polarAngle) * Math.sin(azimuthAngle)
+            "x": Math.cos(azimuthAngle),
+            "y": 0,
+            "z": Math.sin(azimuthAngle)
         }
         var d1={x: 1, y: 0, z: 0}   //  //[0,-Math.PI/2,0]
         var d2={x: -1, y: 0, z: 0}  //  //[0,Math.PI/2,0]
@@ -37,48 +35,66 @@ export class SamplePointList{
             ),0.5)
             // console.log(l)
             m=m/l
-            // m=(m+1)/2
-            // m-=0.4
+            m=(m+1)/2
+            m-=0.25
             if(m<0)m=0
-
-            // console.log(m)
-            // if(m<0||m>1)console.log(m)
-            // console.log(m)
 
             return m
         }
-        // console.log("*")
         return [
             getMul(d,d1),getMul(d,d2),getMul(d,d3),getMul(d,d4),getMul(d,d5),getMul(d,d6)
         ]
+        
+        // var arr=[
+        //     getMul(d,d1),getMul(d,d2),getMul(d,d3),getMul(d,d4),getMul(d,d5),getMul(d,d6)
+        // ]
+        // var arrMaxI=0;
+        // for(var i=0;i<arr.length;i++)
+        //     if(arr[i]>arr[arrMaxI])arrMaxI=i
+        // for(var i=0;i<arr.length;i++)
+        //     if(arr[i]!=arr[arrMaxI])arr[i]=0
+        // if(arr[2]!=0||arr[3]!=0){
+        //     alert(arr[2])
+        //     alert(arr[3])
+        // }
+        // if(arrMaxI==0)console.log("+x")
+        // else if(arrMaxI==1)console.log("-x")
+        // else if(arrMaxI==4)console.log("+z")
+        // else if(arrMaxI==5)console.log("-z")
+        // else alert("error")
+        // console.log(
+        //     [getMul(d,d1),getMul(d,d2),getMul(d,d5),getMul(d,d6)],
+        //     d,
+        //     [arr[0],arr[1],arr[4],arr[5]])
+        return arr
     }
     showVDbyColor(){
         const self=this
         const d=this.getDirection()
         for(let i=0;i<self.meshes.length;i++){
             const mesh=self.meshes[i]
-            mesh.vvd=mesh.vvd1*d[0]+
+            const vvd=mesh.vvd1*d[0]+
                      mesh.vvd2*d[1]+
                      mesh.vvd3*d[2]+
                      mesh.vvd4*d[3]+
                      mesh.vvd5*d[4]+
                      mesh.vvd6*d[5]
-            if(mesh.vvd>0)
-            console.log([
-                    mesh.vvd1+","+d[0],
-                     mesh.vvd2+","+d[1],
-                     mesh.vvd3+","+d[2],
-                     mesh.vvd4+","+d[3],
-                     mesh.vvd5+","+d[4],
-                     mesh.vvd6+","+d[5]
-            ])
+            // if(mesh.vvd>0)
+            // console.log([
+            //         mesh.vvd1+","+d[0],
+            //          mesh.vvd2+","+d[1],
+            //          mesh.vvd3+","+d[2],
+            //          mesh.vvd4+","+d[3],
+            //          mesh.vvd5+","+d[4],
+            //          mesh.vvd6+","+d[5]
+            // ])
             const color=mesh.material.color
-            if(mesh.vvd==0){
+            if(vvd==0){
                 color.r=0.5
                 color.g=color.b=1
                 mesh.material.opacity=0.1
             }else{
-                color.r=1-mesh.vvd*1000000
+                color.r=1-vvd*50
                 if(color.r<0.3)color.r=0.3
                 color.g=color.b=0
                 mesh.material.opacity=1
@@ -94,10 +110,13 @@ export class SamplePointList{
 
         const arrowHelper = new THREE.Object3D()
         const obj= new THREE.ArrowHelper(direction, origin, length, color);
-        arrowHelper.scale.set(200,200,400)
+        arrowHelper.scale.set(200,200,200)
         arrowHelper.position.set(-999999999,-9999999,99999)
+        // arrowHelper.position.set(-49000,2286.5,6000)
         // const obj=new THREE.Object3D()
-        obj.rotation.y//=Math.PI/2
+        // obj.rotation.x=Math.PI/2
+        obj.rotation.y=-Math.PI/2
+        // obj.rotation.z=Math.PI
         arrowHelper.add(obj)
         this.parentGroup.add(arrowHelper)
 
@@ -110,28 +129,21 @@ export class SamplePointList{
                 "azimuthAngle":0     // 偏航角
             }
         };
-        let polarAngle=self.polarAngle  =Math.PI/2
-        let azimuthAngle=self.azimuthAngle=0
-
-        const currentDirection = new THREE.Vector3();
-        arrowHelper.getWorldDirection(currentDirection);// 计算物体当前朝向向量
-        const quaternion = new THREE.Quaternion().setFromUnitVectors(currentDirection, new THREE.Vector3(
-            arrowHelper.position.x+Math.sin(polarAngle) * Math.cos(azimuthAngle),
-            arrowHelper.position.y+Math.cos(polarAngle),
-            arrowHelper.position.z+Math.sin(polarAngle) * Math.sin(azimuthAngle)
-        ));// 使用 setFromUnitVectors() 方法计算旋转四元数
-        arrowHelper.setRotationFromQuaternion(quaternion);// 将四元数应用到物体的旋转中
+        let azimuthAngle=self.azimuthAngle
+        arrowHelper.lookAt(
+            arrowHelper.position.x+Math.cos(azimuthAngle),
+            arrowHelper.position.y,
+            arrowHelper.position.z+Math.sin(azimuthAngle)
+        )
 
         // 添加控制面板
         gui.add(params.rotation, "azimuthAngle", 0, 2*Math.PI).onChange((value) => {
-            var polarAngle  =params.rotation.polarAngle
             var azimuthAngle=params.rotation.azimuthAngle
-            self.polarAngle  =params.rotation.polarAngle
             self.azimuthAngle=params.rotation.azimuthAngle
             arrowHelper.lookAt(
-                arrowHelper.position.x+Math.sin(polarAngle) * Math.cos(azimuthAngle),
-                arrowHelper.position.y+Math.cos(polarAngle),
-                arrowHelper.position.z+Math.sin(polarAngle) * Math.sin(azimuthAngle)
+                arrowHelper.position.x+Math.cos(azimuthAngle),
+                arrowHelper.position.y,
+                arrowHelper.position.z+Math.sin(azimuthAngle)
             )
             self.showVDbyColor()
         });
@@ -144,13 +156,10 @@ export class SamplePointList{
         for(let x=c.x[0];x<=c.x[1];x=x+c.x[2])
             for(let y=c.y[0];y<=c.y[1];y=y+c.y[2])
                 for(let z=c.z[0];z<=c.z[1];z=z+c.z[2]){
-                    let geometry,material
-                    {
-                        geometry = new THREE.SphereGeometry( 
+                    let geometry = new THREE.SphereGeometry( 
                             c.r,//c.r*(-0.4+1.4*self.config.entropy[name]/entropyMax), 
                             32, 16 );
-                        material = new THREE.MeshBasicMaterial( {color:0x008f8f} );
-                    }
+                    let material = new THREE.MeshBasicMaterial( {color:0x008f8f} );
                     material.color.r=0.5
                     material.color.g=material.color.b=1
                     const sphere = new THREE.Mesh( geometry, material );
@@ -194,7 +203,7 @@ export class SamplePointList{
                     if(i in sphere.vvd["3"])mesh.vvd3=sphere.vvd["3"][i];else mesh.vvd3=0
                     if(i in sphere.vvd["4"])mesh.vvd4=sphere.vvd["4"][i];else mesh.vvd4=0
                     if(i in sphere.vvd["5"])mesh.vvd5=sphere.vvd["5"][i];else mesh.vvd5=0
-                    if(i in sphere.vvd["6"])mesh.vvd5=sphere.vvd["6"][i];else mesh.vvd6=0                    
+                    if(i in sphere.vvd["6"])mesh.vvd6=sphere.vvd["6"][i];else mesh.vvd6=0                    
                 }
                 self.showVDbyColor()
                 for(let i=0;i<self.list.length;i++){
@@ -205,6 +214,12 @@ export class SamplePointList{
                 sphere.material.color.g=sphere.material.color.b=0
                 console.log(sphere,sphere.vvd)              
                 
+            }
+            raycaster.setFromCamera(mouse, camera);
+            const intersects2= raycaster.intersectObjects(self.meshes);
+            if(intersects2.length>0){
+                let mesh=intersects2[0]
+                console.log(mesh)
             }
         }
         window.addEventListener("mousedown", onMouseDown, false);

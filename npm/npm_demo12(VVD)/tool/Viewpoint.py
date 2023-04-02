@@ -41,6 +41,9 @@ class Viewpoint:#单个视点的可见度信息
                 name=arr[0]
                 name=name.split(" ")
                 self.name=name[0]+","+name[1]+","+name[2]
+                # if self.name=="-49000,2286.5,6000":
+                #     print(path)
+                #     exit(0)
                 pre=""
             elif pre=="":
                 direction=arr[0]
