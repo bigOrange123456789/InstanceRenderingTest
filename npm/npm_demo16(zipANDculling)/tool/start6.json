@@ -1,0 +1,24 @@
+{
+    "id":6,
+    "getwall":{
+        "threshold_entropy":1.4,
+        "threshold_difference":1,
+        "threshold_distance":5000
+    },
+    "doorCid":[66,67,68,16,17,20],
+    "featureCoef":{
+        "0_1":{
+            "door":0,
+            "wall":0,
+            "inner":1
+        },
+        "2":{
+            "door":0,
+            "wall":1,
+            "inner":0
+        }
+    },
+    "blocking":{
+        "k":8
+    }
+}
