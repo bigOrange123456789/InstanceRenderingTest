@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MEETING</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {overflow:hidden;}
+		</style>
+	</head>
+	<body style="margin: 0">
+	<script src="js/three.js"></script>
+	<script src="js/Main.js"></script>
+	<script>
+
+	</script>
+
+	<script  type="module">
+		import {Net} from './js/Net.js';
+		import {PlayerControl}from'./js/PlayerControl.js'
+		var myMain = new Main();
+		myMain.start();
+		new PlayerControl(myMain.camera);//.cullingTest(myMain.scene)
+
+		var net=new Net().object;
+		net.position.set(170,17,-59)
+		net.scale.set(-0.03,0.03,0.04)
+		net.rotation.set(0,Math.PI/2,0)
+		myMain.scene.add(net);
+
+		net=new Net().object;
+		net.position.set(170,17,29)
+		net.scale.set(0.03,0.03,0.04)
+		net.rotation.set(0,Math.PI/2,0)
+		myMain.scene.add(net);
+
+		const light = new THREE.PointLight( 0xffffff, 1 );
+		light.position.set(0,40.97,0)
+		light.rotation.set(0,Math.PI/2,0)
+		myMain.scene.add(light)
+
+	</script>
+	</body>
+</html>
